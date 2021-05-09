@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 01 de mayo del 2021 -->
+<!-- 09 de mayo del 2021 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 15: El tipo abstracto de datos de las colas</title>
@@ -388,22 +388,19 @@ Representación de las colas mediante listas:
 </div></li>
 
 <li><p>
-Ejemplo de cola: <code>c1</code> es la cola obtenida añadiéndole a la cola vacía los
-números del 1 al 10. Por ejemplo,
+Ejemplo de cola: La cola obtenida añadiéndole a la cola vacía los números del
+1 al 10 es
 </p>
 <pre class="example">
-λ&gt; c1
+λ&gt; foldr inserta vacia [1..10]
 C [10,9,8,7,6,5,4,3,2,1]
-</pre>
-
+</pre></li>
+</ul>
 <p>
-Su definición es
+#+end<sub>src</sub>
 </p>
-<div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #0000ff;">c1</span> <span style="color: #a0522d;">=</span> foldr inserta vacia <span style="color: #707183;">[</span>1<span style="color: #a0522d;">..</span>10<span style="color: #707183;">]</span>
-</pre>
-</div></li>
 
+<ul class="org-ul">
 <li><p>
 <code>vacia</code> es la cola vacía. Por ejemplo,
 </p>
@@ -426,7 +423,8 @@ Su definición es
 <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-inserta 12 c1  ==  C [10,9,8,7,6,5,4,3,2,1,12]
+λ&gt; inserta 12 (foldr inserta vacia [1..10])
+C [10,9,8,7,6,5,4,3,2,1,12]
 </pre>
 
 <p>
@@ -442,7 +440,7 @@ Su definición es
 <code>(primero c)</code> es el primer elemento de la cola <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-primero c1  ==  10
+primero (foldr inserta vacia [1..10])  ==  10
 </pre>
 
 <p>
@@ -460,7 +458,8 @@ Su definición es
 <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-resto c1  ==  C [9,8,7,6,5,4,3,2,1]
+λ&gt; resto (foldr inserta vacia [1..10])
+C [9,8,7,6,5,4,3,2,1]
 </pre>
 
 <p>
@@ -477,7 +476,7 @@ Su definición es
 <code>(esVacia c)</code> se verifica si <code>c</code> es la cola vacía. Por ejemplo,
 </p>
 <pre class="example">
-esVacia c1     ==  False
+esVacia (foldr inserta vacia [1..10])     ==  False
 esVacia vacia  ==  True
 </pre>
 
@@ -496,7 +495,7 @@ representación, todas las colas son válidas.
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
-<span style="color: #0000ff;">valida</span> c <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">valida</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
 </pre>
 </div></li>
 </ul>
@@ -526,12 +525,13 @@ Cabecera del módulo
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">ColaConDosListas</span>
   <span style="color: #707183;">(</span><span style="color: #228b22;">Cola</span>,
-   vacia,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a</span>
-   inserta, <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Cola a -&gt; Cola a</span>
-   primero, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; a</span>
-   resto,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Cola a</span>
-   esVacia, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Bool</span>
-   valida   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Bool</span>
+   vacia,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a</span>
+   inserta,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Cola a -&gt; Cola a</span>
+   primero,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; a</span>
+   resto,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Cola a</span>
+   esVacia,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Bool</span>
+   valida,     <span style="color: #b22222;">-- </span><span style="color: #b22222;">Cola a -&gt; Bool</span>
+   escribeCola <span style="color: #b22222;">-- </span><span style="color: #b22222;">Show a =&gt; Cola a -&gt; String</span>
   <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
 </pre>
 </div></li>
@@ -558,7 +558,7 @@ valida (C ([],[5]))   ==  False
 Su definición es
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell">valida<span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<pre class="src src-haskell"><span style="color: #0000ff;">valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
 <span style="color: #0000ff;">valida</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> not <span style="color: #707183;">(</span>null xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">||</span> null ys
 </pre>
 </div></li>
@@ -567,34 +567,33 @@ Su definición es
 Procedimiento de escritura de colas como pares de listas.
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Cola</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
-  showsPrec p <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> cad <span style="color: #a0522d;">=</span> showString <span style="color: #8b2252;">"C "</span> <span style="color: #707183;">(</span>showList <span style="color: #7388d6;">(</span>xs <span style="color: #a0522d;">++</span> reverse ys<span style="color: #7388d6;">)</span> cad<span style="color: #707183;">)</span>
+<pre class="src src-haskell"><span style="color: #b22222;">-- </span><span style="color: #b22222;">(escribeCola p) es la cadena correspondiente a la cola p. Por</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; escribeCola (foldr inserta vacia [1..10])</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">"C [10,9,8,7,6,5,4,3,2,1]"</span>
+<span style="color: #0000ff;">escribeCola</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span>
+<span style="color: #0000ff;">escribeCola</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"C "</span> <span style="color: #a0522d;">++</span> show <span style="color: #707183;">(</span>xs <span style="color: #a0522d;">++</span> reverse ys<span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Procedimiento de escritura de colas.</span>
+<span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Cola</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  show <span style="color: #a0522d;">=</span> escribeCola
 </pre>
 </div></li>
 
 <li><p>
-Ejemplo de cola: <code>c1</code> es la cola obtenida añadiéndole a la cola vacía los
-números del 1 al 10. Por ejemplo,
+Ejemplo de cola: La cola obtenida añadiéndole a la cola vacía los números del
+1 al 10 es
 </p>
 <pre class="example">
-λ&gt; c1
+λ&gt; foldr inserta vacia [1..10]
 C [10,9,8,7,6,5,4,3,2,1]
-</pre>
-
-<p>
-Su definición es
-</p>
-<div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #0000ff;">c1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> <span style="color: #228b22;">Int</span>
-<span style="color: #0000ff;">c1</span> <span style="color: #a0522d;">=</span> foldr inserta vacia <span style="color: #707183;">[</span>1<span style="color: #a0522d;">..</span>10<span style="color: #707183;">]</span>
-</pre>
-</div></li>
+</pre></li>
 
 <li><p>
 <code>vacia</code> es la cola vacía. Por ejemplo,
 </p>
 <pre class="example">
-λ&gt; c1
+λ&gt; (foldr inserta vacia [1..10])
 C [10,9,8,7,6,5,4,3,2,1]
 </pre>
 
@@ -612,7 +611,7 @@ Su definición es
 <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-inserta 12 c1  ==  C [10,9,8,7,6,5,4,3,2,1,12]
+inserta 12 (foldr inserta vacia [1..10])  ==  C [10,9,8,7,6,5,4,3,2,1,12]
 </pre>
 
 <p>
@@ -647,7 +646,7 @@ Su definición es
 <code>(primero c)</code> es el primer elemento de la cola <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-primero c1  ==  10
+primero (foldr inserta vacia [1..10])  ==  10
 </pre>
 
 <p>
@@ -655,8 +654,8 @@ Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">primero</span>  <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> a
-<span style="color: #0000ff;">primero</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x
-<span style="color: #0000ff;">primero</span> <span style="color: #a020f0;">_</span>             <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"primero: cola vacia"</span>
+<span style="color: #0000ff;">primero</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span><span style="color: #a020f0;">_</span>,<span style="color: #a020f0;">_</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x
+<span style="color: #0000ff;">primero</span> <span style="color: #a020f0;">_</span>           <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"primero: cola vacia"</span>
 </pre>
 </div></li>
 
@@ -665,7 +664,8 @@ Su definición es
 <code>c</code>. Por ejemplo,
 </p>
 <pre class="example">
-resto c1  ==  C [9,8,7,6,5,4,3,2,1]
+λ&gt; resto (foldr inserta vacia [1..10])
+C [9,8,7,6,5,4,3,2,1]
 </pre>
 
 <p>
@@ -673,7 +673,7 @@ Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">resto</span>  <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Cola</span> a
-<span style="color: #0000ff;">resto</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">C</span> <span style="color: #707183;">(</span>normaliza <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">resto</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span><span style="color: #a020f0;">_</span><span style="color: #228b22;">:</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">C</span> <span style="color: #707183;">(</span>normaliza <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
 <span style="color: #0000ff;">resto</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span><span style="color: #909183;">[]</span>,<span style="color: #909183;">[]</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>   <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"resto: cola vacia"</span>
 </pre>
 </div></li>
@@ -682,7 +682,7 @@ Su definición es
 <code>(esVacia c)</code> se verifica si <code>c</code> es la cola vacía. Por ejemplo,
 </p>
 <pre class="example">
-esVacia c1     ==  False
+esVacia (foldr inserta vacia [1..10]) ==  False
 esVacia vacia  ==  True
 </pre>
 
@@ -708,7 +708,7 @@ Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
-<span style="color: #0000ff;">elementos</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> xs <span style="color: #a0522d;">++</span> <span style="color: #707183;">(</span>reverse ys<span style="color: #707183;">)</span>
+<span style="color: #0000ff;">elementos</span> <span style="color: #707183;">(</span><span style="color: #228b22;">C</span> <span style="color: #7388d6;">(</span>xs,ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> xs <span style="color: #a0522d;">++</span> reverse ys
 </pre>
 </div></li>
 
@@ -756,10 +756,12 @@ Extensión de la igualdad a las colas:
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
-Al principio del fichero se añade el siguiente pragma
+Al principio del fichero se añade
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #483d8b;">{-# LANGUAGE TemplateHaskell #-}</span>
+<span style="color: #483d8b;">{-# LANGUAGE FlexibleInstances #-}</span>
+<span style="color: #483d8b;">{-# OPTIONS_GHC -fno-warn-orphans #-}</span>
 </pre>
 </div></li>
 
@@ -769,6 +771,7 @@ Importación de la implementación de las colas que se desea comprobar.
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">ColaConListas</span>
 <span style="color: #b22222;">-- </span><span style="color: #b22222;">import ColaConDosListas</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">import I1M.Cola</span>
 </pre>
 </div></li>
 
@@ -776,8 +779,7 @@ Importación de la implementación de las colas que se desea comprobar.
 Importación de librerías auxiliares
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Data.List</span>
-<span style="color: #a020f0;">import</span> <span style="color: #228b22;">Test.QuickCheck</span>
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Test.QuickCheck</span>
 </pre>
 </div></li>
 </ul>
@@ -808,10 +810,10 @@ Su definición es
                      <span style="color: #7388d6;">(</span>30, <span style="color: #a020f0;">do</span> n <span style="color: #a0522d;">&lt;-</span> choose <span style="color: #909183;">(</span>10,100<span style="color: #909183;">)</span>
                              xs <span style="color: #a0522d;">&lt;-</span> vectorOf n arbitrary
                              return <span style="color: #909183;">(</span>creaCola xs<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
-          <span style="color: #a020f0;">where</span> creaCola <span style="color: #a0522d;">=</span> foldr inserta vacia
+  <span style="color: #a020f0;">where</span> creaCola <span style="color: #a0522d;">=</span> foldr inserta vacia
 
 <span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Arbitrary</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Cola</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
-    arbitrary <span style="color: #a0522d;">=</span> genCola
+  arbitrary <span style="color: #a0522d;">=</span> genCola
 </pre>
 </div></li>
 
@@ -859,7 +861,7 @@ elemento.
 <pre class="src src-haskell"><span style="color: #0000ff;">prop_primero_inserta_no_vacia</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Cola</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
 <span style="color: #0000ff;">prop_primero_inserta_no_vacia</span> c x y <span style="color: #a0522d;">=</span>
   primero <span style="color: #707183;">(</span>inserta x c'<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> primero c'
-  <span style="color: #a020f0;">where</span> c' <span style="color: #a0522d;">=</span> inserta y vacia
+  <span style="color: #a020f0;">where</span> c' <span style="color: #a0522d;">=</span> inserta y c
 </pre>
 </div></li>
 
@@ -1029,7 +1031,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 01 de mayo del 2021</p>
+  <p>Sevilla, 09 de mayo del 2021</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 01 de mayo del 2021 -->
+<!-- 09 de mayo del 2021 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 14: El tipo abstracto de datos de las pilas</title>
@@ -391,13 +391,14 @@ Cabecera del módulo:
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">PilaConTipoDeDatoAlgebraico</span>
-    <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span>,
-     vacia,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a</span>
-     apila,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Pila a -&gt; Pila a</span>
-     cima,     <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; a</span>
-     desapila, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Pila a</span>
-     esVacia   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Bool</span>
-    <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span>,
+   vacia,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a</span>
+   apila,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Pila a -&gt; Pila a</span>
+   cima,       <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; a</span>
+   desapila,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Pila a</span>
+   esVacia,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Bool</span>
+   escribePila <span style="color: #b22222;">-- </span><span style="color: #b22222;">Show a =&gt; Pila a -&gt; String</span>
+  <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
 </pre>
 </div></li>
 
@@ -405,9 +406,9 @@ Cabecera del módulo:
 Tipo de dato algebraico de las pilas.
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #a020f0;">data</span> <span style="color: #228b22;">Pila</span> a <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacia</span> <span style="color: #a0522d;">|</span> <span style="color: #228b22;">P</span> a <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span>
-              <span style="color: #a020f0;">deriving</span> <span style="color: #228b22;">Eq</span>
-
+<pre class="src src-haskell"><span style="color: #a020f0;">data</span> <span style="color: #228b22;">Pila</span> a <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacia</span>
+            <span style="color: #a0522d;">|</span> <span style="color: #228b22;">P</span> a <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">deriving</span> <span style="color: #228b22;">Eq</span>
 </pre>
 </div></li>
 
@@ -415,9 +416,16 @@ Tipo de dato algebraico de las pilas.
 Procedimiento de escritura de pilas.
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #a020f0;">instance</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
-  showsPrec p <span style="color: #228b22;">Vacia</span> cad   <span style="color: #a0522d;">=</span> showChar <span style="color: #8b2252;">'-'</span> cad
-  showsPrec p <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> x s<span style="color: #707183;">)</span> cad <span style="color: #a0522d;">=</span> shows x <span style="color: #707183;">(</span>showChar <span style="color: #8b2252;">'|'</span> <span style="color: #7388d6;">(</span>shows s cad<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+<pre class="src src-haskell"><span style="color: #b22222;">-- </span><span style="color: #b22222;">(escribePila p) es la cadena correspondiente a la pila p. Por</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">escribePila (apila 1 (apila 2 (apila 3 vacia))) == "1|2|3|-"</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Pila</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #228b22;">Vacia</span>   <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"-"</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> x s<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> show x <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"|"</span> <span style="color: #a0522d;">++</span> escribePila s
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Procedimiento de escritura de pilas.</span>
+<span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  show <span style="color: #a0522d;">=</span> escribePila
 </pre>
 </div></li>
 
@@ -425,16 +433,8 @@ Procedimiento de escritura de pilas.
 Ejemplo de pila: La pila obtenida apilando el 3, a continuación el 2 y
 finalmente el 1 se define por
 </p>
-<div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #0000ff;">p1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Pila</span> <span style="color: #228b22;">Int</span>
-<span style="color: #0000ff;">p1</span> <span style="color: #a0522d;">=</span> apila 1 <span style="color: #707183;">(</span>apila 2 <span style="color: #7388d6;">(</span>apila 3 vacia<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
-</pre>
-</div>
-<p>
-Su evaluación es
-</p>
 <pre class="example">
-λ&gt; p1
+λ&gt; apila 1 (apila 2 (apila 3 vacia))
 1|2|3|-
 </pre></li>
 
@@ -460,7 +460,8 @@ Su definición es
 ejemplo,
 </p>
 <pre class="example">
-apila 4 p1  =&gt;  4|1|2|3|-
+λ&gt; apila 4 (apila 1 (apila 2 (apila 3 vacia)))
+4|1|2|3|-
 </pre>
 
 <p>
@@ -476,7 +477,7 @@ Su definición es
 <code>(cima p)</code> es la cima de la pila <code>p</code>. Por ejemplo,
 </p>
 <pre class="example">
-cima p1  ==  1
+cima (apila 1 (apila 2 (apila 3 vacia)))  ==  1
 </pre>
 
 <p>
@@ -494,7 +495,8 @@ Su definición es
 ejemplo,
 </p>
 <pre class="example">
-desapila p1  =&gt;  2|3|-
+λ&gt; desapila (apila 1 (apila 2 (apila 3 vacia)))
+2|3|-
 </pre>
 
 <p>
@@ -511,7 +513,7 @@ Su definición es
 <code>(esVacia p)</code> se verifica si <code>p</code> es la pila vacía. Por ejemplo,
 </p>
 <pre class="example">
-esVacia p1     ==  False
+esVacia (apila 1 (apila 2 (apila 3 vacia)))     ==  False
 esVacia vacia  ==  True
 </pre>
 
@@ -537,13 +539,14 @@ Cabecera del módulo
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">PilaConListas</span>
-    <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span>,
-     vacia,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a</span>
-     apila,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Pila a -&gt; Pila a</span>
-     cima,       <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; a</span>
-     desapila,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Pila a</span>
-     esVacia     <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Bool</span>
-    <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span>,
+   vacia,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a</span>
+   apila,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">a -&gt; Pila a -&gt; Pila a</span>
+   cima,       <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; a</span>
+   desapila,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Pila a</span>
+   esVacia,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">Pila a -&gt; Bool</span>
+   escribePila <span style="color: #b22222;">-- </span><span style="color: #b22222;">Show a =&gt; Pila a -&gt; String</span>
+  <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
 </pre>
 </div></li>
 
@@ -560,9 +563,16 @@ Tipo de datos de las pilas:
 Procedimiento de escritura de pilas.
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #a020f0;">instance</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
-  showsPrec p <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> <span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>     cad <span style="color: #a0522d;">=</span> showChar <span style="color: #8b2252;">'-'</span> cad
-  showsPrec p <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> cad <span style="color: #a0522d;">=</span> shows x <span style="color: #707183;">(</span>showChar <span style="color: #8b2252;">'|'</span> <span style="color: #7388d6;">(</span>shows <span style="color: #909183;">(</span><span style="color: #228b22;">P</span> xs<span style="color: #909183;">)</span> cad<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+<pre class="src src-haskell"><span style="color: #b22222;">-- </span><span style="color: #b22222;">(escribePila p) es la cadena correspondiente a la pila p. Por</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">escribePila (apila 1 (apila 2 (apila 3 vacia))) == "1|2|3|-"</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Pila</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> <span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>     <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">"-"</span>
+<span style="color: #0000ff;">escribePila</span> <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> show x <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"|"</span> <span style="color: #a0522d;">++</span> escribePila <span style="color: #707183;">(</span><span style="color: #228b22;">P</span> xs<span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Procedimiento de escritura de pilas.</span>
+<span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  show <span style="color: #a0522d;">=</span> escribePila
 </pre>
 </div></li>
 
@@ -571,15 +581,9 @@ Ejemplo de pila: <code>p1</code> es la pila obtenida anadiéndole los elementos 
 a la pila vacía. Por ejemplo,
 </p>
 <pre class="example">
-λ&gt; p1
+λ&gt; apila 1 (apila 2 (apila 3 vacia))
 1|2|3|-
-</pre>
-
-<div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #0000ff;">p1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Pila</span> <span style="color: #228b22;">Int</span>
-<span style="color: #0000ff;">p1</span> <span style="color: #a0522d;">=</span> apila 1 <span style="color: #707183;">(</span>apila 2 <span style="color: #7388d6;">(</span>apila 3 vacia<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
-</pre>
-</div></li>
+</pre></li>
 
 <li><p>
 <code>vacia</code> es la pila vacía. Por ejemplo,
@@ -600,7 +604,8 @@ a la pila vacía. Por ejemplo,
 ejemplo,
 </p>
 <pre class="example">
-apila 4 p1  =&gt;  4|1|2|3|-|
+λ&gt; apila 4 p1
+4|1|2|3|-
 </pre>
 
 <p>
@@ -634,7 +639,8 @@ Su definición es
 ejemplo,
 </p>
 <pre class="example">
-desapila p1  =&gt;  2|3|-
+λ&gt; desapila p1
+2|3|-
 </pre>
 
 <p>
@@ -677,10 +683,11 @@ Su definición es
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
-Al principio del fichero se añade el siguiente pragma
+Al principio del fichero se añade
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #483d8b;">{-# LANGUAGE TemplateHaskell #-}</span>
+<span style="color: #483d8b;">{-# OPTIONS_GHC -fno-warn-orphans #-}</span>
 </pre>
 </div></li>
 
@@ -690,6 +697,7 @@ Importación de la implementación de pilas que se desea comprobar.
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">PilaConTipoDeDatoAlgebraico</span>
 <span style="color: #b22222;">-- </span><span style="color: #b22222;">import PilaConListas</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">import I1M.Pila</span>
 </pre>
 </div></li>
 
@@ -725,8 +733,9 @@ Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">genPila</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Num</span> a, <span style="color: #228b22;">Arbitrary</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Gen</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span>
-<span style="color: #0000ff;">genPila</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span> xs <span style="color: #a0522d;">&lt;-</span> listOf arbitrary
-             return <span style="color: #707183;">(</span>foldr apila vacia xs<span style="color: #707183;">)</span>
+<span style="color: #0000ff;">genPila</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  xs <span style="color: #a0522d;">&lt;-</span> listOf arbitrary
+  return <span style="color: #707183;">(</span>foldr apila vacia xs<span style="color: #707183;">)</span>
 
 <span style="color: #a020f0;">instance</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Arbitrary</span> a, <span style="color: #228b22;">Num</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Arbitrary</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Pila</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
   arbitrary <span style="color: #a0522d;">=</span> genPila
@@ -861,7 +870,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 01 de mayo del 2021</p>
+  <p>Sevilla, 09 de mayo del 2021</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

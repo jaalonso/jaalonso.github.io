@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 01 de mayo del 2021 -->
+<!-- 09 de mayo del 2021 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 13: Programas interactivos</title>
@@ -403,10 +403,10 @@ Su definición es
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">ejSecuenciacion</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Char</span>,<span style="color: #228b22;">Char</span><span style="color: #707183;">)</span>
 <span style="color: #0000ff;">ejSecuenciacion</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
-   x <span style="color: #a0522d;">&lt;-</span> getChar
-   getChar
-   y <span style="color: #a0522d;">&lt;-</span> getChar
-   return <span style="color: #707183;">(</span>x,y<span style="color: #707183;">)</span>
+  x <span style="color: #a0522d;">&lt;-</span> getChar
+  <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">&lt;-</span> getChar
+  y <span style="color: #a0522d;">&lt;-</span> getChar
+  return <span style="color: #707183;">(</span>x,y<span style="color: #707183;">)</span>
 </pre>
 </div></li>
 </ul>
@@ -430,7 +430,15 @@ Lectura de cadenas del teclado:
 </div></li>
 
 <li><p>
-Escritura de cadenas en la pantalla:
+<code>(putStr c)</code> escribe la cadena <code>c</code> en la pantalla. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; putStr "abc "
+abc λ&gt;
+</pre>
+
+<p>
+Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">putStr</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
@@ -441,7 +449,17 @@ Escritura de cadenas en la pantalla:
 </div></li>
 
 <li><p>
-Escritura de cadenas en la pantalla y salto de línea:
+<code>(putStrLn c)</code> escribe la cadena <code>c</code> y un salto de línea en la pantalla. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; putStrLn "abc "
+abc
+λ&gt;
+</pre>
+
+<p>
+Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">putStrLn</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
@@ -451,7 +469,7 @@ Escritura de cadenas en la pantalla y salto de línea:
 </div></li>
 
 <li><p>
-Ejecución de una lista de acciones. Por ejemplo,
+<code>(sequence_ as)</code> ejecuta la lista de acciones <code>as</code>. Por ejemplo,
 </p>
 <pre class="example">
 λ&gt; sequence_ [putStrLn "uno", putStrLn "dos"]
@@ -467,7 +485,7 @@ La definición es
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">sequence_</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">IO</span> a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
 <span style="color: #0000ff;">sequence_</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> return <span style="color: #707183;">()</span>
-<span style="color: #0000ff;">sequence_</span> <span style="color: #707183;">(</span>a<span style="color: #228b22;">:</span>as<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span> a
+<span style="color: #0000ff;">sequence_</span> <span style="color: #707183;">(</span>a<span style="color: #228b22;">:</span>as<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">&lt;-</span> a
                       sequence_ as
 </pre>
 </div></li>
@@ -520,7 +538,7 @@ máquina.</li>
 Ejemplo de sesión:
 </p>
 <pre class="example">
-Main&gt; juego
+λ&gt; juego
 Piensa un numero entre el 1 y el 100.
 Es 50? [mayor/menor/exacto] mayor
 Es 75? [mayor/menor/exacto] menor
@@ -534,20 +552,20 @@ Programa:
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">juego</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
-<span style="color: #0000ff;">juego</span> <span style="color: #a0522d;">=</span>
-    <span style="color: #a020f0;">do</span> putStrLn <span style="color: #8b2252;">"Piensa un numero entre el 1 y el 100."</span>
-       adivina 1 100
-       putStrLn <span style="color: #8b2252;">"Fin del juego"</span>
+<span style="color: #0000ff;">juego</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  putStrLn <span style="color: #8b2252;">"Piensa un numero entre el 1 y el 100."</span>
+  adivina 1 100
+  putStrLn <span style="color: #8b2252;">"Fin del juego"</span>
 
 <span style="color: #0000ff;">adivina</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
-<span style="color: #0000ff;">adivina</span> a b <span style="color: #a0522d;">=</span>
-    <span style="color: #a020f0;">do</span> putStr <span style="color: #707183;">(</span><span style="color: #8b2252;">"Es "</span> <span style="color: #a0522d;">++</span> show conjetura <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"? [mayor/menor/exacto] "</span><span style="color: #707183;">)</span>
-       s <span style="color: #a0522d;">&lt;-</span> getLine
-       <span style="color: #a020f0;">case</span> s <span style="color: #a020f0;">of</span>
-         <span style="color: #8b2252;">"mayor"</span>  <span style="color: #a0522d;">-&gt;</span> adivina <span style="color: #707183;">(</span>conjetura<span style="color: #a0522d;">+</span>1<span style="color: #707183;">)</span> b
-         <span style="color: #8b2252;">"menor"</span>  <span style="color: #a0522d;">-&gt;</span> adivina a <span style="color: #707183;">(</span>conjetura<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
-         <span style="color: #8b2252;">"exacto"</span> <span style="color: #a0522d;">-&gt;</span> return <span style="color: #707183;">()</span>
-         <span style="color: #a020f0;">_</span>        <span style="color: #a0522d;">-&gt;</span> adivina a b
+<span style="color: #0000ff;">adivina</span> a b <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  putStr <span style="color: #707183;">(</span><span style="color: #8b2252;">"Es "</span> <span style="color: #a0522d;">++</span> show conjetura <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"? [mayor/menor/exacto] "</span><span style="color: #707183;">)</span>
+  s <span style="color: #a0522d;">&lt;-</span> getLine
+  <span style="color: #a020f0;">case</span> s <span style="color: #a020f0;">of</span>
+    <span style="color: #8b2252;">"mayor"</span>  <span style="color: #a0522d;">-&gt;</span> adivina <span style="color: #707183;">(</span>conjetura<span style="color: #a0522d;">+</span>1<span style="color: #707183;">)</span> b
+    <span style="color: #8b2252;">"menor"</span>  <span style="color: #a0522d;">-&gt;</span> adivina a <span style="color: #707183;">(</span>conjetura<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+    <span style="color: #8b2252;">"exacto"</span> <span style="color: #a0522d;">-&gt;</span> return <span style="color: #707183;">()</span>
+    <span style="color: #a020f0;">_</span>        <span style="color: #a0522d;">-&gt;</span> adivina a b
     <span style="color: #a020f0;">where</span>
       conjetura <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>a<span style="color: #a0522d;">+</span>b<span style="color: #707183;">)</span> <span style="color: #a0522d;">`div`</span> 2
 </pre>
@@ -563,7 +581,7 @@ conjeturado por el jugador humano.</li>
 Ejemplo de sesión:
 </p>
 <pre class="example">
-Main&gt; juego2
+λ&gt; juego2
 Tienes que adivinar un numero entre 1 y 100
 Escribe un numero: 50
  es bajo.
@@ -713,7 +731,7 @@ Los restantes botones permiten escribir las expresiones.
              c <span style="color: #a0522d;">&lt;-</span> getCh
              <span style="color: #a020f0;">if</span> elem c botones
                 <span style="color: #a020f0;">then</span> procesa c xs
-                <span style="color: #a020f0;">else</span> <span style="color: #a020f0;">do</span> calc xs
+                <span style="color: #a020f0;">else</span> calc xs
 
 <span style="color: #0000ff;">escribeEnPantalla</span> xs <span style="color: #a0522d;">=</span>
     <span style="color: #a020f0;">do</span> escribeEn <span style="color: #707183;">(</span>3,2<span style="color: #707183;">)</span> <span style="color: #8b2252;">"             "</span>
@@ -743,7 +761,7 @@ Los restantes botones permiten escribir las expresiones.
 <span style="color: #0000ff;">evaluar</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
 <span style="color: #0000ff;">evaluar</span> xs <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">case</span> analiza expr xs <span style="color: #a020f0;">of</span>
              <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>n,<span style="color: #8b2252;">""</span><span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> calc <span style="color: #707183;">(</span>show n<span style="color: #707183;">)</span>
-             <span style="color: #a020f0;">_</span>        <span style="color: #a0522d;">-&gt;</span> <span style="color: #a020f0;">do</span> calc xs
+             <span style="color: #a020f0;">_</span>        <span style="color: #a0522d;">-&gt;</span> calc xs
 
 <span style="color: #0000ff;">agregar</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Char</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
 <span style="color: #0000ff;">agregar</span> c xs <span style="color: #a0522d;">=</span> calc <span style="color: #707183;">(</span>xs <span style="color: #a0522d;">++</span> <span style="color: #7388d6;">[</span>c<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
@@ -791,11 +809,12 @@ Funciones anteriores
 <span style="color: #0000ff;">irA</span> <span style="color: #707183;">(</span>x,y<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> putStr <span style="color: #707183;">(</span><span style="color: #8b2252;">"\ESC["</span> <span style="color: #a0522d;">++</span> show y <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">";"</span> <span style="color: #a0522d;">++</span> show x <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">"H"</span><span style="color: #707183;">)</span>
 
 <span style="color: #0000ff;">escribeEn</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Pos</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
-<span style="color: #0000ff;">escribeEn</span> p xs <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span> irA p
-                    putStr xs
+<span style="color: #0000ff;">escribeEn</span> p xs <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  irA p
+  putStr xs
 
-limpiaPantalla<span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
-limpiaPantalla<span style="color: #a0522d;">=</span> putStr <span style="color: #8b2252;">"\ESC[2J"</span>
+<span style="color: #0000ff;">limpiaPantalla</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">limpiaPantalla</span> <span style="color: #a0522d;">=</span> putStr <span style="color: #8b2252;">"\ESC[2J"</span>
 </pre>
 </div></li>
 
@@ -908,7 +927,7 @@ Su definición es
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">supervivientes</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Tablero</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Pos</span><span style="color: #707183;">]</span>
 <span style="color: #0000ff;">supervivientes</span> t <span style="color: #a0522d;">=</span> <span style="color: #707183;">[</span>p <span style="color: #a0522d;">|</span> p <span style="color: #a0522d;">&lt;-</span> t,
-                        elem <span style="color: #7388d6;">(</span>nVecinosVivos t p<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">[</span>2,3<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+                        nVecinosVivos t p <span style="color: #a0522d;">`elem`</span> <span style="color: #7388d6;">[</span>2,3<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
 </pre>
 </div></li>
 
@@ -990,7 +1009,7 @@ Su definición es
 </p>
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">tieneVida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Tablero</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Pos</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
-<span style="color: #0000ff;">tieneVida</span> t p <span style="color: #a0522d;">=</span> elem p t
+<span style="color: #0000ff;">tieneVida</span> t p <span style="color: #a0522d;">=</span> p <span style="color: #a0522d;">`elem`</span> t
 </pre>
 </div></li>
 
@@ -1117,8 +1136,8 @@ xRango 5 (0,10)  ==  [0.0,2.0,4.0,6.0,8.0,10.0]
 Su definición es
 </p>
 <div class="org-src-container">
-<pre class="src src-haskell"><span style="color: #0000ff;">rango</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Double</span>,<span style="color: #228b22;">Double</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Double</span><span style="color: #707183;">]</span>
-<span style="color: #0000ff;">rango</span> n i <span style="color: #a0522d;">=</span> linearScale n i
+<pre class="src src-haskell"><span style="color: #0000ff;">xRango</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Double</span>,<span style="color: #228b22;">Double</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Double</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">xRango</span> n i <span style="color: #a0522d;">=</span> linearScale n i
 </pre>
 </div></li>
 </ul>
@@ -1627,7 +1646,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 01 de mayo del 2021</p>
+  <p>Sevilla, 09 de mayo del 2021</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
