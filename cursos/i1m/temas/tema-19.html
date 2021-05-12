@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 12 de mayo del 2021 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 18: El tipo abstracto de los árboles binarios de búsqueda</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 18: El tipo abstracto de los árboles binarios de búsqueda</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org1c34cbd">1. Especificación del TAD de los árboles binarios de búsqueda</a>
+<ul>
+<li><a href="#orgc91d04b">1.1. Signatura del TAD de los árboles binarios de búsqueda</a></li>
+<li><a href="#org77cc938">1.2. Propiedades del TAD de los árboles binarios de búsqueda</a></li>
+</ul>
+</li>
+<li><a href="#org0afff65">2. Implementación del TAD de los árboles binarios de búsqueda</a>
+<ul>
+<li><a href="#org7635b8b">2.1. Los ABB como tipo de dato algebraico</a></li>
+</ul>
+</li>
+<li><a href="#orgbefb67b">3. Comprobación de la implementación con QuickCheck</a>
+<ul>
+<li><a href="#org5ff989b">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#org35fad3d">3.2. Generador de árboles binarios de búsqueda</a></li>
+<li><a href="#orgd948fdf">3.3. Especificación de las propiedades de los árboles de búsqueda</a></li>
+<li><a href="#org6fb7750">3.4. Comprobación de las propiedades</a></li>
+</ul>
+</li>
+<li><a href="#org7c10e3f">4. Material complementario</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org1c34cbd" class="outline-2">
+<h2 id="org1c34cbd"><span class="section-number-2">1</span> Especificación del TAD de los árboles binarios de búsqueda</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgc91d04b" class="outline-3">
+<h3 id="orgc91d04b"><span class="section-number-3">1.1</span> Signatura del TAD de los árboles binarios de búsqueda</h3>
+<div class="outline-text-3" id="text-1-1">
+</div>
+<div id="outline-container-org2c618eb" class="outline-4">
+<h4 id="org2c618eb"><span class="section-number-4">1.1.1</span> Descripción de los árboles binarios de búsqueda</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<ul class="org-ul">
+<li>Un árbol binario de búsqueda (ABB) es un árbol binario tal que el valor
+de cada nodo es mayor que los valores de su subárbol izquierdo y es menor que
+los valores de su subárbol derecho y, además, ambos subárboles son árboles
+binarios de búsqueda.</li>
+
+<li><p>
+Por ejemplo, al almacenar los valores de [2,3,4,5,6,8,9] en un ABB se
+puede obtener los siguientes ABB:
+</p>
+<pre class="example">
+   5                     5
+ /   \                 /   \
+2     6               3     8
+ \     \             / \   / \
+  4     8           2   4 6   9
+ /       \
+3         9
+</pre></li>
+
+<li>El objetivo principal de los ABB es reducir el tiempo de acceso a los
+valores.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8d26855" class="outline-4">
+<h4 id="org8d26855"><span class="section-number-4">1.1.2</span> Signatura del TAD de los árboles binarios de búsqueda</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<ul class="org-ul">
+<li><p>
+Signatura
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">vacio</span>     <span style="color: #a0522d;">::</span> <span style="color: #228b22;">ABB</span>
+<span style="color: #0000ff;">inserta</span>   <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">elimina</span>   <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">crea</span>      <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">menor</span>     <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">pertenece</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">valido</span>    <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+</pre>
+</div></li>
+
+<li>Descripción de las operaciones:
+<ul class="org-ul">
+<li><code>vacio</code> es el árbol binario de búsqueda vacío.</li>
+<li><code>(pertenece v a)</code> se verifica si <code>v</code> es el valor de algún nodo del árbol
+binario de búsqueda <code>a</code>.</li>
+<li><code>(inserta v a)</code> es el árbol obtenido añadiendo el valor <code>v</code> al árbol binario
+de búsqueda <code>a</code>, si no es uno de sus valores.</li>
+<li><code>(crea vs)</code> es el árbol binario de búsqueda cuyos valores son <code>vs</code>.</li>
+<li><code>(elementos a)</code> es la lista de los valores de los nodos del árbol binario de
+búsqueda <code>a</code> en el recorrido inorden.</li>
+<li><code>(elimina v a)</code> es el árbol binario de búsqueda obtenido eliminando el valor
+<code>v</code> del árbol binario de búsqueda <code>a</code>.</li>
+<li><code>(menor a)</code> es el mínimo valor del árbol binario de búsqueda <code>a</code>.</li>
+<li><code>(valido a)</code> se verifica si <code>a</code> es un árbol binario de búsqueda correcto.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org77cc938" class="outline-3">
+<h3 id="org77cc938"><span class="section-number-3">1.2</span> Propiedades del TAD de los árboles binarios de búsqueda</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li><code>valido vacio</code></li>
+
+<li><code>valido (inserta v a)</code></li>
+
+<li><code>inserta x a /= vacio</code></li>
+
+<li><code>pertenece x (inserta x a)</code></li>
+
+<li><code>not (pertenece x vacio)</code></li>
+
+<li><code>pertenece y (inserta x a) == (x == y) || pertenece y a</code></li>
+
+<li><code>valido (elimina v a)</code></li>
+
+<li><code>elimina x (inserta x a) == elimina x a</code></li>
+
+<li><code>valido (crea xs)</code></li>
+
+<li><code>elementos (crea xs) == sort (nub xs)</code></li>
+
+<li><code>pertenece v a == elem v (elementos a)</code></li>
+
+<li><code>∀x ∈ elementos a (menor a ≤ x)</code></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0afff65" class="outline-2">
+<h2 id="org0afff65"><span class="section-number-2">2</span> Implementación del TAD de los árboles binarios de búsqueda</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org7635b8b" class="outline-3">
+<h3 id="org7635b8b"><span class="section-number-3">2.1</span> Los ABB como tipo de dato algebraico</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li><p>
+Cabecera del módulo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">Tema_19.ArbolBin</span>
+  <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span>,
+   vacio,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">ABB</span>
+   inserta,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; a -&gt; ABB a -&gt; ABB a</span>
+   elimina,    <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; a -&gt; ABB a -&gt; ABB a</span>
+   crea,       <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; [a] -&gt; ABB a</span>
+   crea',      <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; [a] -&gt; ABB a</span>
+   menor,      <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; ABB a -&gt; a</span>
+   elementos,  <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; ABB a -&gt; [a]</span>
+   pertenece,  <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; a -&gt; ABB a -&gt; Bool</span>
+   valido,     <span style="color: #b22222;">-- </span><span style="color: #b22222;">(Ord a, Show a) =&gt; ABB a -&gt; Bool</span>
+   escribeABB, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Show a =&gt; ABB a -&gt; String</span>
+   ejemploABB  <span style="color: #b22222;">-- </span><span style="color: #b22222;">Int -&gt; ABB Int</span>
+  <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+</pre>
+</div></li>
+
+<li><p>
+Los ABB como tipo de dato algebraico.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">data</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+                    <span style="color: #a0522d;">|</span> <span style="color: #228b22;">Nodo</span> a <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span> a<span style="color: #707183;">)</span> <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span> a<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">deriving</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Show</span>, <span style="color: #228b22;">Eq</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(escribeABB a)</code> es la cadena correspondiente al ABB <code>a</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; escribeABB (crea (reverse [5,2,6,4,8,3,9]))
+" (5 (2 - (4 (3 - -) -)) (6 - (8 - (9 - -))))"
+λ&gt; escribeABB (foldr inserta vacio (reverse [5,2,4,3,8,6,7,10,9,11]))
+" (5 (2 - (4 (3 - -) -)) (8 (6 - (7 - -)) (10 (9 - -) (11 - -))))"
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">escribeABB</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span>
+<span style="color: #0000ff;">escribeABB</span> <span style="color: #228b22;">Vacio</span>        <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">" -"</span>
+<span style="color: #0000ff;">escribeABB</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> x i d<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #8b2252;">" ("</span> <span style="color: #a0522d;">++</span> show x <span style="color: #a0522d;">++</span> escribeABB i <span style="color: #a0522d;">++</span> escribeABB d <span style="color: #a0522d;">++</span> <span style="color: #8b2252;">")"</span>
+</pre>
+</div></li>
+
+<li><p>
+Procedimiento de escritura de ABB.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Show</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Show</span> <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  show <span style="color: #a0522d;">=</span> escribeABB
+</pre>
+</div></li>
+
+<li><p>
+Ejemplos de ABB
+</p>
+<pre class="example">
+λ&gt; ejemploABB 1
+ (5 (2 - (4 (3 - -) -)) (6 - (8 - (9 - -))))
+λ&gt; ejemploABB 2
+ (5 (2 - (4 (3 - -) -)) (8 (6 - (7 - -)) (10 (9 - -) (11 - -))))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">ejemploABB</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">ejemploABB</span> 1 <span style="color: #a0522d;">=</span> crea <span style="color: #707183;">(</span>reverse <span style="color: #7388d6;">[</span>5,2,6,4,8,3,9<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">ejemploABB</span> 2 <span style="color: #a0522d;">=</span> foldr inserta vacio <span style="color: #707183;">(</span>reverse <span style="color: #7388d6;">[</span>5,2,4,3,8,6,7,10,9,11<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">ejemploABB</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"No definido"</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>vacio</code> es el ABB vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; vacio
+ -
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">vacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(pertenece v a)</code> se verifica si <code>v</code> es el valor de algún nodo del ABB
+<code>a</code>. Por ejemplo,
+</p>
+<pre class="example">
+pertenece 3 (ejemploABB 1)  ==  True
+pertenece 7 (ejemploABB 1)  ==  False
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">pertenece</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">pertenece</span> v' <span style="color: #228b22;">Vacio</span>        <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+<span style="color: #0000ff;">pertenece</span> v' <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i d<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">==</span> v <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+                          <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">&lt;</span>  v <span style="color: #a0522d;">=</span> pertenece v' i
+                          <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">&gt;</span>  v <span style="color: #a0522d;">=</span> pertenece v' d
+</pre>
+</div></li>
+
+<li><p>
+<code>(inserta v a)</code> es el árbol obtenido añadiendo el valor <code>v</code> al ABB <code>a</code>, si no
+es uno de sus valores. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; inserta 7 (ejemploABB 1)
+ (5 (2 - (4 (3 - -) -)) (6 - (8 (7 - -) (9 - -))))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">inserta</span> v' <span style="color: #228b22;">Vacio</span>        <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v' <span style="color: #228b22;">Vacio</span> <span style="color: #228b22;">Vacio</span>
+<span style="color: #0000ff;">inserta</span> v' <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i d<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">==</span> v   <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v i d
+                        <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">&lt;</span>  v   <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v <span style="color: #707183;">(</span>inserta v' i<span style="color: #707183;">)</span> d
+                        <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v i <span style="color: #707183;">(</span>inserta v' d<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(crea vs)</code> es el ABB cuyos valores son <code>vs</code>. Por ejemplo
+</p>
+<pre class="example">
+λ&gt; crea [3,7,2]
+ (2 - (7 (3 - -) -))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">crea</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">crea</span> <span style="color: #a0522d;">=</span> foldr inserta <span style="color: #228b22;">Vacio</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(crea' vs)</code> es el ABB de menor profundidad cuyos valores son los de la lista
+ordenada <code>vs</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; crea' [2,3,7]
+(~3 (2 ~-~ -) (7 -~ ~-)) ~~~
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">crea'</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">crea'</span> <span style="color: #707183;">[]</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+<span style="color: #0000ff;">crea'</span> vs <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> x <span style="color: #707183;">(</span>crea' l1<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>crea' l2<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span> n      <span style="color: #a0522d;">=</span> length vs <span style="color: #a0522d;">`div`</span> 2
+        l1     <span style="color: #a0522d;">=</span> take n vs
+        <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>l2<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> drop n vs
+</pre>
+</div></li>
+
+<li><p>
+<code>(elementos a)</code> es la lista de los valores de los nodos del ABB <code>a</code> en el
+recorrido inorden. Por ejemplo,
+</p>
+<pre class="example">
+elementos (ejemploABB 1)  ==  [2,3,4,5,6,8,9]
+elementos (ejemploABB 2)  ==  [2,3,4,5,6,7,8,9,10,11]
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">elementos</span> <span style="color: #228b22;">Vacio</span>        <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">elementos</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i d<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> elementos i <span style="color: #a0522d;">++</span> <span style="color: #707183;">[</span>v<span style="color: #707183;">]</span> <span style="color: #a0522d;">++</span> elementos d
+</pre>
+</div></li>
+
+<li><p>
+<code>(elimina v a)</code> el ABB obtenido eliminando el valor <code>v</code> del ABB <code>a</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; elimina 3 (ejemploABB 1)
+λ&gt; (ejemploABB 1)
+ (5 (2 - (4 (3 - -) -)) (6 - (8 - (9 - -))))
+λ&gt; elimina 3 (ejemploABB 1)
+ (5 (2 - (4 - -)) (6 - (8 - (9 - -))))
+λ&gt; elimina 2 (ejemploABB 1)
+ (5 (4 (3 - -) -) (6 - (8 - (9 - -))))
+λ&gt; elimina 5 (ejemploABB 1)
+ (6 (2 - (4 (3 - -) -)) (8 - (9 - -)))
+λ&gt; elimina 7 (ejemploABB 1)
+ (5 (2 - (4 (3 - -) -)) (6 - (8 - (9 - -))))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">elimina</span>  <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a
+<span style="color: #0000ff;">elimina</span> <span style="color: #a020f0;">_</span>  <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+<span style="color: #0000ff;">elimina</span> v' <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i <span style="color: #228b22;">Vacio</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> v'<span style="color: #a0522d;">==</span>v <span style="color: #a0522d;">=</span> i
+<span style="color: #0000ff;">elimina</span> v' <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v <span style="color: #228b22;">Vacio</span> d<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> v'<span style="color: #a0522d;">==</span>v <span style="color: #a0522d;">=</span> d
+<span style="color: #0000ff;">elimina</span> v' <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i d<span style="color: #707183;">)</span>     <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">&lt;</span> v    <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v <span style="color: #707183;">(</span>elimina v' i<span style="color: #707183;">)</span> d
+                            <span style="color: #a0522d;">|</span> v' <span style="color: #a0522d;">&gt;</span> v    <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> v i <span style="color: #707183;">(</span>elimina v' d<span style="color: #707183;">)</span>
+                            <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Nodo</span> k i <span style="color: #707183;">(</span>elimina k d<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span> k <span style="color: #a0522d;">=</span> menor d
+</pre>
+</div></li>
+
+<li><p>
+<code>(menor a)</code> es el mínimo valor del ABB <code>a</code>. Por ejemplo,
+</p>
+<pre class="example">
+menor (ejemploABB 1)  ==  2
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">menor</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">menor</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v <span style="color: #228b22;">Vacio</span> <span style="color: #a020f0;">_</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> v
+<span style="color: #0000ff;">menor</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> <span style="color: #a020f0;">_</span> i     <span style="color: #a020f0;">_</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> menor i
+</pre>
+</div></li>
+
+<li><p>
+<code>(menorTodos v a)</code> se verifica si <code>v</code> es menor que todos los elementos del
+ABB <code>a</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">menorTodos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">menorTodos</span> v <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">menorTodos</span> v a     <span style="color: #a0522d;">=</span> v <span style="color: #a0522d;">&lt;</span> minimum <span style="color: #707183;">(</span>elementos a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(mayorTodos v a)</code> se verifica si <code>v</code> es mayor que todos los elementos del
+ABB <code>a</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">mayorTodos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">mayorTodos</span> v <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">mayorTodos</span> v a     <span style="color: #a0522d;">=</span> v <span style="color: #a0522d;">&gt;</span> maximum <span style="color: #707183;">(</span>elementos a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(valido a)</code> se verifica si <code>a</code> es un ABB correcto. Por ejemplo,
+</p>
+<pre class="example">
+valido (ejemploABB 1) == True
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">valido</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a, <span style="color: #228b22;">Show</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">ABB</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">valido</span> <span style="color: #228b22;">Vacio</span>        <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">valido</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Nodo</span> v i d<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> mayorTodos v i <span style="color: #a0522d;">&amp;&amp;</span>
+                      menorTodos v d <span style="color: #a0522d;">&amp;&amp;</span>
+                      valido i <span style="color: #a0522d;">&amp;&amp;</span>
+                      valido d
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbefb67b" class="outline-2">
+<h2 id="orgbefb67b"><span class="section-number-2">3</span> Comprobación de la implementación con QuickCheck</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org5ff989b" class="outline-3">
+<h3 id="org5ff989b"><span class="section-number-3">3.1</span> Pragma y librerías auxiliares</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+Al principio del fichero se añade
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #483d8b;">{-# LANGUAGE TemplateHaskell #-}</span>
+<span style="color: #483d8b;">{-# LANGUAGE FlexibleInstances #-}</span>
+<span style="color: #483d8b;">{-# OPTIONS_GHC -fno-warn-orphans #-}</span>
+</pre>
+</div></li>
+
+<li><p>
+Importación de la implementación de los ABB que se desea verificar.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Tema_19.ArbolBin</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">import I1M.ArbolBin</span>
+</pre>
+</div></li>
+
+<li><p>
+Importación de librerías auxiliares.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Data.List</span> <span style="color: #707183;">(</span>nub, sort<span style="color: #707183;">)</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">Test.QuickCheck</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org35fad3d" class="outline-3">
+<h3 id="org35fad3d"><span class="section-number-3">3.2</span> Generador de árboles binarios de búsqueda</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li><p>
+<code>genABB</code> es un generador de árboles binarios de búsqueda. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; sample genABB
+ -
+ (1 (-1 - -) -)
+ (1 - -)
+ (-1 (-3 - -) (1 - (4 - -)))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">genABB</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Gen</span> <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">genABB</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  xs <span style="color: #a0522d;">&lt;-</span> listOf arbitrary
+  return <span style="color: #707183;">(</span>foldr inserta vacio xs<span style="color: #707183;">)</span>
+
+<span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Arbitrary</span> <span style="color: #707183;">(</span><span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  arbitrary <span style="color: #a0522d;">=</span> genABB
+</pre>
+</div></li>
+
+<li><p>
+Propiedad. Todo los elementos generados por genABB son árboles binarios de
+búsqueda.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_genABB_correcto</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_genABB_correcto</span> <span style="color: #a0522d;">=</span> valido
+</pre>
+</div></li>
+
+<li><p>
+<code>listaOrdenada</code> es un generador de listas ordenadas de números enteros. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; sample listaOrdenada
+[1]
+[-2,-1,0]
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">listaOrdenada</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Gen</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">listaOrdenada</span> <span style="color: #a0522d;">=</span>
+  frequency <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>1,return <span style="color: #909183;">[]</span><span style="color: #7388d6;">)</span>,
+             <span style="color: #7388d6;">(</span>4,<span style="color: #a020f0;">do</span> xs <span style="color: #a0522d;">&lt;-</span> orderedList
+                   n <span style="color: #a0522d;">&lt;-</span> arbitrary
+                   return <span style="color: #909183;">(</span>nub <span style="color: #709870;">(</span><span style="color: #907373;">(</span><span style="color: #a020f0;">case</span> xs <span style="color: #a020f0;">of</span>
+                                   <span style="color: #6276ba;">[]</span>  <span style="color: #a0522d;">-&gt;</span> n
+                                   x<span style="color: #228b22;">:</span><span style="color: #a020f0;">_</span> <span style="color: #a0522d;">-&gt;</span> n <span style="color: #a0522d;">`min`</span> x<span style="color: #907373;">)</span>
+                                <span style="color: #228b22;">:</span>xs<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(ordenada xs)</code> se verifica si <code>xs</code> es una lista ordenada creciente. Por
+ejemplo,
+</p>
+<pre class="example">
+ordenada [3,5,9]  ==  True
+ordenada [3,9,5]  ==  False
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">ordenada</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">ordenada</span> xs <span style="color: #a0522d;">=</span> and <span style="color: #707183;">[</span>x <span style="color: #a0522d;">&lt;</span> y <span style="color: #a0522d;">|</span> <span style="color: #7388d6;">(</span>x,y<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">&lt;-</span> zip xs <span style="color: #7388d6;">(</span>tail xs<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+Propiedad. El generador <code>listaOrdenada</code> produce listas ordenadas.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_listaOrdenada_correcta</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Property</span>
+<span style="color: #0000ff;">prop_listaOrdenada_correcta</span> xs <span style="color: #a0522d;">=</span>
+  forAll listaOrdenada ordenada
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd948fdf" class="outline-3">
+<h3 id="orgd948fdf"><span class="section-number-3">3.3</span> Especificación de las propiedades de los árboles de búsqueda</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li><p>
+<code>vacio</code> es un ABB.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_vacio_es_ABB</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_vacio_es_ABB</span> <span style="color: #a0522d;">=</span>
+  valido <span style="color: #707183;">(</span>vacio <span style="color: #a0522d;">::</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Si <code>a</code> es un ABB, entonces <code>(inserta v a)</code> también lo es.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_inserta_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_inserta_es_valida</span> v a <span style="color: #a0522d;">=</span>
+  valido <span style="color: #707183;">(</span>inserta v a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+El árbol que resulta de añadir un elemento a un ABB es no vacío.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_inserta_es_no_vacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_inserta_es_no_vacio</span> x a <span style="color: #a0522d;">=</span>
+  inserta x a <span style="color: #a0522d;">/=</span> vacio
+</pre>
+</div></li>
+
+<li><p>
+Para todo <code>x</code> y <code>a</code>, <code>x</code> es un elemento de <code>(inserta x a)</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elemento_de_inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elemento_de_inserta</span> x a <span style="color: #a0522d;">=</span>
+  pertenece x <span style="color: #707183;">(</span>inserta x a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+En un árbol vacio no hay ningún elemento.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_vacio_sin_elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_vacio_sin_elementos</span> x <span style="color: #a0522d;">=</span>
+  not <span style="color: #707183;">(</span>pertenece x vacio<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Los elementos de <code>(inserta x a)</code> son <code>x</code> y los elementos de <code>a</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elementos_de_inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elementos_de_inserta</span> x y a <span style="color: #a0522d;">=</span>
+  pertenece y <span style="color: #707183;">(</span>inserta x a<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">==</span> <span style="color: #707183;">(</span>x <span style="color: #a0522d;">==</span> y<span style="color: #707183;">)</span> <span style="color: #a0522d;">||</span> pertenece y a
+</pre>
+</div></li>
+
+<li><p>
+Si <code>a</code> es un ABB, entonces <code>(elimina v a)</code> también lo es.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elimina_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elimina_es_valida</span> v a <span style="color: #a0522d;">=</span>
+  valido <span style="color: #707183;">(</span>elimina v a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+El resultado de eliminar el elemento <code>x</code> en <code>(inserta x a)</code> es
+<code>(elimina x a)</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elimina_agrega</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elimina_agrega</span> x a <span style="color: #a0522d;">=</span>
+  elimina <span style="color: #707183;">(</span>inserta x a<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> elimina x a
+</pre>
+</div></li>
+
+<li><p>
+<code>(crea xs)</code> es un ABB.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_crea_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_crea_es_valida</span> xs <span style="color: #a0522d;">=</span>
+  valido <span style="color: #707183;">(</span>crea xs<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Para todas las listas ordenadas <code>xs</code>, se tiene que <code>(crea' xs)</code> es un ABB.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_crea'_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Property</span>
+<span style="color: #0000ff;">prop_crea'_es_valida</span> xs <span style="color: #a0522d;">=</span>
+  forAll listaOrdenada <span style="color: #707183;">(</span>valido <span style="color: #a0522d;">.</span> crea'<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(elementos (crea xs))</code> es igual a la lista <code>xs</code> ordenada y sin repeticiones.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elementos_crea</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elementos_crea</span> xs <span style="color: #a0522d;">=</span>
+  elementos <span style="color: #707183;">(</span>crea xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> sort <span style="color: #707183;">(</span>nub xs<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Si <code>ys</code> es una lista ordenada sin repeticiones, entonces
+<code>(elementos (crea' ys))</code> es igual <code>ys</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_elementos_crea'</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_elementos_crea'</span> xs <span style="color: #a0522d;">=</span>
+  elementos <span style="color: #707183;">(</span>crea' ys<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> ys
+  <span style="color: #a020f0;">where</span> ys <span style="color: #a0522d;">=</span> sort <span style="color: #707183;">(</span>nub xs<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Un elemento pertenece a <code>(elementos a)</code> syss es un valor de <code>a</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_en_elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_en_elementos</span> v a <span style="color: #a0522d;">=</span>
+  pertenece v a <span style="color: #a0522d;">==</span> elem v <span style="color: #707183;">(</span>elementos a<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(menor a)</code> es menor o igual que todos los elementos de ABB <code>a</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_menoresMinimo</span> <span style="color: #a0522d;">::</span><span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">ABB</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_menoresMinimo</span> v a <span style="color: #a0522d;">=</span>
+  and <span style="color: #707183;">[</span>menor a <span style="color: #a0522d;">&lt;=</span> v <span style="color: #a0522d;">|</span> v <span style="color: #a0522d;">&lt;-</span> elementos a<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6fb7750" class="outline-3">
+<h3 id="org6fb7750"><span class="section-number-3">3.4</span> Comprobación de las propiedades</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li><p>
+Para verificar todas las propiedades se escribe
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">return</span> <span style="color: #707183;">[]</span>
+
+<span style="color: #0000ff;">verificaABB</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">verificaABB</span> <span style="color: #a0522d;">=</span> <span style="color: #a0522d;">$</span>quickCheckAll
+</pre>
+</div></li>
+
+<li><p>
+Comprobación de las propiedades de los ABB
+</p>
+<pre class="example">
+λ&gt; verificaABB
+=== prop_genABB_correcto from ArbolBinPropiedades.hs:44 ===
++++ OK, passed 100 tests.
+
+=== prop_listaOrdenada_correcta from ArbolBinPropiedades.hs:83 ===
++++ OK, passed 100 tests.
+
+=== prop_orderedList_correcta from ArbolBinPropiedades.hs:93 ===
++++ OK, passed 100 tests.
+
+=== prop_vacio_es_ABB from ArbolBinPropiedades.hs:109 ===
++++ OK, passed 1 test.
+
+=== prop_inserta_es_valida from ArbolBinPropiedades.hs:121 ===
++++ OK, passed 100 tests.
+
+=== prop_inserta_es_no_vacio from ArbolBinPropiedades.hs:131 ===
++++ OK, passed 100 tests.
+
+=== prop_elemento_de_inserta from ArbolBinPropiedades.hs:140 ===
++++ OK, passed 100 tests.
+
+=== prop_vacio_sin_elementos from ArbolBinPropiedades.hs:152 ===
++++ OK, passed 100 tests.
+
+=== prop_elementos_de_inserta from ArbolBinPropiedades.hs:162 ===
++++ OK, passed 100 tests.
+
+=== prop_elimina_es_valida from ArbolBinPropiedades.hs:174 ===
++++ OK, passed 100 tests.
+
+=== prop_elimina_agrega from ArbolBinPropiedades.hs:184 ===
++++ OK, passed 100 tests.
+
+=== prop_crea_es_valida from ArbolBinPropiedades.hs:196 ===
++++ OK, passed 100 tests.
+
+=== prop_crea'_es_valida from ArbolBinPropiedades.hs:209 ===
++++ OK, passed 100 tests.
+
+=== prop_elementos_crea from ArbolBinPropiedades.hs:222 ===
++++ OK, passed 100 tests.
+
+=== prop_elementos_crea' from ArbolBinPropiedades.hs:232 ===
++++ OK, passed 100 tests.
+
+=== prop_en_elementos from ArbolBinPropiedades.hs:242 ===
++++ OK, passed 100 tests.
+
+=== prop_menoresMinimo from ArbolBinPropiedades.hs:255 ===
++++ OK, passed 100 tests.
+
+True
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7c10e3f" class="outline-2">
+<h2 id="org7c10e3f"><span class="section-number-2">4</span> Material complementario</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+El código del tema se encuentra en los siguientes enlaces
+</p>
+<ul class="org-ul">
+<li><a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_19/ArbolBin.hs">Implementación de los árboles binarios de búsqueda como tipo de dato algebraico</a>.</li>
+<li><a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_19/ArbolBinPropiedades.hs">ArbolBinPropiedades: Propiedades del TAD de los árboles binarios de búsqueda</a>.</li>
+</ul>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="./tema-19.pdf">transparencias en PDF</a>.</li>
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?urlpath=lab/tree/temas/Tema-19.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como <a href="https://youtu.be/u1JkcKtNWk0">vídeo de clase</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 12 de mayo del 2021</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
