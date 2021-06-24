@@ -1,0 +1,898 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 24 de junio del 2021 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 26: Programación de fractales en Haskell</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 26: Programación de fractales en Haskell</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgf36d78f">1. Introducción</a></li>
+<li><a href="#org181919d">2. Ejemplo simple: el fractal del árbol</a>
+<ul>
+<li><a href="#org315a80b">2.1. Tronco de un árbol</a></li>
+<li><a href="#orgbe50b89">2.2. Tronco de árbol con ramas</a></li>
+<li><a href="#orgfb41c01">2.3. Construcción iterada de un árbol</a></li>
+<li><a href="#org91b0f8a">2.4. Árbol como un fractal (recursión sobre el paso)</a></li>
+<li><a href="#org3cabef4">2.5. Árbol como un fractal coloreado (recursión sobre el paso y el color)</a></li>
+</ul>
+</li>
+<li><a href="#org7570959">3. Fractal de la curva de Koch</a></li>
+<li><a href="#org7f24dd2">4. Fractal del copo de nieve de Koch</a></li>
+<li><a href="#orgd6a2ff8">5. Triángulo de Sierpinski</a></li>
+<li><a href="#org12129b3">6. Curva del dragón</a></li>
+<li><a href="#org8e3637a">7. Referencias</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf36d78f" class="outline-2">
+<h2 id="orgf36d78f"><span class="section-number-2">1.</span> Introducción</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>Un <a href="http://es.wikipedia.org/wiki/Fractal">fractal</a> es un objeto geométrico cuya estructura básica, fragmentada o
+irregular, se repite a diferentes escalas.</li>
+
+<li>El término fue propuesto por el matemático <a href="http://bit.ly/1jBvkQo">Benoît Mandelbrot</a> en 1975 y deriva
+del Latín <i>fractus</i>, que significa quebrado o fracturado.</li>
+
+<li>Muchas estructuras naturales son de tipo fractal. Por ejemplo, el <a href="http://bit.ly/1jBwaN8">romanescu</a>
+(un híbrido de brécol) <br />
+<img src="./tema-26/fig/Romanescu.jpg" alt="Romanescu.jpg" /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org181919d" class="outline-2">
+<h2 id="org181919d"><span class="section-number-2">2.</span> Ejemplo simple: el fractal del árbol</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li>El fractal árbol es <br />
+<img src="./tema-26/fig/Arbol_coloreado_6.png" alt="Arbol_coloreado_6.png" /></li>
+</ul>
+</div>
+
+<div id="outline-container-org315a80b" class="outline-3">
+<h3 id="org315a80b"><span class="section-number-3">2.1.</span> Tronco de un árbol</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>Dibujo <br />
+<img src="./tema-26/fig/Tronco.png" alt="Tronco.png" /></li>
+
+<li><p>
+Programa <a href="./tema-26/codigo/Tronco.hs">Tronco.hs</a> <br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Tronco de arbol"</span> <span style="color: #7388d6;">(</span>700,800<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black dibujo
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> aquamarine <span style="color: #707183;">(</span><span style="color: #228b22;">Translate</span> 0 <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>300<span style="color: #7388d6;">)</span> tronco<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Polygon</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>30,0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>30,0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgbe50b89" class="outline-3">
+<h3 id="orgbe50b89"><span class="section-number-3">2.2.</span> Tronco de árbol con ramas</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>Dibujo <br />
+<img src="./tema-26/fig/TroncoConRama.png" alt="TroncoConRama.png" /></li>
+
+<li><p>
+Programa <a href="./tema-26/codigo/TroncoConRamas.hs">TroncoConRamas.hs</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Tronco y ramas"</span> <span style="color: #7388d6;">(</span>700,800<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black dibujo
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> green <span style="color: #707183;">(</span><span style="color: #228b22;">Translate</span> 0 <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>300<span style="color: #7388d6;">)</span> troncoConRamas<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Polygon</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>30,0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>30,0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">troncoConRamas</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">troncoConRamas</span> <span style="color: #a0522d;">=</span>
+  <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span> tronco,
+             <span style="color: #228b22;">Translate</span> 0 300 rama,
+             <span style="color: #228b22;">Translate</span> 0 240 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 20    rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 180 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>20<span style="color: #909183;">)</span> rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 120 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 40    rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0  60 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>40<span style="color: #909183;">)</span> rama<span style="color: #7388d6;">)</span>
+           <span style="color: #707183;">]</span>
+  <span style="color: #a020f0;">where</span> rama <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 tronco
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfb41c01" class="outline-3">
+<h3 id="orgfb41c01"><span class="section-number-3">2.3.</span> Construcción iterada de un árbol</h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li>Dibujo <br />
+<img src="./tema-26/fig/Arbol.png" alt="Arbol.png" /></li>
+
+<li><p>
+Programa <a href="./tema-26/codigo/Arbol.hs">Arbol.hs</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Arbol"</span> <span style="color: #7388d6;">(</span>700,800<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black dibujo
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> green <span style="color: #707183;">(</span><span style="color: #228b22;">Translate</span> 0 <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>300<span style="color: #7388d6;">)</span> arbol<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Polygon</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>30,0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>30,0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">troncoConRamas</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">troncoConRamas</span> <span style="color: #a0522d;">=</span>
+  <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span> tronco,
+             <span style="color: #228b22;">Translate</span> 0 300 rama,
+             <span style="color: #228b22;">Translate</span> 0 240 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 20    rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 180 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>20<span style="color: #909183;">)</span> rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 120 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 40    rama<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0  60 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>40<span style="color: #909183;">)</span> rama<span style="color: #7388d6;">)</span>
+           <span style="color: #707183;">]</span>
+  <span style="color: #a020f0;">where</span> rama <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 tronco
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">=</span>
+  <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span> tronco,
+             <span style="color: #228b22;">Translate</span> 0 300 ramas,
+             <span style="color: #228b22;">Translate</span> 0 240 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 20    ramas<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 180 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>20<span style="color: #909183;">)</span> ramas<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0 120 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 40    ramas<span style="color: #7388d6;">)</span>,
+             <span style="color: #228b22;">Translate</span> 0  60 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>40<span style="color: #909183;">)</span> ramas<span style="color: #7388d6;">)</span>
+           <span style="color: #707183;">]</span>
+  <span style="color: #a020f0;">where</span> ramas <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 troncoConRamas
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org91b0f8a" class="outline-3">
+<h3 id="org91b0f8a"><span class="section-number-3">2.4.</span> Árbol como un fractal (recursión sobre el paso)</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li><b>Objetivo</b>: Definir una única función con un argumento (el paso) que pinte los
+siguientes dibujos.</li>
+
+<li>Árbol fractal, paso 0 <br />
+<img src="./tema-26/fig/Arbol_fractal_0.png" alt="Arbol_fractal_0.png" /></li>
+
+<li>Árbol fractal, paso 1 <br />
+<img src="./tema-26/fig/Arbol_fractal_1.png" alt="Arbol_fractal_1.png" /></li>
+
+<li>Árbol fractal, paso 2 <br />
+<img src="./tema-26/fig/Arbol_fractal_2.png" alt="Arbol_fractal_2.png" /></li>
+
+<li>Árbol fractal, paso 3 <br />
+<img src="./tema-26/fig/Arbol_fractal_3.png" alt="Arbol_fractal_3.png" /></li>
+
+<li>Árbol fractal, paso 4 <br />
+<img src="./tema-26/fig/Arbol_fractal_4.png" alt="Arbol_fractal_4.png" /></li>
+
+<li>Árbol fractal, paso 5 <br />
+<img src="./tema-26/fig/Arbol_fractal_5.png" alt="Arbol_fractal_5.png" /></li>
+
+<li>Árbol fractal, paso 6 <br />
+<img src="./tema-26/fig/Arbol_fractal_6.png" alt="Arbol_fractal_6.png" /></li>
+
+<li><p>
+Programa <a href="./tema-26/codigo/ArbolFractal.hs">ArbolFractal.hs</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">System.IO</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  hSetBuffering stdout <span style="color: #228b22;">NoBuffering</span>
+  putStr <span style="color: #8b2252;">"&#193;rbol fractal.  Introduce el paso [0..6]: "</span>
+  paso <span style="color: #a0522d;">&lt;-</span> readLn
+  display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Arbol fractal"</span> <span style="color: #7388d6;">(</span>700,800<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black <span style="color: #707183;">(</span>dibujo paso<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> paso <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> green <span style="color: #707183;">(</span><span style="color: #228b22;">Translate</span> 0 <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>300<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>arbol paso<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Polygon</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>30,0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>15,300<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>30,0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>tronco,
+                    <span style="color: #228b22;">Translate</span> 0 300 menor,
+                    <span style="color: #228b22;">Translate</span> 0 240 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 20    menor<span style="color: #7388d6;">)</span>,
+                    <span style="color: #228b22;">Translate</span> 0 180 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>20<span style="color: #909183;">)</span> menor<span style="color: #7388d6;">)</span>,
+                    <span style="color: #228b22;">Translate</span> 0 120 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> 40    menor<span style="color: #7388d6;">)</span>,
+                    <span style="color: #228b22;">Translate</span> 0  60 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>40<span style="color: #909183;">)</span> menor<span style="color: #7388d6;">)</span> <span style="color: #707183;">]</span>
+    <span style="color: #a020f0;">where</span> menor <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3cabef4" class="outline-3">
+<h3 id="org3cabef4"><span class="section-number-3">2.5.</span> Árbol como un fractal coloreado (recursión sobre el paso y el color)</h3>
+<div class="outline-text-3" id="text-2-5">
+<ul class="org-ul">
+<li><b>Objetivo</b>: Definir una única función con un argumento (el paso) que pinte los</li>
+</ul>
+<p>
+siguientes dibujos.
+</p>
+
+<ul class="org-ul">
+<li>Dibujo paso 0 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_0.png" alt="Arbol_fractal_coloreado_0.png" /></li>
+
+<li>Dibujo paso 1 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_1.png" alt="Arbol_fractal_coloreado_1.png" /></li>
+
+<li>Dibujo paso 2 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_2.png" alt="Arbol_fractal_coloreado_2.png" /></li>
+
+<li>Dibujo paso 3 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_3.png" alt="Arbol_fractal_coloreado_3.png" /></li>
+
+<li>Dibujo paso 4 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_4.png" alt="Arbol_fractal_coloreado_4.png" /></li>
+
+<li>Dibujo paso 5 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_5.png" alt="Arbol_fractal_coloreado_5.png" /></li>
+
+<li>Dibujo paso 6 <br />
+<img src="./tema-26/fig/Arbol_fractal_coloreado_6.png" alt="Arbol_fractal_coloreado_6.png" /></li>
+
+<li><p>
+Programa <a href="./tema-26/codigo/ArbolFractalColoreado.hs">ArbolFractalColoreado.hs</a>
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">System.IO</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  hSetBuffering stdout <span style="color: #228b22;">NoBuffering</span>
+  putStr <span style="color: #8b2252;">"&#193;rbol fractal.  Introduce el paso [0..6]: "</span>
+  paso <span style="color: #a0522d;">&lt;-</span> readLn
+  display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Arbol fractal"</span> <span style="color: #7388d6;">(</span>700,800<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black <span style="color: #707183;">(</span>dibujo paso<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> paso <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Translate</span> 0 <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>300<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>arbol paso marron<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Color</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> color <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> color <span style="color: #707183;">(</span><span style="color: #228b22;">Polygon</span> <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>30,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>15,300<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>15,300<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>30,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Color</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 color <span style="color: #a0522d;">=</span> tronco color
+<span style="color: #0000ff;">arbol</span> n color <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>tronco color,
+                          <span style="color: #228b22;">Translate</span> 0 300 arbolMenor,
+                          <span style="color: #228b22;">Translate</span> 0 240 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span>   20  arbolMenor<span style="color: #7388d6;">)</span>,
+                          <span style="color: #228b22;">Translate</span> 0 180 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>20<span style="color: #909183;">)</span> arbolMenor<span style="color: #7388d6;">)</span>,
+                          <span style="color: #228b22;">Translate</span> 0 120 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span>   40  arbolMenor<span style="color: #7388d6;">)</span>,
+                          <span style="color: #228b22;">Translate</span> 0  60 <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>40<span style="color: #909183;">)</span> arbolMenor<span style="color: #7388d6;">)</span> <span style="color: #707183;">]</span>
+  <span style="color: #a020f0;">where</span> arbolMenor <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>masVerde color<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">marron</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Color</span>
+<span style="color: #0000ff;">marron</span> <span style="color: #a0522d;">=</span> makeColor8 139 100  35 255
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(masVerde c) es el color obtenido mezclando los colores c y verde en</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">las proporciones 1 y 0.1.</span>
+<span style="color: #0000ff;">masVerde</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Color</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Color</span>
+<span style="color: #0000ff;">masVerde</span> color <span style="color: #a0522d;">=</span> mixColors 1.0 0.1 color green
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7570959" class="outline-2">
+<h2 id="org7570959"><span class="section-number-2">3.</span> Fractal de la curva de Koch</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>La <a href="http://bit.ly/SqWQWA">curva de Koch</a> es un fractal descrito por el matemático sueco <a href="http://bit.ly/SqX1kC">Helge von Koch</a>
+en 1904.</li>
+
+<li>Construcción:
+<ul class="org-ul">
+<li>Se inicia con un segmento.</li>
+<li>Se divide en tres partes iguales, se remplaza la parte central por dos
+partes de igual longitud haciendo un ángulo de 60 grados.</li>
+<li>Luego, con los cuatro segmentos, se procede de la misma manera, lo que da
+lugar a 16 segmentos más pequeños en la segunda iteración.</li>
+<li>Y así sucesivamente.</li>
+</ul></li>
+
+<li>El paso es <br />
+<img src="./tema-26/fig/Curva_de_Koch_paso.png" alt="Curva_de_Koch_paso.png" /></li>
+
+<li>Representación de los seis primeras pasos de la construcción.
+<a href="./tema-26/fig/Curva_de_Koch_0.png">Curva de Koch, paso 0</a> <br /></li>
+</ul>
+
+<p>
+![Curva de Koch, paso 1](tema-26/fig/Curva_de_Koch_1.png)
+</p>
+
+<p>
+![Curva de Koch, paso 2](tema-26/fig/Curva_de_Koch_2.png)
+</p>
+
+<p>
+![Curva de Koch, paso 3](tema-26/fig/Curva_de_Koch_3.png)
+</p>
+
+<p>
+![Curva de Koch, paso 4](tema-26/fig/Curva_de_Koch_4.png)
+</p>
+
+<p>
+![Curva de Koch, paso 5](tema-26/fig/Curva_de_Koch_5.png)
+</p>
+
+<p>
+![Curva de Koch, paso 6](tema-26/fig/Curva_de_Koch_6.png)
+</p>
+
+<ul class="org-ul">
+<li><p>
+Programa [Curva_de_Koch.hs](tema-26/codigo/Curva_de_Koch.hs)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">System.IO</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  hSetBuffering stdout <span style="color: #228b22;">NoBuffering</span>
+  putStr <span style="color: #8b2252;">"Curva de Koch. Introduce el paso [0..6]: "</span>
+  paso <span style="color: #a0522d;">&lt;-</span> readLn
+  display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #7388d6;">(</span><span style="color: #8b2252;">"Curva de Koch - Paso "</span> <span style="color: #a0522d;">++</span> show paso<span style="color: #7388d6;">)</span>
+                    <span style="color: #7388d6;">(</span>500,500<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black <span style="color: #707183;">(</span>dibujo paso<span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Longitud de los lados del tri&#225;ngulo inicial</span>
+<span style="color: #0000ff;">longitud</span> <span style="color: #a0522d;">=</span> 360 <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Float</span>
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> paso <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Color</span> aquamarine <span style="color: #a0522d;">$</span>                                  <span style="color: #b22222;">-- </span><span style="color: #b22222;">colorea</span>
+    <span style="color: #228b22;">Translate</span> <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span><span style="color: #7388d6;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3<span style="color: #7388d6;">)</span><span style="color: #a0522d;">/</span>6<span style="color: #707183;">)</span> <span style="color: #a0522d;">$</span>  <span style="color: #b22222;">-- </span><span style="color: #b22222;">centra el fractal</span>
+    curva paso
+
+<span style="color: #0000ff;">curva</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">curva</span> 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Line</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0, 0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>longitud, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">curva</span> n <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>nuevaCurva,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>3<span style="color: #7388d6;">)</span> 0                        <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>60<span style="color: #909183;">)</span> nuevaCurva<span style="color: #7388d6;">)</span>,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3<span style="color: #909183;">)</span><span style="color: #a0522d;">/</span>6<span style="color: #7388d6;">)</span>  <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span>   60  nuevaCurva<span style="color: #7388d6;">)</span>,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>2 <span style="color: #a0522d;">*</span> longitud<span style="color: #a0522d;">/</span>3<span style="color: #7388d6;">)</span> 0                    nuevaCurva <span style="color: #707183;">]</span>
+    <span style="color: #a020f0;">where</span> nuevaCurva <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>3<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>3<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>curva <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7f24dd2" class="outline-2">
+<h2 id="org7f24dd2"><span class="section-number-2">4.</span> Fractal del copo de nieve de Koch</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>Construcción: Tres curvas de Koch unidas forman el copo de nieve de Koch.</li>
+
+<li>Representación de los seis primeras pasos de la construcción.</li>
+</ul>
+
+<p>
+![Copo de nieve, paso 0](tema-26/fig/Copo_de_nieve_0.png)
+</p>
+
+<p>
+![Copo de nieve, paso 1](tema-26/fig/Copo_de_nieve_1.png)
+</p>
+
+<p>
+![Copo de nieve, paso 2](tema-26/fig/Copo_de_nieve_2.png)
+</p>
+
+<p>
+![Copo de nieve, paso 3](tema-26/fig/Copo_de_nieve_3.png)
+</p>
+
+<p>
+![Copo de nieve, paso 4](tema-26/fig/Copo_de_nieve_4.png)
+</p>
+
+<p>
+![Copo de nieve, paso 5](tema-26/fig/Copo_de_nieve_5.png)
+</p>
+
+<p>
+![Copo de nieve, paso 6](tema-26/fig/Copo_de_nieve_6.png)
+</p>
+
+<ul class="org-ul">
+<li><p>
+Programa [Copo_de_nieve_de_Koch.hs](tema-26/codigo/Copo_de_nieve_de_Koch.hs)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">System.IO</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  hSetBuffering stdout <span style="color: #228b22;">NoBuffering</span>
+  putStr <span style="color: #8b2252;">"Fractal copo de nieve. Introduce el paso [0..6]: "</span>
+  paso <span style="color: #a0522d;">&lt;-</span> readLn
+  display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #8b2252;">"Fractal copo de nieve"</span> <span style="color: #7388d6;">(</span>500,500<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black <span style="color: #707183;">(</span>dibujo paso<span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Longitud de los lados del tri&#225;ngulo inicial</span>
+<span style="color: #0000ff;">longitud</span> <span style="color: #a0522d;">=</span> 360 <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Float</span>
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> paso <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Color</span> aquamarine <span style="color: #a0522d;">$</span>                                  <span style="color: #b22222;">-- </span><span style="color: #b22222;">colorea</span>
+    <span style="color: #228b22;">Translate</span> <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3<span style="color: #7388d6;">)</span><span style="color: #a0522d;">/</span>6<span style="color: #707183;">)</span> <span style="color: #a0522d;">$</span>   <span style="color: #b22222;">-- </span><span style="color: #b22222;">centra el fractal</span>
+    copoDeNieve paso
+
+<span style="color: #0000ff;">curva</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">curva</span> 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Line</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>, <span style="color: #7388d6;">(</span>longitud, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">curva</span> n <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>nuevaCurva,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>3<span style="color: #7388d6;">)</span>     0                        <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>60<span style="color: #909183;">)</span> nuevaCurva<span style="color: #7388d6;">)</span>,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #7388d6;">)</span>     <span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3<span style="color: #909183;">)</span><span style="color: #a0522d;">/</span>6<span style="color: #7388d6;">)</span>  <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span>   60  nuevaCurva<span style="color: #7388d6;">)</span>,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>2 <span style="color: #a0522d;">*</span> longitud<span style="color: #a0522d;">/</span>3<span style="color: #7388d6;">)</span> 0                        nuevaCurva<span style="color: #707183;">]</span>
+    <span style="color: #a020f0;">where</span> nuevaCurva <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>3<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>3<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>curva <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">copoDeNieve</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">copoDeNieve</span> n <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>unaCurva ,
+              <span style="color: #228b22;">Translate</span> longitud     0                          <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span>   120  unaCurva<span style="color: #7388d6;">)</span>,
+              <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span><span style="color: #909183;">(</span><span style="color: #709870;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3<span style="color: #709870;">)</span><span style="color: #a0522d;">/</span>2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span><span style="color: #228b22;">Rotate</span> <span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>120<span style="color: #909183;">)</span> unaCurva<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+    <span style="color: #a020f0;">where</span> unaCurva <span style="color: #a0522d;">=</span> curva n
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd6a2ff8" class="outline-2">
+<h2 id="orgd6a2ff8"><span class="section-number-2">5.</span> Triángulo de Sierpinski</h2>
+<div class="outline-text-2" id="text-5">
+<ul class="org-ul">
+<li>El [triángulo de Sierpinski](<a href="http://bit.ly/1r0RMHO">http://bit.ly/1r0RMHO</a>) es un fractal que se
+puede construir a partir de un triángulo equilátero.</li>
+
+<li>Construción
+<ul class="org-ul">
+<li>El inicio es un triángulo equilátero.</li>
+<li>A partir de los puntos medios de cada lado se construye un triángulo
+equilátero invertido de lado 1/2. Se recorta.</li>
+<li>El proceso se repite con cada uno de los tres triángulos de lado 1/2 que
+quedan. Así que esta vez se recortan tres triángulos invertidos de lado
+1/4.</li>
+<li>Se repite el proceso.</li>
+</ul></li>
+
+<li><p>
+El paso es
+</p>
+
+<p>
+<img src="./tema-26/fig/Sierpinski_paso.png" alt="Sierpinski_paso.png" />)
+</p></li>
+
+<li>Representación de los seis primeras pasos de la construcción.</li>
+</ul>
+
+<p>
+![Sierpinski, paso 0](tema-26/fig/Sierpinski_0.png)
+</p>
+
+<p>
+![Sierpinski, paso 1](tema-26/fig/Sierpinski_1.png)
+</p>
+
+<p>
+![Sierpinski, paso 2](tema-26/fig/Sierpinski_2.png)
+</p>
+
+<p>
+![Sierpinski, paso 3](tema-26/fig/Sierpinski_3.png)
+</p>
+
+<p>
+![Sierpinski, paso 4](tema-26/fig/Sierpinski_4.png)
+</p>
+
+<p>
+![Sierpinski, paso 5](tema-26/fig/Sierpinski_5.png)
+</p>
+
+<p>
+![Sierpinski, paso 6](tema-26/fig/Sierpinski_6.png)
+</p>
+
+<ul class="org-ul">
+<li><p>
+Programa [Sierpinski.hs](tema-26/codigo/Sierpinski.hs)
+</p>
+
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Graphics.Gloss</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">System.IO</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  hSetBuffering stdout <span style="color: #228b22;">NoBuffering</span>
+  putStr <span style="color: #8b2252;">"Sierpinski. Introduce el paso [0..6]: "</span>
+  paso <span style="color: #a0522d;">&lt;-</span> readLn
+  display <span style="color: #707183;">(</span><span style="color: #228b22;">InWindow</span> <span style="color: #7388d6;">(</span><span style="color: #8b2252;">"Sierpinski - Paso "</span> <span style="color: #a0522d;">++</span> show paso<span style="color: #7388d6;">)</span>
+                    <span style="color: #7388d6;">(</span>500,500<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>20,20<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> black <span style="color: #707183;">(</span>dibujo paso<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">dibujo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">dibujo</span> paso <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Color</span> aquamarine <span style="color: #707183;">(</span><span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>150<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>125<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>sierpinski paso<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Longitud del lado inicial</span>
+<span style="color: #0000ff;">longitud</span> <span style="color: #a0522d;">=</span> 300 <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Float</span>
+
+<span style="color: #0000ff;">sierpinski</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">sierpinski</span> 0 <span style="color: #a0522d;">=</span>
+    <span style="color: #228b22;">Polygon</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,
+             <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>2, longitud <span style="color: #a0522d;">*</span> sqrt 3 <span style="color: #a0522d;">/</span>2<span style="color: #7388d6;">)</span>,
+             <span style="color: #7388d6;">(</span>longitud, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">sierpinski</span> n
+    <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Pictures</span> <span style="color: #707183;">[</span>nuevoSierpinski,
+                <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>2<span style="color: #7388d6;">)</span> 0 nuevoSierpinski,
+                <span style="color: #228b22;">Translate</span> <span style="color: #7388d6;">(</span>longitud<span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> <span style="color: #7388d6;">(</span>longitud <span style="color: #a0522d;">*</span> sqrt 3 <span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> nuevoSierpinski<span style="color: #707183;">]</span>
+      <span style="color: #a020f0;">where</span> nuevoSierpinski <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Scale</span> 0.5 0.5 <span style="color: #707183;">(</span>sierpinski <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org12129b3" class="outline-2">
+<h2 id="org12129b3"><span class="section-number-2">6.</span> Curva del dragón</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>La curva del dragón se puede construir plegando un papel como se muestra en
+el siguiente vídeo</li>
+</ul>
+
+<p>
+[![Curva dragón](<img src="http://img.youtube.com/vi/wCyC-K_PnRY/0.jpg" alt="0.jpg" />)](<a href="http://www.youtube.com/watch?v=wCyC-K_PnRY">http://www.youtube.com/watch?v=wCyC-K_PnRY</a>
+"Curva dragón")
+</p>
+
+<ul class="org-ul">
+<li><p>
+Primer paso de la curva del dragón con papel
+</p>
+
+
+<div id="org443a79e" class="figure">
+<p><img src="./tema-26/fig/Dragon_1_con_papel.jpg" alt="Dragon_1_con_papel.jpg" />
+</p>
+</div></li>
+
+<li>Representación de los seis primeras pasos de la construcción.</li>
+</ul>
+
+<p>
+![Curva del dragón, paso 0](tema-26/fig/Dragon_0.png)
+</p>
+
+<p>
+![Curva del dragón, paso 1](tema-26/fig/Dragon_1.png)
+</p>
+
+<p>
+![Curva del dragón, paso 2](tema-26/fig/Dragon_2.png)
+</p>
+
+<p>
+![Curva del dragón, paso 3](tema-26/fig/Dragon_3.png)
+</p>
+
+<p>
+![Curva del dragón, paso 4](tema-26/fig/Dragon_4.png)
+</p>
+
+<p>
+![Curva del dragón, paso 5](tema-26/fig/Dragon_5.png)
+</p>
+
+<p>
+![Curva del dragón, paso 6](tema-26/fig/Dragon_6.png)
+</p>
+
+<ul class="org-ul">
+<li>Se propone como ejercicio programar la curva del dragón.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8e3637a" class="outline-2">
+<h2 id="org8e3637a"><span class="section-number-2">7.</span> Referencias</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>C. Baker-Finch
+[Graphics Package Application: Fractals](<a href="http://cs.anu.edu.au/student/comp1100.2011/lectures/16-Fractals/16-Fractals.pdf">http://cs.anu.edu.au/student/comp1100.2011/lectures/16-Fractals/16-Fractals.pdf</a>).</li>
+
+<li>B. Luque y A. Agea.
+[Fractales en la Red](<a href="http://www.dmae.upm.es/cursofractales">http://www.dmae.upm.es/cursofractales</a>).</li>
+
+<li>Wikipedia
+[Fractal](<a href="http://es.wikipedia.org/wiki/Fractal">http://es.wikipedia.org/wiki/Fractal</a>).</li>
+
+<li>Wikipedia
+[La curva de Koch](<a href="http://bit.ly/SqWQWA">http://bit.ly/SqWQWA</a>)</li>
+
+<li>Wikipedia
+[El triángulo de Sierpinki](<a href="http://bit.ly/1r0RMHO">http://bit.ly/1r0RMHO</a>)</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 24 de junio del 2021</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
