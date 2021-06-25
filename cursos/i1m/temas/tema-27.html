@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 25 de junio del 2021 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 27: Programación de animaciones en Haskell con Gloss</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 27: Programación de animaciones en Haskell con Gloss</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org30ad866">1. Animaciones de dibujos</a>
+<ul>
+<li><a href="#org65aa3b5">1.1. Rotando un cuadrado</a></li>
+<li><a href="#org162a504">1.2. Moviendo un círculo</a></li>
+<li><a href="#orge44985d">1.3. Expandiendo un círculo</a></li>
+<li><a href="#orgc267a7b">1.4. Rotación alrededor de un punto</a></li>
+<li><a href="#orgbef7ce4">1.5. Reloj</a></li>
+</ul>
+</li>
+<li><a href="#org851a6e9">2. Animaciones de fractales</a>
+<ul>
+<li><a href="#org9cfabc1">2.1. Árbol animado</a></li>
+<li><a href="#org967d452">2.2. Fractal con relojes animados</a></li>
+</ul>
+</li>
+<li><a href="#orgf5a8b1e">3. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org30ad866" class="outline-2">
+<h2 id="org30ad866"><span class="section-number-2">1.</span> Animaciones de dibujos</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org65aa3b5" class="outline-3">
+<h3 id="org65aa3b5"><span class="section-number-3">1.1.</span> Rotando un cuadrado</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li><p>
+Vídeo con la animación
+</p>
+
+<p>
+<iframe width="440" height="335" src="https://www.youtube.com/embed/QdPf3jd_uss" frameborder="0" allowfullscreen></iframe>
+</p></li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/QdPf3jd_uss?feature=player_detailpage">http://www.youtube.com/embed/QdPf3jd_uss?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [rotando_un_cuadrado.hs](tema-27/codigo/rotando_un_cuadrado.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Rotando un cuadrado" (500,500) (20,20))
+               green animacion
+</p>
+
+<p>
+animacion :: Float -&gt; Picture
+animacion t = rotate (60 * t) (rectangleSolid 100 100)
+<code>~</code>
+</p>
+
+<ul class="org-ul">
+<li>Comentarios
+<ul class="org-ul">
+<li>`(InWindow t (b,a) (x,y))` es una ventana de título t, base b y
+altura a con el vértice superior izquierdo en el punto (x,y).</li>
+<li>`(animate v c a)` dibuja en la ventana v, con color de fondo c, la
+animación a.</li>
+<li>La variable t toma como valor el tiempo transcurrido.&lt;br&gt;
+Sus valores son [0,0.5..].&lt;br&gt;
+Por tanto, los giros son de [0,30,..].</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org162a504" class="outline-3">
+<h3 id="org162a504"><span class="section-number-3">1.2.</span> Moviendo un círculo</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/0syGe1S3PrA?feature=player_detailpage">http://www.youtube.com/embed/0syGe1S3PrA?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [moviendo_un_circulo.hs](tema-27/codigo/moviendo_un_circulo.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Moviendo un circulo" (500,500) (20,20))
+               green animacion
+</p>
+
+<p>
+animacion :: Float -&gt; Picture
+animacion t = translate (50 * t) 0 (color red (circleSolid 25))
+<code>~</code>
+</p>
+
+<ul class="org-ul">
+<li>Comentarios
+<ul class="org-ul">
+<li>La variable t toma como valor el tiempo transcurrido.</li>
+<li>Sus valores son [0,0.5..].</li>
+<li>Por tanto, los desplazamientos son [0,25,..].</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge44985d" class="outline-3">
+<h3 id="orge44985d"><span class="section-number-3">1.3.</span> Expandiendo un círculo</h3>
+<div class="outline-text-3" id="text-1-3">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/3xrTTcbtl7A?feature=player_detailpage">http://www.youtube.com/embed/3xrTTcbtl7A?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [expandiendo_un_circulo.hs](tema-27/codigo/expandiendo_un_circulo.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Expandiendo un circulo" (500,500) (20,20))
+               green animacion
+</p>
+
+<p>
+animacion :: Float -&gt; Picture
+animacion t = circle (20 * t)
+<code>~</code>
+</p>
+
+<ul class="org-ul">
+<li>Comentarios
+<ul class="org-ul">
+<li>La variable t toma como valor el tiempo transcurrido.</li>
+<li>Sus valores son [0,0.5..].</li>
+<li>Por tanto, los radios son [0,10,..].</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc267a7b" class="outline-3">
+<h3 id="orgc267a7b"><span class="section-number-3">1.4.</span> Rotación alrededor de un punto</h3>
+<div class="outline-text-3" id="text-1-4">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/an_js26pB38?feature=player_detailpage">http://www.youtube.com/embed/an_js26pB38?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [rotacion_alrededor_de_un_punto.hs](tema-27/codigo/rotacion_alrededor_de_un_punto.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Rotacion alrededor de un punto" (500,500) (20,20))
+               green animacion
+</p>
+
+<p>
+animacion :: Float -&gt; Picture
+animacion t = rotate (60 * t) (translate 100 0 (circleSolid 25))
+<code>~</code>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgbef7ce4" class="outline-3">
+<h3 id="orgbef7ce4"><span class="section-number-3">1.5.</span> Reloj</h3>
+<div class="outline-text-3" id="text-1-5">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/5f7X6W4QhIA?feature=player_detailpage">http://www.youtube.com/embed/5f7X6W4QhIA?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [reloj.hs](tema-27/codigo/reloj.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Reloj" (500,500) (20,20)) green animacion
+</p>
+
+<p>
+animacion :: Float -&gt; Picture
+animacion t = reloj t
+</p>
+
+<p>
+reloj t = pictures [ fondo,
+                     minutero t,
+                     segundero t ]
+</p>
+
+<p>
+fondo = color (dark white) (circleSolid 250)
+</p>
+
+<p>
+minutero t = rotate (0.1 * t) (line [(0,0), (0,250)])
+<code>~</code>
+</p>
+
+<ul class="org-ul">
+<li>Comentarios:
+<ul class="org-ul">
+<li>Giro del minutero:
+<ul class="org-ul">
+<li>360º ~ 1 hora = 60 minutos = 3.600 segundos</li>
+<li>1 minuto ~ (360/3.600)º = 0.1º</li>
+</ul></li>
+<li>Giro del segundero:
+<ul class="org-ul">
+<li>360º ~ 1 minuto = 60 segundos</li>
+<li>1 segundo ~ (360/60)º = 6º</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org851a6e9" class="outline-2">
+<h2 id="org851a6e9"><span class="section-number-2">2.</span> Animaciones de fractales</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org9cfabc1" class="outline-3">
+<h3 id="org9cfabc1"><span class="section-number-3">2.1.</span> Árbol animado</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/RG3vdN3Z54Y?feature=player_detailpage">http://www.youtube.com/embed/RG3vdN3Z54Y?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [arbol_animado.hs](tema-27/codigo/arbol_animado.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main :: IO ()
+main = animate (InWindow "Zen" (800,500) (5,5)) (greyN 0.2) frame
+</p>
+
+<p>
+&#x2013; Produce one frame of the animation.
+frame :: Float -&gt; Picture
+frame timeS = Pictures
+          &#x2013; the red rectangles
+          [ Translate 0 150     backRec
+          , Translate 0 0       backRec
+          , Translate 0 (-150)  backRec
+</p>
+
+<p>
+&#x2013; the tree
+, Translate 0 (-150) $    treeFrac 7 timeS ]
+</p>
+
+<p>
+&#x2013; One of the red backing rectangles, with a white outline.
+backRec :: Picture
+backRec     = Pictures
+      [ Color red   (rectangleSolid 400 100)
+      , Color white     (rectangleWire  400 100) ]
+</p>
+
+<p>
+&#x2013; The color for the outline of the tree's branches.
+treeOutline :: Color
+treeOutline = makeColor 0.3 0.3 1.0 1.0
+</p>
+
+<p>
+&#x2013; The color for the shading of the tree's branches.
+&#x2013; The Alpha here is set to 0.5 so the branches are partly transparent.
+treeColor :: Color
+treeColor = makeColor 0.0 1.0 0.0 0.5
+</p>
+
+<p>
+&#x2013; The tree fractal.
+&#x2013; The position of the branches changes depending on the animation time
+&#x2013; as well as the iteration number of the fractal.
+treeFrac :: Int -&gt; Float -&gt; Picture
+treeFrac 0 timeS = Blank
+treeFrac n timeS =
+    Pictures [ Color treeColor    $ rectangleUpperSolid 20 300
+             , Color treeOutline  $ rectangleUpperWire  20 300
+             , Translate 0 30
+             $ Rotate  (200 * sin timeS / (fromIntegral n) )
+             $ Scale   0.9 0.9
+             $ treeFrac (n-1) timeS
+             , Translate 0 70
+             $ Rotate  (-200 * sin timeS / (fromIntegral n))
+             $ Scale      0.8 0.8
+             $ treeFrac (n-1) timeS ]
+<code>~</code>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org967d452" class="outline-3">
+<h3 id="org967d452"><span class="section-number-3">2.2.</span> Fractal con relojes animados</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>Vídeo con la animación</li>
+</ul>
+
+<p>
+&gt; &lt;iframe width="640" height="360" src="<a href="http://www.youtube.com/embed/fhjGhf-NPPg?feature=player_detailpage">http://www.youtube.com/embed/fhjGhf-NPPg?feature=player_detailpage</a>" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+</p>
+
+<ul class="org-ul">
+<li>Programa [relojes_animados.hs](tema-27/codigo/relojes_animados.hs)</li>
+</ul>
+
+<p>
+~~~haskell
+import Graphics.Gloss
+</p>
+
+<p>
+main = animate (InWindow "Clock" (500, 500) (20, 20)) black frame
+</p>
+
+<p>
+&#x2013; Build the fractal, scale it so it fits in the window
+&#x2013; and rotate the whole thing as time moves on.
+frame :: Float -&gt; Picture
+frame time = Color white
+             $ Scale 110 110
+             $ Rotate (time * 2*pi)
+             $ clockFractal 5 time
+</p>
+
+<p>
+&#x2013; The basic fractal consists of three circles offset from the origin
+&#x2013; as follows.
+&#x2013;
+&#x2013;         1
+&#x2013;         |
+&#x2013;         .
+&#x2013;       /   \
+&#x2013;      2     3
+&#x2013;
+&#x2013; The direction of rotation switches as n increases.
+&#x2013; Components at higher iterations also spin faster.
+&#x2013;
+clockFractal :: Int -&gt; Float -&gt; Picture
+clockFractal 0 s = Blank
+clockFractal n s = Pictures [circ1, circ2, circ3, lines]
+    where
+      &#x2013; y offset from origin to center of circle 1.
+      a = 1 / sin (2 * pi / 6)
+</p>
+
+<p>
+&#x2013; x offset from origin to center of circles 2 and 3.
+b = a * cos (2 * pi / 6)
+</p>
+
+<p>
+nf  = fromIntegral n
+rot = if n `mod` 2 == 0
+      then   50 * s * (log (1 + nf))
+      else (-50 * s * (log (1 + nf)))
+</p>
+
+<p>
+&#x2013; each element contains a copy of the (n-1) iteration contained
+&#x2013; within a larger circle, and some text showing the time since
+&#x2013; the animation started.
+&#x2013;
+circNm1 = Pictures
+          [ circle 1
+          , Scale (a/2.5) (a/2.5) $ clockFractal (n-1) s
+          , if n &gt; 2
+            then Color cyan
+                     $ Translate (-0.15) 1
+                     $ Scale 0.001 0.001
+                     $ Text (show s)
+            else Blank
+          ]
+</p>
+
+<p>
+circ1 = Translate 0 a       $ Rotate rot    circNm1
+circ2 = Translate 1 (-b)    $ Rotate (-rot) circNm1
+circ3 = Translate (-1) (-b) $ Rotate rot    circNm1
+</p>
+
+<p>
+&#x2013; join each iteration to the origin with some lines.
+lines = Pictures
+        [ Line [(0, 0), ( 0,  a)]
+        , Line [(0, 0), ( 1, -b)]
+        , Line [(0, 0), (-1, -b)] ]
+<code>~</code>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf5a8b1e" class="outline-2">
+<h2 id="orgf5a8b1e"><span class="section-number-2">3.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li>[The snake game](<a href="https://github.com/tfausak/haskell-snake-game">https://github.com/tfausak/haskell-snake-game</a>) por Taylor
+Fausak.</li>
+<li>[Titato: Tic tac toe in Haskell](<a href="https://github.com/tfausak/titato">https://github.com/tfausak/titato</a>) por
+Taylor Fausak.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 25 de junio del 2021</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
