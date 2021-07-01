@@ -1,0 +1,1616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 01 de julio del 2021 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 28: Análisis de la complejidad de los algoritmos</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 28: Análisis de la complejidad de los algoritmos</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org56f417b">1. La notación de Landau</a>
+<ul>
+<li><a href="#orga87ed14">1.1. Definición de O(g)</a></li>
+<li><a href="#org9841bfd">1.2. Propiedades</a></li>
+</ul>
+</li>
+<li><a href="#orgd61b4d0">2. Órdenes de complejidad</a>
+<ul>
+<li><a href="#orgb99e798">2.1. Principales órdenes de complejidad</a></li>
+<li><a href="#org221d07d">2.2. Tasas de crecimiento</a></li>
+<li><a href="#org9d20064">2.3. Jerarquía de complejidad</a></li>
+<li><a href="#org0242b34">2.4. Efectos de duplicaciones</a></li>
+</ul>
+</li>
+<li><a href="#orgd9c7f5b">3. Ejemplo de función con complejidad lineal O(n)</a>
+<ul>
+<li><a href="#orgd73492b">3.1. Especificación de la función suma</a></li>
+<li><a href="#orgad62e1c">3.2. Definición recursiva de la función suma</a></li>
+<li><a href="#orga9f58d5">3.3. Estadísticas de la función suma</a></li>
+<li><a href="#org409dbc9">3.4. Ecuaciones de coste de la función suma</a></li>
+<li><a href="#orge99df04">3.5. Demostración de que suma ∈ O(n) (es decir, es de coste lineal)</a></li>
+</ul>
+</li>
+<li><a href="#org0f858b7">4. Ejemplo de función con complejidad constante O(1)</a>
+<ul>
+<li><a href="#org68c3ab7">4.1. Definición de la función suma mediante la fórmula</a></li>
+<li><a href="#org02b88ab">4.2. Estadísticas de la función suma2</a></li>
+<li><a href="#org6a56280">4.3. Ecuaciones de coste de la función suma2</a></li>
+<li><a href="#org8f712d0">4.4. Demostración de que suma2 ∈ O(1) (es decir, es de coste constante).</a></li>
+</ul>
+</li>
+<li><a href="#orge54ce3a">5. Ejemplo de función con complejidad cuadrática O(n²)</a>
+<ul>
+<li><a href="#org9a9d91c">5.1. Especificación de la función sumaDeSumas</a></li>
+<li><a href="#org35c29d4">5.2. Definición recursiva de la función sumaDeSumas</a></li>
+<li><a href="#org8723be7">5.3. Estadísticas de la función sumaDeSumas</a></li>
+<li><a href="#orgf723e05">5.4. Gráfica de coste de sumaDeSumas</a></li>
+<li><a href="#orgdbd819a">5.5. Ecuaciones de coste de la función sumaDeSumas</a></li>
+<li><a href="#org33f2665">5.6. Demostración de que sumaDeSumas ∈ O(n²) (es decir, es de coste cuadrático)</a></li>
+</ul>
+</li>
+<li><a href="#org0ecff03">6. Ejemplo de función con complejidad exponencial O(2ⁿ)</a>
+<ul>
+<li><a href="#org493f977">6.1. Especificación de la función raiz</a></li>
+<li><a href="#org96f9f9f">6.2. Definición recursiva de la función raiz</a></li>
+<li><a href="#org981d675">6.3. Estadísticas de la función raiz</a></li>
+<li><a href="#orge8b1276">6.4. Ecuaciones de coste de la función raiz</a></li>
+<li><a href="#orgb683efb">6.5. Demostración de que raiz ∈ O(2ⁿ) (es decir, es de coste exponencial)</a></li>
+</ul>
+</li>
+<li><a href="#org50fa7e3">7. Ejemplo de función con complejidad logarítmica O(log n)</a>
+<ul>
+<li><a href="#org787eaa2">7.1. Especificación de la función potencia</a></li>
+<li><a href="#org55b5192">7.2. Definición recursiva de la función potencia</a></li>
+<li><a href="#org48701f7">7.3. Estadísticas de la función potencia</a></li>
+<li><a href="#orgfb7a77a">7.4. Ecuaciones de coste de la función potencia</a></li>
+<li><a href="#orgc5cb098">7.5. Demostración de que potencia ∈ O(log n) (es decir, es de coste logarítmico)</a></li>
+</ul>
+</li>
+<li><a href="#org84cc979">8. Complejidad de la función inversa</a>
+<ul>
+<li><a href="#org5e15114">8.1. Especificación de la función inversa</a></li>
+<li><a href="#org923fe73">8.2. Primera definición de inversa: inversa1</a></li>
+<li><a href="#orgaea7808">8.3. Coste de inversa1</a></li>
+<li><a href="#orge99f08f">8.4. Segunda definición de inversa: inversa2</a></li>
+<li><a href="#orgcbbbc95">8.5. Coste de inversa2</a></li>
+<li><a href="#org3c15318">8.6. Comparación gráfica de costes de inversa1 e inversa2</a></li>
+</ul>
+</li>
+<li><a href="#org8f67381">9. Apéndices</a>
+<ul>
+<li><a href="#org0b50740">9.1. Algunas recurrencias simples para el cálculo de coste</a></li>
+<li><a href="#org5c58277">9.2. Teorema maestro para el cálculo de coste</a></li>
+<li><a href="#orgb7c01f4">9.3. Complejidades de los algoritmos habituales</a></li>
+</ul>
+</li>
+<li><a href="#org4de0bd1">10. Material complementario</a></li>
+<li><a href="#org5817a9e">11. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org56f417b" class="outline-2">
+<h2 id="org56f417b"><span class="section-number-2">1.</span> La notación de Landau</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orga87ed14" class="outline-3">
+<h3 id="orga87ed14"><span class="section-number-3">1.1.</span> Definición de O(g)</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li><p>
+La función f pertenece a la clase de complejidad de g (en símbolos,
+f ∈ O(g)) si existe un c y un n₀ tales que para todo n ≥ nₒ se tiene que
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">f(n)</td>
+<td class="org-left">≤ c</td>
+<td class="org-left">g(n)</td>
+</tr>
+</tbody>
+</table></li>
+<li>f ∈ O(g) syss ∃c∃nₒ∀n(n ≥ n₀ → |f(n)| ≤ c|g(n)|)</li>
+<li><p>
+f ∈ O(g) syss
+</p>
+<pre class="example">
+limsup |f(x)/g(x)| &lt; ∞
+x → ∞
+</pre></li>
+
+<li>Intuitivamente, sólo se considera el término más importante y se ignoran los
+factores constantes.</li>
+
+<li>Ejemplos:
+<ul class="org-ul">
+<li>3n²+5n-7 ∈ O(n²).</li>
+<li>O(2g(n)) = O(g(n))</li>
+<li>O(log n) = O(ln n)</li>
+<li>O(3n²+5n-7) = O(n²)</li>
+<li>O(n²) ⊂ O(n³)</li>
+<li>O(2ⁿ) ⊂ O(3ⁿ)</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org9841bfd" class="outline-3">
+<h3 id="org9841bfd"><span class="section-number-3">1.2.</span> Propiedades</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li>Si g ∈ O(f) y h ∈ O(f), entonces g+h ∈ O(f)</li>
+
+<li>Si f ∈ O(g) y g ∈ O(h), entonces f ∈ O(h)</li>
+
+<li>f+g ∈ O(max(f,g))</li>
+
+<li>O(f+g) = O(max(f,g))</li>
+
+<li>Si f ∈ O(f') y g ∈ O(g'), entonces f+g ∈ O(f'+g')</li>
+
+<li>Si f ∈ O(f') y g ∈ O(g'), entonces f.g ∈ O(f'.g')</li>
+
+<li>Si f ∈ O(g) y a ∈ ℝ⁺-{0}, entonces a.f ∈ O(g)</li>
+
+<li>Si f ∈ O(g) y n ≥ 1, entonces fⁿ ∈ O(gⁿ)</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd61b4d0" class="outline-2">
+<h2 id="orgd61b4d0"><span class="section-number-2">2.</span> Órdenes de complejidad</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgb99e798" class="outline-3">
+<h3 id="orgb99e798"><span class="section-number-3">2.1.</span> Principales órdenes de complejidad</h3>
+<div class="outline-text-3" id="text-2-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Orden</th>
+<th scope="col" class="org-left">Nombre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">O(1)</td>
+<td class="org-left">constante</td>
+</tr>
+
+<tr>
+<td class="org-left">O(log n)</td>
+<td class="org-left">logarítmica</td>
+</tr>
+
+<tr>
+<td class="org-left">O(n)</td>
+<td class="org-left">lineal</td>
+</tr>
+
+<tr>
+<td class="org-left">O(n log n)</td>
+<td class="org-left">casi lineal</td>
+</tr>
+
+<tr>
+<td class="org-left">O(n²)</td>
+<td class="org-left">cuadrática</td>
+</tr>
+
+<tr>
+<td class="org-left">O(n³)</td>
+<td class="org-left">cúbica</td>
+</tr>
+
+<tr>
+<td class="org-left">O(a^n)</td>
+<td class="org-left">exponencial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org221d07d" class="outline-3">
+<h3 id="org221d07d"><span class="section-number-3">2.2.</span> Tasas de crecimiento</h3>
+<div class="outline-text-3" id="text-2-2">
+
+<div id="org53d57c8" class="figure">
+<p><img src="./tema-28/fig/ordenes.png" alt="ordenes.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9d20064" class="outline-3">
+<h3 id="org9d20064"><span class="section-number-3">2.3.</span> Jerarquía de complejidad</h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li>O(1) ⊂ O(log n) ⊂ O(n) ⊂ O(n log n) ⊂ O(n²) ⊂ O(n³) ⊂ O(2ⁿ)</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0242b34" class="outline-3">
+<h3 id="org0242b34"><span class="section-number-3">2.4.</span> Efectos de duplicaciones</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li><p>
+Efecto de duplicar el dato de entrada
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">T(n)</th>
+<th scope="col" class="org-left">n = 100</th>
+<th scope="col" class="org-left">n = 200</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">log(n)</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">1.15 h.</td>
+</tr>
+
+<tr>
+<td class="org-left">n</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">2 h.</td>
+</tr>
+
+<tr>
+<td class="org-left">nlog(n)</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">2.30 h.</td>
+</tr>
+
+<tr>
+<td class="org-left">n²</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">4 h.</td>
+</tr>
+
+<tr>
+<td class="org-left">n³</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">8 h.</td>
+</tr>
+
+<tr>
+<td class="org-left">2ⁿ</td>
+<td class="org-left">1 h.</td>
+<td class="org-left">1.27*10³⁰ h.</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+Efecto de duplicar el tiempo disponible
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">T(n)</th>
+<th scope="col" class="org-left">t = 1h</th>
+<th scope="col" class="org-left">t = 2h</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">log(n)</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 10000</td>
+</tr>
+
+<tr>
+<td class="org-left">n</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 200</td>
+</tr>
+
+<tr>
+<td class="org-left">nlog(n)</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 178</td>
+</tr>
+
+<tr>
+<td class="org-left">n²</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 141</td>
+</tr>
+
+<tr>
+<td class="org-left">n³</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 126</td>
+</tr>
+
+<tr>
+<td class="org-left">2ⁿ</td>
+<td class="org-left">n = 100</td>
+<td class="org-left">n = 101</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd9c7f5b" class="outline-2">
+<h2 id="orgd9c7f5b"><span class="section-number-2">3.</span> Ejemplo de función con complejidad lineal O(n)</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgd73492b" class="outline-3">
+<h3 id="orgd73492b"><span class="section-number-3">3.1.</span> Especificación de la función suma</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+<code>(suma n)</code> es la suma de los números de 1 hasta n. Por ejemplo,
+</p>
+<pre class="example">
+suma 5  ==  15
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgad62e1c" class="outline-3">
+<h3 id="orgad62e1c"><span class="section-number-3">3.2.</span> Definición recursiva de la función suma</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">suma</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">suma</span> 0 <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">suma</span> n <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">+</span> suma <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga9f58d5" class="outline-3">
+<h3 id="orga9f58d5"><span class="section-number-3">3.3.</span> Estadísticas de la función suma</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li><p>
+El tiempo necesario para calcular <code>(suma n)</code> para n en [1000,2000..8000] se
+recoge en la siguiente tabla
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">n</th>
+<th scope="col" class="org-right">segs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1000</td>
+<td class="org-right">0.02</td>
+</tr>
+
+<tr>
+<td class="org-right">2000</td>
+<td class="org-right">0.03</td>
+</tr>
+
+<tr>
+<td class="org-right">3000</td>
+<td class="org-right">0.04</td>
+</tr>
+
+<tr>
+<td class="org-right">4000</td>
+<td class="org-right">0.04</td>
+</tr>
+
+<tr>
+<td class="org-right">5000</td>
+<td class="org-right">0.05</td>
+</tr>
+
+<tr>
+<td class="org-right">6000</td>
+<td class="org-right">0.06</td>
+</tr>
+
+<tr>
+<td class="org-right">7000</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-right">8000</td>
+<td class="org-right">0.08</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+En la tabla se observa que hay una relación lineal entre n y el tiempo
+necesario para calcular <code>(suma n)</code>:
+</p>
+<pre class="example">
+tiempo(suma n) ≈ n * 0.00001
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org409dbc9" class="outline-3">
+<h3 id="org409dbc9"><span class="section-number-3">3.4.</span> Ecuaciones de coste de la función suma</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li>El tiempo necesario para calcular (suma n) es proporcional al número T(n) de
+operaciones elementales necesarias para evaluar la expresión.</li>
+
+<li><p>
+Las ecuaciones para calcular T(n) son
+</p>
+<pre class="example">
+T(1)   = 1
+T(n+1) = 1 + T(n)
+</pre></li>
+
+<li>Nota: Las ecuaciones de coste son ecuaciones en recurrencia que se pueden
+resolver con <a href="http://bit.ly/1aFsIjl">Wolfram Alpha</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge99df04" class="outline-3">
+<h3 id="orge99df04"><span class="section-number-3">3.5.</span> Demostración de que suma ∈ O(n) (es decir, es de coste lineal)</h3>
+<div class="outline-text-3" id="text-3-5">
+<ul class="org-ul">
+<li><p>
+Basta comprobar que T(n) = n cumple las ecuaciones del coste de la función
+suma.
+</p>
+<pre class="example">
+T(1)   = 1       [por definición de T]
+T(n+1) = 1+T(n)  [por definición de T]
+       = 1+n     [por hipótesis de inducción]
+       = n+1     [por álgebra]
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0f858b7" class="outline-2">
+<h2 id="org0f858b7"><span class="section-number-2">4.</span> Ejemplo de función con complejidad constante O(1)</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org68c3ab7" class="outline-3">
+<h3 id="org68c3ab7"><span class="section-number-3">4.1.</span> Definición de la función suma mediante la fórmula</h3>
+<div class="outline-text-3" id="text-4-1">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">suma2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">suma2</span> n <span style="color: #a0522d;">=</span> n<span style="color: #a0522d;">*</span><span style="color: #707183;">(</span>n<span style="color: #a0522d;">+</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">`div`</span> 2
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org02b88ab" class="outline-3">
+<h3 id="org02b88ab"><span class="section-number-3">4.2.</span> Estadísticas de la función suma2</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><p>
+El tiempo necesario para calcular (suma2 n) para n en [1000,2000..8000] se
+recoge en la siguiente tabla
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">n</th>
+<th scope="col" class="org-right">segs.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">2000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">3000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">4000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">5000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">6000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">7000</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">8000</td>
+<td class="org-right">0.01</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+En la tabla se observa que hay una relación constante entre n y el tiempo
+necesario para calcular (suma2 n):
+</p>
+<pre class="example">
+tiempo(suma n) ≈ 0.01
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6a56280" class="outline-3">
+<h3 id="org6a56280"><span class="section-number-3">4.3.</span> Ecuaciones de coste de la función suma2</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li><p>
+Si T(n) es el tiempo necesario para calcular (suma2 n), entonces
+</p>
+<pre class="example">
+T(1) = 1
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8f712d0" class="outline-3">
+<h3 id="org8f712d0"><span class="section-number-3">4.4.</span> Demostración de que suma2 ∈ O(1) (es decir, es de coste constante).</h3>
+<div class="outline-text-3" id="text-4-4">
+<ul class="org-ul">
+<li>Es inmediato, a partir de su ecuación de coste.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge54ce3a" class="outline-2">
+<h2 id="orge54ce3a"><span class="section-number-2">5.</span> Ejemplo de función con complejidad cuadrática O(n²)</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org9a9d91c" class="outline-3">
+<h3 id="org9a9d91c"><span class="section-number-3">5.1.</span> Especificación de la función sumaDeSumas</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li><p>
+<code>(sumaDeSumas n)</code> es la suma de las sumas de 0 a n; es decir,
+</p>
+<pre class="example">
+sumaDeSumas n = (suma 0) + (suma 1) + ... + (suma n)
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org35c29d4" class="outline-3">
+<h3 id="org35c29d4"><span class="section-number-3">5.2.</span> Definición recursiva de la función sumaDeSumas</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">sumaDeSumas</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">sumaDeSumas</span> 0 <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">sumaDeSumas</span> n <span style="color: #a0522d;">=</span> suma n <span style="color: #a0522d;">+</span> sumaDeSumas <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8723be7" class="outline-3">
+<h3 id="org8723be7"><span class="section-number-3">5.3.</span> Estadísticas de la función sumaDeSumas</h3>
+<div class="outline-text-3" id="text-5-3">
+<ul class="org-ul">
+<li><p>
+El tiempo necesario para calcular <code>(sumaDeSumas n)</code> para n en [100,200..600]
+se recoge en la siguiente tabla
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">n</th>
+<th scope="col" class="org-right">segs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">100</td>
+<td class="org-right">0.06</td>
+</tr>
+
+<tr>
+<td class="org-right">200</td>
+<td class="org-right">0.17</td>
+</tr>
+
+<tr>
+<td class="org-right">300</td>
+<td class="org-right">0.35</td>
+</tr>
+
+<tr>
+<td class="org-right">400</td>
+<td class="org-right">0.62</td>
+</tr>
+
+<tr>
+<td class="org-right">500</td>
+<td class="org-right">0.96</td>
+</tr>
+
+<tr>
+<td class="org-right">600</td>
+<td class="org-right">1.37</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf723e05" class="outline-3">
+<h3 id="orgf723e05"><span class="section-number-3">5.4.</span> Gráfica de coste de sumaDeSumas</h3>
+<div class="outline-text-3" id="text-5-4">
+
+<div id="orge76866d" class="figure">
+<p><img src="./tema-28/fig/sumaDeSumas.png" alt="sumaDeSumas.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdbd819a" class="outline-3">
+<h3 id="orgdbd819a"><span class="section-number-3">5.5.</span> Ecuaciones de coste de la función sumaDeSumas</h3>
+<div class="outline-text-3" id="text-5-5">
+<ul class="org-ul">
+<li><p>
+Si T(n) es el tiempo necesario para calcular (sumaDeSumas n), entonces
+</p>
+<pre class="example">
+T(1)   = 1
+T(n+1) = T(suma(n+1))+T(n)
+       = n+1+T(n)
+</pre></li>
+
+<li>Nota: Las ecuaciones de coste se pueden resolver con
+<a href="http://bit.ly/18blHoH">Wolfram Alpha</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org33f2665" class="outline-3">
+<h3 id="org33f2665"><span class="section-number-3">5.6.</span> Demostración de que sumaDeSumas ∈ O(n²) (es decir, es de coste cuadrático)</h3>
+<div class="outline-text-3" id="text-5-6">
+<ul class="org-ul">
+<li>Basta demostrar que para la función sumaDeSumas, T(n) ≤ n².</li>
+<li>Se demuestra por inducción.
+<ul class="org-ul">
+<li><p>
+Caso base:
+</p>
+<pre class="example">
+T(1) = 1 ≤ 1²
+</pre></li>
+<li>Caso inductivo:
+<ul class="org-ul">
+<li>Suponemos la hipótesis de inducción: T(n) ≤ n².</li>
+<li>Hay que demostrar que T(n+1) ≤ (n+1)².</li>
+<li><p>
+Demostración:
+</p>
+<pre class="example">
+T(n+1)
+= n+1+T(n)     [por coste de sumaDeSumas.2]
+≤ n+1+n²       [por hip. de inducción]
+≤ n²+2n+1      [por álgebra]
+= (n+1)²       [por álgebra]
+</pre></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0ecff03" class="outline-2">
+<h2 id="org0ecff03"><span class="section-number-2">6.</span> Ejemplo de función con complejidad exponencial O(2ⁿ)</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org493f977" class="outline-3">
+<h3 id="org493f977"><span class="section-number-3">6.1.</span> Especificación de la función raiz</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><p>
+<code>(raiz x n)</code> es el n-ésimo término de la sucesión x(n) que calcula la raíz
+cuadrada de x por el método de Herón; es decir,
+</p>
+<pre class="example">
+x(0)   = 1
+x(n+1) = (x/x(n) + x(n))/2
+</pre>
+
+<p>
+Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; raiz 9 5
+3.0
+λ&gt; raiz 16 5
+4.0000005
+λ&gt; raiz 16 10
+4.0
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org96f9f9f" class="outline-3">
+<h3 id="org96f9f9f"><span class="section-number-3">6.2.</span> Definición recursiva de la función raiz</h3>
+<div class="outline-text-3" id="text-6-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">raiz</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Float</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Float</span>
+<span style="color: #0000ff;">raiz</span> x 0 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">raiz</span> x n <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>x <span style="color: #a0522d;">/</span> <span style="color: #7388d6;">(</span>raiz x <span style="color: #909183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span> <span style="color: #a0522d;">+</span> <span style="color: #7388d6;">(</span>raiz x <span style="color: #909183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">/</span> 2.0
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org981d675" class="outline-3">
+<h3 id="org981d675"><span class="section-number-3">6.3.</span> Estadísticas de la función raiz</h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li><p>
+El tiempo necesario para calcular (raiz 100 n) para n en
+[14..20] se recoge en la siguiente tabla
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">n</th>
+<th scope="col" class="org-right">segs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">14</td>
+<td class="org-right">0.14</td>
+</tr>
+
+<tr>
+<td class="org-right">15</td>
+<td class="org-right">0.27</td>
+</tr>
+
+<tr>
+<td class="org-right">16</td>
+<td class="org-right">0.53</td>
+</tr>
+
+<tr>
+<td class="org-right">17</td>
+<td class="org-right">1.04</td>
+</tr>
+
+<tr>
+<td class="org-right">18</td>
+<td class="org-right">2.03</td>
+</tr>
+
+<tr>
+<td class="org-right">19</td>
+<td class="org-right">4.08</td>
+</tr>
+
+<tr>
+<td class="org-right">20</td>
+<td class="org-right">8.10</td>
+</tr>
+</tbody>
+</table></li>
+
+<li>En la tabla se observa que por cada número que aumenta n se duplica el tiempo
+y el espacio. Por tanto la relación entre n y el tiempo necesario para
+calcular <code>(raiz 100 n)</code> es del orden 2ⁿ</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge8b1276" class="outline-3">
+<h3 id="orge8b1276"><span class="section-number-3">6.4.</span> Ecuaciones de coste de la función raiz</h3>
+<div class="outline-text-3" id="text-6-4">
+<ul class="org-ul">
+<li><p>
+Si T(n) es el tiempo necesario para calcular <code>(raiz x n)</code>, entonces
+</p>
+<pre class="example">
+T(0)   = 1
+T(n+1) = 2*T(n)
+</pre></li>
+
+<li>Nota: Las ecuaciones de coste se pueden resolver con
+<a href="http://bit.ly/18blSQM">Wolfram Alpha</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb683efb" class="outline-3">
+<h3 id="orgb683efb"><span class="section-number-3">6.5.</span> Demostración de que raiz ∈ O(2ⁿ) (es decir, es de coste exponencial)</h3>
+<div class="outline-text-3" id="text-6-5">
+<ul class="org-ul">
+<li>Basta demostrar que para la función raiz, T(n) = 2ⁿ.</li>
+<li>Se demuestra por inducción.
+<ul class="org-ul">
+<li><p>
+Caso base:
+</p>
+<pre class="example">
+T(0) = 1 = 2^0
+</pre></li>
+<li>Caso inductivo:
+<ul class="org-ul">
+<li>Suponemos la hipótesis de inducción: T(n) = 2ⁿ</li>
+<li>Hay que demostrar que T(n+1) = 2^(n+1).</li>
+<li><p>
+Demostración
+</p>
+<pre class="example">
+T(n+1)
+= 2*T(n)   [por coste de raiz]
+= 2*2ⁿ     [por hip. de inducción]
+= 2^(n+1)  [por álgebra]
+</pre></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org50fa7e3" class="outline-2">
+<h2 id="org50fa7e3"><span class="section-number-2">7.</span> Ejemplo de función con complejidad logarítmica O(log n)</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org787eaa2" class="outline-3">
+<h3 id="org787eaa2"><span class="section-number-3">7.1.</span> Especificación de la función potencia</h3>
+<div class="outline-text-3" id="text-7-1">
+<ul class="org-ul">
+<li><p>
+<code>(potencia x n)</code> es x^n, calculada usando las propiedades
+</p>
+<pre class="example">
+x^n = (x*x)^(n/2),   si n es par
+x^n = x*(x*x)^(n/2), si n es impar
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org55b5192" class="outline-3">
+<h3 id="org55b5192"><span class="section-number-3">7.2.</span> Definición recursiva de la función potencia</h3>
+<div class="outline-text-3" id="text-7-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">potencia</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">potencia</span> x 0 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">potencia</span> x n <span style="color: #a0522d;">|</span> even n    <span style="color: #a0522d;">=</span> potencia <span style="color: #707183;">(</span>x<span style="color: #a0522d;">*</span>x<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>div n 2<span style="color: #707183;">)</span>
+             <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> x <span style="color: #a0522d;">*</span> potencia <span style="color: #707183;">(</span>x<span style="color: #a0522d;">*</span>x<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>div n 2<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org48701f7" class="outline-3">
+<h3 id="org48701f7"><span class="section-number-3">7.3.</span> Estadísticas de la función potencia</h3>
+<div class="outline-text-3" id="text-7-3">
+<ul class="org-ul">
+<li><p>
+El tiempo necesario para calcular (potencia 2 n) para n en
+[1024,2048,4096,8192,16384,32768] se recoge en la siguiente tabla
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">n</th>
+<th scope="col" class="org-right">segs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1024</td>
+<td class="org-right">0.01</td>
+</tr>
+
+<tr>
+<td class="org-right">2048</td>
+<td class="org-right">0.02</td>
+</tr>
+
+<tr>
+<td class="org-right">4096</td>
+<td class="org-right">0.04</td>
+</tr>
+
+<tr>
+<td class="org-right">8192</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-right">16384</td>
+<td class="org-right">0.14</td>
+</tr>
+
+<tr>
+<td class="org-right">32768</td>
+<td class="org-right">0.26</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfb7a77a" class="outline-3">
+<h3 id="orgfb7a77a"><span class="section-number-3">7.4.</span> Ecuaciones de coste de la función potencia</h3>
+<div class="outline-text-3" id="text-7-4">
+<ul class="org-ul">
+<li><p>
+Si T(n) es el tiempo necesario para calcular (potencia a n), entonces
+</p>
+<pre class="example">
+T(1) = 1
+T(n) = 1 + T(n/2)
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc5cb098" class="outline-3">
+<h3 id="orgc5cb098"><span class="section-number-3">7.5.</span> Demostración de que potencia ∈ O(log n) (es decir, es de coste logarítmico)</h3>
+<div class="outline-text-3" id="text-7-5">
+<ul class="org-ul">
+<li>Basta demostrar que para la función potencia, T(n) = 1 + log n (logaritmo en
+base 2).</li>
+<li>Se demuestra por inducción.
+<ul class="org-ul">
+<li><p>
+Caso base:
+</p>
+<pre class="example">
+T(1) = 1 = 1 + log 1
+</pre></li>
+<li><p>
+Caso inductivo:
+</p>
+<pre class="example">
+T(n)
+= 1 + T(n/2)           [por coste de potencia]
+= 1 + (1 + log(n/2))   [por hipótesis de inducción]
+= 1 + (1 + log n - 1)  [por álgebra]
+= 1 + log n            [por álgebra]
+</pre></li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org84cc979" class="outline-2">
+<h2 id="org84cc979"><span class="section-number-2">8.</span> Complejidad de la función inversa</h2>
+<div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-org5e15114" class="outline-3">
+<h3 id="org5e15114"><span class="section-number-3">8.1.</span> Especificación de la función inversa</h3>
+<div class="outline-text-3" id="text-8-1">
+<ul class="org-ul">
+<li><p>
+<code>(inversa xs)</code> es la lista obtenida escribiendo los elementos de xs en orden
+inverso. Por ejemplo,
+</p>
+<pre class="example">
+inversa [3,2,5,7] ==  [7,5,2,3]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org923fe73" class="outline-3">
+<h3 id="org923fe73"><span class="section-number-3">8.2.</span> Primera definición de inversa: inversa1</h3>
+<div class="outline-text-3" id="text-8-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inversa1</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">inversa1</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> inversa1 xs <span style="color: #a0522d;">++</span> <span style="color: #707183;">[</span>x<span style="color: #707183;">]</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgaea7808" class="outline-3">
+<h3 id="orgaea7808"><span class="section-number-3">8.3.</span> Coste de inversa1</h3>
+<div class="outline-text-3" id="text-8-3">
+<ul class="org-ul">
+<li><p>
+Las ecuaciones del coste de inversa1 son
+</p>
+<pre class="example">
+T(0)   = 1
+T(n+1) = T(n) + n + 1
+</pre></li>
+
+<li>Nota: Las ecuaciones de coste se pueden resolver con
+<a href="http://bit.ly/1FIIqDy">Wolfram Alpha</a>.</li>
+
+<li>Por tanto, inversa1 ∈ O(n²)</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge99f08f" class="outline-3">
+<h3 id="orge99f08f"><span class="section-number-3">8.4.</span> Segunda definición de inversa: inversa2</h3>
+<div class="outline-text-3" id="text-8-4">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inversa2</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">inversa2</span> xs <span style="color: #a0522d;">=</span> aux <span style="color: #707183;">[]</span> xs
+  <span style="color: #a020f0;">where</span> aux ys <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> ys
+        aux ys <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> aux <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>ys<span style="color: #707183;">)</span> xs
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgcbbbc95" class="outline-3">
+<h3 id="orgcbbbc95"><span class="section-number-3">8.5.</span> Coste de inversa2</h3>
+<div class="outline-text-3" id="text-8-5">
+<ul class="org-ul">
+<li><p>
+Las ecuaciones del coste de inversa2 son
+</p>
+<pre class="example">
+T(0)   = 1
+T(n+1) = 1 + T(n)
+</pre></li>
+
+<li>Nota: Las ecuaciones de coste se pueden resolver con
+<a href="http://bit.ly/18bkQ7x">Wolfram Alpha</a>.</li>
+
+<li>Por tanto, inversa2 ∈ O(n)</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org3c15318" class="outline-3">
+<h3 id="org3c15318"><span class="section-number-3">8.6.</span> Comparación gráfica de costes de inversa1 e inversa2</h3>
+<div class="outline-text-3" id="text-8-6">
+
+<div id="orgf18849b" class="figure">
+<p><img src="file:///tema-28/fig/inversa.png" alt="inversa.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8f67381" class="outline-2">
+<h2 id="org8f67381"><span class="section-number-2">9.</span> Apéndices</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-org0b50740" class="outline-3">
+<h3 id="org0b50740"><span class="section-number-3">9.1.</span> Algunas recurrencias simples para el cálculo de coste</h3>
+<div class="outline-text-3" id="text-9-1">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Ecuaciones</th>
+<th scope="col" class="org-left">Orden</th>
+<th scope="col" class="org-left">Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">T(1) = k</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">suma2</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">T(1)   = k</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">suma</td>
+</tr>
+
+<tr>
+<td class="org-left">T(n+1) = T(n)+k'</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">T(1)   = k</td>
+<td class="org-left">O(n²)</td>
+<td class="org-left">sumaDeSumas</td>
+</tr>
+
+<tr>
+<td class="org-left">T(n+1) = T(n)+n</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">T(1)   = k</td>
+<td class="org-left">O(log(n))</td>
+<td class="org-left">potencia</td>
+</tr>
+
+<tr>
+<td class="org-left">T(n)   = T(n/2)+k'</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">T(0)   = k</td>
+<td class="org-left">O(2ⁿ)</td>
+<td class="org-left">raiz</td>
+</tr>
+
+<tr>
+<td class="org-left">T(n+1) = 2T(n)+k'</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="org-left">T(1)   = k</td>
+<td class="org-left">O(nlog(n))</td>
+<td class="org-left">ordenación</td>
+</tr>
+
+<tr>
+<td class="org-left">T(n)   = 2T(n/2)+n</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">por mezcla</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org5c58277" class="outline-3">
+<h3 id="org5c58277"><span class="section-number-3">9.2.</span> Teorema maestro para el cálculo de coste</h3>
+<div class="outline-text-3" id="text-9-2">
+
+<div id="org0c3597b" class="figure">
+<p><img src="./tema-28/fig/teorema_fundamental.png" alt="teorema_fundamental.png" />
+</p>
+</div>
+
+<ul class="org-ul">
+<li>Demostración en la página 16 de los
+<a href="http://bit.ly/1DFiHw6">Apuntes sobre el cálculo de la eficiencia de los algoritmos</a>
+de J.L. Balcázar.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb7c01f4" class="outline-3">
+<h3 id="orgb7c01f4"><span class="section-number-3">9.3.</span> Complejidades de los algoritmos habituales</h3>
+<div class="outline-text-3" id="text-9-3">
+<ul class="org-ul">
+<li>En <a href="http://bigocheatsheet.com">esta página</a> se muestra las complejidades de los algoritmos habituales.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4de0bd1" class="outline-2">
+<h2 id="org4de0bd1"><span class="section-number-2">10.</span> Material complementario</h2>
+<div class="outline-text-2" id="text-10">
+<p>
+El código del tema se encuentra en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_28.hs">este enlace</a>.
+</p>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?urlpath=lab/tree/temas/Tema-28.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como <a href="https://youtu.be/rlZapU2vljU">vídeo de clase</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5817a9e" class="outline-2">
+<h2 id="org5817a9e"><span class="section-number-2">11.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-11">
+<ul class="org-ul">
+<li>J.L. Balcázar. <a href="http://bit.ly/1DFiHw6">Apuntes sobre el cálculo de la eficiencia de los algoritmos</a>.</li>
+
+<li>R. Bird. <a href="http://bit.ly/18Ao9X1">Thinking functionally with Haskell</a>.
+<ul class="org-ul">
+<li>Cap. 7: Efficiency.</li>
+</ul></li>
+
+<li>M. Clarkson. <a href="http://bit.ly/1aHT6Jv">Data structures and functional programming</a>.
+<ul class="org-ul">
+<li>Reasoning about performance: <a href="http://bit.ly/1aHTo31">Efficiency</a>, <a href="http://bit.ly/1aHTA2g">recurrences</a>, <a href="http://bit.ly/1aHTEPt">amortized analysis</a> y
+<a href="http://bit.ly/1aHTOX2">recurrences, part 2</a>.</li>
+</ul></li>
+
+<li>L. Paulson. <a href="https://www.cl.cam.ac.uk/teaching/1213/FoundsCS/fcs-notes.pdf">Foundations of Computer Science</a>.
+<ul class="org-ul">
+<li>Cap. 3: O notation: Estimating costs in the limit.</li>
+</ul></li>
+
+<li>R. Peña. <a href="http://bit.ly/17JU4Dj">Diseño de programas (formalismo y abstracción)</a>.
+<ul class="org-ul">
+<li>Cap. 1: La eficiencia de los algoritmos.</li>
+</ul></li>
+
+<li>F. Rabhi y G. Lapalme. <a href="http://bit.ly/1G5Zh6Y">Algorithms: A functional programming approach</a>.
+<ul class="org-ul">
+<li>Cap. 3: The efficiency of functional programs.</li>
+</ul></li>
+
+<li>S. Thompson. <a href="http://bit.ly/1zPhSgj">Haskell: the craft of functional programming</a>.
+<ul class="org-ul">
+<li>Cap. 20: Time and space behaviour.</li>
+</ul></li>
+
+<li>Wikipedia.
+<ul class="org-ul">
+<li><a href="http://bit.ly/1BsCsYF">Análisis de algoritmos</a>.</li>
+<li><a href="http://bit.ly/1DFleWZ">Big O notation</a>.</li>
+<li><a href="http://bit.ly/1DFl3uX">Notación de Landau</a>.</li>
+<li><a href="http://bit.ly/1BsCkbv">Teorema maestro</a>.</li>
+</ul></li>
+
+<li>R. Pattis. <a href="http://bit.ly/1NHJTy3">Complexity of Python operations</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 01 de julio del 2021</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
