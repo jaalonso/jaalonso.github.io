@@ -1,0 +1,917 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 03 de julio del 2021 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 29: Las librerías de conjuntos y diccionarios en Haskell</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 29: Las librerías de conjuntos y diccionarios en Haskell</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org34f097b">1. Introducción de los conjuntos</a></li>
+<li><a href="#org1299206">2. El tipo de los conjuntos</a></li>
+<li><a href="#org63e7e2e">3. Funciones sobre conjuntos</a>
+<ul>
+<li><a href="#org9910511">3.1. Funciones básicas</a></li>
+<li><a href="#org1189a69">3.2. Complejidades</a></li>
+<li><a href="#org4a4679f">3.3. De listas a conjuntos y viceversa</a></li>
+<li><a href="#orgc40c464">3.4. Operaciones y relaciones usuales</a></li>
+<li><a href="#orgf1c3c81">3.5. Más funciones sobre conjuntos</a></li>
+</ul>
+</li>
+<li><a href="#org3d95966">4. Introducción de los diccionarios</a></li>
+<li><a href="#org0cac2ac">5. El tipo de los diccionarios</a></li>
+<li><a href="#orgea2e8e4">6. Funciones sobre diccionarios</a>
+<ul>
+<li><a href="#org5a33f18">6.1. Funciones básicas</a></li>
+<li><a href="#org2c841f9">6.2. De listas a diccionarios y viceversa</a></li>
+<li><a href="#orgfe4fc6c">6.3. Operaciones y relaciones usuales</a></li>
+<li><a href="#orgfc39d83">6.4. Más funciones sobre diccionarios</a></li>
+</ul>
+</li>
+<li><a href="#org829e1ee">7. Referencia</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org34f097b" class="outline-2">
+<h2 id="org34f097b"><span class="section-number-2">1.</span> Introducción de los conjuntos</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>Los <b>conjuntos</b> permiten almacenar elementos en los que no importa el orden ni
+las repeticiones.</li>
+
+<li>En esta tema se presentan ejemplos de las funciones de la librería de
+conjuntos <a href="https://hackage.haskell.org/package/containers-0.6.5.1">Data.Set 0.6.5.1</a></li>
+
+<li><p>
+En los ejemplos se supone que se ha importado la siguiente librería
+</p>
+<pre class="example">
+λ&gt; import Data.Set as S
+</pre></li>
+
+<li><p>
+Debido a que <code>Data.Set</code> exporta funciones que colisionan con las de <code>Prelude</code>
+y <code>Data.List</code>, se suele importar de forma cualificada.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">qualified</span> <span style="color: #228b22;">Data.Set</span> <span style="color: #a020f0;">as</span> <span style="color: #228b22;">S</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org1299206" class="outline-2">
+<h2 id="org1299206"><span class="section-number-2">2.</span> El tipo de los conjuntos</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li><p>
+<code>(Set a)</code> es el tipo de los conjuntos con elementos de tipo a. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; c1 = fromList [3,2,5,3]
+λ&gt; :type c1
+c1 :: (Ord a, Num a) =&gt; Set a
+λ&gt; c1
+fromList [2,3,5]
+λ&gt; c2 = fromList [2,5,2,3]
+λ&gt; c1 == c2
+True
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org63e7e2e" class="outline-2">
+<h2 id="org63e7e2e"><span class="section-number-2">3.</span> Funciones sobre conjuntos</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org9910511" class="outline-3">
+<h3 id="org9910511"><span class="section-number-3">3.1.</span> Funciones básicas</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+<code>empty</code> es el conjunto vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; empty
+fromList []
+</pre></li>
+
+<li><p>
+<code>(insert x c)</code> es el conjunto obtenido insertando el elemento <code>x</code> en el
+conjunto <code>c</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; insert 7 (fromList [3,2,5])
+fromList [2,3,5,7]
+λ&gt; insert 2 (fromList [3,2,5])
+fromList [2,3,5]
+</pre></li>
+
+<li><p>
+<code>(delete x c)</code> es el conjunto obtenido eliminando el elemento <code>x</code> del conjunto
+<code>c</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; delete 3 (fromList [3,2,5,3,4])
+fromList [2,4,5]
+λ&gt; delete 7 (fromList [3,2,5,3,4])
+fromList [2,3,4,5]
+</pre></li>
+
+<li><p>
+<code>(member x c)</code> se verifica si <code>x</code> es un elemento del conjunto <code>c</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; member 5 (fromList [3,2,5])
+True
+λ&gt; member 7 (fromList [3,2,5])
+False
+</pre></li>
+
+<li><p>
+<code>(null c)</code> se verifica si <code>c</code> es el conjunto vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; S.null (fromList [])
+True
+λ&gt; S.null (fromList [5,2])
+False
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org1189a69" class="outline-3">
+<h3 id="org1189a69"><span class="section-number-3">3.2.</span> Complejidades</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li><p>
+Comparación de las complejidades de las operaciones de los conjuntos definidas
+en el <a href="./tema-17.html">Tema 17</a> con las de la librería de conjuntos <code>Data.Set</code>.
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">TAD</th>
+<th scope="col" class="org-left">LNOCD</th>
+<th scope="col" class="org-left">LNOSD</th>
+<th scope="col" class="org-left">LOSD</th>
+<th scope="col" class="org-left">Data.Set</th>
+<th scope="col" class="org-left">&#xa0;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">vacio</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">empty</td>
+<td class="org-left">O(1)</td>
+</tr>
+
+<tr>
+<td class="org-left">inserta</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">insert</td>
+<td class="org-left">O(log(n))</td>
+</tr>
+
+<tr>
+<td class="org-left">elimina</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">delete</td>
+<td class="org-left">O(log(n))</td>
+</tr>
+
+<tr>
+<td class="org-left">pertenece</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">O(n)</td>
+<td class="org-left">member</td>
+<td class="org-left">O(log(n))</td>
+</tr>
+
+<tr>
+<td class="org-left">esVacio</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">O(1)</td>
+<td class="org-left">null</td>
+<td class="org-left">O(1)</td>
+</tr>
+</tbody>
+</table>
+<p>
+donde las representaciones de conjuntos son
+</p>
+<ul class="org-ul">
+<li>LNOCD: listas no ordenadas con duplicados</li>
+<li>LNOSD: listas no ordenadas sin duplicados</li>
+<li>LOSD: listas ordenadas sin duplicados</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4a4679f" class="outline-3">
+<h3 id="org4a4679f"><span class="section-number-3">3.3.</span> De listas a conjuntos y viceversa</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li><p>
+<code>(fromList xs)</code> es el conjunto cuyos elementos son los de la lista <code>xs</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; fromList [3,2,5,2,15]
+fromList [2,3,5,15]
+λ&gt; :t it
+it :: (Ord a, Num a) =&gt; Set a
+</pre></li>
+
+<li><p>
+<code>(toList c)</code> es la lista de los elementos del conjunto <code>c</code> ordenados
+crecientemente. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; toList (fromList [3,2,5,2,1,5])
+[1,2,3,5]
+</pre></li>
+
+<li><p>
+<code>(elems c)</code> es la lista de los elementos del conjunto <code>c</code> ordenados
+crecientemente. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; elems (fromList [3,2,5,2,1,5])
+[1,2,3,5]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc40c464" class="outline-3">
+<h3 id="orgc40c464"><span class="section-number-3">3.4.</span> Operaciones y relaciones usuales</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li><p>
+<code>(union cs c2)</code> es la unión de los conjuntos <code>c1</code> y <code>c2</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; union (fromList [3,2,5]) (fromList [2,7,5])
+fromList [2,3,5,7]
+</pre></li>
+
+<li><p>
+<code>(intersection cs c2)</code> es la intersecciṕn de los conjuntos <code>c1</code> y <code>c2</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; intersection (fromList [3,2,5]) (fromList [2,7,5])
+fromList [2,5]
+</pre></li>
+
+<li><p>
+<code>(difference c1 c2)</code> es la diferencia de los conjuntos <code>c1</code> y <code>c2</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; difference (fromList [2,5,3]) (fromList [1,4,5])
+fromList [2,3]
+</pre></li>
+
+<li><p>
+<code>(c1 \\ c2)</code> es la diferencia de los conjuntos <code>c1</code> y <code>c2</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; fromList [2,5,3] \\ fromList [1,4,5]
+fromList [2,3]
+</pre></li>
+
+<li><p>
+<code>(size c)</code> es el número de elementos del conjunto <code>c</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; size (fromList [3,2,5,3,2,1])
+4
+</pre></li>
+
+<li><p>
+<code>(isSubsetOf c1 c2)</code> se verifica si <code>c1</code> es un subconjunto de <code>c2</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; isSubsetOf (fromList [3,5]) (fromList [3,2,5])
+True
+λ&gt; isSubsetOf (fromList [3,5,2]) (fromList [3,2,5])
+True
+λ&gt; isProperSubsetOf (fromList [3,7]) (fromList [3,2,5])
+False
+</pre></li>
+
+<li><p>
+<code>(isProperSubsetOf c1 c2)</code> se verifica si <code>c1</code> es un subconjunto propio de
+<code>c2</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; isProperSubsetOf (fromList [3,5]) (fromList [3,2,5])
+True
+λ&gt; isProperSubsetOf (fromList [3,5,2]) (fromList [3,2,5])
+False
+λ&gt; isProperSubsetOf (fromList [3,7]) (fromList [3,2,5])
+False
+</pre></li>
+
+<li><p>
+<code>(c1 == c2)</code> se verifica si los conjuntos <code>c1</code> y <code>c2</code> son iguales. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; fromList [3,2,5] == fromList [5,2,3,2]
+True
+λ&gt; fromList [3,2,5] == fromList [5,1,3,2]
+False
+</pre></li>
+
+<li><p>
+<code>(map f c)</code> es el conjunto obtenido aplicando a cada elemento de <code>c</code> la
+función <code>f</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; S.map (+2) (fromList [3,2,7])
+fromList [4,5,9]
+</pre></li>
+
+<li><p>
+<code>(filter p c)</code> es el conjunto de los elementos de <code>c</code> que cumplen <code>p</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; S.filter even (fromList [3,2,5,7,8,6,9])
+fromList [2,6,8]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf1c3c81" class="outline-3">
+<h3 id="orgf1c3c81"><span class="section-number-3">3.5.</span> Más funciones sobre conjuntos</h3>
+<div class="outline-text-3" id="text-3-5">
+<ul class="org-ul">
+<li>En <a href="http://bit.ly/1DsjKTs">Manual de la librería de conjuntos Data.Set</a> se describen las funciones de
+la librería mediante ejemplos.</li>
+
+<li>En <a href="https://hackage.haskell.org/package/containers-0.6.5.1">Data.Set</a> se describen las funciones de la librería junto con sus órdenes de
+complejidad.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3d95966" class="outline-2">
+<h2 id="org3d95966"><span class="section-number-2">4.</span> Introducción de los diccionarios</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>Los <b>diccionarios</b> (también llamados <b>listas de asociación</b>) son listas
+utilizadas para almacenar pares clave-valor donde el orden no importa.</li>
+
+<li>Por ejemplo, podemos tener un diccionario para almacenar números de teléfono,
+donde los números de telefono serían los valores y los nombres de la gente
+serían las claves.</li>
+
+<li>No nos importa el orden en el que estén almacenados, sólo queremos obtener el
+número correspondiente cada persona.</li>
+
+<li>En este manual se presentan ejemplos de las funciones de la librería de diccionarios
+<a href="http://bit.ly/1Hy0zoJ">Data.Map 0.5.5.1</a>.</li>
+
+<li><p>
+En los ejemplos se supone que se ha importado la siguiente librería
+</p>
+<pre class="example">
+λ&gt; import Data.Map as M
+</pre></li>
+
+<li><p>
+Debido a que <code>Data.Map</code> exporta funciones que colisionan con las de <code>Prelude</code> y
+<code>Data.List</code>, se suele importar de forma cualificada.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">qualified</span> <span style="color: #228b22;">Data.Map</span> <span style="color: #a020f0;">as</span> <span style="color: #228b22;">Map</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0cac2ac" class="outline-2">
+<h2 id="org0cac2ac"><span class="section-number-2">5.</span> El tipo de los diccionarios</h2>
+<div class="outline-text-2" id="text-5">
+<ul class="org-ul">
+<li><p>
+<code>(Map c a)</code> es el tipo de los diccionarios con las claves de tipo <code>c</code> y los
+valores de tipo <code>a</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; let d1 = fromList [("Ana",5),("Juan",7),("Eva",6)]
+λ&gt; :t d1
+d1 :: Map [Char] Integer
+λ&gt; let d2 = fromList [("Ana",5),("Eva",6),("Juan",7)]
+λ&gt; d1 == d2
+True
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgea2e8e4" class="outline-2">
+<h2 id="orgea2e8e4"><span class="section-number-2">6.</span> Funciones sobre diccionarios</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org5a33f18" class="outline-3">
+<h3 id="org5a33f18"><span class="section-number-3">6.1.</span> Funciones básicas</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><p>
+<code>empty</code> es el diccionario vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; empty
+fromList []
+</pre></li>
+
+<li><p>
+<code>(insert k x d)</code> es el diccionario obtenido añadiéndole a <code>d</code> el par <code>(k,x)</code>
+y eliminando el valor de <code>k</code> en <code>d</code> en el caso de que existiera. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; insert 3 7 empty
+fromList [(3,7)]
+λ&gt; insert 3 'c' (fromList [(4,'a'),(6,'b'),(8,'e')])
+fromList [(3,'c'),(4,'a'),(6,'b'),(8,'e')]
+λ&gt; insert 6 'c' (fromList [(4,'a'),(6,'b'),(8,'e')])
+fromList [(4,'a'),(6,'c'),(8,'e')]
+</pre></li>
+
+<li><p>
+<code>(delete k d)</code> es el diccionario obtenido eliminando en <code>d</code> la clave <code>k</code> y su
+valor. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; delete 3 (fromList [(5,"a"),(3,"b"),(7,"d")])
+fromList [(5,"a"),(7,"d")]
+λ&gt; delete 4 (fromList [(5,"a"),(3,"b"),(7,"d")])
+fromList [(3,"b"),(5,"a"),(7,"d")]
+</pre></li>
+
+<li><p>
+<code>(member x d)</code> se verifica si <code>x</code> es una clave del diccionario <code>d</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; member 5 (fromList [(4,'a'),(5,'b'),(2,'e')])
+True
+λ&gt; member 7 (fromList [(4,'a'),(5,'b'),(2,'e')])
+False
+</pre></li>
+</ul>
+<p>
+#+end_src
+</p>
+
+<ul class="org-ul">
+<li><p>
+<code>null d</code> se verifica si el diccionario <code>d</code> es vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; M.null (fromList [])
+True
+λ&gt; M.null (fromList [(3,2)])
+False
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2c841f9" class="outline-3">
+<h3 id="org2c841f9"><span class="section-number-3">6.2.</span> De listas a diccionarios y viceversa</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li><p>
+<code>(fromList ps)</code> es el diccionario cuyos elementos es la lista de pares
+<code>ps</code>. Si la lista tiene más de un valor para una clave, sólo se conserva el
+último. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; fromList [(5,"a"),(3,"b"),(5,"c")]
+fromList [(3,"b"),(5,"c")]
+λ&gt; fromList [(5,"a"),(3,"b"),(5,"c"),(3,"a")]
+fromList [(3,"a"),(5,"c")]
+</pre></li>
+
+<li><p>
+<code>(toList d)</code> es la lista ordenada de los elementos del diccionario <code>d</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; toList (fromList [(1,7),(3,5),(2,8)])
+[(1,7),(2,8),(3,5)]
+</pre></li>
+
+<li><p>
+<code>(keys d)</code> es a lista ordenada de las claves del diccionario <code>d</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; keys (fromList [(1,7),(3,5),(2,8)])
+[1,2,3]
+</pre></li>
+
+<li><p>
+<code>(elems d)</code> es a lista de los valores del diccionario <code>d</code> ordenados según sus
+claves. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; elems (fromList [(1,7),(3,5),(2,8)])
+[7,8,5]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfe4fc6c" class="outline-3">
+<h3 id="orgfe4fc6c"><span class="section-number-3">6.3.</span> Operaciones y relaciones usuales</h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li><p>
+<code>(size d)</code> es el número de elementos del diccionario <code>d</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; size empty
+0
+λ&gt; size (fromList [(4,'a'),(5,'b'),(2,'e')])
+3
+λ&gt; size (fromList [(4,'a'),(5,'b'),(2,'e'),(4,'a')])
+3
+λ&gt; size (fromList [(4,'a'),(5,'b'),(2,'e'),(4,'c')])
+3
+</pre></li>
+
+<li><p>
+<code>(singleton k x)</code> es el diccionario cuya única clave es <code>k</code> u su valor es
+<code>x</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; singleton 'd' 4
+fromList [('d',4)]
+</pre></li>
+
+<li><p>
+<code>(lookup x d)</code> es justo el valor del elemento del diccionario <code>d</code> cuya
+clave es <code>x</code>, si hay alguno y <code>Nothing</code>, en caso contrario. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; M.lookup 5 (fromList [(4,'a'),(5,'b'),(2,'e')])
+Just 'b'
+λ&gt; M.lookup 7 (fromList [(4,'a'),(5,'b'),(2,'e')])
+Nothing
+</pre></li>
+
+<li><p>
+<code>(map f d)</code> aplica <code>f</code> a todos los valores de <code>d</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; M.map (+1) (fromList [(8,4),(3,8),(7,3),(6,7)])
+fromList [(3,9),(6,8),(7,4),(8,5)]
+</pre></li>
+
+<li><p>
+<code>(filter p d)</code> es el diccionario formado por los elementos de <code>d</code> cuyo valor
+cumple el predicado <code>p</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; M.filter (&gt;5) (fromList [("b",4),("e",8),("d",3),("a",7)])
+fromList [("a",7),("e",8)]
+</pre></li>
+
+<li><p>
+<code>(fromListWith f ps)</code> es el diccionario cuyos elementos es la lista de pares
+<code>ps</code> combinados con la operación <code>f</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; fromListWith (++) [(5,"a"),(3,"b"),(5,"c")]
+fromList [(3,"b"),(5,"ca")]
+λ&gt; fromListWith (++) [(5,"a"),(3,"b"),(5,"c"),(3,"a")]
+fromList [(3,"ab"),(5,"ca")]
+λ&gt; fromListWith (-) [(5,4),(3,6),(5,2),(3,1)]
+fromList [(3,-5),(5,-2)]
+</pre></li>
+
+<li><p>
+<code>(insertWith f k x d)</code> es el diccionario obtenido añadiéndole a <code>d</code> el
+par <code>(k,x)</code> si <code>k</code> no es una clave de <code>d</code> o el par <code>(k,f x y)</code> si el par
+<code>(k,y)</code> pertenece a <code>d</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; insertWith (++) 7 "d" (fromList [(5,"a"), (3,"b")])
+fromList [(3,"b"),(5,"a"),(7,"d")]
+λ&gt; insertWith (++) 3 "d" (fromList [(5,"a"), (3,"b")])
+fromList [(3,"db"),(5,"a")]
+λ&gt; insertWith (*) 3 2 (fromList [(5,6), (3,4)])
+fromList [(3,8),(5,6)]
+λ&gt; insertWith (*) 3 2 empty
+fromList [(3,2)]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfc39d83" class="outline-3">
+<h3 id="orgfc39d83"><span class="section-number-3">6.4.</span> Más funciones sobre diccionarios</h3>
+<div class="outline-text-3" id="text-6-4">
+<ul class="org-ul">
+<li>En <a href="http://bit.ly/1DsjKTs">Manual de la librería de diccionarios Data.Map</a> se describen las funciones
+de la librería mediante ejemplos.</li>
+
+<li>En <a href="https://bit.ly/2XymMEu">Data.Map.Lazy</a> se describen las funciones de la librería junto con sus
+órdenes de complejidad.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org829e1ee" class="outline-2">
+<h2 id="org829e1ee"><span class="section-number-2">7.</span> Referencia</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>M. Lipovača <a href="http://bit.ly/1IK2ZEB">¡Aprende Haskell por el bien de todos!</a>:
+<ul class="org-ul">
+<li>Apartado <a href="https://bit.ly/2V90urj">Data.Set</a>.</li>
+<li>Apartado <a href="http://bit.ly/1IK30IJ">Data.Map</a>.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas.html">Temas  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 03 de julio del 2021</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
