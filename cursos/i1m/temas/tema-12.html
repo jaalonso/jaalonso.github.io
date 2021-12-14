@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 12 de mayo del 2021 -->
+<!-- 14 de diciembre del 2021 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 12: Analizadores sintácticos funcionales</title>
@@ -40,7 +40,7 @@
   }
   pre.src {
     position: relative;
-    overflow: visible;
+    overflow: auto;
     padding-top: 1.2em;
   }
   pre.src:before {
@@ -52,7 +52,7 @@
     padding: 3px;
     border: 1px solid black;
   }
-  pre.src:hover:before { display: inline;}
+  pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
@@ -196,57 +196,36 @@
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2019 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
    <a href="/cursos/i1m/">Inicial</a> |
-   <a href="/cursos/i1m/temas.html">Temas  </a>
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/sistemas.html">Sistemas  </a>
 </p>
 </div>
 <div id="content">
@@ -255,21 +234,21 @@ for the JavaScript code in this tag.
 <h2>&Iacute;ndice</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orga082c7c">1. Analizadores sintácticos</a></li>
-<li><a href="#orgf0b59f8">2. El tipo de los analizadores sintácticos</a></li>
-<li><a href="#orgd348537">3. Analizadores sintácticos básicos</a></li>
-<li><a href="#org4f8850d">4. Composición de analizadores sintácticos</a></li>
-<li><a href="#orgfa82e36">5. Primitivas derivadas</a></li>
-<li><a href="#org2d6f3d3">6. Tratamiento de los espacios</a></li>
-<li><a href="#org3b6eb4c">7. Analizador de expresiones aritméticas</a></li>
-<li><a href="#org7fc0004">8. Material complementario</a></li>
-<li><a href="#org2096087">9. Bibliografía</a></li>
+<li><a href="#org476f1d0">1. Analizadores sintácticos</a></li>
+<li><a href="#orgfece861">2. El tipo de los analizadores sintácticos</a></li>
+<li><a href="#org915f36b">3. Analizadores sintácticos básicos</a></li>
+<li><a href="#org1aae76e">4. Composición de analizadores sintácticos</a></li>
+<li><a href="#org804ecb7">5. Primitivas derivadas</a></li>
+<li><a href="#orgfabc8f4">6. Tratamiento de los espacios</a></li>
+<li><a href="#orge57bd43">7. Analizador de expresiones aritméticas</a></li>
+<li><a href="#org36cc9c0">8. Material complementario</a></li>
+<li><a href="#orgb764a87">9. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orga082c7c" class="outline-2">
-<h2 id="orga082c7c"><span class="section-number-2">1</span> Analizadores sintácticos</h2>
+<div id="outline-container-org476f1d0" class="outline-2">
+<h2 id="org476f1d0"><span class="section-number-2">1.</span> Analizadores sintácticos</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Un <b>analizador sintáctico</b> es un programa que analiza textos para determinar
@@ -285,8 +264,8 @@ aplicaciones reales.</li>
 </div>
 </div>
 
-<div id="outline-container-orgf0b59f8" class="outline-2">
-<h2 id="orgf0b59f8"><span class="section-number-2">2</span> El tipo de los analizadores sintácticos</h2>
+<div id="outline-container-orgfece861" class="outline-2">
+<h2 id="orgfece861"><span class="section-number-2">2.</span> El tipo de los analizadores sintácticos</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li><p>
@@ -326,8 +305,8 @@ Con estructuras arbitrarias:
 </div>
 </div>
 
-<div id="outline-container-orgd348537" class="outline-2">
-<h2 id="orgd348537"><span class="section-number-2">3</span> Analizadores sintácticos básicos</h2>
+<div id="outline-container-org915f36b" class="outline-2">
+<h2 id="org915f36b"><span class="section-number-2">3.</span> Analizadores sintácticos básicos</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li><p>
@@ -401,12 +380,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org4f8850d" class="outline-2">
-<h2 id="org4f8850d"><span class="section-number-2">4</span> Composición de analizadores sintácticos</h2>
+<div id="outline-container-org1aae76e" class="outline-2">
+<h2 id="org1aae76e"><span class="section-number-2">4.</span> Composición de analizadores sintácticos</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgfebb489" class="outline-3">
-<h3 id="orgfebb489"><span class="section-number-3">4.1</span> Secuenciación de analizadores sintácticos</h3>
+<div id="outline-container-org86db8fa" class="outline-3">
+<h3 id="org86db8fa"><span class="section-number-3">4.1.</span> Secuenciación de analizadores sintácticos</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -449,8 +428,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org5b293d2" class="outline-3">
-<h3 id="org5b293d2"><span class="section-number-3">4.2</span> Elección de analizadores sintácticos</h3>
+<div id="outline-container-org5663652" class="outline-3">
+<h3 id="org5663652"><span class="section-number-3">4.2.</span> Elección de analizadores sintácticos</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -481,8 +460,8 @@ p <span style="color: #0000ff;">+++</span> q <span style="color: #a0522d;">=</sp
 </div>
 </div>
 
-<div id="outline-container-orgfa82e36" class="outline-2">
-<h2 id="orgfa82e36"><span class="section-number-2">5</span> Primitivas derivadas</h2>
+<div id="outline-container-org804ecb7" class="outline-2">
+<h2 id="org804ecb7"><span class="section-number-2">5.</span> Primitivas derivadas</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li><p>
@@ -730,8 +709,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org2d6f3d3" class="outline-2">
-<h2 id="org2d6f3d3"><span class="section-number-2">6</span> Tratamiento de los espacios</h2>
+<div id="outline-container-orgfabc8f4" class="outline-2">
+<h2 id="orgfabc8f4"><span class="section-number-2">6.</span> Tratamiento de los espacios</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li><p>
@@ -838,12 +817,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org3b6eb4c" class="outline-2">
-<h2 id="org3b6eb4c"><span class="section-number-2">7</span> Analizador de expresiones aritméticas</h2>
+<div id="outline-container-orge57bd43" class="outline-2">
+<h2 id="orge57bd43"><span class="section-number-2">7.</span> Analizador de expresiones aritméticas</h2>
 <div class="outline-text-2" id="text-7">
 </div>
-<div id="outline-container-org9374afb" class="outline-3">
-<h3 id="org9374afb"><span class="section-number-3">7.1</span> Expresiones aritméticas</h3>
+<div id="outline-container-orgea8725a" class="outline-3">
+<h3 id="orgea8725a"><span class="section-number-3">7.1.</span> Expresiones aritméticas</h3>
 <div class="outline-text-3" id="text-7-1">
 <ul class="org-ul">
 <li>Consideramos expresiones aritméticas:
@@ -862,8 +841,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgf155135" class="outline-3">
-<h3 id="orgf155135"><span class="section-number-3">7.2</span> Gramáticas de las expresiones aritméticas: Gramática 1</h3>
+<div id="outline-container-org874375f" class="outline-3">
+<h3 id="org874375f"><span class="section-number-3">7.2.</span> Gramáticas de las expresiones aritméticas: Gramática 1</h3>
 <div class="outline-text-3" id="text-7-2">
 <ul class="org-ul">
 <li><p>
@@ -885,8 +864,8 @@ como <code>2+(3+5)</code></li>
 </div>
 </div>
 
-<div id="outline-container-org49400e3" class="outline-3">
-<h3 id="org49400e3"><span class="section-number-3">7.3</span> Gramáticas de las expresiones aritméticas: Gramática 2</h3>
+<div id="outline-container-org3432366" class="outline-3">
+<h3 id="org3432366"><span class="section-number-3">7.3.</span> Gramáticas de las expresiones aritméticas: Gramática 2</h3>
 <div class="outline-text-3" id="text-7-3">
 <ul class="org-ul">
 <li><p>
@@ -910,19 +889,19 @@ como <code>2+(3+5)</code></li>
 </div>
 
 
-<div id="outline-container-orgc7a8bd2" class="outline-3">
-<h3 id="orgc7a8bd2"><span class="section-number-3">7.4</span> Árbol de análisis sintáctico de <code>2*3+5</code> con la gramática 2</h3>
+<div id="outline-container-orgfc81bdc" class="outline-3">
+<h3 id="orgfc81bdc"><span class="section-number-3">7.4.</span> Árbol de análisis sintáctico de <code>2*3+5</code> con la gramática 2</h3>
 <div class="outline-text-3" id="text-7-4">
 
-<div class="figure">
+<div id="org93a028e" class="figure">
 <p><img src="./fig/tema-12-fig-2.png" alt="tema-12-fig-2.png" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org6d0d540" class="outline-3">
-<h3 id="org6d0d540"><span class="section-number-3">7.5</span> Gramáticas de las expresiones aritméticas: Gramática 3</h3>
+<div id="outline-container-orgcb533a4" class="outline-3">
+<h3 id="orgcb533a4"><span class="section-number-3">7.5.</span> Gramáticas de las expresiones aritméticas: Gramática 3</h3>
 <div class="outline-text-3" id="text-7-5">
 <ul class="org-ul">
 <li><p>
@@ -944,19 +923,19 @@ nat    ::= 0 | 1 | 2 | ...
 </div>
 </div>
 
-<div id="outline-container-org5aa0dcf" class="outline-3">
-<h3 id="org5aa0dcf"><span class="section-number-3">7.6</span> Árbol de análisis sintáctico de <code>2+3+5</code> con la gramática 3</h3>
+<div id="outline-container-org93c9bae" class="outline-3">
+<h3 id="org93c9bae"><span class="section-number-3">7.6.</span> Árbol de análisis sintáctico de <code>2+3+5</code> con la gramática 3</h3>
 <div class="outline-text-3" id="text-7-6">
 
-<div class="figure">
+<div id="org763f569" class="figure">
 <p><img src="./fig/tema-12-fig-3.png" alt="tema-12-fig-3.png" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org2aa0c6c" class="outline-3">
-<h3 id="org2aa0c6c"><span class="section-number-3">7.7</span> Gramáticas de las expresiones aritméticas: Gramática 4</h3>
+<div id="outline-container-org37a207b" class="outline-3">
+<h3 id="org37a207b"><span class="section-number-3">7.7.</span> Gramáticas de las expresiones aritméticas: Gramática 4</h3>
 <div class="outline-text-3" id="text-7-7">
 <ul class="org-ul">
 <li><p>
@@ -981,8 +960,8 @@ aritméticas.</li>
 </div>
 </div>
 
-<div id="outline-container-orgb7cc7f9" class="outline-3">
-<h3 id="orgb7cc7f9"><span class="section-number-3">7.8</span> Analizador de expresiones aritméticas</h3>
+<div id="outline-container-orgcaafd83" class="outline-3">
+<h3 id="orgcaafd83"><span class="section-number-3">7.8.</span> Analizador de expresiones aritméticas</h3>
 <div class="outline-text-3" id="text-7-8">
 <ul class="org-ul">
 <li><p>
@@ -1082,8 +1061,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org7fc0004" class="outline-2">
-<h2 id="org7fc0004"><span class="section-number-2">8</span> Material complementario</h2>
+<div id="outline-container-org36cc9c0" class="outline-2">
+<h2 id="org36cc9c0"><span class="section-number-2">8.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 El código del tema se encuentra en este <a href="https://github.com/jaalonso/i1m-cod-temas/blob/master/src/Tema_12/Analizador.hs">enlace</a>.
@@ -1094,13 +1073,13 @@ Este tema también se encuentra en los siguientes formatos:
 </p>
 <ul class="org-ul">
 <li>Como <a href="./tema-12.pdf">transparencias en PDF</a>.</li>
-<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?urlpath=lab/tree/temas/Tema-12.ipynb">libro interactivo en IHaskell sobre Jupyter</a></li>
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?filepath=temas/Tema-12.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org2096087" class="outline-2">
-<h2 id="org2096087"><span class="section-number-2">9</span> Bibliografía</h2>
+<div id="outline-container-orgb764a87" class="outline-2">
+<h2 id="orgb764a87"><span class="section-number-2">9.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-9">
 <ul class="org-ul">
 <li>R. Bird. <b>Introducción a la programación funcional con Haskell</b>. Prentice Hall, 2000.
@@ -1134,12 +1113,15 @@ Thompson, 2004.
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
    <a href="/cursos/i1m/">Inicial</a> |
-   <a href="/cursos/i1m/temas.html">Temas  </a>
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/sistemas.html">Sistemas  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 12 de mayo del 2021</p>
+  <p>Sevilla, 14 de diciembre del 2021</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
