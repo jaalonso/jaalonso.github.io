@@ -4,6 +4,7 @@
 -- ---------------------------------------------------------------------
 
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 -- Hay que elegir una implementación del TAD colas:
 import ColaConListas
@@ -41,7 +42,7 @@ instance Arbitrary (Cola Int) where
     arbitrary = genCola
 
 -- Propiedad. Todo los elementos generados por genCola son colas
--- válidas. 
+-- válidas.
 prop_genCola_correcto :: Cola Int -> Bool
 prop_genCola_correcto c = valida c
 
@@ -54,9 +55,9 @@ prop_genCola_correcto c = valida c
 -- ---------------------------------------------------------------------
 
 -- Propiedad. El primero de la cola obtenida añadiendo x a la cola vacía
--- es x. 
+-- es x.
 prop_primero_inserta_vacia :: Int -> Bool
-prop_primero_inserta_vacia x = 
+prop_primero_inserta_vacia x =
     primero (inserta x vacia) == x
 
 -- Comprobación.
@@ -64,7 +65,7 @@ prop_primero_inserta_vacia x =
 --    +++ OK, passed 100 tests.
 
 -- Propiedad. Si una cola no está vacía, su primer elemento no varía al
--- añadirle un elemento. 
+-- añadirle un elemento.
 prop_primero_inserta_no_vacia :: Cola Int -> Int -> Int -> Bool
 prop_primero_inserta_no_vacia c x y =
     primero (inserta x c') == primero c'
@@ -75,9 +76,9 @@ prop_primero_inserta_no_vacia c x y =
 --    +++ OK, passed 100 tests.
 
 -- Propiedad. El resto de la cola obtenida insertando un elemento en la
--- cola vacía es la cola vacía.  
+-- cola vacía es la cola vacía.
 prop_resto_inserta_vacia :: Int -> Bool
-prop_resto_inserta_vacia x = 
+prop_resto_inserta_vacia x =
     resto (inserta x vacia) == vacia
 
 -- Comprobación.
@@ -96,7 +97,7 @@ prop_resto_inserta_en_no_vacia c x y =
 
 -- Propiedad. vacia es una cola vacía.
 prop_vacia_es_vacia :: Bool
-prop_vacia_es_vacia = 
+prop_vacia_es_vacia =
     esVacia vacia
 
 -- Comprobación.
@@ -105,7 +106,7 @@ prop_vacia_es_vacia =
 
 -- Propiedad. La cola obtenida insertando un elemento no es vacía.
 prop_inserta_no_es_vacia :: Int -> Cola Int -> Bool
-prop_inserta_no_es_vacia x c = 
+prop_inserta_no_es_vacia x c =
     not (esVacia (inserta x c))
 
 -- Comprobación
@@ -125,7 +126,7 @@ prop_valida_vacia = valida vacia
 --    +++ OK, passed 100 tests.
 
 -- Propiedad. Al añadirle un elemento a una cola válida se obtiene otra
--- cola válida. 
+-- cola válida.
 prop_valida_inserta :: Cola Int -> Int -> Property
 prop_valida_inserta c x =
     valida c ==> valida (inserta x c)
@@ -134,7 +135,7 @@ prop_valida_inserta c x =
 --    ghci> quickCheck prop_valida_inserta
 --    +++ OK, passed 100 tests.
 
--- Propiedad. El resto de una cola válida y no vacía es una cola válida. 
+-- Propiedad. El resto de una cola válida y no vacía es una cola válida.
 prop_valida_resto :: Cola Int -> Property
 prop_valida_resto c =
     valida c && not (esVacia c) ==> valida (resto c)
@@ -142,3 +143,45 @@ prop_valida_resto c =
 -- Comprobación
 --    *Main> quickCheck prop_valida_resto
 --    +++ OK, passed 100 tests.
+
+-- ---------------------------------------------------------------------
+-- § Verificación de todas las propiedades                            --
+-- ---------------------------------------------------------------------
+
+-- Para verificar todas las propiedades se escribe
+return []
+verifica = $quickCheckAll
+
+-- La verificación es
+λ> verifica
+=== prop_genCola_correcto from ColaPropiedades.hs:46 ===
++++ OK, passed 100 tests.
+
+=== prop_primero_inserta_vacia from ColaPropiedades.hs:59 ===
++++ OK, passed 100 tests.
+
+=== prop_primero_inserta_no_vacia from ColaPropiedades.hs:69 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_inserta_vacia from ColaPropiedades.hs:80 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_inserta_en_no_vacia from ColaPropiedades.hs:89 ===
++++ OK, passed 100 tests.
+
+=== prop_vacia_es_vacia from ColaPropiedades.hs:99 ===
++++ OK, passed 1 tests.
+
+=== prop_inserta_no_es_vacia from ColaPropiedades.hs:108 ===
++++ OK, passed 100 tests.
+
+=== prop_valida_vacia from ColaPropiedades.hs:121 ===
++++ OK, passed 1 tests.
+
+=== prop_valida_inserta from ColaPropiedades.hs:130 ===
++++ OK, passed 100 tests.
+
+=== prop_valida_resto from ColaPropiedades.hs:139 ===
++++ OK, passed 100 tests.
+
+True

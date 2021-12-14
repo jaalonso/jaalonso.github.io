@@ -7,12 +7,6 @@
 -- Importación de librerías                                           --
 -- ---------------------------------------------------------------------
 
-import Control.Exception (evaluate)
-import Control.Monad (forM_)
-import System.Time.Extra (duration)
-import System.Process
-import System.IO
-import System.Mem 
 import Test.QuickCheck
 
 -- ---------------------------------------------------------------------
@@ -20,7 +14,7 @@ import Test.QuickCheck
 -- ---------------------------------------------------------------------
 
 -- Nota: La función f pertenece a la clase de complejidad de g (es decir
--- f está en O(g)) si 
+-- f está en O(g)) si
 --     limsup   |f(x)/g(x)| < inf
 --     x -> inf
 
@@ -33,11 +27,11 @@ import Test.QuickCheck
 -- * T_f  es el número de pasos de la función f.
 
 -- Reglas de evaluación de costes:
--- * T(c) = 0, donde c es una constante
--- * T(v) = 0, donde v es una variable
--- * T(if a then b else c) = T(a) + (if a then T(b) else T(c))
--- * T(p a1 a2 ... an) = T(a1) + T(a2) + ... + T(an), donde p es primitiva
--- * T(f a1 a2 ... an) = T(a1) + T(a2) + ... + T(an) + (T_f a1 a2 ... an)
+-- + T(c) = 0, donde c es una constante
+-- + T(v) = 0, donde v es una variable
+-- + T(if a then b else c) = T(a) + (if a then T(b) else T(c))
+-- + T(p a1 a2 ... an) = T(a1) + T(a2) + ... + T(an), donde p es primitiva
+-- + T(f a1 a2 ... an) = T(a1) + T(a2) + ... + T(an) + (T_f a1 a2 ... an)
 
 -- ---------------------------------------------------------------------
 -- Ejemplo de coste constante O(1)                                    --
@@ -61,14 +55,14 @@ f n = n*(n+1) `div` 2
 {-
    n    | segs.
    -----+------
-   1000 | 0.01 
-   2000 | 0.01 
-   3000 | 0.01 
-   4000 | 0.01 
-   5000 | 0.01 
-   6000 | 0.01 
-   7000 | 0.01 
-   8000 | 0.01 
+   1000 | 0.01
+   2000 | 0.01
+   3000 | 0.01
+   4000 | 0.01
+   5000 | 0.01
+   6000 | 0.01
+   7000 | 0.01
+   8000 | 0.01
 -}
 
 -- ---------------------------------------------------------------------
@@ -91,7 +85,7 @@ f n = n*(n+1) `div` 2
 -- ---------------------------------------------------------------------
 -- Ejercicio 2.5. Una función es de complejidad constante si T(f)
 -- pertence a la clase O(1). Demostrar que la función f es de
--- complejidad constante. 
+-- complejidad constante.
 -- ---------------------------------------------------------------------
 
 {-
@@ -107,13 +101,13 @@ f n = n*(n+1) `div` 2
 -- ---------------------------------------------------------------------
 -- Ejercicio 2.1. Definir por recursión la función
 --    suma :: Integer -> Integer
--- tal que (suma n) es la suma de los números de 1 hasta n. Por ejemplo, 
+-- tal que (suma n) es la suma de los números de 1 hasta n. Por ejemplo,
 --    suma 5  ==  15
 -- ---------------------------------------------------------------------
 
 suma :: Integer -> Integer
 suma 0 = 0
-suma n = n + suma (n-1) 
+suma n = n + suma (n-1)
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 2.2. Calcular el tiempo necesario para calcular las
@@ -123,14 +117,14 @@ suma n = n + suma (n-1)
 {-
    n    | segs
    -----+------
-   1000 | 0.02 
-   2000 | 0.03 
-   3000 | 0.04 
-   4000 | 0.04 
-   5000 | 0.05 
-   6000 | 0.06 
+   1000 | 0.02
+   2000 | 0.03
+   3000 | 0.04
+   4000 | 0.04
+   5000 | 0.05
+   6000 | 0.06
    7000 | 0.07
-   8000 | 0.08 
+   8000 | 0.08
 -}
 
 -- ---------------------------------------------------------------------
@@ -151,12 +145,6 @@ suma n = n + suma (n-1)
  T(n+1) = 1 + T(n)
 -}
 
--- Se puede resolver en Maxima
---    (%i1) load("solve_rec")$
---    (%i2) solve_rec(T[n+1]=1+T[n], T[n], T[1]=1);
---    (%o2)                              T  = n
---                                        n
-
 -- ---------------------------------------------------------------------
 -- Ejercicio 2.5. Demostrar que el coste de la función suma es T(n) = n.
 -- ---------------------------------------------------------------------
@@ -164,7 +152,7 @@ suma n = n + suma (n-1)
 {-
  Demostración: Basta comprobar que T(n) = n cumple las ecuaciones del
  coste de la función suma.
- 
+
  T(1) = 1
  T(n+1) = n+1
         = 1+n
@@ -193,7 +181,7 @@ prop_suma n =
 
 -- La comprobación es
 --    *Main> quickCheck prop_suma
---    OK, passed 100 
+--    OK, passed 100
 
 -- ---------------------------------------------------------------------
 -- Ejemplo de complejidad cuadrática O(n^2)                           --
@@ -201,25 +189,25 @@ prop_suma n =
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 3.1. Definir por recursión la función
---    sumaDeSumas :: Integer -> Integer
--- tal que (sumaDeSumas n) es la suma de las sumas de 0 a n; es decir,
---    sumaDeSumas n = (suma 0) + (suma 1) + ... + (suma n)
+--    sumaSuma :: Integer -> Integer
+-- tal que (sumaSuma n) es la suma de las sumas de 0 a n; es decir,
+--    sumaSuma n = (suma 0) + (suma 1) + ... + (suma n)
 -- Por ejemplo,
---    sumaDeSumas 5  ==  35
+--    sumaSuma 5  ==  35
 -- ---------------------------------------------------------------------
 
-sumaDeSumas :: Integer -> Integer
-sumaDeSumas 0 = 0
-sumaDeSumas n = suma n + sumaDeSumas (n-1)
+sumaSuma :: Integer -> Integer
+sumaSuma 0 = 0
+sumaSuma n = suma n + sumaSuma (n-1)
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 3.2. Calcular el tiempo necesario para calcular las
--- expresiones (sumaDeSumas n) para n en [100,200..600].
+-- expresiones (sumaSuma n) para n en [100,200..600].
 -- ---------------------------------------------------------------------
 
 {-
    n   | segs
-   ----+----- 
+   ----+-----
    100 | 0.06
    200 | 0.17
    300 | 0.35
@@ -229,73 +217,28 @@ sumaDeSumas n = suma n + sumaDeSumas (n-1)
 -}
 
 -- ---------------------------------------------------------------------
--- Gráfica de sumaDeSumas
--- ---------------------------------------------------------------------
-
-graficaSumaDeSumas = do
-    escribeGuionSumaDeSumas
-    escribeDatosSumaDeSumas
-    grafica
-
-escribeGuionSumaDeSumas = do
-    withFile "z.plg" WriteMode $ \f -> do
-      hPutStrLn f "set term png"
-      hPutStrLn f "set output \"z.png\""
-      hPutStrLn f "set title \"Comparativa de eficiencia\""
-      hPutStr   f "plot 'z.dat' using 1:2 with linespoint title 'suma', "
-      hPutStr   f "     'z.dat' using 1:3 with linespoint title 'sumaDeSumas'"
-
-escribeDatosSumaDeSumas = do
-    withFile "z.dat" WriteMode $ \f -> do
-         forM_ [0,50..600] $ \n -> pruebasSumaDeSumas f n
-
-pruebasSumaDeSumas f n = do
-    performGC
-    (t1a,_) <- duration $ evaluate $ suma n
-    (t1b,_) <- duration $ evaluate $ suma n
-    (t1c,_) <- duration $ evaluate $ suma n
-    (t1d,_) <- duration $ evaluate $ suma n
-    (t1e,_) <- duration $ evaluate $ suma n
-    performGC
-    (t2a,_) <- duration $ evaluate $ sumaDeSumas n
-    (t2b,_) <- duration $ evaluate $ sumaDeSumas n
-    (t2c,_) <- duration $ evaluate $ sumaDeSumas n
-    (t2d,_) <- duration $ evaluate $ sumaDeSumas n
-    (t2e,_) <- duration $ evaluate $ sumaDeSumas n
-    let t1 = sum [t1a,t1b,t1c,t1d,t1e] / 5
-    let t2 = sum [t2a,t2b,t2c,t2d,t2e] / 5
-    hPutStrLn f $ show n ++ "\t" ++ 
-                  show t1 ++ "\t" ++ 
-                  show t2
-
-grafica = do
-  system ("gnuplot z.plg")
-  system ("display z.png")
-
-
--- ---------------------------------------------------------------------
 -- Ejercicio 3.3. Calcular con Maxima el polinomio de interpolación para
 -- los valores de 100, 200 y 300 y comprobarlo con los restantes
--- valores. 
+-- valores.
 -- ---------------------------------------------------------------------
 
 -- La interpolación con Maxima es
 --    (%i1) load(interpol)$
---    (%i2) p_sumaDeSumas : [[100,0.06],[200,0.17],[300,0.35]]$
---    (%i3) lagrange(p_sumaDeSumas)$
+--    (%i2) p_sumaSuma : [[100,0.06],[200,0.17],[300,0.35]]$
+--    (%i3) lagrange(p_sumaSuma)$
 --    (%i4) expand(%);
 --    3.4999999999999953*10^-6*x^2+5.0000000000001432*10^-5*x+0.02
 
 -- Por tanto, el polinomio es
-t_sumaDeSumas n = 3.5e-6*n^2+5e-5*n+0.02
+t_sumaSuma n = 3.5e-6*n^2+5e-5*n+0.02
 
 -- La comprobación es
---    *Main> [(n,t_sumaDeSumas n) | n <- [100,200..600]]
+--    λ> [(n,t_sumaSuma n) | n <- [100,200..600]]
 --    [(100,06),(200,0.17),(300,0.35),(400,0.6),(500,0.92),(600,1.31)]
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 3.4. Escribir las ecuaciones de recurrencia del coste de
--- la función sumaDeSumas.
+-- la función sumaSuma.
 -- ---------------------------------------------------------------------
 
 {-
@@ -304,26 +247,14 @@ t_sumaDeSumas n = 3.5e-6*n^2+5e-5*n+0.02
         = n+1+T(n)
 -}
 
--- Se puede resolver en Maxima
---    (%i3) solve_rec(T[n+1]=n+1+T[n], T[n], T[1]=1);
---                                   (n - 1) (n + 2)
---    (%o3)                     T  = --------------- + 1
---                               n          2
---    (%i4) expand(%);
---                                           2
---                                          n    n
---    (%o4)                            T  = -- + -
---                                      n   2    2
---    
-
 -- ---------------------------------------------------------------------
--- Ejercicio 3.5. Demostrar por inducción que para la función sumaDeSumas,
+-- Ejercicio 3.5. Demostrar por inducción que para la función sumaSuma,
 --    T(n) <= n^2.
 -- ---------------------------------------------------------------------
 
-{- 
+{-
  Demostración:
- 
+
  Caso base:
     T(1) = 1 <= 1^2
 
@@ -332,8 +263,8 @@ t_sumaDeSumas n = 3.5e-6*n^2+5e-5*n+0.02
  Hay que demostrar que
      T(n+) <= (n+1)^2.
  En efecto,
-    T(n+1) 
-    =  n+1+T(n)     [por coste de sumaDeSumas.2]
+    T(n+1)
+    =  n+1+T(n)     [por coste de sumaSuma.2]
     <= n+1+n^2      [por hip. de inducción]
     <= n^2+2*n+1    [por álgebra]
     = (n+1)^2       [por álgebra]
@@ -341,7 +272,7 @@ t_sumaDeSumas n = 3.5e-6*n^2+5e-5*n+0.02
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 3.6. Una función es de complejidad cuadrática si T(n)
--- pertenece a O(n^2). Demostrar que la función sumaDeSumas es de
+-- pertenece a O(n^2). Demostrar que la función sumaSuma es de
 -- complejidad cuadrática.
 -- ---------------------------------------------------------------------
 
@@ -356,33 +287,35 @@ t_sumaDeSumas n = 3.5e-6*n^2+5e-5*n+0.02
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.1. Definir la función
---    raiz :: Float -> Int -> Float
--- tal (raiz x n) es el n-ésimo término de la sucesión x_n definida por
---    x_0     = 1
+--    nEsimaAproximacion :: Float -> Float -> Int -> Float
+-- tal (nEsimaAproximacion a x n) es el n-ésimo término de la sucesión
+-- x_n definida por
+--    x_0 = x
 --    x_(n+1) = (a/x_n + x_n)/2
 -- ---------------------------------------------------------------------
 
-raiz :: Float -> Int -> Float
-raiz x 0 = 1 
-raiz x n = (x / (raiz x (n-1)) + (raiz x (n-1))) / 2.0
+nEsimaAproximacion :: Float -> Float -> Int -> Float
+nEsimaAproximacion a x 0     = x
+nEsimaAproximacion a x (n+1) =
+    (a / (nEsimaAproximacion a x n) + (nEsimaAproximacion a x n)) / 2.0
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.2. Calcular el valor de las siguientes expresiones
---    raiz  9 1  5
---    raiz 16 1  5
---    raiz 16 1 10
+--    nEsimaAproximacion  9 1  5
+--    nEsimaAproximacion 16 1  5
+--    nEsimaAproximacion 16 1 10
 -- ---------------------------------------------------------------------
 
 -- El cálculo es
---    *Main> raiz  9 1 5
+--    λ> nEsimaAproximacion  9 1 5
 --    3.0
---    *Main> raiz  16 1 5
+--    λ> nEsimaAproximacion  16 1 5
 --    4.0000005
---    *Main> raiz  16 1 10
+--    λ> nEsimaAproximacion  16 1 10
 --    4.0
 
 -- ---------------------------------------------------------------------
--- Ejercicio 4.3. Definir el operador 
+-- Ejercicio 4.3. Definir el operador
 --    (~=) :: Float -> Float -> Bool
 -- tal que (x ~= y) si |x-y| < 0.001. Por ejemplo,
 --    3.05 ~= 3.07        ==  False
@@ -396,21 +329,21 @@ x ~= y = abs(x-y) < 0.001
 -- ---------------------------------------------------------------------
 -- Ejecicio 6.4. Comprobar con QuickCheck que para todo número positivo
 -- a, existe un número natural n tal que
---    (raiz a 1 n)^2 ~= a
+--    (nEsimaAproximacion a 1 n)^2 ~= a
 -- ---------------------------------------------------------------------
 
 -- La propiedad es
-prop_raiz a =
-    a >= 0 ==> or [(raiz a n)^2 ~= a | n <- [1..]]
+prop_nEsimaAproximacion a =
+    a >= 0 ==> or [(nEsimaAproximacion a 1 n)^2 ~= a | n <- [1..]]
 
 -- La comprobación es
---    *Main> quickCheck prop_raiz
+--    λ> quickCheck prop_nEsimaAproximacion
 --    OK, passed 100 tests.
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.5. Demostrar que para todo a >= 0, el límite de la
--- sucesión 
---    x_n = (raiz a 1 n)
+-- sucesión
+--    x_n = (nEsimaAproximacion a 1 n)
 -- es la raíz cuadrada de a.
 -- ---------------------------------------------------------------------
 
@@ -428,8 +361,8 @@ prop_raiz a =
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.6. Calcular el tiempo y espacio necesario para calcular
--- las siguientes expresiones (raiz 100 1 n) para n en
--- [14..19] 
+-- las siguientes expresiones (nEsimaAproximacion 100 1 n) para n en
+-- [14..19]
 -- ---------------------------------------------------------------------
 
 {-
@@ -454,7 +387,7 @@ prop_raiz a =
 
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.8. Escribir las ecuaciones de recurrencia del coste de
--- la función raiz.
+-- la función nEsimaAproximacion.
 -- ---------------------------------------------------------------------
 
 {-
@@ -462,14 +395,8 @@ prop_raiz a =
  T(n+1) = 2*T(n)
 -}
 
--- Se puede resolver en Maxima
---    (%i5) solve_rec(T[n+1]=2*T[n], T[n], T[0]=1);
---                                             n
---    (%o6)                              T  = 2
---                                        n
-
 -- ---------------------------------------------------------------------
--- Ejercicio 4.9. Demostrar por inducción que para la función sumaDeSumas,
+-- Ejercicio 4.9. Demostrar por inducción que para la función sumaSuma,
 --    T(n) = 2^n.
 -- ---------------------------------------------------------------------
 
@@ -483,8 +410,8 @@ prop_raiz a =
  Hay que demostrar que
      T(n+1) = 2^(n+1).
  En efecto,
-     T(n+1) 
-     = 2*T(n)   [por coste de raiz]
+     T(n+1)
+     = 2*T(n)   [por coste de nEsimaAproximacion]
      = 2*2^n    [por hip. de inducción]
      = 2^(n+1)  [por álgebra]
 -}
@@ -492,7 +419,7 @@ prop_raiz a =
 -- ---------------------------------------------------------------------
 -- Ejercicio 4.10. Una función es de complejidad exponencial (de base 2)
 -- si T(n) pertenece a O(2^n). Demostrar que la función
--- raiz es de complejidad exponencial (de base 2).
+-- nEsimaAproximacion es de complejidad exponencial (de base 2).
 -- ---------------------------------------------------------------------
 
 {-
@@ -518,7 +445,7 @@ potencia x n | even n    = potencia (x*x) (div n 2)
              | otherwise = x * potencia (x*x) (div n 2)
 
 -- ---------------------------------------------------------------------
--- Ejercicio 5.2. Calcular el tiempo necesario para calcular 
+-- Ejercicio 5.2. Calcular el tiempo necesario para calcular
 -- (potencia 2 n) para n [1024,2048,4096,8192,16384,32768].
 -- ---------------------------------------------------------------------
 
@@ -544,18 +471,18 @@ potencia x n | even n    = potencia (x*x) (div n 2)
 -}
 
 -- ---------------------------------------------------------------------
--- Ejercicio 5.4. Demostrar por inducción que para la función sumaDeSumas,
+-- Ejercicio 5.4. Demostrar por inducción que para la función sumaSuma,
 --    T(n) = log n.
 -- Nota. El logaritmo es en base 2.
 -- ---------------------------------------------------------------------
 
-{- 
+{-
  Demostración:
  Caso base:
     T(1) = 1 <= log 1
 
  Caso inductivo:
-    T(n) 
+    T(n)
     =  1 + T(n/2)
     <= 1 + log(n/2)
     =  1 + log n - 1
@@ -571,7 +498,7 @@ potencia x n | even n    = potencia (x*x) (div n 2)
 --    reverse [] = []
 --    reverse (x:xs) = reverse xs ++ [x]
 -- Escribir las ecuaciones de recurrencia del coste de la función
--- reverse. 
+-- reverse.
 -- ---------------------------------------------------------------------
 
 {-
@@ -583,20 +510,14 @@ potencia x n | even n    = potencia (x*x) (div n 2)
 -- ---------------------------------------------------------------------
 -- Ejercicio 6.2. Resolver con Maxima las ecuaciones de recurrencia del
 -- coste de la función reverse y calcular la complejidad de la función
--- reverse. 
+-- reverse.
 -- ---------------------------------------------------------------------
 
--- La solución con Maxima es 
---    (%i7) solve_rec(T[n+1]=n+1+T[n],T[n],T[0]=1);
---                                       n (n + 1)
---    (%o7)                        T  = --------- + 1
---                                  n       2
---    (%i8) expand(%);
---                                         2
---                                        n    n
---    (%o8)                          T  = -- + - + 1
---                                    n   2    2
+-- La solución con Maxima es
+--    (%i1) load("solve_rec")$
+--    (%i2) solve_rec(t[n+1]=n+1+t[n],t[n]);
+--    (%o2) t[n]=(n*(n+1))/2+%k[1]
+--    (%i3) expand(%);
+--    (%o3) t[n]=n^2/2+n/2+%k[1]
 
 -- Por tanto, reverse es de O(n^2).
-
--- Rahbi p. 71

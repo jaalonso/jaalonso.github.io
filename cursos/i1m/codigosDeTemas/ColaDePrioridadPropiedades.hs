@@ -3,10 +3,12 @@
 -- José A. Alonso Jiménez <jalonso@us.es>
 -- ---------------------------------------------------------------------
 
+{-# LANGUAGE TemplateHaskell #-}
+
 module ColaDePrioridadPropiedades where
 
 -- Nota: Hay que elegir una de las 2 implementaciones del TAD cola de
--- prioridad. 
+-- prioridad.
 import ColaDePrioridadConListas
 -- import ColaDePrioridadConMonticulos
 
@@ -34,12 +36,12 @@ genCPrioridad = do
   xs <- listOf arbitrary
   return (foldr inserta vacia xs)
 
--- La colas de prioridad son una concreción de la clase arbitraria. 
+-- La colas de prioridad son una concreción de la clase arbitraria.
 instance (Arbitrary a, Num a, Ord a) => Arbitrary (CPrioridad a) where
   arbitrary = genCPrioridad
 
 -- Prop.: Las colas de prioridad producidas por genCPrioridad son
--- válidas. 
+-- válidas.
 prop_genCPrioridad_correcto ::  CPrioridad Int -> Bool
 prop_genCPrioridad_correcto c = valida c
 
@@ -71,9 +73,9 @@ prop_primero_inserta_vacia x _ =
 -- Comprobación.
 --    ghci> quickCheck prop_primero_inserta_vacia
 --    +++ OK, passed 100 tests.
- 
+
 -- Propiedad. El primer elemento de una cola de prioridad c no cambia
--- cuando se le añade un elemento mayor o igual que algún elemento de c. 
+-- cuando se le añade un elemento mayor o igual que algún elemento de c.
 prop_primero_inserta :: Int -> Int -> CPrioridad Int -> Property
 prop_primero_inserta x y c =
   x <= y ==> primero (inserta y c') == primero c'
@@ -84,7 +86,7 @@ prop_primero_inserta x y c =
 --    +++ OK, passed 100 tests.
 
 -- Propiedad. El resto de añadir un elemento a la cola de prioridad
--- vacía es la cola vacía. 
+-- vacía es la cola vacía.
 prop_resto_inserta_vacia :: Int -> Bool
 prop_resto_inserta_vacia x =
   resto (inserta x vacia) == vacia
@@ -122,3 +124,39 @@ prop_inserta_no_es_vacia x c =
 -- Comprobación.
 --    ghci> quickCheck prop_inserta_no_es_vacia
 --    +++ OK, passed 100 tests.
+
+-- ---------------------------------------------------------------------
+-- § Verificación de todas las propiedades                            --
+-- ---------------------------------------------------------------------
+
+-- Para verificar todas las propiedades se escribe
+return []
+verifica = $quickCheckAll
+
+-- La verificación es
+--    λ> verifica
+--    === prop_genCPrioridad_correcto from ColaDePrioridadPropiedades.hs:45 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_inserta_conmuta from ColaDePrioridadPropiedades.hs:59 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_primero_inserta_vacia from ColaDePrioridadPropiedades.hs:69 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_primero_inserta from ColaDePrioridadPropiedades.hs:79 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_resto_inserta_vacia from ColaDePrioridadPropiedades.hs:90 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_resto_inserta from ColaDePrioridadPropiedades.hs:101 ===
+--    +++ OK, passed 100 tests.
+--
+--    === prop_vacia_es_vacia from ColaDePrioridadPropiedades.hs:111 ===
+--    +++ OK, passed 1 tests.
+--
+--    === prop_inserta_no_es_vacia from ColaDePrioridadPropiedades.hs:120 ===
+--    +++ OK, passed 100 tests.
+--
+--    True
