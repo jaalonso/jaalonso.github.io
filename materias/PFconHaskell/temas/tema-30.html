@@ -1,0 +1,869 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 03 de marzo del 2022 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 30: Resolución de problemas mediante programación dinámica</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 30: Resolución de problemas mediante programación dinámica</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org4b19cde">1. Introducción</a></li>
+<li><a href="#orge6b5788">2. Los números de Fibonacci</a>
+<ul>
+<li><a href="#org8c1b22a">2.1. Enunciado</a></li>
+<li><a href="#orgded59a3">2.2. Definición por recursión</a></li>
+<li><a href="#org68538f2">2.3. Definición con programación dinámica</a></li>
+<li><a href="#orgc2d507a">2.4. Comparación de eficiencia</a></li>
+</ul>
+</li>
+<li><a href="#org387ee61">3. Coeficientes binomiales</a>
+<ul>
+<li><a href="#org5817898">3.1. Enunciado</a></li>
+<li><a href="#orgb29f4f6">3.2. Definición por recursión</a></li>
+<li><a href="#orgd63027b">3.3. Definición con programación dinámica</a></li>
+<li><a href="#orge1fba3b">3.4. Comparación de eficiencia</a></li>
+</ul>
+</li>
+<li><a href="#orgbc3108e">4. Longitud de la subsecuencia común máxima (SCM)</a>
+<ul>
+<li><a href="#org261cf8c">4.1. Enunciado</a></li>
+<li><a href="#orgf5242ed">4.2. Definición por recursión</a></li>
+<li><a href="#org402ff21">4.3. Definición con programación dinámica</a></li>
+<li><a href="#orga34318e">4.4. Comparación de eficiencia</a></li>
+</ul>
+</li>
+<li><a href="#orgf0a476c">5. Subsecuencia común máxima (SCM)</a>
+<ul>
+<li><a href="#org435ae54">5.1. Enunciado</a></li>
+<li><a href="#org2ec9fdc">5.2. Definición por recursión</a></li>
+<li><a href="#orgb7599fe">5.3. Definición con programación dinámica</a></li>
+<li><a href="#org5e924cf">5.4. Comparación de eficiencia</a></li>
+</ul>
+</li>
+<li><a href="#org11956b7">6. Distancia de Levenshtein</a>
+<ul>
+<li><a href="#org5746c48">6.1. Enunciado</a></li>
+<li><a href="#org08e986a">6.2. Definición por recursión</a></li>
+<li><a href="#org38e66b1">6.3. Definición con programación dinámica</a></li>
+<li><a href="#orga2eb07e">6.4. Comparación de eficiencia</a></li>
+</ul>
+</li>
+<li><a href="#orgbd03ed5">7. Material complementario</a></li>
+<li><a href="#org37a5419">8. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4b19cde" class="outline-2">
+<h2 id="org4b19cde"><span class="section-number-2">1.</span> Introducción</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+El objetivo de este tema es introducir la programación dinámica mediante
+una colección de problemas.
+</p>
+
+<p>
+Se usarán las siguientes librerías auxiliares:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Data.List</span>
+<span style="color: #a020f0;">import</span> <span style="color: #228b22;">Data.Array</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge6b5788" class="outline-2">
+<h2 id="orge6b5788"><span class="section-number-2">2.</span> Los números de Fibonacci</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org8c1b22a" class="outline-3">
+<h3 id="org8c1b22a"><span class="section-number-3">2.1.</span> Enunciado</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Los primeros términos de la sucesión de Fibonacci son
+</p>
+<pre class="example">
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, ...
+</pre>
+
+
+<p>
+Definir la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">fib</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+</pre>
+</div>
+<p>
+tal que <code>(fib n)</code> es el <code>n</code>-ésimo término de la sucesión de Fibonacci. Por
+ejemplo,
+</p>
+<pre class="example">
+fib 6 == 8
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgded59a3" class="outline-3">
+<h3 id="orgded59a3"><span class="section-number-3">2.2.</span> Definición por recursión</h3>
+<div class="outline-text-3" id="text-2-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">fib1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">fib1</span> 0 <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">fib1</span> 1 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">fib1</span> n <span style="color: #a0522d;">=</span> fib1 <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">+</span> fib1 <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>2<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org68538f2" class="outline-3">
+<h3 id="org68538f2"><span class="section-number-3">2.3.</span> Definición con programación dinámica</h3>
+<div class="outline-text-3" id="text-2-3">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">fib2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">fib2</span> n <span style="color: #a0522d;">=</span> vectorFib2 n <span style="color: #a0522d;">!</span> n
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(vectorFib2 n) es el vector con &#237;ndices de 0 a n tal que el valor</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">de la posici&#243;n i es el i-&#233;simo n&#250;mero de Finonacci. Por ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; vectorFib2 7</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">array (0,7) [(0,0),(1,1),(2,1),(3,2),(4,3),(5,5),(6,8),(7,13)]</span>
+<span style="color: #0000ff;">vectorFib2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Array</span> <span style="color: #228b22;">Integer</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">vectorFib2</span> n <span style="color: #a0522d;">=</span> v <span style="color: #a020f0;">where</span>
+  v <span style="color: #a0522d;">=</span> array <span style="color: #707183;">(</span>0,n<span style="color: #707183;">)</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>i,f i<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>n<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+  f 0 <span style="color: #a0522d;">=</span> 0
+  f 1 <span style="color: #a0522d;">=</span> 1
+  f n <span style="color: #a0522d;">=</span> v<span style="color: #a0522d;">!</span><span style="color: #707183;">(</span>m<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">+</span> v<span style="color: #a0522d;">!</span><span style="color: #707183;">(</span>m<span style="color: #a0522d;">-</span>2<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc2d507a" class="outline-3">
+<h3 id="orgc2d507a"><span class="section-number-3">2.4.</span> Comparación de eficiencia</h3>
+<div class="outline-text-3" id="text-2-4">
+<pre class="example">
+λ&gt; fib1 34
+5702887
+(13.00 secs, 3,780,606,208 bytes)
+λ&gt; fib2 34
+5702887
+(0.00 secs, 0 bytes)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org387ee61" class="outline-2">
+<h2 id="org387ee61"><span class="section-number-2">3.</span> Coeficientes binomiales</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org5817898" class="outline-3">
+<h3 id="org5817898"><span class="section-number-3">3.1.</span> Enunciado</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+El coeficiente binomial n sobre k es el número de subconjuntos de k
+elementos escogidos de un conjunto con n elementos.
+</p>
+
+<p>
+Definir la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">binomial</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb29f4f6" class="outline-3">
+<h3 id="orgb29f4f6"><span class="section-number-3">3.2.</span> Definición por recursión</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">binomial1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">binomial1</span> <span style="color: #a020f0;">_</span> 0 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">binomial1</span> n k
+  <span style="color: #a0522d;">|</span> n <span style="color: #a0522d;">==</span> k    <span style="color: #a0522d;">=</span> 1
+  <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> binomial1 <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>k<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">+</span> binomial1 <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> k
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd63027b" class="outline-3">
+<h3 id="orgd63027b"><span class="section-number-3">3.3.</span> Definición con programación dinámica</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">binomial2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">binomial2</span> n k <span style="color: #a0522d;">=</span> matrizBinomial2 n k <span style="color: #a0522d;">!</span> <span style="color: #707183;">(</span>n,k<span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(matrizBinomial2 n k) es la matriz de orden (n+1)x(k+1) tal que el</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">valor en la posici&#243;n (i,j) (con j &lt;= i) es el coeficiente binomial i</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">sobre j. Por ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; [[(matrizBinomial2 3 3)!(i,j) | j &lt;- [0..i]] | i &lt;- [0..3]]</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">[[1],[1,1],[1,2,1],[1,3,3,1]]</span>
+<span style="color: #0000ff;">matrizBinomial2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Array</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Integer</span>,<span style="color: #228b22;">Integer</span><span style="color: #707183;">)</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">matrizBinomial2</span> n k <span style="color: #a0522d;">=</span> q <span style="color: #a020f0;">where</span>
+  q <span style="color: #a0522d;">=</span> array <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>n,k<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>i,j<span style="color: #909183;">)</span>,f i j<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>n<span style="color: #7388d6;">]</span>, j <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>k<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+  f <span style="color: #a020f0;">_</span> 0 <span style="color: #a0522d;">=</span> 1
+  f i j
+    <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">==</span> j    <span style="color: #a0522d;">=</span> 1
+    <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> q<span style="color: #a0522d;">!</span><span style="color: #707183;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">+</span> q<span style="color: #a0522d;">!</span><span style="color: #707183;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge1fba3b" class="outline-3">
+<h3 id="orge1fba3b"><span class="section-number-3">3.4.</span> Comparación de eficiencia</h3>
+<div class="outline-text-3" id="text-3-4">
+<pre class="example">
+λ&gt; binomial1 24 12
+2704156
+(4.16 secs, 1,479,653,016 bytes)
+λ&gt; binomial2 24 12
+2704156
+(0.00 secs, 0 bytes)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbc3108e" class="outline-2">
+<h2 id="orgbc3108e"><span class="section-number-2">4.</span> Longitud de la subsecuencia común máxima (SCM)</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org261cf8c" class="outline-3">
+<h3 id="org261cf8c"><span class="section-number-3">4.1.</span> Enunciado</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Si a una secuencia X de elementos (pongamos por ejemplo, caracteres) le
+quitamos algunos de ellos y dejamos los que quedan en el orden en el que
+aparecían originalmente tenemos lo que se llama una subsecuencia de X. Por
+ejemplo, "aaoa" es una subsecuencia de la secuencia "amapola".
+</p>
+
+<p>
+El término también se aplica cuando quitamos todos los elementos (es
+decir, la secuencia vacía es siempre subsecuencia de cualquier
+secuencia) o cuando no quitamos ninguno (lo que significa que
+cualquier secuencia es siempre subsecuencia de sí misma).
+</p>
+
+<p>
+Dadas dos secuencias X e Y, decimos que Z es una subsecuencia común
+de X e Y si Z es subsecuencia de X y de Y. Por ejemplo, si X =
+"amapola" e Y = "matamoscas", la secuencia "aaoa" es una de las
+subsecuencias comunes de X e Y más larga, con longitud 4, ya que no
+hay ninguna subsecuencia común a X e Y de longitud mayor que 4.
+También son subsecuencias comunes de longitud 4 "maoa" o "amoa".
+</p>
+
+<p>
+Se desea encontrar la longitud de las subsecuencias comunes más
+largas de dos secuencias de caracteres dadas.
+</p>
+
+<p>
+Definir la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">longitudSCM</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+</pre>
+</div>
+<p>
+tal que <code>(longitudSCM xs ys)</code> es la longitud de la subsecuencia
+máxima de <code>xs</code> e <code>ys</code>. Por ejemplo,
+</p>
+<pre class="example">
+longitudSCM "amapola" "matamoscas" == 4
+longitudSCM "atamos" "matamoscas"  == 6
+longitudSCM "aaa" "bbbb"           == 0
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgf5242ed" class="outline-3">
+<h3 id="orgf5242ed"><span class="section-number-3">4.2.</span> Definición por recursión</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">longitudSCM1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">longitudSCM1</span> <span style="color: #707183;">[]</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">longitudSCM1</span> <span style="color: #a020f0;">_</span> <span style="color: #707183;">[]</span> <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">longitudSCM1</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">|</span> x <span style="color: #a0522d;">==</span> y    <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> longitudSCM1 xs ys
+  <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> max <span style="color: #707183;">(</span>longitudSCM1 <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #7388d6;">)</span> ys<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>longitudSCM1 xs <span style="color: #7388d6;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org402ff21" class="outline-3">
+<h3 id="org402ff21"><span class="section-number-3">4.3.</span> Definición con programación dinámica</h3>
+<div class="outline-text-3" id="text-4-3">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">longitudSCM2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">longitudSCM2</span> xs ys <span style="color: #a0522d;">=</span> matrizLongitudSCM2 xs ys <span style="color: #a0522d;">!</span> <span style="color: #707183;">(</span>n,m<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span> n <span style="color: #a0522d;">=</span> length xs
+        m <span style="color: #a0522d;">=</span> length ys
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(matrizLongitudSCM2 xs ys) es la matriz de orden (n+1)x(m+1) (donde n</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">y m son los n&#250;meros de elementos de xs e ys, respectivamente) tal que</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">el valor en la posici&#243;n (i,j) es la longitud de la SCM de los i</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">primeros elementos de xs y los j primeros elementos de ys. Por ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; elems (matrizLongitudSCM2 "amapola" "matamoscas")</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">[0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,2,2,2,2,2,2,</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">0,1,2,2,2,2,2,2,2,3,3,0,1,2,2,2,2,2,2,2,3,3,0,1,2,2,2,2,3,3,3,3,3,</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">0,1,2,2,2,2,3,3,3,3,3,0,1,2,2,3,3,3,3,3,4,4]</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Gr&#225;ficamente,</span>
+<span style="color: #b22222;">--       </span><span style="color: #b22222;">m a t a m o s c a s</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">[0,0,0,0,0,0,0,0,0,0,0,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   0,0,1,1,1,1,1,1,1,1,1,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">m   0,1,1,1,1,2,2,2,2,2,2,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   0,1,2,2,2,2,2,2,2,3,3,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">p   0,1,2,2,2,2,2,2,2,3,3,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">o   0,1,2,2,2,2,3,3,3,3,3,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">l   0,1,2,2,2,2,3,3,3,3,3,</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   0,1,2,2,3,3,3,3,3,4,4]</span>
+<span style="color: #0000ff;">matrizLongitudSCM2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Array</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Int</span>,<span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">matrizLongitudSCM2</span> xs ys <span style="color: #a0522d;">=</span> q
+  <span style="color: #a020f0;">where</span>
+    n <span style="color: #a0522d;">=</span> length xs
+    m <span style="color: #a0522d;">=</span> length ys
+    v <span style="color: #a0522d;">=</span> listArray <span style="color: #707183;">(</span>1,n<span style="color: #707183;">)</span> xs
+    w <span style="color: #a0522d;">=</span> listArray <span style="color: #707183;">(</span>1,m<span style="color: #707183;">)</span> ys
+    q <span style="color: #a0522d;">=</span> array <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>n,m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>i,j<span style="color: #909183;">)</span>, f i j<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>n<span style="color: #7388d6;">]</span>, j <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>m<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+      <span style="color: #a020f0;">where</span> f 0 <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> 0
+            f <span style="color: #a020f0;">_</span> 0 <span style="color: #a0522d;">=</span> 0
+            f i j <span style="color: #a0522d;">|</span> v <span style="color: #a0522d;">!</span> i <span style="color: #a0522d;">==</span> w <span style="color: #a0522d;">!</span> j <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> q <span style="color: #a0522d;">!</span> <span style="color: #707183;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+                  <span style="color: #a0522d;">|</span> otherwise      <span style="color: #a0522d;">=</span> max <span style="color: #707183;">(</span>q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">(</span>q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i,j<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga34318e" class="outline-3">
+<h3 id="orga34318e"><span class="section-number-3">4.4.</span> Comparación de eficiencia</h3>
+<div class="outline-text-3" id="text-4-4">
+<pre class="example">
+λ&gt; longitudSCM1 (take 18 (cycle [1,3])) (take 18 (cycle [2,3]))
+9
+(21.59 secs, 8,868,816,536 bytes)
+λ&gt; longitudSCM2 (take 18 (cycle [1,3])) (take 18 (cycle [2,3]))
+9
+(0.01 secs, 0 bytes)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf0a476c" class="outline-2">
+<h2 id="orgf0a476c"><span class="section-number-2">5.</span> Subsecuencia común máxima (SCM)</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org435ae54" class="outline-3">
+<h3 id="org435ae54"><span class="section-number-3">5.1.</span> Enunciado</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+Definir la función
+</p>
+<pre class="example">
+scm :: Eq a =&gt; [a] -&gt; [a] -&gt; [a]
+</pre>
+<p>
+tal que <code>(scm xs ys)</code> es una de las subsecuencias comunes de longitud
+máxima de <code>xs</code> e <code>ys</code>. Por ejemplo,
+</p>
+<pre class="example">
+scm "amapola" "matamoscas" == "amoa"
+scm "atamos" "matamoscas"  == "atamos"
+scm "aaa" "bbbb"           == ""
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org2ec9fdc" class="outline-3">
+<h3 id="org2ec9fdc"><span class="section-number-3">5.2.</span> Definición por recursión</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">scm1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">scm1</span> <span style="color: #707183;">[]</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">scm1</span> <span style="color: #a020f0;">_</span> <span style="color: #707183;">[]</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">scm1</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">|</span> x <span style="color: #a0522d;">==</span> y    <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> scm1 xs ys
+  <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> mayor <span style="color: #707183;">(</span>scm1 <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #7388d6;">)</span> ys<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>scm1 xs <span style="color: #7388d6;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(mayor xs ys) es la cadena m&#225;s larga de xs e ys.</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">mayor "hola" "buenas"  ==  "buenas"</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">mayor "hola" "pera"    ==  "hola"</span>
+<span style="color: #0000ff;">mayor</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">mayor</span> xs ys
+  <span style="color: #a0522d;">|</span> length xs <span style="color: #a0522d;">&gt;=</span> length ys <span style="color: #a0522d;">=</span> xs
+  <span style="color: #a0522d;">|</span> otherwise              <span style="color: #a0522d;">=</span> ys
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb7599fe" class="outline-3">
+<h3 id="orgb7599fe"><span class="section-number-3">5.3.</span> Definición con programación dinámica</h3>
+<div class="outline-text-3" id="text-5-3">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">scm2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">scm2</span> xs ys <span style="color: #a0522d;">=</span> reverse <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>matrizSCM2 xs ys<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>n,m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span> n <span style="color: #a0522d;">=</span> length xs
+        m <span style="color: #a0522d;">=</span> length ys
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(matrizSCM2 xs ys) es la matriz de orden (n+1)x(m+1) (donde n</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">y m son los n&#250;meros de elementos de xs e ys, respectivamente) tal que</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">el valor en la posici&#243;n (i,j) es una SCM de los i primeros</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">elementos de xs y los j primeros elementos de ys. Por ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; elems (matrizSCM2 "amapola" "matamoscas")</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">["","","","","","","","","","","","","","a","a","a","a","a","a",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"a","a","a","","m","a","a","a","ma","ma","ma","ma","ma","ma","",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"m","am","am","aa","ma","ma","ma","ma","ama","ama","","m","am",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"am","aa","ma","ma","ma","ma","ama","ama","","m","am","am","aa",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"ma","oma","oma","oma","ama","ama","","m","am","am","aa","ma",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"oma","oma","oma","ama","ama","","m","am","am","aam","aam","oma",</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">"oma","oma","aoma","aoma"]</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Gr&#225;ficamente,</span>
+<span style="color: #b22222;">--        </span><span style="color: #b22222;">m   a    t    a     m     o     s     c     a      s</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">["","" ,""  ,""  ,""   ,""   ,""   ,""   ,""   ,""    ,"",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   "","" ,"a" ,"a" ,"a"  ,"a"  ,"a"  ,"a"  ,"a"  ,"a"   ,"a",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">m   "","m","a" ,"a" ,"a"  ,"ma" ,"ma" ,"ma" ,"ma" ,"ma"  ,"ma",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   "","m","am","am","aa" ,"ma" ,"ma" ,"ma" ,"ma" ,"ama" ,"ama",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">p   "","m","am","am","aa" ,"ma" ,"ma" ,"ma" ,"ma" ,"ama" ,"ama",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">o   "","m","am","am","aa" ,"ma" ,"oma","oma","oma","ama" ,"ama",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">l   "","m","am","am","aa" ,"ma" ,"oma","oma","oma","ama" ,"ama",</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">a   "","m","am","am","aam","aam","oma","oma","oma","aoma","aoma"]</span>
+<span style="color: #0000ff;">matrizSCM2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Array</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Int</span>,<span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">matrizSCM2</span> xs ys <span style="color: #a0522d;">=</span> q <span style="color: #a020f0;">where</span>
+  q <span style="color: #a0522d;">=</span> array <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>n,m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>i,j<span style="color: #909183;">)</span>, f i j<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>n<span style="color: #7388d6;">]</span>, j <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>m<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+  n <span style="color: #a0522d;">=</span> length xs
+  m <span style="color: #a0522d;">=</span> length ys
+  v <span style="color: #a0522d;">=</span> listArray <span style="color: #707183;">(</span>1,n<span style="color: #707183;">)</span> xs
+  w <span style="color: #a0522d;">=</span> listArray <span style="color: #707183;">(</span>1,m<span style="color: #707183;">)</span> ys
+  f 0 <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+  f <span style="color: #a020f0;">_</span> 0 <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+  f i j <span style="color: #a0522d;">|</span> v <span style="color: #a0522d;">!</span> i <span style="color: #a0522d;">==</span> w <span style="color: #a0522d;">!</span> j <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>v<span style="color: #a0522d;">!</span>i<span style="color: #707183;">)</span> <span style="color: #228b22;">:</span> <span style="color: #707183;">(</span>q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        <span style="color: #a0522d;">|</span> otherwise      <span style="color: #a0522d;">=</span> mayor <span style="color: #707183;">(</span>q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">(</span>q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i,j<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5e924cf" class="outline-3">
+<h3 id="org5e924cf"><span class="section-number-3">5.4.</span> Comparación de eficiencia</h3>
+<div class="outline-text-3" id="text-5-4">
+<pre class="example">
+λ&gt; length (scm1 (take 16 (cycle [1,3])) (take 16 (cycle [2,3])))
+8
+(11.30 secs, 1,716,231,120 bytes)
+λ&gt; length (scm2 (take 16 (cycle [1,3])) (take 16 (cycle [2,3])))
+8
+(0.02 secs, 0 bytes)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org11956b7" class="outline-2">
+<h2 id="org11956b7"><span class="section-number-2">6.</span> Distancia de Levenshtein</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-org5746c48" class="outline-3">
+<h3 id="org5746c48"><span class="section-number-3">6.1.</span> Enunciado</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+La distancia de Levenshtein (o distancia de edición) es el número mínimo
+de operaciones requeridas para transformar una cadena de caracteres en
+otra. Las operaciones de edición que se pueden hacer son:
+</p>
+<ul class="org-ul">
+<li>insertar un carácter (por ejemplo, de "abc" a "abca")</li>
+<li>eliminar un carácter (por ejemplo, de "abc" a "ac")</li>
+<li>sustituir un carácter (por ejemplo, de "abc" a "adc")</li>
+</ul>
+
+<p>
+Por ejemplo, la distancia de Levenshtein entre "casa" y "calle" es de
+3 porque se necesitan al menos tres ediciones elementales para
+cambiar uno en el otro:
+</p>
+<pre class="example">
+"casa"  --&gt; "cala"  (sustitución de 's' por 'l')
+"cala"  --&gt; "calla" (inserción de 'l' entre 'l' y 'a')
+"calla" --&gt; "calle" (sustitución de 'a' por 'e')
+</pre>
+
+
+<p>
+Definir la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">levenshtein</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+</pre>
+</div>
+<p>
+tal que <code>(levenshtein xs ys)</code> es la distancia de Levenshtein entre <code>xs</code> e
+<code>ys</code>. Por ejemplo,
+</p>
+<pre class="example">
+levenshtein "casa"  "calle"    ==  3
+levenshtein "calle" "casa"     ==  3
+levenshtein "casa"  "casa"     ==  0
+levenshtein "ana" "maria"      ==  3
+levenshtein "agua" "manantial" ==  7
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org08e986a" class="outline-3">
+<h3 id="org08e986a"><span class="section-number-3">6.2.</span> Definición por recursión</h3>
+<div class="outline-text-3" id="text-6-2">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">levenshtein1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">levenshtein1</span> <span style="color: #8b2252;">""</span> ys <span style="color: #a0522d;">=</span> length ys
+<span style="color: #0000ff;">levenshtein1</span> xs <span style="color: #8b2252;">""</span> <span style="color: #a0522d;">=</span> length xs
+<span style="color: #0000ff;">levenshtein1</span> c1<span style="color: #a0522d;">@</span><span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> c2<span style="color: #a0522d;">@</span><span style="color: #707183;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">|</span> x <span style="color: #a0522d;">==</span> y    <span style="color: #a0522d;">=</span> levenshtein1 xs ys
+  <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> minimum <span style="color: #707183;">[</span> levenshtein1 xs c2
+                            , levenshtein1 c1 ys
+                            , levenshtein1 xs ys<span style="color: #707183;">]</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org38e66b1" class="outline-3">
+<h3 id="org38e66b1"><span class="section-number-3">6.3.</span> Definición con programación dinámica</h3>
+<div class="outline-text-3" id="text-6-3">
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">levenshtein2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">levenshtein2</span> xs ys <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>matrizLevenshtein xs ys<span style="color: #707183;">)</span> <span style="color: #a0522d;">!</span> <span style="color: #707183;">(</span>m,n<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span>  m <span style="color: #a0522d;">=</span> length xs
+         n <span style="color: #a0522d;">=</span> length ys
+
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">(matrizLevenshtein xs ys) es la matriz cuyo n&#250;mero de filas es la</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">longitud de xs, cuyo n&#250;mero de columnas es la longitud de ys y en</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">valor en la posici&#243;n (i,j) es la distancia de Levenshtein entre los</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">primeros i caracteres de xs y los j primeros caracteres de ys. Por</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">ejemplo,</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">&#955;&gt; elems (matrizLevenshtein "casa" "calle")</span>
+<span style="color: #b22222;">--    </span><span style="color: #b22222;">[0,1,2,3,4,5,1,0,1,2,3,4,2,1,0,1,2,3,3,2,1,1,2,3,4,3,2,2,2,3]</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">Gr&#225;ficamente,</span>
+<span style="color: #b22222;">--       </span><span style="color: #b22222;">c a l l e</span>
+<span style="color: #b22222;">--     </span><span style="color: #b22222;">0,1,2,3,4,5,</span>
+<span style="color: #b22222;">--  </span><span style="color: #b22222;">c  1,0,1,2,3,4,</span>
+<span style="color: #b22222;">--  </span><span style="color: #b22222;">a  2,1,0,1,2,3,</span>
+<span style="color: #b22222;">--  </span><span style="color: #b22222;">s  3,2,1,1,2,3,</span>
+<span style="color: #b22222;">--  </span><span style="color: #b22222;">a  4,3,2,2,2,3</span>
+<span style="color: #0000ff;">matrizLevenshtein</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Array</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Int</span>,<span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">matrizLevenshtein</span> xs ys <span style="color: #a0522d;">=</span> q <span style="color: #a020f0;">where</span>
+  q <span style="color: #a0522d;">=</span> array <span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>m,n<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>i,j<span style="color: #909183;">)</span>, f i j<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">|</span> i <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>m<span style="color: #7388d6;">]</span>, j <span style="color: #a0522d;">&lt;-</span> <span style="color: #7388d6;">[</span>0<span style="color: #a0522d;">..</span>n<span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+  m <span style="color: #a0522d;">=</span> length xs
+  n <span style="color: #a0522d;">=</span> length ys
+  f 0 j <span style="color: #a0522d;">=</span> j
+  f i 0 <span style="color: #a0522d;">=</span> i
+  f i j <span style="color: #a0522d;">|</span> xs <span style="color: #a0522d;">!!</span> <span style="color: #707183;">(</span>i<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> ys <span style="color: #a0522d;">!!</span> <span style="color: #707183;">(</span>j<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> q <span style="color: #a0522d;">!</span> <span style="color: #707183;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+        <span style="color: #a0522d;">|</span> otherwise                  <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> minimum <span style="color: #707183;">[</span> q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #7388d6;">)</span>
+                                                   , q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i,j<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span>
+                                                   , q <span style="color: #a0522d;">!</span> <span style="color: #7388d6;">(</span>i<span style="color: #a0522d;">-</span>1,j<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga2eb07e" class="outline-3">
+<h3 id="orga2eb07e"><span class="section-number-3">6.4.</span> Comparación de eficiencia</h3>
+<div class="outline-text-3" id="text-6-4">
+<pre class="example">
+λ&gt; levenshtein1 (show (2^33)) (show (3^33))
+12
+(16.19 secs, 11,766,254,536 bytes)
+λ&gt; levenshtein2 (show (2^33)) (show (3^33))
+12
+(0.02 secs, 0 bytes)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbd03ed5" class="outline-2">
+<h2 id="orgbd03ed5"><span class="section-number-2">7.</span> Material complementario</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+El código del tema se encuentra en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_30.hs">este enlace</a>.
+</p>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?filepath=temas/Tema-25.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como <a href="https://youtu.be/-zoqLajq1No">vídeo de clase</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org37a5419" class="outline-2">
+<h2 id="org37a5419"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-8">
+<ul class="org-ul">
+<li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
+<ul class="org-ul">
+<li>Cap. 9: Dynamic programming.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 03 de marzo del 2022</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>

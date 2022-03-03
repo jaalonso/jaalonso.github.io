@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 03 de marzo del 2022 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 10: Evaluación perezosa</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 10: Evaluación perezosa</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgf5ca1f3">1. Estrategias de evaluación</a>
+<ul>
+<li><a href="#org53dd556">1.1. Estrategias de evaluación</a></li>
+<li><a href="#org7c98f04">1.2. Evaluación con lambda expresiones</a></li>
+</ul>
+</li>
+<li><a href="#org011734f">2. Terminación</a>
+<ul>
+<li><a href="#org66c0660">2.1. Procesamiento con el infinito</a></li>
+</ul>
+</li>
+<li><a href="#orgeebae8c">3. Número de reducciones</a>
+<ul>
+<li><a href="#org9a0e953">3.1. Número de reducciones según las estrategias</a></li>
+<li><a href="#org6db6f9c">3.2. Evaluación perezosa e impaciente</a></li>
+</ul>
+</li>
+<li><a href="#orgf3b121f">4. Estructuras infinitas</a>
+<ul>
+<li><a href="#orgc27191c">4.1. Programación con estructuras infinitas</a></li>
+<li><a href="#org2c2255f">4.2. Evaluación con estructuras infinitas</a></li>
+</ul>
+</li>
+<li><a href="#org0e3ddd6">5. Programación modular</a>
+<ul>
+<li><a href="#org3d737c1">5.1. Programación modular</a></li>
+<li><a href="#orgbfe4e16">5.2. Terminación de evaluaciones con estructuras infinitas</a></li>
+<li><a href="#org461dd27">5.3. La criba de Erastótenes</a></li>
+</ul>
+</li>
+<li><a href="#org10c9df2">6. Aplicación estricta</a>
+<ul>
+<li><a href="#orga80a653">6.1. Ejemplo de programa sin aplicación estricta</a></li>
+<li><a href="#org7e79a39">6.2. Comparación de consumo de memoria</a></li>
+<li><a href="#org00dc6be">6.3. Plegado estricto</a></li>
+</ul>
+</li>
+<li><a href="#org915f7da">7. Material complementario</a></li>
+<li><a href="#orgfc5d3de">8. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf5ca1f3" class="outline-2">
+<h2 id="orgf5ca1f3"><span class="section-number-2">1.</span> Estrategias de evaluación</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org53dd556" class="outline-3">
+<h3 id="org53dd556"><span class="section-number-3">1.1.</span> Estrategias de evaluación</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li><p>
+Para los ejemplos se considera la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">mult</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Int</span>,<span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">mult</span> <span style="color: #707183;">(</span>x,y<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x<span style="color: #a0522d;">*</span>y
+</pre>
+</div></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por valor (o por más internos):
+</p>
+<pre class="example">
+mult (1+2,2+3)
+= mult (3,5)        [por def. de +]
+= 3*5               [por def. de mult]
+= 15                [por def. de *]
+</pre></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por nombre (o por más externos):
+</p>
+<pre class="example">
+mult (1+2,2+3)
+= (1+2)*(3+5)       [por def. de mult]
+= 3*5               [por def. de +]
+= 15                [por def. de *]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7c98f04" class="outline-3">
+<h3 id="org7c98f04"><span class="section-number-3">1.2.</span> Evaluación con lambda expresiones</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li><p>
+Se considera la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">mult'</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">mult'</span> x <span style="color: #a0522d;">=</span> <span style="color: #a0522d;">\</span>y <span style="color: #a0522d;">-&gt;</span> x<span style="color: #a0522d;">*</span>y
+</pre>
+</div></li>
+
+<li><p>
+Evaluación:
+</p>
+<pre class="example">
+mult' (1+2) (2+3)
+= mult' 3 (2+3)      [por def. de +]
+= (\y -&gt; 3*y) (2+3)  [por def. de mult']
+= (\y -&gt; 3*y) 5      [por def. de +]
+= 3*5                [por def. de +]
+= 15                 [por def. de *]
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org011734f" class="outline-2">
+<h2 id="org011734f"><span class="section-number-2">2.</span> Terminación</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org66c0660" class="outline-3">
+<h3 id="org66c0660"><span class="section-number-3">2.1.</span> Procesamiento con el infinito</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li><p>
+Definición de infinito
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inf</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">inf</span> <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> inf
+</pre>
+</div></li>
+
+<li><p>
+Evaluación de infinito en Haskell:
+</p>
+<pre class="example">
+λ&gt; inf
+  C-c C-c Interrupted.
+</pre></li>
+
+<li><p>
+Evaluación de infinito:
+</p>
+<pre class="example">
+inf
+= 1 + inf             [por def. inf]
+= 1 + (1 + inf)       [por def. inf]
+= 1 + (1 + (1 + inf)) [por def. inf]
+= ...
+</pre></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por valor:
+</p>
+<pre class="example">
+fst (0,inf)
+= fst (0,1 + inf)             [por def. inf]
+= fst (0,1 + (1 + inf))       [por def. inf]
+= fst (0,1 + (1 + (1 + inf))) [por def. inf]
+= ...
+</pre></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por nombre:
+</p>
+<pre class="example">
+fst (0,inf)
+= 0           [por def. fst]
+</pre></li>
+
+<li><p>
+Evaluación Haskell con infinito:
+</p>
+<pre class="example">
+λ&gt; fst (0,inf)
+0
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgeebae8c" class="outline-2">
+<h2 id="orgeebae8c"><span class="section-number-2">3.</span> Número de reducciones</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org9a0e953" class="outline-3">
+<h3 id="org9a0e953"><span class="section-number-3">3.1.</span> Número de reducciones según las estrategias</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+Para los ejemplos se considera la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">cuadrado</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">cuadrado</span> n <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">*</span> n
+</pre>
+</div></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por valor:
+</p>
+<pre class="example">
+cuadrado (1+2)
+= cuadrado 3      [por def. +]
+= 3*3             [por def. cuadrado]
+= 9               [por def. de *]
+</pre></li>
+
+<li><p>
+Evaluación mediante paso de parámetros por nombre:
+</p>
+<pre class="example">
+cuadrado (1+2)
+= (1+2)*(1+2)        [por def. cuadrado]
+= 3*(1+2)            [por def. de +]
+= 3*3                [por def. de +]
+= 9                  [por def. de *]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6db6f9c" class="outline-3">
+<h3 id="org6db6f9c"><span class="section-number-3">3.2.</span> Evaluación perezosa e impaciente</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li>En la evaluación mediante paso de parámetros por nombre los argumentos pueden
+evaluarse más veces que en el paso por valor.</li>
+
+<li>Se puede usar punteros para compartir valores de expresiones.</li>
+
+<li>La evaluación mediante paso de parámetros por nombre usando punteros para
+compartir valores de expresiones se llama <b>evaluación perezosa</b>.</li>
+
+<li>La evaluación mediante paso de parámetros por valor se llama <b>evaluación
+impaciente</b>.</li>
+
+<li><p>
+Evaluación perezosa del ejemplo anterior:
+</p>
+<pre class="example">
+cuadrado (1+2)
+= x*x con x = 1+2      [por def. cuadrado]
+= 3*3                  [por def. de +]
+= 9                    [por def. de *]
+</pre></li>
+
+<li>Haskell usa evaluación perezosa.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf3b121f" class="outline-2">
+<h2 id="orgf3b121f"><span class="section-number-2">4.</span> Estructuras infinitas</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-orgc27191c" class="outline-3">
+<h3 id="orgc27191c"><span class="section-number-3">4.1.</span> Programación con estructuras infinitas</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li><p>
+<code>unos</code> es una lista infinita de unos.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">unos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">unos</span> <span style="color: #a0522d;">=</span> 1 <span style="color: #228b22;">:</span> unos
+</pre>
+</div></li>
+
+<li><p>
+Evaluación:
+</p>
+<pre class="example">
+unos
+= 1 : unos                [por def. unos]
+= 1 : (1 : unos)          [por def. unos]
+= 1 : (1 : (1 : unos))    [por def. unos]
+= ...
+</pre></li>
+
+<li><p>
+Evaluación en Haskell:
+</p>
+<pre class="example">
+λ&gt; unos
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,...
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2c2255f" class="outline-3">
+<h3 id="org2c2255f"><span class="section-number-3">4.2.</span> Evaluación con estructuras infinitas</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><p>
+Evaluación impaciente:
+</p>
+<pre class="example">
+head unos
+= head (1 : unos)                [por def. unos]
+= head (1 : (1 : unos))          [por def. unos]
+= head (1 : (1 : (1 : unos)))    [por def. unos]
+= ...
+</pre></li>
+
+<li><p>
+Evaluación perezosa:
+</p>
+<pre class="example">
+head unos
+= head (1 : unos)   [por def. unos]
+= 1                 [por def. head]
+</pre></li>
+
+<li><p>
+Evaluación Haskell:
+</p>
+<pre class="example">
+λ&gt; head unos
+1
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0e3ddd6" class="outline-2">
+<h2 id="org0e3ddd6"><span class="section-number-2">5.</span> Programación modular</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org3d737c1" class="outline-3">
+<h3 id="org3d737c1"><span class="section-number-3">5.1.</span> Programación modular</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li>La evaluación perezosa permite separar el control de los datos.</li>
+
+<li><p>
+Para los ejemplos se considera la función
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">take</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">take</span> n <span style="color: #a020f0;">_</span>  <span style="color: #a0522d;">|</span> n <span style="color: #a0522d;">&lt;=</span> 0  <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">take</span> <span style="color: #a020f0;">_</span> <span style="color: #707183;">[]</span>           <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">take</span> n <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span>       <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> take <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> xs
+</pre>
+</div></li>
+
+<li><p>
+Ejemplo de separación del control (tomar 2 elementos) de los datos (una lista
+infinita de unos):
+</p>
+<pre class="example">
+take 2 unos
+= take 2 (1 : unos)         [por def. unos]
+= 1 : (take 1 unos)         [por def. take]
+= 1 : (take 1 (1 : unos))   [por def. unos]
+= 1 : (1 : (take 0 unos))   [por def. take]
+= 1 : (1 : [])              [por def. take]
+= [1,1]                     [por notación de listas]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgbfe4e16" class="outline-3">
+<h3 id="orgbfe4e16"><span class="section-number-3">5.2.</span> Terminación de evaluaciones con estructuras infinitas</h3>
+<div class="outline-text-3" id="text-5-2">
+<ul class="org-ul">
+<li><p>
+Ejemplo de no terminación:
+</p>
+<pre class="example">
+λ&gt; [1..]
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,...
+</pre></li>
+
+<li><p>
+Ejemplo de terminación:
+</p>
+<pre class="example">
+λ&gt; take 3 [1..]
+[1,2,3]
+</pre></li>
+
+<li><p>
+Ejemplo de no terminación:
+</p>
+<pre class="example">
+λ&gt; filter (&lt;=3) [1..]
+[1,2,3  C-c C-c Interrupted.
+</pre></li>
+
+<li><p>
+Ejemplo de no terminación:
+</p>
+<pre class="example">
+λ&gt; takeWhile (&lt;=3) [1..]
+[1,2,3]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org461dd27" class="outline-3">
+<h3 id="org461dd27"><span class="section-number-3">5.3.</span> La criba de Erastótenes</h3>
+<div class="outline-text-3" id="text-5-3">
+<ul class="org-ul">
+<li><p>
+Ejemplo con la criba de Erastótenes
+</p>
+<pre class="example">
+2  3  4  5  6  7  8  9  10  11  12  13  14  15  ...
+   3     5     7     9      11      13      15  ...
+         5     7            11      13          ...
+               7            11      13          ...
+                            11      13          ...
+                                    13          ...
+</pre></li>
+
+<li><p>
+Definición
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">primos</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span> <span style="color: #707183;">]</span>
+<span style="color: #0000ff;">primos</span> <span style="color: #a0522d;">=</span> criba <span style="color: #707183;">[</span>2<span style="color: #a0522d;">..</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">criba</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">criba</span> <span style="color: #707183;">(</span>p<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> p <span style="color: #228b22;">:</span> criba <span style="color: #707183;">[</span>x <span style="color: #a0522d;">|</span> x <span style="color: #a0522d;">&lt;-</span> xs, x <span style="color: #a0522d;">`mod`</span> p <span style="color: #a0522d;">/=</span> 0<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+Evaluación:
+</p>
+<pre class="example">
+take 15 primos == [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47]
+</pre></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+primos
+= criba [2..]
+= criba (2 : [3..])
+= 2 : (criba [x | x &lt;- [3..], x `mod` 2 /= 0])
+= 2 : (criba (3 : [x | x &lt;- [4..], x `mod` 2 /= 0]))
+= 2 : 3 : (criba [x | x &lt;- [4..], x `mod` 2 /= 0,
+                                  x `mod` 3 /= 0])
+= 2 : 3 : (criba (5 : [x | x &lt;- [6..], x `mod` 2 /= 0,
+                                       x `mod` 3 /= 0]))
+= 2 : 3 : 5 : (criba ([x | x &lt;- [6..], x `mod` 2 /= 0,
+                                       x `mod` 3 /= 0,
+                                       x `mod` 5 /= 0]))
+= ...
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org10c9df2" class="outline-2">
+<h2 id="org10c9df2"><span class="section-number-2">6.</span> Aplicación estricta</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orga80a653" class="outline-3">
+<h3 id="orga80a653"><span class="section-number-3">6.1.</span> Ejemplo de programa sin aplicación estricta</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><p>
+<code>(sumaNE xs)</code> es la suma de los números de <code>xs</code>. Por ejemplo,
+</p>
+<pre class="example">
+sumaNE [2,3,5]  ==  10
+</pre>
+
+<p>
+La definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">sumaNE</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">sumaNE</span> xs <span style="color: #a0522d;">=</span> sumaNE' 0 xs
+
+<span style="color: #0000ff;">sumaNE'</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">sumaNE'</span> v <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> v
+<span style="color: #0000ff;">sumaNE'</span> v <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> sumaNE' <span style="color: #707183;">(</span>v<span style="color: #a0522d;">+</span>x<span style="color: #707183;">)</span> xs
+</pre>
+</div></li>
+
+<li><p>
+Evaluación:
+</p>
+<pre class="example">
+sumaNE [2,3,5]
+= sumaNE' 0 [2,3,5]           [por def. sumaNE]
+= sumaNE' (0+2) [3,5]         [por def. sumaNE']
+= sumaNE' ((0+2)+3) [5]       [por def. sumaNE']
+= sumaNE' (((0+2)+3)+5) []    [por def. sumaNE']
+= ((0+2)+3)+5                 [por def. sumaNE']
+= (2+3)+5                     [por def. +]
+= 5+5                         [por def. +]
+= 10                          [por def. +]
+</pre></li>
+</ul>
+
+<p>
+<b><b>Ejemplo de programa con aplicación estricta</b></b>
+</p>
+
+<ul class="org-ul">
+<li><p>
+<code>(sumaE xs)</code> es la suma de los números de <code>xs</code>. Por ejemplo,
+</p>
+<pre class="example">
+sumaE [2,3,5]  ==  10
+</pre>
+
+<p>
+La definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">sumaE</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">sumaE</span> xs <span style="color: #a0522d;">=</span> sumaE' 0 xs
+
+<span style="color: #0000ff;">sumaE'</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">sumaE'</span> v <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> v
+<span style="color: #0000ff;">sumaE'</span> v <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>sumaE' <span style="color: #a0522d;">$!</span> <span style="color: #7388d6;">(</span>v<span style="color: #a0522d;">+</span>x<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> xs
+</pre>
+</div></li>
+
+<li><p>
+Evaluación:
+</p>
+<pre class="example">
+sumaE [2,3,5]
+= sumaE' 0 [2,3,5]          [por def. sumaE]
+= (sumaE' $! (0+2)) [3,5]   [por def. sumaE']
+= sumaE' 2 [3,5]            [por aplicación de $!]
+= (sumaE' $! (2+3)) [5]     [por def. sumaE']
+= sumaE' 5 [5]              [por aplicación de $!]
+= (sumaE' $! (5+5)) []      [por def. sumaE']
+= sumaE' 10 []              [por aplicación de $!]
+= 10                        [por def. sumaE']
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7e79a39" class="outline-3">
+<h3 id="org7e79a39"><span class="section-number-3">6.2.</span> Comparación de consumo de memoria</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li><p>
+La comparación es
+</p>
+<pre class="example">
+λ&gt; sumaNE [1..1000000]
+*** Exception: stack overflow
+λ&gt; sumaE [1..1000000]
+1784293664
+λ&gt; :set +s
+λ&gt; sumaE [1..1000000]
+1784293664
+(2.16 secs, 145435772 bytes)
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org00dc6be" class="outline-3">
+<h3 id="org00dc6be"><span class="section-number-3">6.3.</span> Plegado estricto</h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li><p>
+Versión estricta de <code>foldl</code> en <code>Data.List</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">foldl'</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span>a <span style="color: #a0522d;">-&gt;</span> b <span style="color: #a0522d;">-&gt;</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">-&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>b<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">foldl'</span> f a <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> a
+<span style="color: #0000ff;">foldl'</span> f a <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>foldl' f <span style="color: #a0522d;">$!</span> f a x<span style="color: #707183;">)</span> xs
+</pre>
+</div></li>
+
+<li><p>
+Comparación de plegado y plegado estricto:
+</p>
+<pre class="example">
+λ&gt; foldl (+) 0 [2,3,5]
+10
+λ&gt; foldl' (+) 0 [2,3,5]
+10
+λ&gt; foldl (+) 0 [1..1000000]
+*** Exception: stack overflow
+λ&gt; foldl' (+) 0 [1..1000000]
+500000500000
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org915f7da" class="outline-2">
+<h2 id="org915f7da"><span class="section-number-2">7.</span> Material complementario</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+El código del tema se encuentra en este <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_10.hs">enlace</a>.
+</p>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="./tema-10.pdf">transparencias en PDF</a>.</li>
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?filepath=temas/Tema-10.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como <a href="https://youtu.be/mT6KvvuJsDs">vídeo de clase</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfc5d3de" class="outline-2">
+<h2 id="orgfc5d3de"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-8">
+<ul class="org-ul">
+<li>R. Bird. <b>Introducción a la programación funcional con Haskell</b>. Prentice
+Hall, 2000.
+<ul class="org-ul">
+<li>Cap. Cap. 7: Eficiencia.</li>
+</ul></li>
+
+<li>G. Hutton. <b>Programming in Haskell</b>. Cambridge University Press, 2007.
+<ul class="org-ul">
+<li>Cap. 12: Lazy evaluation.</li>
+</ul></li>
+
+<li>B. O'Sullivan, D. Stewart y J. Goerzen. <b>Real World Haskell</b>. O'Reilly, 2008.
+<ul class="org-ul">
+<li>Cap. 2: Types and functions.</li>
+</ul></li>
+
+<li>B.C. Ruiz, F. Gutiérrez, P. Guerrero y J.E. Gallardo. <b>Razonando con
+Haskell</b>. Thompson, 2004.
+<ul class="org-ul">
+<li>Cap. 2: Introducción a Haskell.</li>
+<li>Cap. 8: Evaluación perezosa. Redes de procesos.</li>
+</ul></li>
+
+<li>S. Thompson. <b>Haskell: The Craft of Functional Programming</b>, Second
+Edition. Addison-Wesley, 1999.
+<ul class="org-ul">
+<li>Cap. 17: Lazy programming.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 03 de marzo del 2022</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
