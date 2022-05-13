@@ -1,18 +1,15 @@
-% concatena-1.pl
+% conc_2.pl
 % Concatenación de listas.
-% Ref.: Bratko-86 p. 68-69.
-%==============================================================================
+% José A. Alonso Jiménez <https://jaalonso.github.io>
+% Sevilla, 13-mayo-2022
+% =============================================================================
 
-%******************************************************************************
-% Enunciado
-%******************************************************************************
-
-% Definir el predicado
-%      conc(L1,L2,L3)
-% de forma que si L1 y L2 son listas, entonces L3 es la lista obtenida
-% escribiendo los elementos de L2 a continuación de los elementos de
-% L1. Por ejemplo, si L1 es [a,b] y L2 es [c,d], entonces L3 es
-% [a,b,c,d].
+% ---------------------------------------------------------------------
+% Definir la relación
+%    conc(L1,L2,L3)
+% que se verifica si L3 es la lista obtenida escribiendo los elementos
+% de la lista L2 a continuación de los elementos de L1. Por ejemplo, si
+% L1 es [a,b] y L2 es [c,d], entonces L3 es [a,b,c,d].
 %
 % Utilizar el programa para responder a las siguientes cuestiones:
 % (1) ¿Cuál es el resultado de concatenar las listas [a,b] y [c,d,e]?
@@ -26,47 +23,44 @@
 %
 % Construir el árbol de deducción correspondiente a la pregunta
 % conc(L1,L2,[a,b]).
+%---------------------------------------------------------------------
 
-%******************************************************************************
-% Programa
-%******************************************************************************
-
-% conc(?L1,?L2,?L3) :-
-% 	L3 es la lista obtenida añadiendo L2 a continuación de L1.
 conc([],L,L).
 conc([X|L1],L2,[X|L3]) :-
 	conc(L1,L2,L3).
 
-%******************************************************************************
-% Sesión
-%******************************************************************************
+% Consultas
+% =========
 
 % ?- conc([a,b],[c,d,e],L).
-% L = [a, b, c, d, e] ;
+% L = [a, b, c, d, e].
 %
 % ?- conc([a,b],L,[a,b,c,d]).
-% L = [c, d] ;
+% L = [c, d].
 %
 % ?- conc(L1,L2,[a,b]).
-% L1 = []
+% L1 = [],
 % L2 = [a, b] ;
-% L1 = [a]
+% L1 = [a],
 % L2 = [b] ;
-% L1 = [a, b]
+% L1 = [a, b],
 % L2 = [] ;
+% false.
 %
 % ?- conc(L1,[b|L2],[a,b,c]).
-% L1 = [a]
+% L1 = [a],
 % L2 = [c] ;
+% false.
 %
 % ?- conc(_,[b|_],[a,b,c]).
-% Yes
+% true
 %
 % ?- conc(_,[b,c|_],[a,b,c,d]).
-% Yes
+% true
 %
 % ?- conc(_,[b,d|_],[a,b,c,d]).
-% No
+% false.
 %
 % ?- conc(_,[X],[b,a,c,d]).
 % X = d ;
+% false.
