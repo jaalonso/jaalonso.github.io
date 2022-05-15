@@ -5,7 +5,9 @@
 % =============================================================================
 
 % factorial(X,Y) se verifica si Y es el factorial de X. Por ejemplo,
-
+%    ?- factorial(3,Y).
+%    Y = 6 ;
+%    false.
 factorial(1,1).
 factorial(X,Y) :-
    X > 1,
