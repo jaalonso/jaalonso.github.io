@@ -24,7 +24,7 @@
 %
 % siendo e3 el estado final. Representar el autómata utilizando las
 % siguientes relaciones:
-% (1) final(S) que se verifica si X es el estado final.
+% (1) final(E) que se verifica si X es el estado final.
 % (2) trans(E1,X,E2) que se verifica si se puede pasar del estado E1 al
 %     estado E2 usando la letra X.
 % (3) nulo(E1,E2) que se verifica si se puede pasar del estado E1 al
@@ -88,23 +88,23 @@ acepta(E,L) :-
 
 % ----------------------------------------------------------------------
 % Ejercicio 5. Definir la relación
-%    acepta_acotada(S,L,N)
-% que se verifique si el autómata, a partir del estado S, acepta la
+%    acepta_acotada(E,L,N)
+% que se verifique si el autómata, a partir del estado E, acepta la
 % lista L y la longitud de L es N.
 % ----------------------------------------------------------------------
 
-acepta_acotada(S,[],0) :-
-   final(S).
+acepta_acotada(E,[],0) :-
+   final(E).
 
-acepta_acotada(S,[X|L],N) :-
+acepta_acotada(E,[X|L],N) :-
    N > 0,
-   trans(S,X,E1),
+   trans(E,X,E1),
    M is N -1,
    acepta_acotada(E1,L,M).
 
-acepta_acotada(S,L,N) :-
+acepta_acotada(E,L,N) :-
    N > 0,
-   nulo(S,E1),
+   nulo(E,E1),
    acepta_acotada(E1,L,N).
 
 % ----------------------------------------------------------------------
@@ -119,23 +119,23 @@ acepta_acotada(S,L,N) :-
 
 % ----------------------------------------------------------------------
 % Ejercicio 7. Definir la relación
-%    acepta_acotada_2(S,L,N)
-% que se verifique si el autómata, a partir del estado S, acepta la
+%    acepta_acotada_2(E,L,N)
+% que se verifique si el autómata, a partir del estado E, acepta la
 % lista L y la longitud de L es menor o igual que N.
 % ----------------------------------------------------------------------
 
-acepta_acotada_2(S,[],_N) :-
-   final(S).
+acepta_acotada_2(E,[],_N) :-
+   final(E).
 
-acepta_acotada_2(S,[X|L],N) :-
+acepta_acotada_2(E,[X|L],N) :-
    N > 0,
-   trans(S,X,E1),
+   trans(E,X,E1),
    M is N-1,
    acepta_acotada_2(E1,L,M).
 
-acepta_acotada_2(S,L,N) :-
+acepta_acotada_2(E,L,N) :-
    N > 0,
-   nulo(S,E1),
+   nulo(E,E1),
    acepta_acotada_2(E1,L,N).
 
 % ----------------------------------------------------------------------
