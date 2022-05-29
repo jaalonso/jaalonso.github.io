@@ -262,7 +262,7 @@
 <li><a href="#org7eaac83">4.4. Solución del problema del paseo mediante búsqueda en anchura.</a></li>
 </ul>
 </li>
-<li><a href="#org7a8eb6f">5. Búsqueda óptima</a>
+<li><a href="#org52e0a2f">5. Búsqueda óptima (de menor coste)</a>
 <ul>
 <li><a href="#orgbc7d8a0">5.1. Problema del viaje</a></li>
 <li><a href="#orgd6c3b87">5.2. Solución del problema del viaje mediante búsqueda en profundidad y en anchura</a></li>
@@ -272,7 +272,19 @@
 <li><a href="#org5e01890">5.6. Comparación de procedimientos de búsqueda óptima</a></li>
 </ul>
 </li>
-<li><a href="#org57027cb">6. Bibliografía</a></li>
+<li><a href="#org5b14ebd">6. Búsqueda en escalada (con heurística).</a>
+<ul>
+<li><a href="#org3581ed3">6.1. Heurística del problema del viaje</a></li>
+<li><a href="#org5aa4932">6.2. Solución del problema del viaje mediante búsqueda en Escalada</a></li>
+</ul>
+</li>
+<li><a href="#org247b9b4">7. Búsqueda por primero el mejor</a>
+<ul>
+<li><a href="#orgee67e37">7.1. Problema de las fichas</a></li>
+<li><a href="#org02f637f">7.2. Solución del problema de las fichas mediante búsqueda por primero el mejor</a></li>
+</ul>
+</li>
+<li><a href="#org57027cb">8. Bibliografía</a></li>
 </ul>
 </div>
 </div>
@@ -1029,8 +1041,8 @@ S = <span style="color: #707183;">[</span>0,-1,-2,-3<span style="color: #707183;
 </div>
 </div>
 
-<div id="outline-container-org7a8eb6f" class="outline-2">
-<h2 id="org7a8eb6f"><span class="section-number-2">5.</span> Búsqueda óptima</h2>
+<div id="outline-container-org52e0a2f" class="outline-2">
+<h2 id="org52e0a2f"><span class="section-number-2">5.</span> Búsqueda óptima (de menor coste)</h2>
 <div class="outline-text-2" id="text-5">
 </div>
 <div id="outline-container-orgbc7d8a0" class="outline-3">
@@ -1389,9 +1401,327 @@ S = <span style="color: #707183;">[</span>sevilla,m&#225;laga,granada,almer&#237
 </div>
 </div>
 
-<div id="outline-container-org57027cb" class="outline-2">
-<h2 id="org57027cb"><span class="section-number-2">6.</span> Bibliografía</h2>
+<div id="outline-container-org5b14ebd" class="outline-2">
+<h2 id="org5b14ebd"><span class="section-number-2">6.</span> Búsqueda en escalada (con heurística).</h2>
 <div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>La <i>heurística</i> de un estado es una estimación del mínimo coste de las
+soluciones a partir de dicho estado.</li>
+
+<li>Un <i>nodo</i> es un término de la forma <code>H-[E(n), ...,E(1)]</code> donde [E_n,&#x2026;,E_1]
+es una lista de estados de forma que E_1 es el estado inicial y
+E_(i+1) es un sucesor de E_i y H es la heurística de E_n.</li>
+
+<li><p>
+<code>escalada(?S)</code> se verifica si <code>S</code> es una solución del problema
+mediante búsqueda en escalada. El procedimiento es: 
+</p>
+<ul class="org-ul">
+<li>Sea <code>E</code> el estado inicial y <code>H</code> su heurística. La solución <code>S</code> es la
+solución obtenida por búsqueda en escalada a partir de <code>H-[E]</code>.</li>
+</ul>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escalada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">Sol</span><span style="color: #707183;">)</span> :-
+   estado_inicial<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>,
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span>,
+   escalada<span style="color: #707183;">(</span><span style="color: #a0522d;">H</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">Sol</span><span style="color: #707183;">)</span>.
+
+<span style="color: #b22222;">% </span><span style="color: #b22222;">escalada(+N,?S) se verifica si S es una soluci&#243;n del problema a partir</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">del nodo N encontrada por b&#250;squeda en escalada. El procedimiento es</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">1. Si</span>
+<span style="color: #b22222;">%         </span><span style="color: #b22222;">N=H-[E|R] y</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">1.1 E es un estado final,</span>
+<span style="color: #b22222;">%    </span><span style="color: #b22222;">entonces</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">1.2 S es la inversa de [E|R].</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">2. Si</span>
+<span style="color: #b22222;">%         </span><span style="color: #b22222;">N=H-[E|C] y</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.1 E1 es un sucesor de E con heur&#237;stica H1 &lt; H y E no tiene</span>
+<span style="color: #b22222;">%         </span><span style="color: #b22222;">sucesores con heur&#237;stica menor que H1</span>
+<span style="color: #b22222;">%    </span><span style="color: #b22222;">entonces</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.2 S es la soluci&#243;n por escalada a partir de H1-[E1,E|R].</span>
+<span style="color: #0000ff;">escalada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">_H</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   estado_final<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>,          <span style="color: #b22222;">% </span><span style="color: #b22222;">1.1</span>
+   reverse<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.         <span style="color: #b22222;">% </span><span style="color: #b22222;">1.2</span>
+<span style="color: #0000ff;">escalada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">H</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   mejor_sucesor<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">H</span>,<span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">H1</span><span style="color: #707183;">)</span>, <span style="color: #b22222;">% </span><span style="color: #b22222;">2.1</span>
+   escalada<span style="color: #707183;">(</span><span style="color: #a0522d;">H1</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.  <span style="color: #b22222;">% </span><span style="color: #b22222;">2.2</span>
+
+<span style="color: #0000ff;">mejor_sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">H</span>,<span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">H1</span><span style="color: #707183;">)</span> :-
+   sucesor<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">H1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">H1</span> &lt; <span style="color: #a0522d;">H</span>,
+   not<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>sucesor<span style="color: #909183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">E2</span><span style="color: #909183;">)</span>,
+        heuristica<span style="color: #909183;">(</span><span style="color: #a0522d;">E2</span>,<span style="color: #a0522d;">H2</span><span style="color: #909183;">)</span>,
+        <span style="color: #a0522d;">H2</span> &lt; <span style="color: #a0522d;">H1</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+
+
+<div id="outline-container-org3581ed3" class="outline-3">
+<h3 id="org3581ed3"><span class="section-number-3">6.1.</span> Heurística del problema del viaje</h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><p>
+<code>heuristica(E,H)</code> se verifica si <code>H4 es la heurística de ~E</code> (es
+decir, la distancia de <code>E</code> al estado final).
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">heuristica</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span> :-
+   estado_final<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   coste<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5aa4932" class="outline-3">
+<h3 id="org5aa4932"><span class="section-number-3">6.2.</span> Solución del problema del viaje mediante búsqueda en Escalada</h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li><p>
+La solución es
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>p_viaje, b_escalada<span style="color: #707183;">]</span>.
+true.
+
+?- escalada<span style="color: #707183;">(</span>S<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+S = <span style="color: #707183;">[</span>sevilla,m&#225;laga,granada,almer&#237;a<span style="color: #707183;">]</span> 
+
+?- trace<span style="color: #707183;">(</span>escalada,+call<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+
+?- escalada<span style="color: #707183;">(</span>S<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+ T Call: b_escalada:escalada<span style="color: #707183;">(</span>_8632<span style="color: #707183;">)</span>
+ T Call: b_escalada:escalada<span style="color: #707183;">(</span>325.08498888752155-<span style="color: #7388d6;">[</span>sevilla<span style="color: #7388d6;">]</span>,_8632<span style="color: #707183;">)</span>
+ T Call: b_escalada:escalada<span style="color: #707183;">(</span>177.91290003819284-<span style="color: #7388d6;">[</span>m&#225;laga,sevilla<span style="color: #7388d6;">]</span>,_8632<span style="color: #707183;">)</span>
+ T Call: b_escalada:escalada<span style="color: #707183;">(</span>106.25676449054902-<span style="color: #7388d6;">[</span>granada,m&#225;laga,sevilla<span style="color: #7388d6;">]</span>,_8632<span style="color: #707183;">)</span>
+ T Call: b_escalada:escalada<span style="color: #707183;">(</span>0.0-<span style="color: #7388d6;">[</span>almer&#237;a,granada,m&#225;laga,sevilla<span style="color: #7388d6;">]</span>,_8632<span style="color: #707183;">)</span>
+S = <span style="color: #707183;">[</span>sevilla,m&#225;laga,granada,almer&#237;a<span style="color: #707183;">]</span> 
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org247b9b4" class="outline-2">
+<h2 id="org247b9b4"><span class="section-number-2">7.</span> Búsqueda por primero el mejor</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-orgee67e37" class="outline-3">
+<h3 id="orgee67e37"><span class="section-number-3">7.1.</span> Problema de las fichas</h3>
+<div class="outline-text-3" id="text-7-1">
+</div>
+<div id="outline-container-orgdba87f8" class="outline-4">
+<h4 id="orgdba87f8"><span class="section-number-4">7.1.1.</span> Descripción del problema de las fichas</h4>
+<div class="outline-text-4" id="text-7-1-1">
+<p>
+Se considera un tablero con 7 cuadrados consecutivos. Inicialmente, en
+cada uno de los 3 primeros cuadrados hay una ficha blanca y en cada uno
+de los 3 últimos cuadrados hay una ficha verde. El objetivo consiste en
+tener las fichas verdes al principiocipio y las blancas al final.
+</p>
+
+<p>
+La situación inicial es
+</p>
+<div class="org-src-container">
+<pre class="src src-txt">+---+---+---+---+---+---+---+
+| B | B | B |   | V | V | V |
++---+---+---+---+---+---+---+
+
+</pre>
+</div>
+<p>
+y la final es
+</p>
+<div class="org-src-container">
+<pre class="src src-txt">+---+---+---+---+---+---+---+
+| V | V | V |   | B | B | B |
++---+---+---+---+---+---+---+
+
+</pre>
+</div>
+
+<p>
+Los movimientos permitidos consisten en desplazar una ficha al hueco
+saltando, como máximo, sobre otras dos.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4d02a8e" class="outline-4">
+<h4 id="org4d02a8e"><span class="section-number-4">7.1.2.</span> Representación del problema de las Fichas</h4>
+<div class="outline-text-4" id="text-7-1-2">
+<ul class="org-ul">
+<li>Un estado es una lista de siete elementos representando cada una de
+las fichas (<code>B</code> = blanca, <code>V</code> = verde) y el hueco (<code>H</code>).</li>
+
+<li><p>
+<code>estado_inicial(?E)</code> se verifica si <code>E</code> es el estado inicial.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">estado_inicial</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>b,b,b,h,v,v,v<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>estado_final(?E)</code> se verifica si <code>E</code> es un estado final.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">estado_final</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>v,v,v,h,b,b,b<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>sucesor(+E1,?E2)</code> se verifica si <code>E2</code> es un sucesor del estado
+<code>E1</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- sucesor<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>v, v, v, h, b, b, b<span style="color: #7388d6;">]</span>,E<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+E = <span style="color: #707183;">[</span>v, v, h, v, b, b, b<span style="color: #707183;">]</span> ;
+E = <span style="color: #707183;">[</span>v, h, v, v, b, b, b<span style="color: #707183;">]</span> ;
+E = <span style="color: #707183;">[</span>h, v, v, v, b, b, b<span style="color: #707183;">]</span> ;
+E = <span style="color: #707183;">[</span>v, v, v, b, h, b, b<span style="color: #707183;">]</span> ;
+E = <span style="color: #707183;">[</span>v, v, v, b, b, h, b<span style="color: #707183;">]</span> ;
+E = <span style="color: #707183;">[</span>v, v, v, b, b, b, h<span style="color: #707183;">]</span> ;
+No
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">G</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">H</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">H</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">G</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">sucesor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   descompone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>h,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">H</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   compone<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">H</span>,h<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>descompone(?L1,?L2,?L3,+L4)</code> se verifica si <code>L4</code> es la concatenación
+de las listas <code>L1</code>, <code>L2</code> y <code>L3</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">descompone</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span>,<span style="color: #a0522d;">L3</span>,<span style="color: #a0522d;">L4</span><span style="color: #707183;">)</span> :-
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">L12</span>,<span style="color: #a0522d;">L3</span>,<span style="color: #a0522d;">L4</span><span style="color: #707183;">)</span>,
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span>,<span style="color: #a0522d;">L12</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>compone(+L1,+L2,+L3,?L4)</code> se verifica si <code>L4</code> es la concatenación de
+las listas <code>L1</code>, <code>L2</code> y <code>L3</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">compone</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span>,<span style="color: #a0522d;">L3</span>,<span style="color: #a0522d;">L4</span><span style="color: #707183;">)</span> :-
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span>,<span style="color: #a0522d;">L12</span><span style="color: #707183;">)</span>,
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">L12</span>,<span style="color: #a0522d;">L3</span>,<span style="color: #a0522d;">L4</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+Se considera la heurística que para cada estado vale la suma de piezas
+blancas situadas a la izquierda de cada una de las piezas verdes. Por
+ejemplo, para el estado
+</p>
+<div class="org-src-container">
+<pre class="src src-txt">+---+---+---+---+---+---+---+
+| B | V | B |   | V | V | B |
++---+---+---+---+---+---+---+
+</pre>
+</div>
+<p>
+su valor es 1+2+2 = 5.
+</p></li>
+
+<li><p>
+<code>heuristica(E,H)</code> se verifica si <code>H</code> es la heurística del estado <code>E</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">heuristica</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>v<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span> :-
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">heuristica</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>h<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span> :-
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">heuristica</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>b<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span> :-
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">H1</span><span style="color: #707183;">)</span>,
+   verdes<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">H</span> is <span style="color: #a0522d;">N</span>+<span style="color: #a0522d;">H1</span>.
+<span style="color: #0000ff;">heuristica</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">verdes</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>v<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   verdes<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">N1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N</span> is <span style="color: #a0522d;">N1</span>+1.
+<span style="color: #0000ff;">verdes</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>h<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   verdes<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">verdes</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>b<span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   verdes<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">verdes</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del problema de las fichas se encuentra en <a href="https://swish.swi-prolog.org/p/PLP_p_fichas.pl">p_fichas.pl</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org02f637f" class="outline-3">
+<h3 id="org02f637f"><span class="section-number-3">7.2.</span> Solución del problema de las fichas mediante búsqueda por primero el mejor</h3>
+<div class="outline-text-3" id="text-7-2">
+<ul class="org-ul">
+<li><p>
+La solución es
+</p>
+<pre class="example">
+?- [p_fichas, b_primero_mejor].
+true.
+
+?- primero_el_mejor(S).
+S = [[b,b,b,h,v,v,v],
+     [b,b,b,v,h,v,v],
+     [b,b,h,v,b,v,v],
+     [b,b,v,v,b,h,v],
+     [b,b,v,v,b,v,h],
+     [b,b,v,v,h,v,b],
+     [b,h,v,v,b,v,b],
+     [b,v,h,v,b,v,b],
+     [b,v,v,v,b,h,b],
+     [b,v,v,v,h,b,b],
+     [b,v,h,v,v,b,b],
+     [h,v,b,v,v,b,b],
+     [v,v,b,h,v,b,b],
+     [v,v,b,v,h,b,b],
+     [v,v,h,v,b,b,b],
+     [v,v,v,h,b,b,b]] 
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org57027cb" class="outline-2">
+<h2 id="org57027cb"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>I. Bratko
 <a href="https://archive.org/details/prologprogrammin0000brat_w4b1">Prolog programming for artificial intelligence (3 ed.)</a>
