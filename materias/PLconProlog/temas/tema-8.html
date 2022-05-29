@@ -281,10 +281,18 @@
 <li><a href="#org247b9b4">7. Búsqueda por primero el mejor</a>
 <ul>
 <li><a href="#orgee67e37">7.1. Problema de las fichas</a></li>
-<li><a href="#org02f637f">7.2. Solución del problema de las fichas mediante búsqueda por primero el mejor</a></li>
+<li><a href="#org859a917">7.2. Procedimiento de búsqueda por primero el mejor</a></li>
+<li><a href="#org02f637f">7.3. Solución del problema de las fichas mediante búsqueda por primero el mejor</a></li>
 </ul>
 </li>
-<li><a href="#org57027cb">8. Bibliografía</a></li>
+<li><a href="#orgcbf6f0c">8. Algoritmo A*</a>
+<ul>
+<li><a href="#org2b0db6a">8.1. El problema del 8 puzzle</a></li>
+<li><a href="#orgc94a148">8.2. El algoritmo A*</a></li>
+<li><a href="#org3a829e4">8.3. Solucióm del 8 puzzle mediante el algoritmo A*</a></li>
+</ul>
+</li>
+<li><a href="#org57027cb">9. Bibliografía</a></li>
 </ul>
 </div>
 </div>
@@ -1685,9 +1693,94 @@ su valor es 1+2+2 = 5.
 </div>
 </div>
 
-<div id="outline-container-org02f637f" class="outline-3">
-<h3 id="org02f637f"><span class="section-number-3">7.2.</span> Solución del problema de las fichas mediante búsqueda por primero el mejor</h3>
+<div id="outline-container-org859a917" class="outline-3">
+<h3 id="org859a917"><span class="section-number-3">7.2.</span> Procedimiento de búsqueda por primero el mejor</h3>
 <div class="outline-text-3" id="text-7-2">
+<ul class="org-ul">
+<li>Un <i>nodo</i> es un término <code>H-[E(n), ... ,E(1)]</code> de forma que <code>E(1)</code> es
+el estado inicial, <code>E(i+1)</code> es un sucesor de <code>E(i)</code> y <code>H</code> es la
+heurística de <code>E(n)</code>.</li>
+
+<li><i>Abiertos</i> es una lista de nodos (los nodos pendientes de analizar).</li>
+
+<li><i>Cerrados</i> es una lista de estados (los estados analizados).</li>
+
+<li><p>
+<code>primero_el_mejor(?S)</code> se verifica si <code>S</code> es una solución del problema
+mediante búsqueda por primero el mejor. El procedimiento es
+</p>
+<ol class="org-ol">
+<li>Sea <code>E</code> el estado inicial y</li>
+<li><code>H</code> la heurística de <code>E</code>.</li>
+<li>La solución <code>S</code> es la obtenida por búsqueda por primero el mejor
+con <code>[H-[E]]</code> como la lista de abiertos y <code>[]</code> como la lista de
+cerrados.</li>
+</ol>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">primero_el_mejor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   estado_inicial<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>,               <span style="color: #b22222;">% </span><span style="color: #b22222;">1</span>
+   heuristica<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">H</span><span style="color: #707183;">)</span>,                 <span style="color: #b22222;">% </span><span style="color: #b22222;">2</span>
+   primero_el_mejor<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">H</span>-<span style="color: #909183;">[</span><span style="color: #a0522d;">E</span><span style="color: #909183;">]</span><span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span> <span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>. <span style="color: #b22222;">% </span><span style="color: #b22222;">3</span>
+
+<span style="color: #b22222;">% </span><span style="color: #b22222;">primero_el_mejor(+Abiertos,+Cerrados,?Solucion) se verifica si</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">Solucion es la soluci&#243;n encontrada por b&#250;squeda por primero el mejor a</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">partir de las listas Abiertos y Cerrados. El procedimiento es</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">1. Si</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">1.1. el primer elemento de Abiertos es _-[E|C] y</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">1.2. E es un estado final,</span>
+<span style="color: #b22222;">%    </span><span style="color: #b22222;">entonces</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">1.3 S es la inversa de [E|C].</span>
+<span style="color: #b22222;">% </span><span style="color: #b22222;">2. Si</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.1. Abiertos es la lista [_-[E|_]|R],</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.2. la lista de los sucesores de E que no est&#225;n ni en Abiertos ni en</span>
+<span style="color: #b22222;">%          </span><span style="color: #b22222;">Cerrados es Sucesores,</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.3. los nuevos abiertos, NAbiertos1, es la lista obtenida a&#241;adiendo</span>
+<span style="color: #b22222;">%          </span><span style="color: #b22222;">dichos Sucesores a continuaci&#243;n de R,</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.4. la lista ordenada de los nuevos abiertos es NAbiertos y</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.5. los nuevos cerrados, NCerrados, es la lista obtenida a&#241;adiendo E a</span>
+<span style="color: #b22222;">%          </span><span style="color: #b22222;">Cerrados,</span>
+<span style="color: #b22222;">%    </span><span style="color: #b22222;">entonces</span>
+<span style="color: #b22222;">%     </span><span style="color: #b22222;">2.6. S es la soluci&#243;n obtenida por b&#250;squeda primero el mejor con los</span>
+<span style="color: #b22222;">%          </span><span style="color: #b22222;">nuevos abiertos y los nuevos cerrados.</span>
+<span style="color: #0000ff;">primero_el_mejor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">Abiertos</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+        <span style="color: #a0522d;">Abiertos</span> = <span style="color: #707183;">[</span><span style="color: #a0522d;">_</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">C</span><span style="color: #7388d6;">]</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_</span><span style="color: #707183;">]</span>,                  <span style="color: #b22222;">% </span><span style="color: #b22222;">1.1</span>
+        estado_final<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>,                         <span style="color: #b22222;">% </span><span style="color: #b22222;">1.2</span>
+        reverse<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">C</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.                        <span style="color: #b22222;">% </span><span style="color: #b22222;">1.3</span>
+<span style="color: #0000ff;">primero_el_mejor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">Abiertos</span>,<span style="color: #a0522d;">Cerrados</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+        <span style="color: #a0522d;">Abiertos</span> = <span style="color: #707183;">[</span><span style="color: #a0522d;">_</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_</span><span style="color: #7388d6;">]</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">R</span><span style="color: #707183;">]</span>,                  <span style="color: #b22222;">% </span><span style="color: #b22222;">2.1</span>
+        expande<span style="color: #707183;">(</span><span style="color: #a0522d;">Abiertos</span>,<span style="color: #a0522d;">Cerrados</span>,<span style="color: #a0522d;">Sucesores</span><span style="color: #707183;">)</span>,    <span style="color: #b22222;">% </span><span style="color: #b22222;">2.2</span>
+        append<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">Sucesores</span>,<span style="color: #a0522d;">NAbiertos1</span><span style="color: #707183;">)</span>,          <span style="color: #b22222;">% </span><span style="color: #b22222;">2.3</span>
+        sort<span style="color: #707183;">(</span><span style="color: #a0522d;">NAbiertos1</span>,<span style="color: #a0522d;">NAbiertos</span><span style="color: #707183;">)</span>,              <span style="color: #b22222;">% </span><span style="color: #b22222;">2.4</span>
+        <span style="color: #a0522d;">NCerrados</span> = <span style="color: #707183;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">Cerrados</span><span style="color: #707183;">]</span>,                <span style="color: #b22222;">% </span><span style="color: #b22222;">2.5</span>
+        primero_el_mejor<span style="color: #707183;">(</span><span style="color: #a0522d;">NAbiertos</span>,<span style="color: #a0522d;">NCerrados</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>. <span style="color: #b22222;">% </span><span style="color: #b22222;">2.6</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>expande(+Abiertos,+Cerrados,?Sucesores)</code> se verifica si Sucesores es
+la lista de los sucesores del primer elemento de <code>Abiertos</code> que no
+pertenecen si a <code>Abiertos</code> ni a <code>Cerrados</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">expande</span><span style="color: #707183;">(</span><span style="color: #a0522d;">Abiertos</span>,<span style="color: #a0522d;">Cerrados</span>,<span style="color: #a0522d;">Sucesores</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">Abiertos</span> = <span style="color: #707183;">[</span><span style="color: #a0522d;">_</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">C</span><span style="color: #7388d6;">]</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_</span><span style="color: #707183;">]</span>,
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">H1</span>-<span style="color: #7388d6;">[</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">E</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">C</span><span style="color: #7388d6;">]</span>,
+           <span style="color: #7388d6;">(</span>sucesor<span style="color: #909183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #a0522d;">E1</span><span style="color: #909183;">)</span>,
+            not<span style="color: #909183;">(</span>memberchk<span style="color: #709870;">(</span><span style="color: #a0522d;">_</span>-<span style="color: #907373;">[</span><span style="color: #a0522d;">E1</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_</span><span style="color: #907373;">]</span>,<span style="color: #a0522d;">Abiertos</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>,
+            not<span style="color: #909183;">(</span>memberchk<span style="color: #709870;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">Cerrados</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>,
+            heuristica<span style="color: #909183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">H1</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,
+           <span style="color: #a0522d;">Sucesores</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código de la búsqueda por primero el mejor se encuentra em <a href="https://swish.swi-prolog.org/p/PLP_b_primero_mejor.pl">b_primero_mejor.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org02f637f" class="outline-3">
+<h3 id="org02f637f"><span class="section-number-3">7.3.</span> Solución del problema de las fichas mediante búsqueda por primero el mejor</h3>
+<div class="outline-text-3" id="text-7-3">
 <ul class="org-ul">
 <li><p>
 La solución es
@@ -1719,9 +1812,26 @@ S = [[b,b,b,h,v,v,v],
 </div>
 </div>
 
-<div id="outline-container-org57027cb" class="outline-2">
-<h2 id="org57027cb"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div id="outline-container-orgcbf6f0c" class="outline-2">
+<h2 id="orgcbf6f0c"><span class="section-number-2">8.</span> Algoritmo A*</h2>
 <div class="outline-text-2" id="text-8">
+</div>
+<div id="outline-container-org2b0db6a" class="outline-3">
+<h3 id="org2b0db6a"><span class="section-number-3">8.1.</span> El problema del 8 puzzle</h3>
+</div>
+
+<div id="outline-container-orgc94a148" class="outline-3">
+<h3 id="orgc94a148"><span class="section-number-3">8.2.</span> El algoritmo A*</h3>
+</div>
+
+<div id="outline-container-org3a829e4" class="outline-3">
+<h3 id="org3a829e4"><span class="section-number-3">8.3.</span> Solucióm del 8 puzzle mediante el algoritmo A*</h3>
+</div>
+</div>
+
+<div id="outline-container-org57027cb" class="outline-2">
+<h2 id="org57027cb"><span class="section-number-2">9.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-9">
 <ul class="org-ul">
 <li>I. Bratko
 <a href="https://archive.org/details/prologprogrammin0000brat_w4b1">Prolog programming for artificial intelligence (3 ed.)</a>
