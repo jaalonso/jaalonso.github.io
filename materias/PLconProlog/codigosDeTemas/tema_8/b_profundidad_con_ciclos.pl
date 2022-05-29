@@ -1,5 +1,5 @@
 % b_profundidad_con_ciclos.pl
-% Búsqueda en profundidad (con detección de ciclos y nodos)
+% Búsqueda en profundidad con detección de ciclos.
 % José A. Alonso Jiménez <https://jaalonso.github.io>
 % Sevilla, 25-mayo-2022
 % ======================================================================

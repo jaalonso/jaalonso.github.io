@@ -1,13 +1,13 @@
 % b_optima_1.pl
-% Búsqueda del camino de menor coste (V1: Museo británico).
-% José A. Alonso Jiménez <jalonso@cs.us.es>
+% BÃºsqueda del camino de menor coste (V1: Museo britÃ¡nico).
+% JosÃ© A. Alonso JimÃ©nez <jalonso@cs.us.es>
 % Sevilla, 30 de Noviembre de 2003
 % =============================================================================
 
-:- module(b_optima_1, [óptima_1/1]).
+:- module(b_optima_1, [Ã³ptima_1/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Relaciones dependientes del problema                                    %%
+%% Â§ Relaciones dependientes del problema                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Se supone que se han definido
@@ -17,13 +17,13 @@
 % 4. coste(E1,E2,C) que se verifica si C es el coste de ir del estado E1 al E2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Búsqueda óptima mediante "museo británico"                              %%
+%% Â§ BÃºsqueda Ã³ptima mediante "museo britÃ¡nico"                              %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% óptima_1(?S)
-%    se verifica si S es una solución óptima del problema; es decir, S es una
-%    solución del problema y no hay otra solución de menor coste.
-óptima_1(Sol) :-
+% Ã³ptima_1(?S)
+%    se verifica si S es una soluciÃ³n Ã³ptima del problema; es decir, S es una
+%    soluciÃ³n del problema y no hay otra soluciÃ³n de menor coste.
+Ã³ptima_1(Sol) :-
    profundidad_con_ciclos(Sol),
    coste_camino(Sol,C),
    not((profundidad_con_ciclos(Sol1),
@@ -39,8 +39,5 @@ coste_camino([E2,E1|R],C) :-
    coste_camino([E1|R],C2),
    C is C1+C2.
 
-%******************************************************************************
-% § Búsqueda en profundidad en grafos
-%******************************************************************************
-
-:- ['b-profundidad-con-ciclos'].
+% Se usa el procedimiento de bÃºsqueda en profundidad con ciclos. 
+:- [b_profundidad_con_ciclos].

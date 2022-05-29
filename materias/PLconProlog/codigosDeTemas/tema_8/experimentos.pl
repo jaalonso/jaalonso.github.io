@@ -54,7 +54,8 @@ con_procedimiento(a_estrella) :-
    [b_a_estrella].
 
 escribe_procedimiento([Pr,NH]) :- !,
-   format('~nProcedimiento: ~w con heurística ~w',[Pr,NH]).
+   forma
+   t('~nProcedimiento: ~w con heurística ~w',[Pr,NH]).
 escribe_procedimiento(Pr) :-
    format('~nProcedimiento: ~w',Pr).
 
@@ -267,7 +268,6 @@ escribe_problema(P-NEI) :-
 
 con_problema(P) :-
    flag('$load_silent',_,true),
-   flag('$redefine_module',_,true),
    [P].
 
 % coste_camino_2(+C,?Co) se verifica si Co es el coste del camino C.

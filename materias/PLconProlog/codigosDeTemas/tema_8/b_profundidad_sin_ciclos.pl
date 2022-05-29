@@ -19,7 +19,7 @@
 
 % profundidad_sin_ciclos(?S) se verifica si S es una solución del
 % problema mediante búsqueda en profundidad en árbol. Por ejemplo,
-%    ?- [arbol].
+%    ?- [p_arbol].
 %    true.
 %
 %    ?- profundidad_sin_ciclos(S).

@@ -1,5 +1,5 @@
 % p_paseo.pl
-% Problema del paseo
+% Problema del paseo.
 % José A. Alonso Jiménez <https://jaalonso.github.io>
 % Sevilla, 25-mayo-2022
 % =============================================================================

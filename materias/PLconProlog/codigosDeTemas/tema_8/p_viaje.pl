@@ -1,5 +1,5 @@
 % p_viaje.pl
-% Problema del viaje en Andalucía
+% problema del viaje en andalucía
 % José A. Alonso Jiménez <https://jaalonso.github.io>
 % Sevilla, 25-mayo-2022
 % =============================================================================

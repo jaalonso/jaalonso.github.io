@@ -1,5 +1,5 @@
 % p_grafo.pl
-% Grafo para búsqueda.
+% Problema del grafo.
 % José A. Alonso Jiménez <https://jaalonso.github.io>
 % Sevilla, 25-mayo-2022
 % ======================================================================
@@ -9,7 +9,7 @@
 
 % El problema de búsqueda correspondiente al siguiente grafo:
 %
-%	                           a
+%                                  a
 %                                /   \
 %                              b       c
 %                             /  \    /  \
