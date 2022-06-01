@@ -105,7 +105,7 @@ solución_3([A,B,C,D,E]) :-
 solución_4([C,U,A,T,R,O],[V,E,I,N,T,E]) :-
    Vars = [C,U,A,T,R,O,V,E,I,N],
    Vars ins 0..9,                                 % Los valores son los dígitos
-   all_distinct(Vars),                          % Los valores son distintos
+   all_distinct(Vars),                            % Los valores son distintos
       (100000*C+10000*U+1000*A+100*T+10*R+O) * 5
    #=  100000*V+10000*E+1000*I+100*N+10*T+E,
    label(Vars).
