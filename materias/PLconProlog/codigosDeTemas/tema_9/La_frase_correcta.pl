@@ -28,6 +28,6 @@ solución([A1,A2,A3,A4,A5,A6]) :-
    sat(A6 =:= ~(A1+A2+A3+A4+A5)).
 
 % Cálculo de la solución
-%    ?- solucion(L).
+%    ?- solución(L).
 %    L = [0, 0, 0, 0, 1, 0].
 % Por tanto, la verdadera es la 5ª.
