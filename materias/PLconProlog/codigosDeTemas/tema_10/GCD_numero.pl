@@ -1,18 +1,25 @@
 % GCD_numero.pl
-% Concordancia en número en gramáticas de cláusulas definidas.
-% José A. Alonso Jiménez <jalonso@cs.us.es>
-% Sevilla,  8 de Diciembre de 2003
-% =============================================================================
+% Concordancia en nÃºmero en gramÃ¡ticas de clÃ¡usulas definidas.
+% JosÃ© A. Alonso JimÃ©nez <https://jaalonso.github.io>
+% Sevilla,  6-junio-2022
+% ======================================================================
 
-oración              -->  sintagma_nominal(N), 
-                          sintagma_verbal(N).
+% phrase(oraciÃ³n,L) se verifica si L es una oraciÃ³n de la gramÃ¡tica con
+% concordancia en nÃºmero. Por ejemplo,
+%    ?- phrase(oraciÃ³n,[el,gato,come,pescado]).
+%    true 
+%    
+%    ?- phrase(oraciÃ³n,[los,gato,come,pescado]).
+%    false.
+%    
+%    ?- phrase(oraciÃ³n,[los,gatos,comen,pescado]).
+%    true 
+oraciÃ³n              -->  sintagma_nominal(N), sintagma_verbal(N).
 sintagma_nominal(N)  -->  nombre(N).
-sintagma_nominal(N)  -->  artículo(N), 
-                          nombre(N).
-sintagma_verbal(N)   -->  verbo(N),
-                          sintagma_nominal(_).
-artículo(singular)   -->  [el].
-artículo(plural)     -->  [los].
+sintagma_nominal(N)  -->  artÃ­culo(N), nombre(N).
+sintagma_verbal(N)   -->  verbo(N), sintagma_nominal(_).
+artÃ­culo(singular)   -->  [el].
+artÃ­culo(plural)     -->  [los].
 nombre(singular)     -->  [gato].
 nombre(plural)       -->  [gatos].
 nombre(singular)     -->  [perro].
@@ -21,16 +28,3 @@ nombre(singular)     -->  [pescado].
 nombre(singular)     -->  [carne].
 verbo(singular)      -->  [come].
 verbo(plural)        -->  [comen].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Sesión                                                                    %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ?- phrase(oración,[el,gato,come,pescado]).
-% Yes
-% 
-% ?- phrase(oración,[los,gato,come,pescado]).
-% No
-% 
-% ?- phrase(oración,[los,gatos,comen,pescado]).
-% Yes

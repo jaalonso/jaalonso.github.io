@@ -1,50 +1,45 @@
 % GCD_lexicon_1.pl
-% Separación de reglas y lexicón.
-% José A. Alonso Jiménez <jalonso@cs.us.es>
-% Sevilla,  8 de Diciembre de 2003
-% =============================================================================
+% SeparaciÃ³n de reglas y lexicÃ³n.
+% JosÃ© A. Alonso JimÃ©nez <https://jaalonso.github.io>
+% Sevilla, 6-junio-2022
+% ======================================================================
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Reglas                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-oración           -->  sintagma_nominal, sintagma_verbal.
+% phrase(oraciÃ³n,L) se verifica si L es una oraciÃ³n de la siguiente
+% gramÃ¡tica en la que se han separado las reglas del lexicÃ³n. Por ejemplo.
+%    ?- phrase(oraciÃ³n,[el,gato,come,pescado]).
+%    true 
+%    ?- phrase(oraciÃ³n,[el,come,pescado]).
+%    false.
+%    
+%    ?- phrase(oraciÃ³n,[el,gato,X,pescado]).
+%    X = come ;
+%    false.
+%    
+%    ?- phrase(oraciÃ³n,[X,gato,Y,pescado]).
+%    X = el,
+%    Y = come ;
+%    false.
+%    
+%    ?- phrase(sintagma_nominal,L).
+%    L = [gato] ;
+%    L = [perro] ;
+%    L = [pescado] ;
+%    L = [carne] ;
+%    L = [el,gato] 
+% Las reglas son
+oraciÃ³n           -->  sintagma_nominal, sintagma_verbal.
 sintagma_nominal  -->  nombre.
-sintagma_nominal  -->  artículo, nombre.
+sintagma_nominal  -->  artÃ­culo, nombre.
 sintagma_verbal   -->  verbo, sintagma_nominal.
-artículo          -->  [Palabra], {lex(Palabra,artículo)}.
+artÃ­culo          -->  [Palabra], {lex(Palabra,artÃ­culo)}.
 nombre            -->  [Palabra], {lex(Palabra,nombre)}.
 verbo             -->  [Palabra], {lex(Palabra,verbo)}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Lexicón                                                                 %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-lex(el,artículo).
+% El lexicÃ³n es
+lex(el,artÃ­culo).
 lex(gato,nombre).
 lex(perro,nombre).
 lex(pescado,nombre).
 lex(carne,nombre).
 lex(come,verbo).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Sesión                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ?- oración([el,gato,come,pescado],[]).
-% Yes
-% ?- oración([el,come,pescado],[]).
-% No
-% ?- oración([el,gato,X,pescado],[]).
-% X = come ;
-% No
-% ?- oración([X,gato,Y,pescado],[]).
-% X = el
-% Y = come 
-% Yes
-% ?- sintagma_nominal(L,[]).
-% L = [gato] ;
-% L = [perro] 
-% Yes
 
 

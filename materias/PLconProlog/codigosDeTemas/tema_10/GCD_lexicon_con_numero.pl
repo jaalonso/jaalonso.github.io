@@ -1,15 +1,33 @@
 % GCD_lexicon_con_numero.pl
-% Concordancia en número en GCD con llamadas.
-% José A. Alonso Jiménez <jalonso@cs.us.es>
-% Sevilla,  8 de Diciembre de 2003
-% =============================================================================
+% Concordancia en nÃºmero en GCD con llamadas.
+% JosÃ© A. Alonso JimÃ©nez <https://jaalonso.github.io>
+% Sevilla, 6-junio-2022
+% ======================================================================
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Lexicón                                                                 %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% phrase(oraciÃ³n,L) se verifica si L es una oraciÃ³n de la siguiente
+% gramÃ¡tica con concordancia en nÃºmero en la que se han separado las
+% reglas del lexicÃ³n. Por ejemplo. 
+%    ?- phrase(oraciÃ³n,[el,gato,come,pescado]).
+%    true 
+%    
+%    ?- phrase(oraciÃ³n,[los,gato,come,pescado]).
+%    false.
+%    
+%    ?- phrase(oraciÃ³n,[los,gatos,comen,pescado]).
+%    true 
 
-lex(el,artículo,singular).
-lex(los,artículo,plural).
+% Las reglas son
+oraciÃ³n             -->  sintagma_nominal(N), sintagma_verbal(N).
+sintagma_nominal(N) -->  nombre(N).
+sintagma_nominal(N) -->  artÃ­culo(N), nombre(N).
+sintagma_verbal(N)  -->  verbo(N), sintagma_nominal(_).
+artÃ­culo(N)         -->  [Palabra], {lex(Palabra,artÃ­culo,N)}.
+nombre(N)           -->  [Palabra], {lex(Palabra,nombre,N)}.
+verbo(N)            -->  [Palabra], {lex(Palabra,verbo,N)}.
+
+% El lexicÃ³n es
+lex(el,artÃ­culo,singular).
+lex(los,artÃ­culo,plural).
 lex(gato,nombre,singular).
 lex(gatos,nombre,plural).
 lex(perro,nombre,singular).
@@ -20,27 +38,3 @@ lex(carne,nombre,singular).
 lex(carnes,nombre,plural).
 lex(come,verbo,singular).
 lex(comen,verbo,plural).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Reglas                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-oración              -->  sintagma_nominal(N), sintagma_verbal(N).
-sintagma_nominal(N)  -->  nombre(N).
-sintagma_nominal(N)  -->  artículo(N), nombre(N).
-sintagma_verbal(N)   -->  verbo(N), sintagma_nominal(_).
-artículo(N)          -->  [Palabra], {lex(Palabra,artículo,N)}.
-nombre(N)            -->  [Palabra], {lex(Palabra,nombre,N)}.
-verbo(N)             -->  [Palabra], {lex(Palabra,verbo,N)}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Sesión                                                                    %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ?- oración([el,gato,come,pescado],[]).
-% Yes
-% ?- oración([los,gato,come,pescado],[]).
-% No
-% ?- oración([los,gatos,comen,pescado],[]).
-% Yes
-

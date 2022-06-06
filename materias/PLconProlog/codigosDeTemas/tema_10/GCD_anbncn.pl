@@ -1,40 +1,26 @@
 % GCD_anbncn.pl
 % GCD para un lenguaje formal a^nb^nc^n
-% José A. Alonso Jiménez <jalonso@cs.us.es>
-% Sevilla,  8 de Diciembre de 2003
-% =============================================================================
+% JosÃ© A. Alonso JimÃ©nez <https://jaalonso.github.io>
+% Sevilla, 6-junio-2022
+% ======================================================================
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Enunciado                                                               %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% GCD para el lenguaje a^nb^nc^n
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § GCD                                                                     %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-s --> bloque_a(N), bloque_b(N), bloque_c(N).
-
-bloque_a(0) --> [].
+% phrase(s,L) se verifica si L es una palabra del lenguaje
+% a^nb^nc^n. Por ejemplo, 
+%    ?- phrase(s,[a,a,b,b,c,c]).
+%    true 
+%    
+%    ?- phrase(s,[a,a,b,b,b,c,c]).
+%    false.
+%    
+%    ?- phrase(s,L).
+%    L = [] ;
+%    L = [a,b,c] ;
+%    L = [a,a,b,b,c,c] ;
+%    L = [a,a,a,b,b,b,c,c,c] 
+s                --> bloque_a(N), bloque_b(N), bloque_c(N).
+bloque_a(0)      --> [].
 bloque_a(suc(N)) --> [a], bloque_a(N).
-
-bloque_b(0) --> [].
+bloque_b(0)      --> [].
 bloque_b(suc(N)) --> [b], bloque_b(N).
-
-bloque_c(0) --> [].
+bloque_c(0)      --> [].
 bloque_c(suc(N)) --> [c], bloque_c(N).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% § Sesión                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ?- s([a,a,b,b,c,c],[]).
-% Yes
-% ?- s([a,a,b,b,b,c,c],[]).
-% No
-% ?- s(X,[]).
-% X = [] ;
-% X = [a, b, c] ;
-% X = [a, a, b, b, c, c] 
-% Yes

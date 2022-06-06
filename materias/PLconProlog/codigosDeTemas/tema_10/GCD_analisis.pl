@@ -1,58 +1,53 @@
 % GCD_analisis.pl
-% ¡rbol de an·lisis con gram·ticas de cl·usulas definidas.
-% JosÈ A. Alonso JimÈnez <jalonso@cs.us.es>
-% Sevilla,  8 de Diciembre de 2003
-% =============================================================================
+% √Årbol de an√°lisis con gram√°ticas de cl√°usulas definidas.
+% Jos√© A. Alonso Jim√©nez <https://jaalonso.github.io>
+% Sevilla,  6-junio-2022
+% ======================================================================
 
-oraciÛn(o(SN,SV))           -->  sintagma_nominal(SN), 
+% oraci√≥n(A,L,[]) se verifica si A es el √°rbol de an√°lisis sint√°ctico de
+% la oraci√≥n L. Por ejemplo,
+%    ?- oraci√≥n(A,[el,gato,come,pescado],[]).
+%    A = o(sn(art(el),n(gato)),sv(v(come),sn(n(pescado)))) 
+%    
+%    ?- phrase(oraci√≥n(A),[el,gato,come,pescado]).
+%    A = o(sn(art(el),n(gato)),sv(v(come),sn(n(pescado)))) 
+oraci√≥n(o(SN,SV))           -->  sintagma_nominal(SN), 
                                  sintagma_verbal(SV).
 sintagma_nominal(sn(N))     -->  nombre(N).
-sintagma_nominal(sn(Art,N)) -->  artÌculo(Art), 
+sintagma_nominal(sn(Art,N)) -->  art√≠culo(Art), 
                                  nombre(N).
 sintagma_verbal(sv(V,SN))   -->  verbo(V), 
                                  sintagma_nominal(SN).
-artÌculo(art(el))           -->  [el].
+art√≠culo(art(el))           -->  [el].
 nombre(n(gato))             -->  [gato].
 nombre(n(perro))            -->  [perro].
 nombre(n(pescado))          -->  [pescado].
 nombre(n(carne))            -->  [carne].
 verbo(v(come))              -->  [come].
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% SesiÛn                                                                    %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ?- oraciÛn(A,[el,gato,come,pescado],[]).
-% A = o(sn(art(el), n(gato)), sv(v(come), sn(n(pescado)))) 
-% Yes
-% ?- phrase(oraciÛn(A),[el,gato,come,pescado]).
-% A = o(sn(art(el), n(gato)), sv(v(come), sn(n(pescado)))) 
-% Yes
-%  
-% ?- listing([oraciÛn,sintagma_nominal,sintagma_verbal,artÌculo,nombre,verbo]).
-% 
-% oraciÛn(o(A, B), C, D) :-
-%    sintagma_nominal(A, C, E),
-%    sintagma_verbal(B, E, D).
-% 
-% sintagma_nominal(sn(A), B, C) :-
-%    nombre(A, B, C).
-% sintagma_nominal(sn(A, B), C, D) :-
-%    artÌculo(A, C, E),
-%    nombre(B, E, D).
-% 
-% sintagma_verbal(sv(A, B), C, D) :-
-%    verbo(A, C, E),
-%    sintagma_nominal(B, E, D).
-% 
-% artÌculo(art(el), [el|A], A).
-% 
-% nombre(n(gato), [gato|A], A).
-% nombre(n(perro), [perro|A], A).
-% nombre(n(pescado), [pescado|A], A).
-% nombre(n(carne), [carne|A], A).
-% 
-% verbo(v(come), [come|A], A).
-% 
-% Yes
-% 
+% Programa correspondiente a la GCD
+%    ?- listing([oraci√≥n,sintagma_nominal,sintagma_verbal,art√≠culo,nombre,verbo]).
+%    oraci√≥n(o(SN, SV), A, B) :-
+%        sintagma_nominal(SN, A, C),
+%        sintagma_verbal(SV, C, B).
+%    
+%    sintagma_nominal(sn(N), A, B) :-
+%        nombre(N, A, B).
+%    sintagma_nominal(sn(Art, N), A, B) :-
+%        art√≠culo(Art, A, C),
+%        nombre(N, C, B).
+%    
+%    sintagma_verbal(sv(V, SN), A, B) :-
+%        verbo(V, A, C),
+%        sintagma_nominal(SN, C, B).
+%    
+%    art√≠culo(art(el), [el|A], A).
+%    
+%    nombre(n(gato), [gato|A], A).
+%    nombre(n(perro), [perro|A], A).
+%    nombre(n(pescado), [pescado|A], A).
+%    nombre(n(carne), [carne|A], A).
+%    
+%    verbo(v(come), [come|A], A).
+%    
+%    true.
