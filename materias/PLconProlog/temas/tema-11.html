@@ -1,0 +1,1862 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 07 de junio del 2022 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 11: Formalización en Prolog de la lógica proposicional</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/materias/PLconProlog/">Inicial</a> |
+   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
+   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
+   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
+   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 11: Formalización en Prolog de la lógica proposicional</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org9518613">1. Sintaxis de la lógica proposicional</a></li>
+<li><a href="#org872f0a8">2. Semántica de la lógica proposicional</a>
+<ul>
+<li><a href="#org9ae7682">2.1. Valores y funciones de verdad</a></li>
+<li><a href="#orgae85a27">2.2. Valor de una fórmula en una interpretación</a></li>
+<li><a href="#orga6ad2e1">2.3. Interpretaciones principales de una fórmula</a></li>
+<li><a href="#orgecd9f01">2.4. Modelo de una fórmula</a></li>
+<li><a href="#orga7d0668">2.5. Cálculo de los modelos de una fórmula</a></li>
+<li><a href="#orgfe661c2">2.6. Satisfacibilidad</a></li>
+<li><a href="#orgdbfc7be">2.7. Contramodelo de una fórmula</a></li>
+<li><a href="#org8439896">2.8. Fórmulas válidas (tautologías)</a></li>
+<li><a href="#orgc226536">2.9. Interpretaciones principales de un conjunto de fórmulas</a></li>
+<li><a href="#org182cae6">2.10. Modelo de un conjunto de fórmulas</a></li>
+<li><a href="#orgcd1fb0c">2.11. Cálculo de modelos de conjuntos de fórmulas</a></li>
+<li><a href="#orgcd8caa8">2.12. Consistencia de un conjunto de fórmulas</a></li>
+<li><a href="#org960fc01">2.13. Consecuencia lógica</a></li>
+<li><a href="#orgbfaec7d">2.14. El problema de los veraces y mentirosos</a></li>
+</ul>
+</li>
+<li><a href="#orgdd4e4d2">3. Tableros semánticos</a>
+<ul>
+<li><a href="#orgb516e50">3.1. Demostraciones mediante tableros semánticos</a></li>
+<li><a href="#org951263b">3.2. Notación uniforme</a></li>
+<li><a href="#org4eb601c">3.3. Procedimiento de completación de tableros</a></li>
+<li><a href="#orge70326a">3.4. Tableros cerrados</a></li>
+<li><a href="#org739f971">3.5. Teorema por tableros</a></li>
+<li><a href="#org09d2643">3.6. Deducción por tableros</a></li>
+</ul>
+</li>
+<li><a href="#orgc764a04">4. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+<p>
+Nota: El código correspondiente a este capítulo se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_logica_proposicional.pl">logica_proposicional.pl</a>. 
+</p>
+
+<div id="outline-container-org9518613" class="outline-2">
+<h2 id="org9518613"><span class="section-number-2">1.</span> Sintaxis de la lógica proposicional</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>Alfabeto proposicional:
+<ul class="org-ul">
+<li>símbolos proposicionales.</li>
+<li><p>
+conectivas lógicas:
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">¬</td>
+<td class="org-left">negación</td>
+</tr>
+
+<tr>
+<td class="org-left">∧</td>
+<td class="org-left">conjunción</td>
+</tr>
+
+<tr>
+<td class="org-left">∨</td>
+<td class="org-left">disyunción</td>
+</tr>
+
+<tr>
+<td class="org-left">→</td>
+<td class="org-left">condicional</td>
+</tr>
+
+<tr>
+<td class="org-left">↔</td>
+<td class="org-left">equivalencia</td>
+</tr>
+</tbody>
+</table></li>
+<li>símbolos auxiliares: "("` y ")".</li>
+</ul></li>
+
+<li>Fórmulas proposicionales:
+<ul class="org-ul">
+<li>Los símbolos proposicionales son fórmulas</li>
+<li>Si F y G son fórmulas, entonces también lo son
+¬ F, 
+(F ∧ G), 
+(F ∨ G), 
+(F → G) y
+(F ↔ G).</li>
+</ul></li>
+
+<li>Eliminación de paréntesis:
+<ul class="org-ul">
+<li>Eliminación de paréntesis externos.</li>
+<li>Precedencia: ¬, ∧, ∨ →, ↔</li>
+<li>Asociatividad: ∧ y ∨ asocian por la derecha</li>
+</ul></li>
+
+<li><p>
+Sintaxis en Prolog 
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Usual</td>
+<td class="org-left">¬</td>
+<td class="org-left">∧</td>
+<td class="org-left">∨</td>
+<td class="org-left">→</td>
+<td class="org-left">↔</td>
+</tr>
+
+<tr>
+<td class="org-left">Prolog</td>
+<td class="org-left"><code>-</code></td>
+<td class="org-left"><code>&amp;</code></td>
+<td class="org-left"><code>v</code></td>
+<td class="org-left"><code>=&gt;</code></td>
+<td class="org-left"><code>&lt;=&gt;</code></td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+Declaración de operadores:
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- op<span style="color: #707183;">(</span>610, fy,  -<span style="color: #707183;">)</span>.     <span style="color: #b22222;">% </span><span style="color: #b22222;">negaci&#243;n             </span>
+:- op<span style="color: #707183;">(</span>620, xfy, &amp;<span style="color: #707183;">)</span>.     <span style="color: #b22222;">% </span><span style="color: #b22222;">conjunci&#243;n           </span>
+:- op<span style="color: #707183;">(</span>630, xfy, v<span style="color: #707183;">)</span>.     <span style="color: #b22222;">% </span><span style="color: #b22222;">disyunci&#243;n           </span>
+:- op<span style="color: #707183;">(</span>640, xfy, =&gt;<span style="color: #707183;">)</span>.    <span style="color: #b22222;">% </span><span style="color: #b22222;">condicional</span>
+:- op<span style="color: #707183;">(</span>650, xfy, &lt;=&gt;<span style="color: #707183;">)</span>.   <span style="color: #b22222;">% </span><span style="color: #b22222;">equivalencia         </span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org872f0a8" class="outline-2">
+<h2 id="org872f0a8"><span class="section-number-2">2.</span> Semántica de la lógica proposicional</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org9ae7682" class="outline-3">
+<h3 id="org9ae7682"><span class="section-number-3">2.1.</span> Valores y funciones de verdad</h3>
+<div class="outline-text-3" id="text-2-1">
+</div>
+<div id="outline-container-org118e099" class="outline-4">
+<h4 id="org118e099"><span class="section-number-4">2.1.1.</span> Valores de verdad</h4>
+<div class="outline-text-4" id="text-2-1-1">
+<ul class="org-ul">
+<li>Valores de verdad:
+<ul class="org-ul">
+<li>1: verdadero y</li>
+<li>0: falso</li>
+</ul></li>
+
+<li><p>
+<code>valor_de_verdad(?V)</code> se verifica si <code>V</code> es un valor de verdad.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">valor_de_verdad</span><span style="color: #707183;">(</span>0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">valor_de_verdad</span><span style="color: #707183;">(</span>1<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org32cddaa" class="outline-4">
+<h4 id="org32cddaa"><span class="section-number-4">2.1.2.</span> Funciones de verdad (negación)</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<ul class="org-ul">
+<li><p>
+Función de verdad de la negación: 
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">i</th>
+<th scope="col" class="org-right">¬i</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-right">0</td>
+<td class="org-right">1</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+<code>función_de_verdad(+Op,+V1,-V)</code> si <code>Op(V1) = V</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>-,  1, 0<span style="color: #707183;">)</span>. 
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>-,  0, 1<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5176c72" class="outline-4">
+<h4 id="org5176c72"><span class="section-number-4">2.1.3.</span> Funciones de verdad de las conectivas binarias</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<ul class="org-ul">
+<li><p>
+Las funciones de verdad de las conectivas binarias son   
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">i</th>
+<th scope="col" class="org-right">j</th>
+<th scope="col" class="org-right">i ∧ j</th>
+<th scope="col" class="org-right">i ∨ j</th>
+<th scope="col" class="org-right">i → j</th>
+<th scope="col" class="org-right">i ↔ j</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+<td class="org-right">0</td>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-right">0</td>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-right">0</td>
+<td class="org-right">0</td>
+<td class="org-right">0</td>
+<td class="org-right">0</td>
+<td class="org-right">1</td>
+<td class="org-right">1</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+<code>función_de_verdad(+Op,+V1,+V2,-V)</code> si <code>Op(V1,V2)=V</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>v,   0, 0, 0<span style="color: #707183;">)</span> :- <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>v,   <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span>, 1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>&amp;,   1, 1, 1<span style="color: #707183;">)</span> :- <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>&amp;,   <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span>, 0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>=&gt;,  1, 0, 0<span style="color: #707183;">)</span> :- <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>=&gt;,  <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span>, 1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>&lt;=&gt;, <span style="color: #a0522d;">X</span>, <span style="color: #a0522d;">X</span>, 1<span style="color: #707183;">)</span> :- <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">funci&#243;n_de_verdad</span><span style="color: #707183;">(</span>&lt;=&gt;, <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span>, 0<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgae85a27" class="outline-3">
+<h3 id="orgae85a27"><span class="section-number-3">2.2.</span> Valor de una fórmula en una interpretación</h3>
+<div class="outline-text-3" id="text-2-2">
+</div>
+<div id="outline-container-org91e6bbc" class="outline-4">
+<h4 id="org91e6bbc"><span class="section-number-4">2.2.1.</span> Representación de las interpretaciones</h4>
+<div class="outline-text-4" id="text-2-2-1">
+<ul class="org-ul">
+<li>Las <b>interpretaciones</b> son listas de pares de variables y valores de
+verdad. Por ejemplo, <code>[(p,1),(r,0),(u,1)]</code> es una interpretación.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5d2435f" class="outline-4">
+<h4 id="org5d2435f"><span class="section-number-4">2.2.2.</span> Valor de una fórmula en una interpretación</h4>
+<div class="outline-text-4" id="text-2-2-2">
+<ul class="org-ul">
+<li><p>
+<code>valor(+F, +I, -V)</code> se verifica si el valor de la fórmula <code>F</code> en la
+interpretación <code>I</code> es <code>V</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- valor<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,V<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+V = 1 
+?- valor<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,V<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+V = 0 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">valor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">V</span><span style="color: #707183;">)</span> :-
+   memberchk<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">V</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">I</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">valor</span><span style="color: #707183;">(</span>-<span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">V</span><span style="color: #707183;">)</span> :-
+   valor<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">VA</span><span style="color: #707183;">)</span>,
+   funci&#243;n_de_verdad<span style="color: #707183;">(</span>-, <span style="color: #a0522d;">VA</span>, <span style="color: #a0522d;">V</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">valor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">V</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">F</span> =..<span style="color: #707183;">[</span><span style="color: #a0522d;">Op</span>, <span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">B</span><span style="color: #707183;">]</span>,
+   valor<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">VA</span><span style="color: #707183;">)</span>,
+   valor<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>, <span style="color: #a0522d;">I</span>, <span style="color: #a0522d;">VB</span><span style="color: #707183;">)</span>,
+   funci&#243;n_de_verdad<span style="color: #707183;">(</span><span style="color: #a0522d;">Op</span>, <span style="color: #a0522d;">VA</span>, <span style="color: #a0522d;">VB</span>, <span style="color: #a0522d;">V</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga6ad2e1" class="outline-3">
+<h3 id="orga6ad2e1"><span class="section-number-3">2.3.</span> Interpretaciones principales de una fórmula</h3>
+<div class="outline-text-3" id="text-2-3">
+</div>
+<div id="outline-container-orgedb02d6" class="outline-4">
+<h4 id="orgedb02d6"><span class="section-number-4">2.3.1.</span> Interpretaciones de una fórmula</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<ul class="org-ul">
+<li>I es una <b>interpretación principal</b> de F si es una aplicación del
+conjunto de los símbolos proposicionales de F en el conjunto de los
+valores de verdad.</li>
+
+<li><p>
+<code>interpretaciones_fórmula(+F,-L)</code> se verifica si <code>L</code> es el conjunto de
+las interpretaciones principales de la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- interpretaciones_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpretaciones_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,interpretaci&#243;n_f&#243;rmula<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+
+<ul class="org-ul">
+<li><p>
+<code>interpretación_fórmula(?I,+F)</code> se verifica si <code>I</code> es una
+interpretación de la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- interpretaci&#243;n_f&#243;rmula<span style="color: #707183;">(</span>I,<span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> 
+true.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpretaci&#243;n_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>,
+   interpretaci&#243;n_s&#237;mbolos<span style="color: #707183;">(</span><span style="color: #a0522d;">U</span>,<span style="color: #a0522d;">I</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf6904e3" class="outline-4">
+<h4 id="orgf6904e3"><span class="section-number-4">2.3.2.</span> Símbolos de una fórmula</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<ul class="org-ul">
+<li><p>
+<code>símbolos_fórmula(+F,?U)</code> se verifica si <code>U</code> es el conjunto ordenado
+de los símbolos proposicionales de la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- s&#237;mbolos_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span>, U<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+U = <span style="color: #707183;">[</span>p, q, r<span style="color: #707183;">]</span>
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">s&#237;mbolos_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_f&#243;rmula_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U1</span><span style="color: #707183;">)</span>,
+   sort<span style="color: #707183;">(</span><span style="color: #a0522d;">U1</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">s&#237;mbolos_f&#243;rmula_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   atom<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">s&#237;mbolos_f&#243;rmula_aux</span><span style="color: #707183;">(</span>-<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_f&#243;rmula_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">s&#237;mbolos_f&#243;rmula_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">F</span> =.. <span style="color: #707183;">[</span><span style="color: #a0522d;">_Op</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">B</span><span style="color: #707183;">]</span>,
+   s&#237;mbolos_f&#243;rmula_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">UA</span><span style="color: #707183;">)</span>,
+   s&#237;mbolos_f&#243;rmula_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">UB</span><span style="color: #707183;">)</span>,
+   union<span style="color: #707183;">(</span><span style="color: #a0522d;">UA</span>,<span style="color: #a0522d;">UB</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6d22b88" class="outline-4">
+<h4 id="org6d22b88"><span class="section-number-4">2.3.3.</span> Interpretación de una lista de símbolos</h4>
+<div class="outline-text-4" id="text-2-3-3">
+<ul class="org-ul">
+<li><p>
+<code>interpretación_símbolos(+L,-I)</code> se verifica si <code>I</code> es una
+interpretación de la lista de símbolos proposicionales <code>L</code>. Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- interpretaci&#243;n_s&#237;mbolos<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p,q<span style="color: #7388d6;">]</span>,I<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpretaci&#243;n_s&#237;mbolos</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">interpretaci&#243;n_s&#237;mbolos</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">A</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span><span style="color: #909183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">V</span><span style="color: #909183;">)</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">IL</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   valor_de_verdad<span style="color: #707183;">(</span><span style="color: #a0522d;">V</span><span style="color: #707183;">)</span>,
+   interpretaci&#243;n_s&#237;mbolos<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">IL</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgecd9f01" class="outline-3">
+<h3 id="orgecd9f01"><span class="section-number-3">2.4.</span> Modelo de una fórmula</h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li><p>
+<code>es_modelo_fórmula(+I,+F)</code> se verifica si la interpretación <code>I</code> es un
+modelo de la fórmula <code>F</code> (es decir, si el valor de F en I es
+verdadero). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_modelo_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_modelo_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_modelo_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   valor<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">V</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">V</span> = 1.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga7d0668" class="outline-3">
+<h3 id="orga7d0668"><span class="section-number-3">2.5.</span> Cálculo de los modelos de una fórmula</h3>
+<div class="outline-text-3" id="text-2-5">
+<ul class="org-ul">
+<li><p>
+<code>modelo_fórmula(?I,+F)</code> se verifica si <code>I</code> es un modelo principal de
+la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- modelo_f&#243;rmula<span style="color: #707183;">(</span>I,<span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">modelo_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   interpretaci&#243;n_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>,
+   es_modelo_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>modelos_fórmula(+F,-L)</code> se verifica si <code>L</code> es el conjunto de los
+modelos principales de la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- modelos_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">modelos_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,modelo_f&#243;rmula<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgfe661c2" class="outline-3">
+<h3 id="orgfe661c2"><span class="section-number-3">2.6.</span> Satisfacibilidad</h3>
+<div class="outline-text-3" id="text-2-6">
+<ul class="org-ul">
+<li><p>
+<code>es_satisfacible(+F)</code> se verifica si la fórmula <code>F</code> es satisfacible
+(es decir, si tiene modelos). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_satisfacible<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p v q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>-q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_satisfacible<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p &amp; q<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>p =&gt; r<span style="color: #7388d6;">)</span> &amp; <span style="color: #7388d6;">(</span>q =&gt; -r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_satisfacible</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   interpretaci&#243;n_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>,
+   es_modelo_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgdbfc7be" class="outline-3">
+<h3 id="orgdbfc7be"><span class="section-number-3">2.7.</span> Contramodelo de una fórmula</h3>
+<div class="outline-text-3" id="text-2-7">
+<ul class="org-ul">
+<li><p>
+<code>contramodelo_fórmula(?I,+F)</code> se verifica si <code>I</code> es un contramodelo
+principal de la fórmula <code>F</code> (es decir, si <code>I</code> es una interpretación
+principal de F que no es modelo de F). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- contramodelo_f&#243;rmula<span style="color: #707183;">(</span>I, p &lt;=&gt; q<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+false.
+?- contramodelo_f&#243;rmula<span style="color: #707183;">(</span>I, p =&gt; p<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">contramodelo_f&#243;rmula</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   interpretaci&#243;n_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span>es_modelo_f&#243;rmula<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8439896" class="outline-3">
+<h3 id="org8439896"><span class="section-number-3">2.8.</span> Fórmulas válidas (tautologías)</h3>
+<div class="outline-text-3" id="text-2-8">
+<ul class="org-ul">
+<li><p>
+<code>es_tautología(+F)</code> se verifica si la fórmula <code>F</code> es una tautología
+(es decir, si todas las interpretaciones son modelos de F). Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_tautolog&#237;a<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>p =&gt; q<span style="color: #7388d6;">)</span> v <span style="color: #7388d6;">(</span>q =&gt; p<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_tautolog&#237;a<span style="color: #707183;">(</span>p =&gt; q<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_tautolog&#237;a</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>contramodelo_f&#243;rmula<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_I</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+Una definición alternativa es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_tautolog&#237;a_alt</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>es_satisfacible<span style="color: #7388d6;">(</span>-<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc226536" class="outline-3">
+<h3 id="orgc226536"><span class="section-number-3">2.9.</span> Interpretaciones principales de un conjunto de fórmulas</h3>
+<div class="outline-text-3" id="text-2-9">
+<ul class="org-ul">
+<li>Una <b>interpretación principal</b> de un conjunto de fórmulas es una
+aplicación del conjunto de sus símbolos proposicionales en el conjunto
+de los valores de verdad.</li>
+
+<li><p>
+<code>interpretaciones_conjunto(+S,-L)</code> se verifica si <code>L</code> es el conjunto
+de las interpretaciones principales del conjunto <code>S</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- interpretaciones_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, <span style="color: #a0522d;">q</span>=&gt; r<span style="color: #7388d6;">]</span>,U<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+U = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>q,1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpretaciones_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,interpretaci&#243;n_conjunto<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>interpretación_conjunto(?I,+S)</code> se verifica si <code>I</code> es una
+interpretación del conjunto de fórmulas <code>S</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">?- interpretaci&#243;n_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span>p =&gt; q, q =&gt; p &amp; q<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+<span style="color: #a0522d;">I</span> = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> <span style="color: #a020f0;">;</span>
+<span style="color: #a0522d;">I</span> = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> <span style="color: #a020f0;">;</span>
+<span style="color: #a0522d;">I</span> = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> <span style="color: #a020f0;">;</span>
+<span style="color: #a0522d;">I</span> = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> <span style="color: #a020f0;">;</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpretaci&#243;n_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>,
+   interpretaci&#243;n_s&#237;mbolos<span style="color: #707183;">(</span><span style="color: #a0522d;">U</span>,<span style="color: #a0522d;">I</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>símbolos_conjunto(+S,?U)</code> se verifica si <code>U</code> es el conjunto ordenado
+de los símbolos proposicionales del conjunto de fórmulas <code>S</code>.  Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- s&#237;mbolos_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, <span style="color: #a0522d;">q</span>=&gt; r<span style="color: #7388d6;">]</span>,U<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+U = <span style="color: #707183;">[</span>p, q, r<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">s&#237;mbolos_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_conjunto_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">U1</span><span style="color: #707183;">)</span>,
+   sort<span style="color: #707183;">(</span><span style="color: #a0522d;">U1</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">s&#237;mbolos_conjunto_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">s&#237;mbolos_conjunto_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span> :-
+   s&#237;mbolos_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">U1</span><span style="color: #707183;">)</span>,
+   s&#237;mbolos_conjunto_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">U2</span><span style="color: #707183;">)</span>,
+   union<span style="color: #707183;">(</span><span style="color: #a0522d;">U1</span>,<span style="color: #a0522d;">U2</span>,<span style="color: #a0522d;">U</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org182cae6" class="outline-3">
+<h3 id="org182cae6"><span class="section-number-3">2.10.</span> Modelo de un conjunto de fórmulas</h3>
+<div class="outline-text-3" id="text-2-10">
+<ul class="org-ul">
+<li><p>
+<code>es_modelo_conjunto(+I,+S)</code> se verifica si la interpretación <code>I</code> es un
+modelo del conjunto de fórmulas <code>S</code> (es decir, si <code>I</code> es modelo de
+todas las fórmulas de <code>S</code>). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_modelo_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,1<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,q =&gt; r<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_modelo_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p,0<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>q,1<span style="color: #909183;">)</span>,<span style="color: #909183;">(</span>r,0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,q =&gt; r<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_modelo_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">_I</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_modelo_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   es_modelo_f&#243;rmula<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>,
+   es_modelo_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgcd1fb0c" class="outline-3">
+<h3 id="orgcd1fb0c"><span class="section-number-3">2.11.</span> Cálculo de modelos de conjuntos de fórmulas</h3>
+<div class="outline-text-3" id="text-2-11">
+<ul class="org-ul">
+<li><p>
+<code>modelo_conjunto(?I,+S)</code> se verifica si <code>I</code> es un modelo principal del
+conjunto de fórmulas <code>S</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- modelo_conjunto<span style="color: #707183;">(</span>I,<span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,p =&gt; r<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>r, 1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">modelo_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   interpretaci&#243;n_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>,
+   es_modelo_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>modelos_conjunto(+S,-L)</code> se verifica si <code>L</code> es el conjunto de los
+modelos principales del conjunto de fórmulas <code>S</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- modelos_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,p =&gt; r<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 0<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>p, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>q, 1<span style="color: #909183;">)</span>,  <span style="color: #909183;">(</span>r, 1<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">modelos_conjunto</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,modelo_conjunto<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgcd8caa8" class="outline-3">
+<h3 id="orgcd8caa8"><span class="section-number-3">2.12.</span> Consistencia de un conjunto de fórmulas</h3>
+<div class="outline-text-3" id="text-2-12">
+<ul class="org-ul">
+<li><p>
+<code>consistente(+S)</code> se verifica si el conjunto de fórmulas <code>S</code> es
+consistente (es decir, tiene modelos). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- consistente<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,p =&gt; r<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- consistente<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">(</span>p v q<span style="color: #909183;">)</span> &amp; <span style="color: #909183;">(</span>-q v r<span style="color: #909183;">)</span>,p =&gt; r, -r<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">consistente</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   modelo_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">_I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>inconsistente(+S)</code> se verifica si el conjunto de fórmulas <code>S</code> es
+inconsistente (es decir, no tiene modelos).
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">inconsistente</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>modelo_conjunto<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_I</span>,<span style="color: #a0522d;">S</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org960fc01" class="outline-3">
+<h3 id="org960fc01"><span class="section-number-3">2.13.</span> Consecuencia lógica</h3>
+<div class="outline-text-3" id="text-2-13">
+<ul class="org-ul">
+<li><p>
+<code>es_consecuencia(+S,+F)</code> se verifica si la fórmula <code>F</code> es consecuencia
+del conjunto de fórmulas <code>S</code> (es decir, si todos los modelos de <code>S</code>
+son modelos de <code>F</code>). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_consecuencia<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, q =&gt; r<span style="color: #7388d6;">]</span>, p =&gt; r<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_consecuencia<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p<span style="color: #7388d6;">]</span>, p &amp; q<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_consecuencia</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>contramodelo_consecuencia<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">_I</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>contramodelo_consecuencia(+S,+F,?I)</code> se verifica si <code>I</code> es una
+interpretación principal de \(~S~ ∪ \{~F~\}\) que es modelo del conjunto
+de fórmulas <code>S</code> pero no es modelo de la fórmula <code>F</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- contramodelo_consecuencia<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p<span style="color: #7388d6;">]</span>, p &amp; q, I<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+I = <span style="color: #707183;">[</span> <span style="color: #7388d6;">(</span>p, 1<span style="color: #7388d6;">)</span>,  <span style="color: #7388d6;">(</span>q, 0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> ;
+false.
+?- contramodelo_consecuencia<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, <span style="color: #a0522d;">q</span>=&gt; r<span style="color: #7388d6;">]</span>, p =&gt; r, I<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">contramodelo_consecuencia</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">I</span><span style="color: #707183;">)</span> :-
+   interpretaci&#243;n_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   es_modelo_conjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span>es_modelo_f&#243;rmula<span style="color: #7388d6;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">F</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+Una definición alternativa de <code>es_consecuencia</code> es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_consecuencia_alt</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   inconsistente<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>-<span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgbfaec7d" class="outline-3">
+<h3 id="orgbfaec7d"><span class="section-number-3">2.14.</span> El problema de los veraces y mentirosos</h3>
+<div class="outline-text-3" id="text-2-14">
+<ul class="org-ul">
+<li><p>
+Enunciado: En una isla hay dos tribus, la de los veraces (que siempre
+dicen la verdad) y la de los mentirosos (que siempre mienten).  Un
+viajero se encuentra con tres isleños A, B y C y cada uno le dice una
+frase
+</p>
+<ul class="org-ul">
+<li>A dice "B y C son veraces syss C es veraz"</li>
+<li>B dice "Si A y B son veraces, entonces B y C son veraces y A es
+mentiroso"</li>
+<li>C dice "B es mentiroso syss A o B es veraz"</li>
+</ul>
+<p>
+Determinar a qué tribu pertenecen A, B y C.
+</p></li>
+
+<li>Representación:
+<ul class="org-ul">
+<li><code>a</code>, <code>b</code> y <code>c</code> representan que A, B y C son veraces \newline</li>
+<li><code>-a</code>, <code>-b</code> y <code>-c</code> representan que A, B y C son mentirosos</li>
+</ul></li>
+
+<li><p>
+Las tribus se determinan a partir de los modelos del conjunto de
+fórmulas correspondientes a las tres frases.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- modelos_conjunto<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>a &lt;=&gt; <span style="color: #909183;">(</span>b &amp; c &lt;=&gt; c<span style="color: #909183;">)</span>,
+                     b &lt;=&gt; <span style="color: #909183;">(</span>a &amp; c =&gt; b &amp; c &amp; -a<span style="color: #909183;">)</span>,
+                     c &lt;=&gt; <span style="color: #909183;">(</span>-b &lt;=&gt; a v b<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+                    L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span> <span style="color: #909183;">(</span>a, 1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>b, 1<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>c, 0<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">]</span>
+</pre>
+</div>
+<p>
+Por tanto, A y B son veraces y C es mentiroso.
+</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdd4e4d2" class="outline-2">
+<h2 id="orgdd4e4d2"><span class="section-number-2">3.</span> Tableros semánticos</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgb516e50" class="outline-3">
+<h3 id="orgb516e50"><span class="section-number-3">3.1.</span> Demostraciones mediante tableros semánticos</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li>Demostración de fórmula válida: <br />
+¬ p ∨ ¬ q → ¬(p ∧ q) es válida <br />
+syss {¬(¬ p ∨ ¬ q → ¬(p ∧ q))} es inconsistente <br />
+syss {¬ p ∨ ¬ q, ¬¬(p ∧ q)} es inconsistente <br />
+syss {¬ p ∨ ¬ q, p ∧ q} es inconsistente <br />
+syss {p, q, ¬ p ∨ ¬ q} es inconsistente <br />
+syss {p, q, ¬ p} y \{p, q, ¬ q} son inconsistentes</li>
+
+<li>Tablero semántico: <br />
+<img src="./fig/tema-11-tablero_1a.png" alt="tema-11-tablero_1a.png" /></li>
+
+<li>Demostración de fórmula no válida:
+¬ p ∨ ¬ q → ¬(p ∧ r) es válida <br />
+syss {¬(¬ p ∨ ¬ q → ¬(p ∧ r))} es inconsistente <br />
+syss {¬ p ∨ ¬ q, ¬¬(p ∧ r)} es inconsistente <br />
+syss {¬ p ∨ ¬ q, p ∧ r} es inconsistente <br />
+syss {p, q, ¬ p ∨ ¬ r} es inconsistente <br />
+syss {p, q, ¬ p} y \{p, q, ¬ r} son inconsistentes</li>
+
+<li>Tablero semántico: <br />
+<img src="./fig/tema-11-tablero_1b.png" alt="tema-11-tablero_1b.png" /></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org951263b" class="outline-3">
+<h3 id="org951263b"><span class="section-number-3">3.2.</span> Notación uniforme</h3>
+<div class="outline-text-3" id="text-3-2">
+</div>
+<div id="outline-container-org751a165" class="outline-4">
+<h4 id="org751a165"><span class="section-number-4">3.2.1.</span> Literales</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<ul class="org-ul">
+<li>Los <b>literales</b> son los átomos y sus negaciones.</li>
+
+<li><p>
+<code>literal(+F)</code> se verifica si la fórmula <code>F</code> es un literal.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">literal</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>  :- 
+   atom<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">literal</span><span style="color: #707183;">(</span>-<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :- 
+   atom<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4e1948c" class="outline-4">
+<h4 id="org4e1948c"><span class="section-number-4">3.2.2.</span> Dobles negaciones</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<ul class="org-ul">
+<li>La fórmula F es una <b>doble negación</b> si existe una fórmula G tal
+que F es de la forma ¬¬G.</li>
+
+<li>Si F es ¬¬G, entonces ⊨ F ↔ G.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org60bc494" class="outline-4">
+<h4 id="org60bc494"><span class="section-number-4">3.2.3.</span> Fórmulas alfa</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<ul class="org-ul">
+<li><p>
+Las fórmulas <b>alfa</b>, junto con sus componentes, son las 
+siguientes
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Fórmula</th>
+<th scope="col" class="org-left">1ª componente</th>
+<th scope="col" class="org-left">2ª componente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">A₁ ∧ A₂</td>
+<td class="org-left">A₁</td>
+<td class="org-left">A₂</td>
+</tr>
+
+<tr>
+<td class="org-left">¬(A₁ → A₂)</td>
+<td class="org-left">A₁</td>
+<td class="org-left">¬A₂</td>
+</tr>
+
+<tr>
+<td class="org-left">¬(A₁ ∨ A₂)</td>
+<td class="org-left">¬A₁</td>
+<td class="org-left">¬A₂</td>
+</tr>
+</tbody>
+</table></li>
+
+<li>Si F es una fórmula alfa y sus componentes son F₁ y F₂, entonces
+⊨ F ↔ F₁ ∧ F₂.</li>
+
+<li><p>
+<code>alfa(+A,-A1,-A2)</code> se verifica si <code>A</code> es una fórmula alfa y sus
+componentes son <code>A1</code> y <code>A2</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">alfa</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A1</span> &amp; <span style="color: #a0522d;">A2</span>,     <span style="color: #a0522d;">A1</span>,  <span style="color: #a0522d;">A2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">alfa</span><span style="color: #707183;">(</span>-<span style="color: #7388d6;">(</span><span style="color: #a0522d;">A1</span> =&gt; <span style="color: #a0522d;">A2</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">A1</span>,  -<span style="color: #a0522d;">A2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">alfa</span><span style="color: #707183;">(</span>-<span style="color: #7388d6;">(</span><span style="color: #a0522d;">A1</span> v <span style="color: #a0522d;">A2</span><span style="color: #7388d6;">)</span>,  -<span style="color: #a0522d;">A1</span>, -<span style="color: #a0522d;">A2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge72e036" class="outline-4">
+<h4 id="orge72e036"><span class="section-number-4">3.2.4.</span> Fórmulas beta</h4>
+<div class="outline-text-4" id="text-3-2-4">
+<ul class="org-ul">
+<li><p>
+Las fórmulas <b>beta</b>, junto con sus componentes, son las
+siguientes: 
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Fórmula</th>
+<th scope="col" class="org-left">1ª componente</th>
+<th scope="col" class="org-left">2ª componente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">B₁ ∨ B₂</td>
+<td class="org-left">B₁</td>
+<td class="org-left">B₂</td>
+</tr>
+
+<tr>
+<td class="org-left">B₁ → B₂</td>
+<td class="org-left">¬B₁</td>
+<td class="org-left">B₂</td>
+</tr>
+
+<tr>
+<td class="org-left">¬(B₁ ∧ B₂)</td>
+<td class="org-left">¬B₁</td>
+<td class="org-left">¬B₂</td>
+</tr>
+
+<tr>
+<td class="org-left">B₁ ↔ B₂</td>
+<td class="org-left">B₁ ∧ B₂</td>
+<td class="org-left">¬B₁ ∧ ¬B₂</td>
+</tr>
+
+<tr>
+<td class="org-left">¬(B₁ ↔ B₂)</td>
+<td class="org-left">B₁ ∧ ¬ B₂</td>
+<td class="org-left">¬B₁ ∧ B₂</td>
+</tr>
+</tbody>
+</table></li>
+
+<li>Si F es una fórmula beta y sus componentes son F₁ y F₂, entonces
+⊨ F ↔ F₁ ∨ F₂.</li>
+
+<li><p>
+<code>beta(+B,-B1,-B2)</code> se verifica si <code>B</code> es una fórmula beta y sus
+componentes son <code>B1</code> y <code>B2</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">beta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">B1</span> v <span style="color: #a0522d;">B2</span>,      <span style="color: #a0522d;">B1</span>,       <span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">beta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">B1</span> =&gt; <span style="color: #a0522d;">B2</span>,     -<span style="color: #a0522d;">B1</span>,      <span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">beta</span><span style="color: #707183;">(</span>-<span style="color: #7388d6;">(</span><span style="color: #a0522d;">B1</span> &amp; <span style="color: #a0522d;">B2</span><span style="color: #7388d6;">)</span>,   -<span style="color: #a0522d;">B1</span>,      -<span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">beta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">B1</span> &lt;=&gt; <span style="color: #a0522d;">B2</span>,    <span style="color: #a0522d;">B1</span> &amp; <span style="color: #a0522d;">B2</span>,  -<span style="color: #a0522d;">B1</span> &amp; -<span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">beta</span><span style="color: #707183;">(</span>-<span style="color: #7388d6;">(</span><span style="color: #a0522d;">B1</span> &lt;=&gt; <span style="color: #a0522d;">B2</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">B1</span> &amp; -<span style="color: #a0522d;">B2</span>, -<span style="color: #a0522d;">B1</span> &amp; <span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4eb601c" class="outline-3">
+<h3 id="org4eb601c"><span class="section-number-3">3.3.</span> Procedimiento de completación de tableros</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li>Un conjunto de fórmulas es <b>cerrado</b> si contiene una fórmula y su
+negación,</li>
+
+<li>Un conjunto de fórmulas es <b>abierto</b> si es un conjunto de literales
+que no contiene una fórmula y su negación.</li>
+
+<li>Construcción del tablero de un conjunto de fórmulas \(S\).
+<ul class="org-ul">
+<li>(I) El árbol cuyo único nodo tiene como etiqueta S es un tablero de S.</li>
+<li>(C) Sea 𝑻 un tablero de S y S₁ la etiqueta de una hoja de 𝑻.
+<ul class="org-ul">
+<li>(C.1) Si S₁ es cerrado, entonces el árbol obtenido añadiendo como
+hijo de S₁ el nodo etiquetado con <code>cerrado</code> es un tablero de S.</li>
+<li>(C.2) Si S₁ es abierto, entonces el árbol obtenido añadiendo como
+hijo de S₁ el nodo etiquetado con <code>abierto</code> es un tablero de S.</li>
+<li>(C.3) Si S₁ contiene una doble negación ¬¬ F, entonces el árbol
+obtenido añadiendo como hijo de S₁ el nodo etiquetado con
+(S₁ - {¬¬F\}) ∪ {F} es un tablero de S.</li>
+<li>(C.4) Si S₁ contiene una fórmula alfa F de componentes
+F₁ y F₂, entonces el árbol obtenido añadiendo como hijo de
+S₁ el nodo etiquetado con (S₁ - {F}) ∪ {F₁,F₂} es un tablero de S.</li>
+<li>(C.5) Si S₁ contiene una fórmula beta F de componentes
+F₁ y F₂, entonces el árbol obtenido añadiendo como hijos de
+S₁ los nodos etiquetados con (S₁ - {F}) ∪ {F₁} y 
+(S₁ - {F}) ∪ {F₂} es un tablero de S.</li>
+</ul></li>
+</ul></li>
+
+<li>Un tablero semántico de S es <b>completo</b> si no se le puede aplicar
+ninguna de las reglas de expansión; es decir, todas sus hojas son
+abiertas o cerradas.</li>
+
+<li>Representación de tableros: <code>t(S,Izq,Dcha)</code> representa el tablero de
+raíz <code>S</code>, rama izquierda <code>Izq</code> y rama derecha <code>Dcha</code>.</li>
+
+<li><p>
+<code>tablero_completo(+S,-Tab)</code> se verifica si <code>Tab</code> es un tablero
+completo del conjunto <code>S</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- tablero_completo<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>- <span style="color: #909183;">(</span>-p v -q =&gt; - <span style="color: #709870;">(</span>p &amp; r<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+T = t<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>- <span style="color: #909183;">(</span>-p v -q =&gt; - <span style="color: #709870;">(</span>p &amp; r<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+      t<span style="color: #7388d6;">(</span><span style="color: #909183;">[</span>-p v -q, - -<span style="color: #709870;">(</span>p &amp; r<span style="color: #709870;">)</span><span style="color: #909183;">]</span>,
+        t<span style="color: #909183;">(</span><span style="color: #709870;">[</span>p &amp; r, -p v -q<span style="color: #709870;">]</span>,
+          t<span style="color: #709870;">(</span><span style="color: #907373;">[</span>p, r, -p v -q<span style="color: #907373;">]</span>,
+            t<span style="color: #907373;">(</span><span style="color: #6276ba;">[</span>-p, p, r<span style="color: #6276ba;">]</span>, cerrado, vacio<span style="color: #907373;">)</span>,
+            t<span style="color: #907373;">(</span><span style="color: #6276ba;">[</span>-q, p, r<span style="color: #6276ba;">]</span>, abierto, vacio<span style="color: #907373;">)</span><span style="color: #709870;">)</span>,
+          vacio<span style="color: #909183;">)</span>,
+        vacio<span style="color: #7388d6;">)</span>,
+      vacio<span style="color: #707183;">)</span> 
+true.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">tablero_completo</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span> :- 
+   completaci&#243;n<span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">_Izq</span>,<span style="color: #a0522d;">_Dcha</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>completación(+Tab1,-Tab2)</code> se verifica si <code>Tab2</code> es una completación
+(i.e. un tablero completo) del tablero <code>Tab1</code>. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">completaci&#243;n</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">Flas</span>,<span style="color: #a0522d;">Izq1</span>,<span style="color: #a0522d;">Dcha1</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">Flas</span>,<span style="color: #a0522d;">Izq3</span>,<span style="color: #a0522d;">Dcha3</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+   paso<span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">Flas</span>,<span style="color: #a0522d;">Izq1</span>,<span style="color: #a0522d;">Dcha1</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">Flas</span>,<span style="color: #a0522d;">Izq2</span>,<span style="color: #a0522d;">Dcha2</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   completaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">Izq2</span>,<span style="color: #a0522d;">Izq3</span><span style="color: #707183;">)</span>,
+   completaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">Dcha2</span>,<span style="color: #a0522d;">Dcha3</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">completaci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">Tab</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>paso(+Tab1,-Tab2)</code> se verifica si <code>Tab2</code> es un tablero obtenido
+aplicando una regla de completación al tablero <code>Tab1</code>. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">paso</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>, cerrado, vacio<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- <span style="color: #b22222;">% </span><span style="color: #b22222;">C1</span>
+   cerrada<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">paso</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>, abierto, vacio<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- <span style="color: #b22222;">% </span><span style="color: #b22222;">C2</span>
+   lista_de_literales<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">paso</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">Izq</span>, vacio<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-     <span style="color: #b22222;">% </span><span style="color: #b22222;">C3</span>
+   regla_doble_negacion<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">S2</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">Izq</span> = t<span style="color: #707183;">(</span><span style="color: #a0522d;">S2</span>, <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">paso</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">Izq</span>, vacio<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-     <span style="color: #b22222;">% </span><span style="color: #b22222;">C4</span>
+   regla_alfa<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">S2</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">Izq</span> = t<span style="color: #707183;">(</span><span style="color: #a0522d;">S2</span>, <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">paso</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">Izq</span>, <span style="color: #a0522d;">Dcha</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-      <span style="color: #b22222;">% </span><span style="color: #b22222;">C5</span>
+   regla_beta<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">S2</span>, <span style="color: #a0522d;">S3</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Izq</span>  = t<span style="color: #707183;">(</span><span style="color: #a0522d;">S2</span>, <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Dcha</span> = t<span style="color: #707183;">(</span><span style="color: #a0522d;">S3</span>, <span style="color: #a0522d;">_</span>, <span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>cerrada(+S)</code> se verifica si <code>S</code> es una lista cerrada (i.e. que
+contiene una fórmula y su negación). 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">cerrada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :- 
+   member<span style="color: #707183;">(</span>-<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>, 
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>lista_de_literales(+S)</code> se verifica si <code>S</code> es una lista de literales.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">lista_de_literales</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">lista_de_literales</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   literal<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span>,
+   lista_de_literales<span style="color: #707183;">(</span><span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>regla_doble_negacion(+S1,-S2)</code> se verifica si <code>S1</code> es una lista de
+fórmulas que contiene una doble negación <code>--F</code> y <code>S2</code> es la lista de
+fórmulas obtenidas sustituyendo en <code>S1</code> la fórmula <code>--F</code> por <code>F</code>. Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- regla_doble_negacion<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>- -<span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, p =&gt; r<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>q v r, p =&gt; r<span style="color: #707183;">]</span> 
+?- regla_doble_negacion<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p v <span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, p =&gt; r<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>  
+No
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">regla_doble_negacion</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #7388d6;">[</span><span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   member<span style="color: #707183;">(</span>- -<span style="color: #a0522d;">F</span>, <span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   delete<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, - -<span style="color: #a0522d;">F</span>, <span style="color: #a0522d;">S2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>regla_alfa(+S1,-S2)</code> se verifica si <code>S1</code> es una lista de fórmulas que
+contiene una fórmula alfa <code>A</code> y <code>S2</code> es la lista de fórmulas obtenidas
+sustituyendo en <code>S1</code> la fórmula <code>A</code> por sus componentes. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- regla_alfa<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p &amp; <span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, p =&gt; r<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>p, q v r, p =&gt; r<span style="color: #707183;">]</span> 
+?- regla_alfa<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p v <span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, p =&gt; r<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>  
+true.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">regla_alfa</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #7388d6;">[</span><span style="color: #a0522d;">A1</span>,<span style="color: #a0522d;">A2</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>,
+   alfa<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">A1</span>, <span style="color: #a0522d;">A2</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   delete<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">A</span>, <span style="color: #a0522d;">S2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>regla_beta(+S1,-S2,-S3)</code> se verifica si <code>S1</code> es una lista de fórmulas
+que contiene al menos una fórmula beta <code>B</code> y <code>S2</code> es la lista de
+fórmulas obtenidas sustituyendo en <code>S1</code> la fórmula <code>B</code> por una de sus
+componentes y <code>S3</code>, por la otra. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">?- regla_beta<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p &amp; <span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, p =&gt; r<span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+<span style="color: #a0522d;">L1</span> = <span style="color: #707183;">[</span>-p, p &amp; <span style="color: #7388d6;">(</span>q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #a0522d;">L2</span> = <span style="color: #707183;">[</span>r, p &amp; <span style="color: #7388d6;">(</span>q v r<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> 
+?- regla_beta<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p &amp; <span style="color: #909183;">(</span>q v r<span style="color: #909183;">)</span>, -<span style="color: #909183;">(</span>p =&gt; r<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">regla_beta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #7388d6;">[</span><span style="color: #a0522d;">B1</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">RS1</span><span style="color: #7388d6;">]</span>, <span style="color: #7388d6;">[</span><span style="color: #a0522d;">B2</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">RS1</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>, <span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>,
+   beta<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>, <span style="color: #a0522d;">B1</span>, <span style="color: #a0522d;">B2</span><span style="color: #707183;">)</span>,
+   delete<span style="color: #707183;">(</span><span style="color: #a0522d;">S1</span>, <span style="color: #a0522d;">B</span>, <span style="color: #a0522d;">RS1</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge70326a" class="outline-3">
+<h3 id="orge70326a"><span class="section-number-3">3.4.</span> Tableros cerrados</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li><p>
+<code>es_cerrado(+Tab)</code> se verifica si <code>Tab</code> es un tablero cerrado (es
+decir, si todas sus hojas están etiquetadas con <code>cerrado</code> o <code>vacio</code>).
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_cerrado</span><span style="color: #707183;">(</span>t<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">Izq</span>,<span style="color: #a0522d;">Dcha</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+   es_cerrado<span style="color: #707183;">(</span><span style="color: #a0522d;">Izq</span><span style="color: #707183;">)</span>,
+   es_cerrado<span style="color: #707183;">(</span><span style="color: #a0522d;">Dcha</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_cerrado</span><span style="color: #707183;">(</span>cerrado<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_cerrado</span><span style="color: #707183;">(</span>vacio<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org739f971" class="outline-3">
+<h3 id="org739f971"><span class="section-number-3">3.5.</span> Teorema por tableros</h3>
+<div class="outline-text-3" id="text-3-5">
+</div>
+<div id="outline-container-orgce8a30c" class="outline-4">
+<h4 id="orgce8a30c"><span class="section-number-4">3.5.1.</span> Prueba mediante tableros</h4>
+<div class="outline-text-4" id="text-3-5-1">
+<ul class="org-ul">
+<li><p>
+<code>prueba(+F,-Tab)</code> se verifica si <code>Tab</code> es una prueba de la fórmula <code>F</code>
+(es decir, un tablero completo cerrado de {¬F}). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- prueba<span style="color: #707183;">(</span>-p v -q =&gt; -<span style="color: #7388d6;">(</span>p &amp; q<span style="color: #7388d6;">)</span>,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+T = t<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>- <span style="color: #909183;">(</span>-p v-q =&gt; - <span style="color: #709870;">(</span>p &amp; q<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,
+      t<span style="color: #7388d6;">(</span><span style="color: #909183;">[</span>-p v-q, - -<span style="color: #709870;">(</span>p &amp; q<span style="color: #709870;">)</span><span style="color: #909183;">]</span>,
+        t<span style="color: #909183;">(</span><span style="color: #709870;">[</span>p &amp; q, -p v -q<span style="color: #709870;">]</span>,
+          t<span style="color: #709870;">(</span><span style="color: #907373;">[</span>p, q, -p v -q<span style="color: #907373;">]</span>,
+            t<span style="color: #907373;">(</span><span style="color: #6276ba;">[</span>-p, p, q<span style="color: #6276ba;">]</span>, cerrado, vacio<span style="color: #907373;">)</span>,
+            t<span style="color: #907373;">(</span><span style="color: #6276ba;">[</span>-q, p, q<span style="color: #6276ba;">]</span>, cerrado, vacio<span style="color: #907373;">)</span><span style="color: #709870;">)</span>,
+          vacio<span style="color: #909183;">)</span>,
+        vacio<span style="color: #7388d6;">)</span>,
+      vacio<span style="color: #707183;">)</span>
+?- prueba<span style="color: #707183;">(</span>-p v -q =&gt; -p,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span> :-
+   tablero_completo<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>-<span style="color: #a0522d;">F</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   es_cerrado<span style="color: #707183;">(</span><span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgf5519c2" class="outline-4">
+<h4 id="orgf5519c2"><span class="section-number-4">3.5.2.</span> Teorema mediante tableros</h4>
+<div class="outline-text-4" id="text-3-5-2">
+<ul class="org-ul">
+<li><p>
+<code>es_teorema(+F)</code> se verifica si la fórmula <code>F</code> es teorema mediante
+tableros semánticos (es decir, F tiene una prueba mediante
+tableros). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_teorema<span style="color: #707183;">(</span>-p v -q =&gt; -<span style="color: #7388d6;">(</span>p &amp; q<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_teorema<span style="color: #707183;">(</span>-p v -q =&gt; -<span style="color: #7388d6;">(</span>p &amp; r<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_teorema</span><span style="color: #707183;">(</span><span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">_Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El cálculo de tableros semánticos es adecuado y completo; es decir,
+una fórmula es válida syss es teorema mediante tableros semánticos.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org09d2643" class="outline-3">
+<h3 id="org09d2643"><span class="section-number-3">3.6.</span> Deducción por tableros</h3>
+<div class="outline-text-3" id="text-3-6">
+</div>
+<div id="outline-container-org12442ac" class="outline-4">
+<h4 id="org12442ac"><span class="section-number-4">3.6.1.</span> Deducción por tableros</h4>
+<div class="outline-text-4" id="text-3-6-1">
+<ul class="org-ul">
+<li><p>
+<code>prueba_deducible_tab(+S,+F,-Tab)</code> se verifica si <code>Tab</code> es una prueba
+por tableros semánticos de que la fórmula <code>F</code> es deducible del
+conjunto de fórmulas <code>S</code> (es decir, <code>Tab</code> es un tablero completo
+cerrado de S ∪ {¬F}$. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- prueba_deducible_tab<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, q =&gt; r<span style="color: #7388d6;">]</span>, p =&gt; r,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+T = t<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>- <span style="color: #909183;">(</span>p =&gt; r<span style="color: #909183;">)</span>, p =&gt; q, q =&gt; r<span style="color: #7388d6;">]</span>,
+      t<span style="color: #7388d6;">(</span><span style="color: #909183;">[</span>p, -r, p =&gt; q, q =&gt; r<span style="color: #909183;">]</span>,
+        t<span style="color: #909183;">(</span><span style="color: #709870;">[</span>-p, p, -r, q =&gt; r<span style="color: #709870;">]</span>, cerrado, vacio<span style="color: #909183;">)</span>,
+        t<span style="color: #909183;">(</span><span style="color: #709870;">[</span>q, p, -r, q =&gt; r<span style="color: #709870;">]</span>,
+          t<span style="color: #709870;">(</span><span style="color: #907373;">[</span>-q, q, p, -r<span style="color: #907373;">]</span>, cerrado, vacio<span style="color: #709870;">)</span>,
+          t<span style="color: #709870;">(</span><span style="color: #907373;">[</span>r, q, p, -r<span style="color: #907373;">]</span>, cerrado, vacio<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,
+      vacio<span style="color: #707183;">)</span> 
+true.
+?- prueba_deducible_tab<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>p =&gt; q, q =&gt; r<span style="color: #7388d6;">]</span>, p &lt;=&gt; r,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span> 
+false.
+</pre>
+</div>
+<p>
+Gráficamente, <br />
+<img src="./fig/tema-11-tablero_2.png" alt="tema-11-tablero_2.png" />
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_deducible_tab</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span> :-
+   tablero_completo<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>-<span style="color: #a0522d;">F</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">S</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   es_cerrado<span style="color: #707183;">(</span><span style="color: #a0522d;">Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org16ae7ba" class="outline-4">
+<h4 id="org16ae7ba"><span class="section-number-4">3.6.2.</span> Deducibilidad por tableros</h4>
+<div class="outline-text-4" id="text-3-6-2">
+<ul class="org-ul">
+<li><p>
+<code>es_deducible_tab(+S,+F)</code> se verifica si la fórmula <code>F</code> es deducible
+(mediante tableros) del conjunto de fórmulas <code>S</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_deducible_tab</span><span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span><span style="color: #707183;">)</span> :-
+   prueba_deducible_tab<span style="color: #707183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">_Tab</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>La fórmula F es consecuencia de S syss F es deducible mediante
+tableros a partir de S.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc764a04" class="outline-2">
+<h2 id="orgc764a04"><span class="section-number-2">4.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-4">
+<ul class="org-ul">
+<li>Alonso, J.A. y Borrego, J.
+<a href="https://www.cs.us.es/~jalonso/publicaciones/2002-ded-automatica-1.pdf">Deducción automática (Vol. 1: Construcción lógica de sistemas lógicos)</a>.
+(Ed. Kronos, 2002).
+<ul class="org-ul">
+<li>Cap. 3: Elementos de lógica proposicional.</li>
+<li>Cap. 4.1: Tableros semánticos.</li>
+</ul></li>
+
+<li>Ben-Ari, M.
+<a href="https://books.google.es/books?id=K24QBwAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">Mathematical Logic for Computer Science (2nd ed.)</a>
+(Springer, 2001)
+<ul class="org-ul">
+<li>Cap. 2: Propositional calculus: Formulas, models, tableaux.</li>
+</ul></li>
+
+<li>Fitting, M.
+<a href="https://books.google.es/books?id=133kBwAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">First-order logic and automated theorem proving (2nd ed.)</a>
+(Springer, 1995)</li>
+
+<li>Nerode,A. y Shore, R.A.
+<a href="https://books.google.es/books?id=90HhBwAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">Logic for applications</a>.
+(Springer, 1997)</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/materias/PLconProlog/">Inicial</a> |
+   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
+   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
+   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
+   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 07 de junio del 2022</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
