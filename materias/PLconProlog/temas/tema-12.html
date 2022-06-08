@@ -1,0 +1,1386 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 08 de junio del 2022 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 12: Metaprogramación de metaintérpretes</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="José A. Alonso" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/materias/PLconProlog/">Inicial</a> |
+   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
+   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
+   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
+   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content">
+<h1 class="title">Tema 12: Metaprogramación de metaintérpretes</h1>
+<div id="table-of-contents">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org259a268">1. Base de conocimiento del sistema eléctrico</a></li>
+<li><a href="#org5edfcd7">2. Metaintérpretes simples</a>
+<ul>
+<li><a href="#org644d017">2.1. Metaintéprete básico</a></li>
+<li><a href="#org6ae1803">2.2. Metaintéprete ampliado</a></li>
+<li><a href="#orge3b3903">2.3. Metaintérprete con profundidad acotada</a></li>
+</ul>
+</li>
+<li><a href="#org02772a4">3. Metaintérprete con preguntas</a></li>
+<li><a href="#org0656c17">4. Metaintérprete con explicación</a>
+<ul>
+<li><a href="#orgcdf8549">4.1. Metaintéprete con árbol de prueba</a></li>
+<li><a href="#org4e7fde8">4.2. Metaintérprete con explicación de <i>cómo</i> deduce.</a></li>
+<li><a href="#org780ad0b">4.3. Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</a></li>
+</ul>
+</li>
+<li><a href="#org14426a1">5. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org259a268" class="outline-2">
+<h2 id="org259a268"><span class="section-number-2">1.</span> Base de conocimiento del sistema eléctrico</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>El sistema eléctrico que se va a representar es el siguiente (Poole-98
+p. 16) <br />
+<img src="./fig/tema-11-sistema-electrico.png" alt="tema-11-sistema-electrico.png" /></li>
+
+<li><p>
+Operadores
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- op<span style="color: #707183;">(</span>1100, xfx, &lt;-<span style="color: #707183;">)</span>.
+:- op<span style="color: #707183;">(</span>1000, xfy, &amp;<span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>luz(?L)</code> se verifica si <code>L</code> es una luz
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">luz</span><span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">luz</span><span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>abajo(?I)</code> se verifica si el interruptor <code>I</code> está hacia abajo.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">abajo</span><span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>arriba(?I)</code> se verifica si el interruptor <code>I</code> está hacia arriba.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">arriba</span><span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span> &lt;- verdad.   <span style="color: #0000ff;">arriba</span><span style="color: #707183;">(</span>i3<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>está_bien(?X)</code> se verifica si la luz (o cortacircuito) <code>X</code> está
+bien. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">est&#225;_bien</span><span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &lt;- verdad.   
+<span style="color: #0000ff;">est&#225;_bien</span><span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">est&#225;_bien</span><span style="color: #707183;">(</span>cc1<span style="color: #707183;">)</span> &lt;- verdad.  
+<span style="color: #0000ff;">est&#225;_bien</span><span style="color: #707183;">(</span>cc2<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>conectado(?D1,?D2)</code> se verifica si los dispositivos <code>D1</code> y <code>D2</code> están
+conectados (de forma que puede fluir la corriente eléctrica de <code>D2</code> a
+<code>D1</code>).
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>l1,c0<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c0,c1<span style="color: #707183;">)</span> &lt;- arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c0,c2<span style="color: #707183;">)</span> &lt;- abajo<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c1,c3<span style="color: #707183;">)</span> &lt;- arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c2,c3<span style="color: #707183;">)</span> &lt;- abajo<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>l2,c4<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c4,c3<span style="color: #707183;">)</span> &lt;- arriba<span style="color: #707183;">(</span>i3<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>e1,c3<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c3,c5<span style="color: #707183;">)</span> &lt;- est&#225;_bien<span style="color: #707183;">(</span>cc1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>e2,c6<span style="color: #707183;">)</span> &lt;- verdad.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c6,c5<span style="color: #707183;">)</span> &lt;- est&#225;_bien<span style="color: #707183;">(</span>cc2<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c5,entrada<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>tiene_corriente(?D)</code> se verifica si el dispositivo <code>D</code> tiene
+corriente.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">tiene_corriente</span><span style="color: #707183;">(</span><span style="color: #a0522d;">D</span><span style="color: #707183;">)</span> &lt;- 
+   conectado<span style="color: #707183;">(</span><span style="color: #a0522d;">D</span>,<span style="color: #a0522d;">D1</span><span style="color: #707183;">)</span> &amp;
+   tiene_corriente<span style="color: #707183;">(</span><span style="color: #a0522d;">D1</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">tiene_corriente</span><span style="color: #707183;">(</span>entrada<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li><p>
+<code>está_encendida(?L)</code> se verifica si la luz <code>L</code> está encendida.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">est&#225;_encendida</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> &lt;-
+   luz<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> &amp;
+   est&#225;_bien<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> &amp;
+   tiene_corriente<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código se encuentra en <a href="https://swish.swi-prolog.org/p/PLP_i_electrica.pl">i_electrica.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5edfcd7" class="outline-2">
+<h2 id="org5edfcd7"><span class="section-number-2">2.</span> Metaintérpretes simples</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org644d017" class="outline-3">
+<h3 id="org644d017"><span class="section-number-3">2.1.</span> Metaintéprete básico</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li><p>
+<code>prueba(+O)</code> se verifica si el objetivo <code>O</code> se puede demostrar a
+partir de la base de conocimiento. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- prueba<span style="color: #707183;">(</span>est&#225;_encendida<span style="color: #7388d6;">(</span>X<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = l2 ;
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+   prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>,
+   prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   <span style="color: #707183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>,
+   prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+Ejemplos de pruebas
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>i_electrica<span style="color: #707183;">]</span>.
+true.
+
+?- prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true 
+
+?- prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l6<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+
+?- prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>X<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = i2 ;
+X = i3 ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l1,D<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+D = c0 ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c0,D<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+D = c1 ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c1,D<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+
+?- prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>D,c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+D = c2 ;
+D = c4 ;
+D = e1 ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>X,Y<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = l1,
+Y = c0 ;
+X = c0,
+Y = c1 ;
+X = c2,
+Y = c3 ;
+X = l2,
+Y = c4 ;
+X = c4,
+Y = c3 ;
+X = e1,
+Y = c3 ;
+X = c3,
+Y = c5 ;
+X = e2,
+Y = c6 ;
+X = c6,
+Y = c5 ;
+X = c5,
+Y = entrada ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>D<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+D = c2 ;
+D = l2 ;
+D = c4 ;
+D = e1 ;
+D = c3 ;
+D = e2 ;
+D = c6 ;
+D = c5 ;
+D = entrada ;
+false.
+
+?- prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>X<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = l2 ;
+false.
+
+?- trace<span style="color: #707183;">(</span>prueba<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+
+?- prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>X<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+ T Call: prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>_1512<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>luz<span style="color: #909183;">(</span>_1512<span style="color: #909183;">)</span>&amp;esta_bien<span style="color: #909183;">(</span>_1512<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_1512<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>_1512<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l1<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l1<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l1,_7854<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_7854<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l1,_7854<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l1,c0<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c0<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c0,_10890<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_10890<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c0,_10890<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c0,c1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c1,_14890<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_14890<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c1,_14890<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c1,_14890<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c1,_14890<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_14890<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c0,c1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>abajo<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>abajo<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c0,_10890<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c0,_10890<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_10890<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c0<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l1,c0<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l1,_7854<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l1,_7854<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_7854<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l1<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l1<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l2,_22608<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_22608<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l2,_22608<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l2,c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c4,_25644<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_25644<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c4,_25644<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c4,c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c3,_29644<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_29644<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c3,_29644<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>cc1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>cc1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c3,c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,_3770<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_3770<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,_3770<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>entrada,_6806<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_6806<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>entrada,_6806<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>entrada,_6806<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>entrada,_6806<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_6806<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,entrada<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>entrada<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c3,c5<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c5<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c4,c3<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c3<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l2,c4<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c4<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>luz<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+X = l2 ;
+ T Redo: prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>luz<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l2,c4<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c4<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c4,c3<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c3<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c3,c5<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>c5<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,entrada<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>entrada<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,_3770<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,_3770<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_3770<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c3,c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>cc1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>cc1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c3,_2278<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c3,_2278<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_2278<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c4,c3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c4,_1618<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c4,_1618<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_1618<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l2,c4<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>l2,_1090<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>l2,_1090<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_1090<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>esta_bien<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>esta_bien<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>l2<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>luz<span style="color: #7388d6;">(</span>_10<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>luz<span style="color: #909183;">(</span>_10<span style="color: #909183;">)</span>&amp;esta_bien<span style="color: #909183;">(</span>_10<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_10<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Fail: prueba<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>_10<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+false.
+
+?- maplist<span style="color: #707183;">(</span>trace,<span style="color: #7388d6;">[</span>prueba,&lt;-<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+
+?- prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: tiene_corriente<span style="color: #707183;">(</span>c5<span style="color: #707183;">)</span>&lt;-_888
+ T Exit: tiene_corriente<span style="color: #707183;">(</span>c5<span style="color: #707183;">)</span>&lt;-conectado<span style="color: #707183;">(</span>c5,_1438<span style="color: #707183;">)</span>&amp;tiene_corriente<span style="color: #707183;">(</span>_1438<span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,_1438<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_1438<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,_1438<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: conectado<span style="color: #707183;">(</span>c5,_1438<span style="color: #707183;">)</span>&lt;-_2972
+ T Exit: conectado<span style="color: #707183;">(</span>c5,entrada<span style="color: #707183;">)</span>&lt;-verdad
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>c5,entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: tiene_corriente<span style="color: #707183;">(</span>entrada<span style="color: #707183;">)</span>&lt;-_5860
+ T Exit: tiene_corriente<span style="color: #707183;">(</span>entrada<span style="color: #707183;">)</span>&lt;-conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&amp;tiene_corriente<span style="color: #707183;">(</span>_6410<span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>entrada,_6410<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_6410<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>entrada,_6410<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&lt;-_7944
+ T Fail: conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&lt;-_7944
+ T Fail: prueba<span style="color: #707183;">(</span>conectado<span style="color: #7388d6;">(</span>entrada,_6410<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Call: conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&amp;tiene_corriente<span style="color: #707183;">(</span>_6410<span style="color: #707183;">)</span>&lt;-_8548
+ T Fail: conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&amp;tiene_corriente<span style="color: #707183;">(</span>_6410<span style="color: #707183;">)</span>&lt;-_8548
+ T Fail: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>entrada,_6410<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>_6410<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Redo: tiene_corriente<span style="color: #707183;">(</span>entrada<span style="color: #707183;">)</span>&lt;-conectado<span style="color: #707183;">(</span>entrada,_6410<span style="color: #707183;">)</span>&amp;tiene_corriente<span style="color: #707183;">(</span>_6410<span style="color: #707183;">)</span>
+ T Exit: tiene_corriente<span style="color: #707183;">(</span>entrada<span style="color: #707183;">)</span>&lt;-verdad
+ T Call: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>entrada<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5,entrada<span style="color: #909183;">)</span>&amp;tiene_corriente<span style="color: #909183;">(</span>entrada<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+ T Exit: prueba<span style="color: #707183;">(</span>tiene_corriente<span style="color: #7388d6;">(</span>c5<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+true 
+</pre>
+</div></li>
+
+<li>El código se encuentra en <a href="https://swish.swi-prolog.org/p/PLP_meta_simple.pl">meta_simple.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6ae1803" class="outline-3">
+<h3 id="org6ae1803"><span class="section-number-3">2.2.</span> Metaintéprete ampliado</h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li>Ampliación del lenguaje base:
+<ul class="org-ul">
+<li>Disyunciones: <code>A ; B</code></li>
+<li>Predicados predefinidos: <code>is</code>, <code>&lt;</code>, &#x2026;</li>
+</ul></li>
+
+<li><p>
+Operadores
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- op<span style="color: #707183;">(</span>1100, xfx, &lt;-<span style="color: #707183;">)</span>.
+:- op<span style="color: #707183;">(</span>1000, xfy, <span style="color: #7388d6;">[</span>&amp;,<span style="color: #a020f0;">;</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+Base de conocimiento de vecinos
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">vecino</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span> &lt;- <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>-1 <span style="color: #a020f0;">;</span> <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>+1.
+</pre>
+</div></li>
+
+<li>El código de la base de conocimiento de vecinos se encuentra en <a href="https://swish.swi-prolog.org/p/PLP_vecino.pl">vecino.pl</a>.</li>
+
+<li><p>
+<code>prueba(+O)</code> se verifica si el objetivo <code>O</code> se puede demostrar a
+partir de la base de conocimiento (que puede contener disyunciones y
+predicados predefinidos). Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>vecino<span style="color: #707183;">]</span>.
+true.
+?- prueba<span style="color: #707183;">(</span>vecino<span style="color: #7388d6;">(</span>2,3<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- prueba<span style="color: #707183;">(</span>vecino<span style="color: #7388d6;">(</span>3,2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>, prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> <span style="color: #a020f0;">;</span> <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> <span style="color: #a020f0;">;</span> <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>       :- predefinido<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>, <span style="color: #a0522d;">A</span>.
+<span style="color: #0000ff;">prueba</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>       :- <span style="color: #707183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>, prueba<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>predefinido(+O)</code> se verifica si <code>O</code> es un predicado predefinido.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">predefinido</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span> is <span style="color: #a0522d;">Y</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">predefinido</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span> &lt; <span style="color: #a0522d;">Y</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintéprete ampliado se encuentra en <a href="https://swish.swi-prolog.org/p/PLP_meta_ampliado.pl">meta_ampliado.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge3b3903" class="outline-3">
+<h3 id="orge3b3903"><span class="section-number-3">2.3.</span> Metaintérprete con profundidad acotada</h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li><p>
+Ejemplo de base de conocimiento de hermandad:
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">hermano</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span> &lt;- hermano<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">hermano</span><span style="color: #707183;">(</span>b,a<span style="color: #707183;">)</span> &lt;- verdad.
+</pre>
+</div></li>
+
+<li>El código de la base de conocimiento de hermandad se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_hermano.pl">hermano.pl</a>.</li>
+
+<li><p>
+Fallo al buscar la prueba con el metaintérprete simple.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">?- <span style="color: #707183;">[</span>meta_simple<span style="color: #707183;">]</span>.
+true.
+
+?- prueba<span style="color: #707183;">(</span>hermano<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+<span style="color: #a0522d;">ERROR</span>: <span style="color: #a0522d;">Stack</span> limit <span style="color: #707183;">(</span>1.0Gb<span style="color: #707183;">)</span> exceeded
+</pre>
+</div></li>
+
+<li><p>
+<code>prueba_pa(+O,+N)</code> es verdad si el objetivo <code>O</code> se puede demostrar con
+profundidad <code>N</code> como máximo. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>hermano<span style="color: #707183;">]</span>.
+true.
+
+?- prueba_pa<span style="color: #707183;">(</span>hermano<span style="color: #7388d6;">(</span>a,X<span style="color: #7388d6;">)</span>,1<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = b ;
+false.
+
+?- prueba_pa<span style="color: #707183;">(</span>hermano<span style="color: #7388d6;">(</span>X,Y<span style="color: #7388d6;">)</span>,1<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = a,
+Y = b ;
+X = b,
+Y = a ;
+false.
+
+?- prueba_pa<span style="color: #707183;">(</span>hermano<span style="color: #7388d6;">(</span>a,X<span style="color: #7388d6;">)</span>,2<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = b ;
+false.
+
+?- prueba_pa<span style="color: #707183;">(</span>hermano<span style="color: #7388d6;">(</span>a,X<span style="color: #7388d6;">)</span>,3<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = b ;
+X = b ;
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_pa</span><span style="color: #707183;">(</span>verdad,<span style="color: #a0522d;">_N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_pa</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   prueba_pa<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   prueba_pa<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_pa</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">N</span> &gt;= 0,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>-1,
+   <span style="color: #707183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>,
+   prueba_pa<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">N1</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintérprete con profundidad acotada se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_meta_pa.pl">meta_pa.pl</a>.</li>
+
+<li><p>
+Prueba con el metaintérprete simple usando <code>call_with_depth_limit</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- call_with_depth_limit<span style="color: #707183;">(</span>prueba<span style="color: #7388d6;">(</span>hermano<span style="color: #909183;">(</span>X,Y<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,1,R<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+R = depth_limit_exceeded.
+
+?- call_with_depth_limit<span style="color: #707183;">(</span>prueba<span style="color: #7388d6;">(</span>hermano<span style="color: #909183;">(</span>X,Y<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,2,R<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = b,
+Y = a,
+R = 3 ;
+R = depth_limit_exceeded.
+
+?- call_with_depth_limit<span style="color: #707183;">(</span>prueba<span style="color: #7388d6;">(</span>hermano<span style="color: #909183;">(</span>X,Y<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,3,R<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = a,
+Y = b,
+R = 4 ;
+X = b,
+Y = a,
+R = 4 ;
+false.
+
+?- call_with_depth_limit<span style="color: #707183;">(</span>prueba<span style="color: #7388d6;">(</span>hermano<span style="color: #909183;">(</span>X,Y<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,4,R<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+X = b,
+Y = a,
+R = 5 ;
+X = a,
+Y = b,
+R = 5 ;
+X = b,
+Y = a,
+R = 4 ;
+false.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org02772a4" class="outline-2">
+<h2 id="org02772a4"><span class="section-number-2">3.</span> Metaintérprete con preguntas</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li><p>
+Ampliación de la base de conocimiento del sistema eléctrico.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">preguntable</span><span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">preguntable</span><span style="color: #707183;">(</span>abajo<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código de la base de conocimiento se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_i_electrica_con_preguntas.pl">i_electrica_con_preguntas.pl</a>.</li>
+
+<li><p>
+<code>prueba_p(+O)</code> se verifica si el objetivo <code>O</code> se puede demostrar a
+partir de la BC objeto y las respuestas del usuario. Por ejemplo, 
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>i_electrica_con_preguntas, meta_con_preguntas<span style="color: #707183;">]</span>.
+true.
+
+?- prueba_p<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>L<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: si.
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: no.
+&#191;Es verdad abajo<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: no.
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i3<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: si.
+
+L = l2 
+
+?- listing<span style="color: #707183;">(</span>respuesta<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+:- dynamic respuesta/2.
+
+<span style="color: #0000ff;">respuesta</span><span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span>, si<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+<span style="color: #0000ff;">respuesta</span><span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i1<span style="color: #7388d6;">)</span>, no<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+<span style="color: #0000ff;">respuesta</span><span style="color: #707183;">(</span>abajo<span style="color: #7388d6;">(</span>i2<span style="color: #7388d6;">)</span>, no<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+<span style="color: #0000ff;">respuesta</span><span style="color: #707183;">(</span>arriba<span style="color: #7388d6;">(</span>i3<span style="color: #7388d6;">)</span>, si<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+
+true.
+
+?- retractall<span style="color: #707183;">(</span>respuesta<span style="color: #7388d6;">(</span>_,_<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+
+?- prueba_p<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>L<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: si.
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no<span style="color: #707183;">)</span>
+|: si.
+
+L = l1 
+</pre>
+</div>
+<p>
+Su definición es   
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_p</span><span style="color: #707183;">(</span>verdad<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_p</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :- 
+   prueba_p<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>, 
+   prueba_p<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_p</span><span style="color: #707183;">(</span><span style="color: #a0522d;">G</span><span style="color: #707183;">)</span> :-
+   preguntable<span style="color: #707183;">(</span><span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>,
+   respuesta<span style="color: #707183;">(</span><span style="color: #a0522d;">G</span>,si<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_p</span><span style="color: #707183;">(</span><span style="color: #a0522d;">G</span><span style="color: #707183;">)</span> :-
+   preguntable<span style="color: #707183;">(</span><span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>,
+   no_preguntado<span style="color: #707183;">(</span><span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>,
+   pregunta<span style="color: #707183;">(</span><span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">Respuesta</span><span style="color: #707183;">)</span>,
+   assert<span style="color: #707183;">(</span>respuesta<span style="color: #7388d6;">(</span><span style="color: #a0522d;">G</span>,<span style="color: #a0522d;">Respuesta</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Respuesta</span>=si.
+<span style="color: #0000ff;">prueba_p</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-  
+   <span style="color: #707183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>, 
+   prueba_p<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>respuesta(?O,?R)</code> se verifica si la respuesta al objetivo <code>O</code> es
+<code>R</code>. (Se añade dinámicamente a la base de datos). 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- <span style="color: #483d8b;">dynamic</span> <span style="color: #0000ff;">respuesta/2</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>no_preguntado(+O)</code> es verdad si el objetivo <code>O</code> no se ha preguntado. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">no_preguntado</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>respuesta<span style="color: #7388d6;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>pregunta(+O, -Respuesta)</code> pregunta <code>O</code> al usuario y éste responde la
+<code>Respuesta</code>. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">pregunta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span><span style="color: #707183;">)</span> :-
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'&#191;Es verdad '</span>,<span style="color: #a0522d;">O</span>,<span style="color: #8b2252;">'? (si/no)'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   read<span style="color: #707183;">(</span><span style="color: #a0522d;">Respuesta</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_lista(+L)</code> escribe cada uno de los elementos de la lista
+<code>L</code>. 
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span> :- nl.
+<span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   write<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintérprete con preguntas se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_meta_con_preguntas.pl">meta_con_preguntas.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0656c17" class="outline-2">
+<h2 id="org0656c17"><span class="section-number-2">4.</span> Metaintérprete con explicación</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-orgcdf8549" class="outline-3">
+<h3 id="orgcdf8549"><span class="section-number-3">4.1.</span> Metaintéprete con árbol de prueba</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li><p>
+<code>prueba_con_demostración((+O,?A)</code> es verdad si <code>A</code> es un árbol de
+prueba del objetivo <code>O</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>i_electrica<span style="color: #707183;">]</span>.
+true.
+
+?- prueba_con_demostracion<span style="color: #707183;">(</span>est&#225;_encendida<span style="color: #7388d6;">(</span>L<span style="color: #7388d6;">)</span>,T<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = l2
+T = si<span style="color: #707183;">(</span>est&#225;_encendida<span style="color: #7388d6;">(</span>l2<span style="color: #7388d6;">)</span>,
+        <span style="color: #7388d6;">(</span>si<span style="color: #909183;">(</span>luz<span style="color: #709870;">(</span>l2<span style="color: #709870;">)</span>, verdad<span style="color: #909183;">)</span> &amp;
+         si<span style="color: #909183;">(</span>est&#225;_bien<span style="color: #709870;">(</span>l2<span style="color: #709870;">)</span>, verdad<span style="color: #909183;">)</span> &amp;
+         si<span style="color: #909183;">(</span>tiene_corriente<span style="color: #709870;">(</span>l2<span style="color: #709870;">)</span>,
+             <span style="color: #709870;">(</span>si<span style="color: #907373;">(</span>conectado<span style="color: #6276ba;">(</span>l2, c4<span style="color: #6276ba;">)</span>, verdad<span style="color: #907373;">)</span> &amp;
+              si<span style="color: #907373;">(</span>tiene_corriente<span style="color: #6276ba;">(</span>c4<span style="color: #6276ba;">)</span>,
+                  <span style="color: #6276ba;">(</span>si<span style="color: #858580;">(</span>conectado<span style="color: #80a880;">(</span>c4, c3<span style="color: #80a880;">)</span>,
+                       si<span style="color: #80a880;">(</span>arriba<span style="color: #887070;">(</span>i3<span style="color: #887070;">)</span>, verdad<span style="color: #80a880;">)</span><span style="color: #858580;">)</span> &amp; 
+                   si<span style="color: #858580;">(</span>tiene_corriente<span style="color: #80a880;">(</span>c3<span style="color: #80a880;">)</span>,
+                       <span style="color: #80a880;">(</span>si<span style="color: #887070;">(</span>conectado<span style="color: #707183;">(</span>c3, c5<span style="color: #707183;">)</span>,
+                            si<span style="color: #707183;">(</span>est&#225;_bien<span style="color: #7388d6;">(</span>cc1<span style="color: #7388d6;">)</span>, verdad<span style="color: #707183;">)</span><span style="color: #887070;">)</span> &amp;
+                        si<span style="color: #887070;">(</span>tiene_corriente<span style="color: #707183;">(</span>c5<span style="color: #707183;">)</span>,
+                            <span style="color: #707183;">(</span>si<span style="color: #7388d6;">(</span>conectado<span style="color: #909183;">(</span>c5, entrada<span style="color: #909183;">)</span>, verdad<span style="color: #7388d6;">)</span> &amp;
+                            si<span style="color: #7388d6;">(</span>tiene_corriente<span style="color: #909183;">(</span>entrada<span style="color: #909183;">)</span>, verdad<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #887070;">)</span><span style="color: #80a880;">)</span><span style="color: #858580;">)</span><span style="color: #6276ba;">)</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+<p>
+Su definición es  
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_con_demostraci&#243;n</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>verdad,verdad<span style="color: #7388d6;">)</span>.
+<span style="color: #0000ff;">prueba_con_demostraci&#243;n</span><span style="color: #7388d6;">(</span><span style="color: #909183;">(</span><span style="color: #709870;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #709870;">)</span>,<span style="color: #709870;">(</span><span style="color: #a0522d;">PA</span> &amp; <span style="color: #a0522d;">PB</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span> :-
+   prueba_con_demostraci&#243;n<span style="color: #909183;">(</span><span style="color: #709870;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">PA</span><span style="color: #709870;">)</span>,
+   prueba_con_demostraci&#243;n<span style="color: #709870;">(</span><span style="color: #907373;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">PB</span><span style="color: #907373;">)</span>.
+<span style="color: #0000ff;">prueba_con_demostraci&#243;n</span><span style="color: #907373;">(</span><span style="color: #6276ba;">(</span><span style="color: #a0522d;">O</span>,si<span style="color: #858580;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">PB</span><span style="color: #858580;">)</span><span style="color: #6276ba;">)</span> :-
+   <span style="color: #6276ba;">(</span><span style="color: #a0522d;">O</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #6276ba;">)</span>,
+   prueba_con_demostraci&#243;n<span style="color: #6276ba;">(</span><span style="color: #858580;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">PB</span><span style="color: #858580;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintérprete con árbol de prueba se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_meta_con_explicacion_arbol.pl">meta_con_explicacion_arbol.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4e7fde8" class="outline-3">
+<h3 id="org4e7fde8"><span class="section-number-3">4.2.</span> Metaintérprete con explicación de <i>cómo</i> deduce.</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><p>
+<code>prueba_con_explicación(+O)</code> significa probar el objetivo <code>O</code> a partir
+de la base de conocimiento y navegar por su árbol de prueba mediante
+preguntas. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>i_electrica<span style="color: #707183;">]</span>.
+true.
+
+?- prueba_con_explicaci&#243;n<span style="color: #707183;">(</span>est&#225;_encendida<span style="color: #7388d6;">(</span>L<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+<span style="color: #0000ff;">est&#225;_encendida</span><span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span> :-
+   1: luz<span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span>
+   2: est&#225;_bien<span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span>
+   3: tiene_corriente<span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span>
+|: 3.
+<span style="color: #0000ff;">tiene_corriente</span><span style="color: #707183;">(</span>l2<span style="color: #707183;">)</span> :-
+   1: conectado<span style="color: #707183;">(</span>l2, c4<span style="color: #707183;">)</span>
+   2: tiene_corriente<span style="color: #707183;">(</span>c4<span style="color: #707183;">)</span>
+|: 2.
+<span style="color: #0000ff;">tiene_corriente</span><span style="color: #707183;">(</span>c4<span style="color: #707183;">)</span> :-
+   1: conectado<span style="color: #707183;">(</span>c4, c3<span style="color: #707183;">)</span>
+   2: tiene_corriente<span style="color: #707183;">(</span>c3<span style="color: #707183;">)</span>
+|: 1.
+<span style="color: #0000ff;">conectado</span><span style="color: #707183;">(</span>c4, c3<span style="color: #707183;">)</span> :-
+   1: arriba<span style="color: #707183;">(</span>i3<span style="color: #707183;">)</span>
+|: 1.
+<span style="color: #0000ff;">arriba</span><span style="color: #707183;">(</span>i3<span style="color: #707183;">)</span> es un hecho
+
+L = l2 
+</pre>
+</div>
+<p>
+Su definición es  
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_con_explicaci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span> :-
+   prueba_con_demostraci&#243;n<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">A</span><span style="color: #7388d6;">)</span>,
+   navega<span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span><span style="color: #7388d6;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>navega(+A)</code> significa que se está navegando en el árbol <code>A</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">navega</span><span style="color: #707183;">(</span>si<span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span>,verdad<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+    escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">A</span>,<span style="color: #8b2252;">' es un hecho'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">navega</span><span style="color: #707183;">(</span>si<span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+    <span style="color: #a0522d;">B</span> \== verdad,
+    escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">A</span>,<span style="color: #8b2252;">' :-'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+    escribe_cuerpo<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,1,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>,
+    read<span style="color: #707183;">(</span><span style="color: #a0522d;">Orden</span><span style="color: #707183;">)</span>,
+    interpreta_orden<span style="color: #707183;">(</span><span style="color: #a0522d;">Orden</span>,<span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_lista(+L)</code> escribe cada uno de los elementos de la lista <code>L</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span> :- nl.
+<span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   write<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_cuerpo(+B,+N1,?N2)</code> es verdad si <code>B</code> es un cuerpo que se va a
+escribir, <code>N1</code> es el número de átomos antes de la llamada a <code>B</code> y <code>N2</code>
+es el número de átomos después de la llamada a <code>B</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_cuerpo</span><span style="color: #707183;">(</span>verdad,<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">escribe_cuerpo</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">N3</span><span style="color: #707183;">)</span> :-
+   escribe_cuerpo<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">N2</span><span style="color: #707183;">)</span>,
+   escribe_cuerpo<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">N2</span>,<span style="color: #a0522d;">N3</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">escribe_cuerpo</span><span style="color: #707183;">(</span>si<span style="color: #7388d6;">(</span><span style="color: #a0522d;">H</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">N1</span><span style="color: #707183;">)</span> :-
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'   '</span>,<span style="color: #a0522d;">N</span>,<span style="color: #8b2252;">': '</span>,<span style="color: #a0522d;">H</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>+1.
+</pre>
+</div></li>
+
+<li><p>
+<code>interpreta_orden(+Orden,+B)</code> interpreta la <code>Orden</code> sobre el cuerpo
+<code>B</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpreta_orden</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">B</span><span style="color: #707183;">)</span> :-
+   integer<span style="color: #707183;">(</span><span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   nth<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>,
+   navega<span style="color: #707183;">(</span><span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>nth(+E,+N,?A)</code> es verdad si <code>A</code> es el <code>N</code>-ésimo elemento de la
+estructura <code>E</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">nth</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,1,<span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> = <span style="color: #909183;">(</span><span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">nth</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span>&amp;<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,1,<span style="color: #a0522d;">A</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">nth</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">_</span>&amp;<span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">N</span>&gt;1,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>-1,
+   nth<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintérprete con explicaciones de <i>cómo</i> se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_meta_con_explicacion_como.pl">meta_con_explicacion_como.pl</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org780ad0b" class="outline-3">
+<h3 id="org780ad0b"><span class="section-number-3">4.3.</span> Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</h3>
+<div class="outline-text-3" id="text-4-3">
+<ul class="org-ul">
+<li><p>
+<code>prueba_con_porque(O)</code> significa probar el objetivo <code>O</code>, con las
+respuestas del usuario, permitiéndole preguntar por qué se le plantean
+preguntas. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- <span style="color: #707183;">[</span>i_electrica_con_preguntas<span style="color: #707183;">]</span>.
+true.
+
+?- prueba_con_porque<span style="color: #707183;">(</span>esta_encendida<span style="color: #7388d6;">(</span>L<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   conectado<span style="color: #707183;">(</span>c0,c1<span style="color: #707183;">)</span> &lt;- 
+       arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   tiene_corriente<span style="color: #707183;">(</span>c0<span style="color: #707183;">)</span> &lt;- 
+       conectado<span style="color: #707183;">(</span>c0,c1<span style="color: #707183;">)</span> &amp;
+       tiene_corriente<span style="color: #707183;">(</span>c1<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   tiene_corriente<span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &lt;- 
+       conectado<span style="color: #707183;">(</span>l1,c0<span style="color: #707183;">)</span> &amp;
+       tiene_corriente<span style="color: #707183;">(</span>c0<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   esta_encendida<span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &lt;- 
+       luz<span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &amp;
+       esta_bien<span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span> &amp;
+       tiene_corriente<span style="color: #707183;">(</span>l1<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Porque esa fue su pregunta!
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: si.
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   conectado<span style="color: #707183;">(</span>c1,c3<span style="color: #707183;">)</span> &lt;- 
+       arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad arriba<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: no.
+&#191;Es verdad abajo<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: porque.
+Se usa en:
+   conectado<span style="color: #707183;">(</span>c0,c2<span style="color: #707183;">)</span> &lt;- 
+       abajo<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+&#191;Es verdad abajo<span style="color: #707183;">(</span>i2<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: si.
+&#191;Es verdad abajo<span style="color: #707183;">(</span>i1<span style="color: #707183;">)</span>? <span style="color: #707183;">(</span>si/no/porque<span style="color: #707183;">)</span>
+|: si.
+
+L = l1 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_con_porque</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span> :-
+   prueba_con_porque_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>prueba_con_porque_aux(O,Antecesores)</code> se verifica si <code>O</code> es probable
+con la lista de <code>Antecesores</code>. Pregunta al usuario y las posibles
+respuesta son Sí, No o Por qué hace la pregunta.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">prueba_con_porque_aux</span><span style="color: #707183;">(</span>verdad,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_con_porque_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span> :-
+   prueba_con_porque_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span>,
+   prueba_con_porque_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_con_porque_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span> :-
+   preguntable<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span>,
+   respuesta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,si<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">prueba_con_porque_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span> :-
+   preguntable<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span>,
+   no_preguntado<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span><span style="color: #707183;">)</span>,
+   pregunta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span>,
+   assert<span style="color: #707183;">(</span>respuesta<span style="color: #7388d6;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Respuesta</span>=si.
+<span style="color: #0000ff;">prueba_con_porque_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span> :-
+   <span style="color: #707183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>,
+   prueba_con_porque_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span>,<span style="color: #7388d6;">[</span><span style="color: #909183;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #909183;">)</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">Antecesores</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>respuesta(O,Respuesta)</code> se añade dinámicamente a la base de datos.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- <span style="color: #483d8b;">dynamic</span> <span style="color: #0000ff;">respuesta/2</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>no_preguntado(O)</code> se verifica si el objetivo <code>O</code> no se ha
+preguntado.
+</p>
+<pre class="example">
+no_preguntado(G) :- \+ respuesta(G,_).   
+</pre></li>
+
+<li><p>
+<code>pregunta(O,Respuesta,Antecesores)</code> pregunta al usuario, en el contexto
+dado por los <code>Antecesores</code>, la cuestión <code>O</code> y éste escribe la
+<code>Respuesta</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">pregunta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span> :-
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'&#191;Es verdad '</span>,<span style="color: #a0522d;">O</span>,<span style="color: #8b2252;">'? (si/no/porque)'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   read<span style="color: #707183;">(</span><span style="color: #a0522d;">Replica</span><span style="color: #707183;">)</span>,
+   interpreta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,<span style="color: #a0522d;">Replica</span>,<span style="color: #a0522d;">Antecesores</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_lista(L)</code> escribe cada uno de los elementos de la lista L.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span> :- nl.
+<span style="color: #0000ff;">escribe_lista</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   write<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>interpreta(O,Respuesta,Replica,Antecesores)</code> interpreta la <code>Replica</code>
+(cuyos posibles valores son <code>si</code>, <code>no</code> o <code>porque</code>) en el contexto de
+los <code>Antecesores</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">interpreta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">Replica</span>,<span style="color: #a0522d;">Replica</span>,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">Replica</span> \== porque.
+<span style="color: #0000ff;">interpreta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,porque,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">Regla</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">Reglas</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>:-
+   write<span style="color: #707183;">(</span><span style="color: #8b2252;">'Se usa en:'</span><span style="color: #707183;">)</span>, nl,
+   escribe_regla<span style="color: #707183;">(</span><span style="color: #a0522d;">Regla</span><span style="color: #707183;">)</span>,
+   pregunta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,<span style="color: #a0522d;">Reglas</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">interpreta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,porque,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>:-
+   write<span style="color: #707183;">(</span><span style="color: #8b2252;">'Porque esa fue su pregunta!'</span><span style="color: #707183;">)</span>, nl,
+   pregunta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">Respuesta</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_regla(R)</code> escribe la regla <code>R</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_regla</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &lt;- <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'   '</span>,<span style="color: #a0522d;">A</span>, <span style="color: #8b2252;">' &lt;- '</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   escribe_cuerpo<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>escribe_cuerpo(C)</code> escribe el cuerpo <code>C</code> de una regla.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">escribe_cuerpo</span><span style="color: #707183;">(</span><span style="color: #7388d6;">(</span><span style="color: #a0522d;">A</span> &amp; <span style="color: #a0522d;">B</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> :-
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'       '</span>,<span style="color: #a0522d;">A</span>, <span style="color: #8b2252;">' &amp;'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   escribe_cuerpo<span style="color: #707183;">(</span><span style="color: #a0522d;">B</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">escribe_cuerpo</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   \+ <span style="color: #a0522d;">A</span> = <span style="color: #707183;">(</span><span style="color: #a0522d;">_B</span> &amp; <span style="color: #a0522d;">_C</span><span style="color: #707183;">)</span>,
+   escribe_lista<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #8b2252;">'       '</span>,<span style="color: #a0522d;">A</span>,<span style="color: #8b2252;">'.'</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li>El código del metaintérprete con explicaciones de <i>por qué</i> se encuentra en
+<a href="https://swish.swi-prolog.org/p/PLP_meta_con_explicacion_porque.pl">meta_con_explicacion_porque.pl</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org14426a1" class="outline-2">
+<h2 id="org14426a1"><span class="section-number-2">5.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-5">
+<ul class="org-ul">
+<li>D. Poole, A. Mackworth y R. Goebel.
+<a href="https://www.cs.ubc.ca/~poole/ci.html">Computational intelligence (A logical approach)</a>.       
+(Oxford University Press, 1998)
+<ul class="org-ul">
+<li>Cap. 5: Knowledge engineering.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/materias/PLconProlog/">Inicial</a> |
+   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
+   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
+   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
+   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 08 de junio del 2022</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
