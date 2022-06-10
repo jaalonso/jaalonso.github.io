@@ -260,6 +260,7 @@
 <li><a href="#org9c5088c">4.8. Descomposición en factores primos</a></li>
 <li><a href="#org2bddaf2">4.9. Menor múltiplo con suma de sus dígitos mayor que N</a></li>
 <li><a href="#orga9e9345">4.10. Números libres de cuadrados</a></li>
+<li><a href="#org011f736">4.11. Suma de los números libres de cuadrados</a></li>
 </ul>
 </li>
 <li><a href="#orgfec5ec6">5. Bibliografía</a></li>
@@ -1238,6 +1239,67 @@ false.
 <pre class="src src-prolog"><span style="color: #0000ff;">libre_de_cuadrados_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
    <span style="color: #a0522d;">M</span> is floor<span style="color: #707183;">(</span>sqrt<span style="color: #7388d6;">(</span><span style="color: #a0522d;">N</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
    forall<span style="color: #707183;">(</span>between<span style="color: #7388d6;">(</span>2,<span style="color: #a0522d;">M</span>,<span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">N</span> mod <span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span>*<span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span> =\= 0<span style="color: #707183;">)</span>.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org011f736" class="outline-3">
+<h3 id="org011f736"><span class="section-number-3">4.11.</span> Suma de los números libres de cuadrados</h3>
+<div class="outline-text-3" id="text-4-11">
+<hr />
+<p>
+<b>Ejercicio 11.</b> Definir la relación <code>suma_libres_de_cuadrados(+L,-S)</code>
+que se verifique si <code>S</code> es la suma de los números libres de cuadrados la
+lista numérica <code>L</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- suma_libres_de_cuadrados<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>6,12,18,30<span style="color: #7388d6;">]</span>,S<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+S = 36 .
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución (sin cortes)</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">suma_libres_de_cuadrados_1</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">suma_libres_de_cuadrados_1</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   libre_de_cuadrados<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   suma_libres_de_cuadrados_1<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">S</span> is <span style="color: #a0522d;">X</span>+<span style="color: #a0522d;">S1</span>.
+<span style="color: #0000ff;">suma_libres_de_cuadrados_1</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>libre_de_cuadrados<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   suma_libres_de_cuadrados_1<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+<b>2ª solución (con cortes)</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">suma_libres_de_cuadrados_2</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">suma_libres_de_cuadrados_2</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   libre_de_cuadrados<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   suma_libres_de_cuadrados_2<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">S1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">S</span> is <span style="color: #a0522d;">X</span>+<span style="color: #a0522d;">S1</span>.
+<span style="color: #0000ff;">suma_libres_de_cuadrados_2</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">_X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">not(libre_de_cuadrados(_X)),</span>
+   suma_libres_de_cuadrados_2<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+<b>3ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">suma_libres_de_cuadrados_3</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span> :-
+   include<span style="color: #707183;">(</span>libre_de_cuadrados, <span style="color: #a0522d;">L</span>, <span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   sum_list<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">S</span><span style="color: #707183;">)</span>.
 </pre>
 </div>
 </div>
