@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 10 de junio del 2022 -->
+<!-- 11 de junio del 2022 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 4: Retroceso, corte y negación</title>
@@ -267,6 +267,7 @@
 <li><a href="#orgce35c1d">4.15. Suma de los elementos con posiciones múltiplos de n</a></li>
 <li><a href="#org8a5df18">4.16. Compresión de listas</a></li>
 <li><a href="#orgc8cccf9">4.17. Empaquetamiento de listas</a></li>
+<li><a href="#org75979c8">4.18. Codificación por longitud</a></li>
 </ul>
 </li>
 <li><a href="#orgfec5ec6">5. Bibliografía</a></li>
@@ -1665,6 +1666,76 @@ La definición anterior puede transformarse introduciendo corte en
 </ul>
 </div>
 </div>
+
+<div id="outline-container-org75979c8" class="outline-3">
+<h3 id="org75979c8"><span class="section-number-3">4.18.</span> Codificación por longitud</h3>
+<div class="outline-text-3" id="text-4-18">
+<hr />
+<p>
+<b>Ejercicio 18</b> Definir la relación <code>codificada(+L1,-L2)</code> que se
+verifique si <code>L2</code> es la codificación por longitud de la lista <code>L1</code>; es
+decir, las sucesiones de un mismo elemento <code>X</code> de <code>L1</code> se codifican por
+términos de la forma <code>N-X</code> donde <code>N</code> es la longitud de la sucesión. Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- codificada<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>a,b,b,a,a,a,c,c,b,b,b<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>1-a, 2-b, 3-a, 2-c, 3-b<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">codificada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   empaquetada<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   codificada_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+
+<ul class="org-ul">
+<li><p>
+<code>codificada_aux(+L1,-L2)</code> se verifica si, suponiendo que <code>L1</code> es una lista
+de la forma <code>[[E1,...,E1],...,[Em,....Em]])</code>, <code>L2</code> es la lista
+<code>[N1-E1,...Nm-Em]</code> donde <code>Ni</code> es la longitud de <code>[Ei,...,Ei]</code>. Por
+ejemplo.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- codificada_aux<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">[</span>a<span style="color: #909183;">]</span>,<span style="color: #909183;">[</span>b,b<span style="color: #909183;">]</span>,<span style="color: #909183;">[</span>a,a,a<span style="color: #909183;">]</span>,<span style="color: #909183;">[</span>c,c<span style="color: #909183;">]</span>,<span style="color: #909183;">[</span>b,b,b<span style="color: #909183;">]</span><span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>1-a, 2-b, 3-a, 2-c, 3-b<span style="color: #707183;">]</span>.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">codificada_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">codificada_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #909183;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">Y</span><span style="color: #909183;">]</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L1</span><span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">N</span>-<span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   length<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">Y</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   codificada_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+<p>
+<b>2ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">codificada_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   empaquetada<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   codificada_aux_2<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">codificada_aux_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   bagof<span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>-<span style="color: #a0522d;">X</span>, <span style="color: #a0522d;">X</span>^<span style="color: #a0522d;">L3</span>^<span style="color: #7388d6;">(</span>member<span style="color: #909183;">(</span><span style="color: #709870;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L3</span><span style="color: #709870;">]</span>,<span style="color: #a0522d;">L1</span><span style="color: #909183;">)</span>, length<span style="color: #909183;">(</span><span style="color: #709870;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L3</span><span style="color: #709870;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+</div>
+</div>
 </div>
 
 <div id="outline-container-orgfec5ec6" class="outline-2">
@@ -1715,7 +1786,7 @@ La definición anterior puede transformarse introduciendo corte en
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 10 de junio del 2022</p>
+  <p>Sevilla, 11 de junio del 2022</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
