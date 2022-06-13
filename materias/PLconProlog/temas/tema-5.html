@@ -289,6 +289,7 @@
 <li><a href="#org64ff502">8.10. Lista de números capicúas en un intervalo</a></li>
 <li><a href="#orgb97bc23">8.11. Palabra inversa</a></li>
 <li><a href="#org4808036">8.12. Determinación de un número por su factorial</a></li>
+<li><a href="#org7bec1d7">8.13. Nodos de una generación en una lista de árboles binarios</a></li>
 </ul>
 </li>
 <li><a href="#orgd198605">9. Bibliografía</a></li>
@@ -1817,6 +1818,90 @@ true
 true 
 </pre>
 </div>
+</div>
+</div>
+
+<div id="outline-container-org7bec1d7" class="outline-3">
+<h3 id="org7bec1d7"><span class="section-number-3">8.13.</span> Nodos de una generación en una lista de árboles binarios</h3>
+<div class="outline-text-3" id="text-8-13">
+<hr />
+<p>
+<b>Ejercicio 13.</b> Un árbol binario es vacío o consta de tres partes: la
+raíz (que debe de ser un número positivo), el subárbol izquierdo (que
+debe ser un árbol binario) y el subárbol derecho (que debe ser un árbol
+binario). Usaremos la siguiente representación
+</p>
+<ul class="org-ul">
+<li><code>nil</code> representa el árbol vacío</li>
+<li><code>t(I,R,D)</code> representa el árbol de la raíz <code>R</code>, subárbol izquierdo <code>I</code> y
+subárbol derecho <code>D</code>.</li>
+</ul>
+<p>
+Por ejemplo, <code>t(t(nil,2,nil),1,t(t(nil,4,nil),3,nil))</code> representa el árbol
+</p>
+<div class="org-src-container">
+<pre class="src src-txt">   1                                   
+ /   \                                 
+2     3                                
+     /                                 
+    4                                  
+</pre>
+</div>
+
+<p>
+Definir la relación <code>generación(+N,+L1,-L2)</code> que se verifique si <code>L2</code> es
+la lista de nodos de la generación <code>N</code> de la lista de árboles <code>L1</code>. Por
+ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- generaci&#243;n<span style="color: #707183;">(</span>0,<span style="color: #7388d6;">[</span>t<span style="color: #909183;">(</span>t<span style="color: #709870;">(</span>nil,2,nil<span style="color: #709870;">)</span>,3,nil<span style="color: #909183;">)</span>,t<span style="color: #909183;">(</span>nil,4,t<span style="color: #709870;">(</span>nil,5,nil<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>3, 4<span style="color: #707183;">]</span> 
+?- generaci&#243;n<span style="color: #707183;">(</span>1,<span style="color: #7388d6;">[</span>t<span style="color: #909183;">(</span>t<span style="color: #709870;">(</span>nil,2,nil<span style="color: #709870;">)</span>,3,nil<span style="color: #909183;">)</span>,t<span style="color: #909183;">(</span>nil,4,t<span style="color: #709870;">(</span>nil,5,nil<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>2, 5<span style="color: #707183;">]</span> 
+?- generaci&#243;n<span style="color: #707183;">(</span>2,<span style="color: #7388d6;">[</span>t<span style="color: #909183;">(</span>t<span style="color: #709870;">(</span>nil,2,nil<span style="color: #709870;">)</span>,3,nil<span style="color: #909183;">)</span>,t<span style="color: #909183;">(</span>nil,4,t<span style="color: #709870;">(</span>nil,5,nil<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">generaci&#243;n</span><span style="color: #707183;">(</span>0,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>:-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">R</span>,member<span style="color: #7388d6;">(</span>t<span style="color: #909183;">(</span><span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">R</span>,<span style="color: #a0522d;">_</span><span style="color: #909183;">)</span>,<span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">generaci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>:-
+   <span style="color: #a0522d;">N</span> &gt; 0,
+   elimina_raices<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>-1,
+   generaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>elimina_raices(+L1,-L2)</code> se verifica si <code>L2</code> es la lista de los
+árboles obtenidos de la lista de árboles <code>L1</code> eliminando sus
+raices. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- elimina_raices<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>t<span style="color: #909183;">(</span>t<span style="color: #709870;">(</span>nil,2,nil<span style="color: #709870;">)</span>,3,nil<span style="color: #909183;">)</span>,t<span style="color: #909183;">(</span>nil,4,t<span style="color: #709870;">(</span>nil,5,nil<span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>t<span style="color: #7388d6;">(</span>nil, 2, nil<span style="color: #7388d6;">)</span>, nil, nil, t<span style="color: #7388d6;">(</span>nil, 5, nil<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">elimina_raices</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">elimina_raices</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>nil<span style="color: #a020f0;">|</span><span style="color: #a0522d;">L1</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>:-
+   elimina_raices<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">elimina_raices</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>t<span style="color: #909183;">(</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">D</span><span style="color: #909183;">)</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L1</span><span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">I</span>,<span style="color: #a0522d;">D</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>:-
+   elimina_raices<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
 </div>
 </div>
 </div>
