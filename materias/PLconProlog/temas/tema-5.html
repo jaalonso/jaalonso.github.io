@@ -292,6 +292,7 @@
 <li><a href="#org7bec1d7">8.13. Nodos de una generación en una lista de árboles binarios</a></li>
 <li><a href="#org848068c">8.14. Lista de elementos únicos</a></li>
 <li><a href="#orgd6921bc">8.15. Elementos más frecuentes de una lista</a></li>
+<li><a href="#org171e3f1">8.16. El problema 3n+1</a></li>
 </ul>
 </li>
 <li><a href="#orgd198605">9. Bibliografía</a></li>
@@ -2017,6 +2018,155 @@ Su definición es
 </pre>
 </div></li>
 </ul>
+</div>
+</div>
+
+<div id="outline-container-org171e3f1" class="outline-3">
+<h3 id="org171e3f1"><span class="section-number-3">8.16.</span> El problema 3n+1</h3>
+<div class="outline-text-3" id="text-8-16">
+<hr />
+<p>
+<b>Ejercicio 16.1.</b> Consideremos la función siguiente definida sobre los
+números naturales: 
+f(x) = 3x + 1, si x es impar;
+       x / 2,  si x es par
+</p>
+
+<p>
+Definir la relación <code>sucesión(+X,?L)</code> que se verifique si <code>L</code> es la
+lista de los elementos <code>X, f(X), f(f(X)), ..., f^n(X)</code> tal que
+<code>f^n(X) = 1</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- sucesi&#243;n<span style="color: #707183;">(</span>3,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>3, 10, 5, 16, 8, 4, 2, 1<span style="color: #707183;">]</span>
+</pre>
+</div>
+<p>
+Se dice que <code>L</code> es la <b>sucesión generada por</b> X.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">f</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">X</span> mod 2 =:= 0, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>/2.
+<span style="color: #0000ff;">f</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">X mod 2 =/= 0,</span>
+   <span style="color: #a0522d;">Y</span> is 3*<span style="color: #a0522d;">X</span>+1.
+
+<span style="color: #0000ff;">sucesi&#243;n</span><span style="color: #707183;">(</span>1,<span style="color: #7388d6;">[</span>1<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :- <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">sucesi&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">X =/= 1,</span>
+   f<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span>,
+   sucesi&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 16.2.</b> Definir la relación <code>longitudes(+X,?L)</code> que se
+verifique si <code>L</code> la lista de pares <code>Y-N</code> donde <code>Y</code> es un número de <code>1</code> a
+<code>X</code> y <code>N</code> es la longitud de sucesión generada por <code>Y</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- longitudes<span style="color: #707183;">(</span>5,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>1-1, 2-2, 3-8, 4-3, 5-6<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">longitudes</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   longitudes_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   reverse<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">longitudes_aux</span><span style="color: #707183;">(</span>1,<span style="color: #7388d6;">[</span>1-<span style="color: #a0522d;">N</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a020f0;">!</span>,
+   sucesi&#243;n<span style="color: #707183;">(</span>1,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   length<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">longitudes_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span>-<span style="color: #a0522d;">N</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">X &gt; 1,</span>
+   sucesi&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   length<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>-1,
+   longitudes_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+<b>2ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">longitudes_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span>-<span style="color: #a0522d;">N</span>,<span style="color: #7388d6;">(</span>between<span style="color: #909183;">(</span>1,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #909183;">)</span>,sucesi&#243;n<span style="color: #909183;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">S</span><span style="color: #909183;">)</span>,length<span style="color: #909183;">(</span><span style="color: #a0522d;">S</span>,<span style="color: #a0522d;">N</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 16.3.</b> Definir la relación <code>longitud_máx(+X,?P)</code> que se
+verifica si <code>P</code> es un par de la forma <code>Y-N4 donde ~Y</code> es un número entre
+<code>1</code> y <code>X</code> tal que la longitud de la sucesión generada por <code>Y</code> es la más
+larga de las sucesiones generadas por <code>1, 2, ..., X</code> y <code>N</code> es la
+longitud de dicha sucesión. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- longitud_m&#225;x<span style="color: #707183;">(</span>10,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = 9-20
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">longitud_m&#225;x</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span>-<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   longitudes<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span>-<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   \+ <span style="color: #707183;">(</span>member<span style="color: #7388d6;">(</span><span style="color: #a0522d;">_Z</span>-<span style="color: #a0522d;">M</span>,<span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span>, <span style="color: #a0522d;">M</span> &gt; <span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 16.4.</b> Definir menor_que_~genera_mayor(+N,-M)~ que se
+verifique si <code>M</code> es el menor número natural tal que la longitud de la
+sucesión generada por <code>M</code> es mayor que <code>N</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- menor_que_genera_mayor<span style="color: #707183;">(</span>100,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+N = 27.
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">menor_que_genera_mayor</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span> :-
+   menor_que_genera_mayor_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,1,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">menor_que_genera_mayor_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">M</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span> :-
+   sucesi&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">M</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   length<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">X</span> &gt; <span style="color: #a0522d;">N</span>, <span style="color: #a020f0;">!</span>.
+<span style="color: #0000ff;">menor_que_genera_mayor_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>+1,
+   menor_que_genera_mayor_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
 </div>
 </div>
 </div>
