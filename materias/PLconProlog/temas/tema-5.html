@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de junio del 2022 -->
+<!-- 13 de junio del 2022 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 5: Programación lógica de orden superior</title>
@@ -288,6 +288,7 @@
 <li><a href="#org096a491">8.9. Rotaciones de una lista</a></li>
 <li><a href="#org64ff502">8.10. Lista de números capicúas en un intervalo</a></li>
 <li><a href="#orgb97bc23">8.11. Palabra inversa</a></li>
+<li><a href="#org4808036">8.12. Determinación de un número por su factorial</a></li>
 </ul>
 </li>
 <li><a href="#orgd198605">9. Bibliografía</a></li>
@@ -1656,6 +1657,168 @@ P = zorra.
 </div>
 </div>
 </div>
+
+<div id="outline-container-org4808036" class="outline-3">
+<h3 id="org4808036"><span class="section-number-3">8.12.</span> Determinación de un número por su factorial</h3>
+<div class="outline-text-3" id="text-8-12">
+<hr />
+<p>
+<b>Ejercicio 12.</b> Definir la relación <code>factorial_inverso(+X,-N)</code> que se
+verifique si <code>X</code> es el factorial de <code>N</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- factorial_inverso<span style="color: #707183;">(</span>120,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+N = 5 ;
+false.
+?- factorial_inverso<span style="color: #707183;">(</span>80,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_1</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   factorial_inverso_1_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,1,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>factorial_inverso_1_aux(+X,+A,-N)</code> se verifica si <code>N</code> es el menor número
+mayor o igual que <code>A</code> cuyo factorial es <code>X</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_1_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   factorial<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">factorial_inverso_1_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   factorial<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N1</span> &lt; <span style="color: #a0522d;">X</span>,
+   <span style="color: #a0522d;">A1</span> is <span style="color: #a0522d;">A</span> + 1,
+   factorial_inverso_1_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A1</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+
+<ul class="org-ul">
+<li><p>
+<code>factorial(+N,-X)</code> se verifica si <code>X</code> es el factorial de <code>N</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial</span><span style="color: #707183;">(</span>1,1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">factorial</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">N</span> &gt; 1,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>-1,
+   factorial<span style="color: #707183;">(</span><span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">X1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">X</span> is <span style="color: #a0522d;">X1</span> * <span style="color: #a0522d;">N</span>.
+</pre>
+</div></li>
+</ul>
+
+<p>
+<b>2ª solución (con memorización)</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   factorial_inverso_2_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,1,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>factorial_inverso_2_aux(+X,+A,-N)</code> se verifica si <code>N</code> es el menor número
+mayor o igual que <code>A</code> cuyo factorial (con memoria) es <code>X</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_2_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   factorial_con_memoria<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">factorial_inverso_2_aux</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   factorial_con_memoria<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">N1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N1</span> &lt; <span style="color: #a0522d;">X</span>,
+   <span style="color: #a0522d;">C1</span> is <span style="color: #a0522d;">A</span> + 1,
+   factorial_inverso_2_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">C1</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>factorial_con_memoria(+N,-X)</code> se verifica si <code>X</code> es el factorial de
+<code>N</code>. Además almacena en la base de datos internas los factoriales
+calculados.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog">:- <span style="color: #483d8b;">dynamic</span> <span style="color: #0000ff;">factorial_con_memoria/2</span>.
+
+<span style="color: #0000ff;">factorial_con_memoria</span><span style="color: #707183;">(</span>1,1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">factorial_con_memoria</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">N</span> &gt; 1,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>-1,
+   factorial_con_memoria<span style="color: #707183;">(</span><span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">X1</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">X</span> is <span style="color: #a0522d;">X1</span> * <span style="color: #a0522d;">N</span>,
+   asserta<span style="color: #707183;">(</span>factorial_con_memoria<span style="color: #7388d6;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span> :- <span style="color: #a020f0;">!</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+<p>
+<b>3ª solución (con dos acumuladores)</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_3</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   factorial_inverso_aux_3<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,1,1,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>factorial_inverso_aux_3(+X,+A,+F,-N)</code> se verifica si <code>X = A*(A+1)*...*N</code>
+(de forma que si <code>A = 1</code> entonces <code>X = N!</code>).
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">factorial_inverso_aux_3</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">A</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">A</span>*<span style="color: #a0522d;">F</span> =:= <span style="color: #a0522d;">X</span>.
+<span style="color: #0000ff;">factorial_inverso_aux_3</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">F</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">F1</span> is <span style="color: #a0522d;">A</span>*<span style="color: #a0522d;">F</span>,
+   <span style="color: #a0522d;">F1</span> &lt; <span style="color: #a0522d;">X</span>, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">A1</span> is <span style="color: #a0522d;">A</span> + 1,
+   factorial_inverso_aux_3<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">A1</span>,<span style="color: #a0522d;">F1</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+<p>
+<b>Comparación de eficiencia</b>
+</p>
+
+<p>
+La comparación es
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- factorial<span style="color: #707183;">(</span>2000,_X<span style="color: #707183;">)</span>, time<span style="color: #707183;">(</span>factorial_inverso_1<span style="color: #7388d6;">(</span>_X,_N<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+% 11,997,999 inferences, 2.921 CPU<span style="color: #a020f0;"> in</span> 2.925 seconds <span style="color: #707183;">(</span>100% CPU, 4106828 Lips<span style="color: #707183;">)</span>
+true 
+?- factorial<span style="color: #707183;">(</span>2000,_X<span style="color: #707183;">)</span>, time<span style="color: #707183;">(</span>factorial_inverso_2<span style="color: #7388d6;">(</span>_X,_N<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+% 13,993 inferences, 0.004 CPU<span style="color: #a020f0;"> in</span> 0.004 seconds <span style="color: #707183;">(</span>100% CPU, 3832958 Lips<span style="color: #707183;">)</span>
+true 
+?- factorial<span style="color: #707183;">(</span>2000,_X<span style="color: #707183;">)</span>, time<span style="color: #707183;">(</span>factorial_inverso_3<span style="color: #7388d6;">(</span>_X,_N<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+% 7,997 inferences, 0.009 CPU<span style="color: #a020f0;"> in</span> 0.009 seconds <span style="color: #707183;">(</span>100% CPU, 877368 Lips<span style="color: #707183;">)</span>
+true 
+
+?- factorial<span style="color: #707183;">(</span>4000,_X<span style="color: #707183;">)</span>, time<span style="color: #707183;">(</span>factorial_inverso_2<span style="color: #7388d6;">(</span>_X,_N<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+% 35,993 inferences, 0.035 CPU<span style="color: #a020f0;"> in</span> 0.035 seconds <span style="color: #707183;">(</span>100% CPU, 1035996 Lips<span style="color: #707183;">)</span>
+true 
+?- factorial<span style="color: #707183;">(</span>4000,_X<span style="color: #707183;">)</span>, time<span style="color: #707183;">(</span>factorial_inverso_3<span style="color: #7388d6;">(</span>_X,_N<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+% 15,997 inferences, 0.022 CPU<span style="color: #a020f0;"> in</span> 0.022 seconds <span style="color: #707183;">(</span>100% CPU, 716325 Lips<span style="color: #707183;">)</span>
+true 
+</pre>
+</div>
+</div>
+</div>
 </div>
 
 <div id="outline-container-orgd198605" class="outline-2">
@@ -1702,7 +1865,7 @@ P = zorra.
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de junio del 2022</p>
+  <p>Sevilla, 13 de junio del 2022</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
