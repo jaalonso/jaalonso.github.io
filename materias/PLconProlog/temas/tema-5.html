@@ -291,6 +291,7 @@
 <li><a href="#org4808036">8.12. Determinación de un número por su factorial</a></li>
 <li><a href="#org7bec1d7">8.13. Nodos de una generación en una lista de árboles binarios</a></li>
 <li><a href="#org848068c">8.14. Lista de elementos únicos</a></li>
+<li><a href="#orgd6921bc">8.15. Elementos más frecuentes de una lista</a></li>
 </ul>
 </li>
 <li><a href="#orgd198605">9. Bibliografía</a></li>
@@ -1953,6 +1954,66 @@ Su definición es
 <pre class="src src-prolog"><span style="color: #0000ff;">es_&#250;nico</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
    select<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">R</span><span style="color: #707183;">)</span>,
    not<span style="color: #707183;">(</span>memberchk<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">R</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgd6921bc" class="outline-3">
+<h3 id="orgd6921bc"><span class="section-number-3">8.15.</span> Elementos más frecuentes de una lista</h3>
+<div class="outline-text-3" id="text-8-15">
+<hr />
+<p>
+<b>Ejercicio 15.</b> Definir el predicado <code>populares(L1,L2)</code> que se verifique
+si <code>L2</code> es la lista de los elementos de <code>L1</code> que aparecen el mayor
+número de veces. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- populares<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>rosa,juan,david,manu,rosa,nuria,david<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>david,rosa<span style="color: #707183;">]</span>
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">populares</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   setof<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,
+         <span style="color: #7388d6;">(</span><span style="color: #909183;">(</span>member<span style="color: #709870;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L1</span><span style="color: #709870;">)</span>,
+           cuenta<span style="color: #709870;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N1</span><span style="color: #709870;">)</span>,
+           not<span style="color: #709870;">(</span><span style="color: #907373;">(</span>member<span style="color: #6276ba;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">L1</span><span style="color: #6276ba;">)</span>,
+                cuenta<span style="color: #6276ba;">(</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N2</span><span style="color: #6276ba;">)</span>,
+                <span style="color: #a0522d;">N1</span> &lt; <span style="color: #a0522d;">N2</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,
+         <span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>cuenta(+X,+L,-N)</code> se verifica si <code>N</code> es el número de veces que
+aparece el elemento <code>X</code> en la lista <code>L</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- cuenta<span style="color: #707183;">(</span>d,<span style="color: #7388d6;">[</span>r,j,d,m,r,n,d<span style="color: #7388d6;">]</span>,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+N = 2
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">cuenta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">_</span>,<span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">cuenta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">B</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   <span style="color: #a0522d;">A</span> == <span style="color: #a0522d;">B</span>, <span style="color: #a020f0;">!</span>,
+   cuenta<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">N</span> is <span style="color: #a0522d;">M</span>+1.
+<span style="color: #0000ff;">cuenta</span><span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">_B</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">A \== _B,</span>
+   cuenta<span style="color: #707183;">(</span><span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>.
 </pre>
 </div></li>
 </ul>
