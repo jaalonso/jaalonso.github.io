@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 18 de junio del 2022 -->
+<!-- 19 de junio del 2022 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 5: Programación lógica de orden superior</title>
@@ -299,6 +299,7 @@
 <li><a href="#orgdc7e23f">8.20. Palabras maximales</a></li>
 <li><a href="#org6fcf9bd">8.21. Clausura transitiva</a></li>
 <li><a href="#orgae3cb13">8.22. Traducción de dígitos a palabras</a></li>
+<li><a href="#orgbad2481">8.23. Transformación de lista dependiente de la posición</a></li>
 </ul>
 </li>
 <li><a href="#orgd198605">9. Bibliografía</a></li>
@@ -2691,6 +2692,112 @@ L = <span style="color: #707183;">[</span>uno,tres<span style="color: #707183;">
 </div>
 </div>
 </div>
+
+<div id="outline-container-orgbad2481" class="outline-3">
+<h3 id="orgbad2481"><span class="section-number-3">8.23.</span> Transformación de lista dependiente de la posición</h3>
+<div class="outline-text-3" id="text-8-23">
+<hr />
+<p>
+<b>Ejercicio 23.</b> Definir la relación <code>transforma(+L1,-L2)</code> que se
+verifique si <code>L2</code> es la lista obtenida sumándole a cada elemento
+numérico de <code>L1</code> su posición en la lista. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- transforma<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>1,1,1,a,b,c,1,1,1<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>2,3,4,a,b,c,8,9,10<span style="color: #707183;">]</span>.
+
+?- transforma<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>1,2,a,5,2,b,3,1<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>2,4,a,9,7,b,10,9<span style="color: #707183;">]</span>.
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transforma</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   transforma_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,1,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>transforma_aux(+L1,+N,-L2)</code> se verifica si <code>L2</code> es la lista obtenida
+añadiéndole a cada elemento numérico de <code>L1</code> la suma de <code>N</code> y su
+posición en la lista.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transforma_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,<span style="color: #a0522d;">_</span>,<span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">transforma_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L1</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">Y</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   number<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">X</span>+<span style="color: #a0522d;">N</span>,
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>+1,
+   transforma_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">transforma_aux</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L1</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">N</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L2</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   <span style="color: #b22222;">% </span><span style="color: #b22222;">not(number(X)),</span>
+   <span style="color: #a0522d;">N1</span> is <span style="color: #a0522d;">N</span>+1,
+   transforma_aux<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+
+<p>
+<b>2ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transforma_2</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   lista_de_posiciones<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   maplist<span style="color: #707183;">(</span>suma,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>lista_de_posiciones(+L1,-L2)</code> se verifica si <code>L2</code> es la lista de
+posiciones correspondiente a la lista <code>L1</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- lista_de_posiciones<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>1,1,1,a,b,c,1,1,1<span style="color: #7388d6;">]</span>,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>1, 2, 3, 4, 5, 6, 7, 8, 9<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">lista_de_posiciones</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   length<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">N</span><span style="color: #707183;">)</span>,
+   numlist<span style="color: #707183;">(</span>1,<span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>suma(+X,+Y,-Z)</code> se verifica si <code>Z</code> es la suma de <code>X</code> y el número <code>Y</code>, cuando
+<code>X</code> es un número y es igual a <code>X</code>, en caso contrario. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- suma<span style="color: #707183;">(</span>3,2,Z<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+Z = 5 
+?- suma<span style="color: #707183;">(</span>b,2,Z<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+Z = b 
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">suma</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">Z</span><span style="color: #707183;">)</span> :-
+   number<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>, <span style="color: #a020f0;">!</span>,
+   <span style="color: #a0522d;">Z</span> is <span style="color: #a0522d;">X</span>+<span style="color: #a0522d;">Y</span>.
+<span style="color: #0000ff;">suma</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
 </div>
 
 <div id="outline-container-orgd198605" class="outline-2">
@@ -2737,7 +2844,7 @@ L = <span style="color: #707183;">[</span>uno,tres<span style="color: #707183;">
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 18 de junio del 2022</p>
+  <p>Sevilla, 19 de junio del 2022</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
