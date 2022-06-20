@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 19 de junio del 2022 -->
+<!-- 20 de junio del 2022 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 7: Aplicaciones: Grafos, reinas y mapas</title>
@@ -260,6 +260,7 @@
 <li><a href="#orgff30e16">4.3. Árboles</a></li>
 <li><a href="#org540a736">4.4. Grafo recubridor</a></li>
 <li><a href="#orgc82f024">4.5. Formación de grupos minimales de asignaturas compatibles</a></li>
+<li><a href="#orged9ec6e">4.6. Simulación de una calculadora básica</a></li>
 </ul>
 </li>
 <li><a href="#org8d6d773">5. Bibliografía</a></li>
@@ -1453,6 +1454,492 @@ false.
 </div>
 </div>
 </div>
+
+<div id="outline-container-orged9ec6e" class="outline-3">
+<h3 id="orged9ec6e"><span class="section-number-3">4.6.</span> Simulación de una calculadora básica</h3>
+<div class="outline-text-3" id="text-4-6">
+<hr />
+<p>
+<b>Ejercicio 6.1.</b> El objetivo de los siguientes ejercicios es la
+simulación de una calculadora básica. Para ello consideraremos que en
+cada momento la calculadora se encuentra en un determinado estado
+caracterizado por una lista con cuatro elementos [UCE,UTA,UOA,VIM]
+donde
+</p>
+<ul class="org-ul">
+<li>UCE es el último cálculo efectuado,</li>
+<li>UTA es la última tecla activada,</li>
+<li>UOA es el último operador activado y</li>
+<li>VIM es el valor impreso.</li>
+</ul>
+
+<p>
+El estado inicial es [0,=,=,0] y está definido por
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">estado_inicial</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>0,=,=,0<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+Las acciones posibles son pulsar un dígito, una operación aritmética o
+la de resultado y están definidas por
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">acci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span> :- es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">acci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span> :- es_operaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">acci&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span> :- es_resultado<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>1<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>2<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>3<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>4<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>5<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>6<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>7<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>8<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_d&#237;gito</span><span style="color: #707183;">(</span>9<span style="color: #707183;">)</span>.  
+
+<span style="color: #0000ff;">es_operaci&#243;n</span><span style="color: #707183;">(</span>+<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_operaci&#243;n</span><span style="color: #707183;">(</span>-<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_operaci&#243;n</span><span style="color: #707183;">(</span>*<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">es_operaci&#243;n</span><span style="color: #707183;">(</span>/<span style="color: #707183;">)</span>.
+
+<span style="color: #0000ff;">es_resultado</span><span style="color: #707183;">(</span>=<span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+En la siguiente tabla se muestran los estados de la calculadora
+correspondientes a las acciones indicadas en la última columna
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">estado</th>
+<th scope="col" class="org-left">tecla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">( 0, =, =,  0)</td>
+<td class="org-left">3</td>
+</tr>
+
+<tr>
+<td class="org-left">( 0, 3, =,  3)</td>
+<td class="org-left">+</td>
+</tr>
+
+<tr>
+<td class="org-left">( 3, +, +,  3)</td>
+<td class="org-left">2</td>
+</tr>
+
+<tr>
+<td class="org-left">( 3, 2, +,  2)</td>
+<td class="org-left">1</td>
+</tr>
+
+<tr>
+<td class="org-left">( 3, 1, +, 21)</td>
+<td class="org-left">*</td>
+</tr>
+
+<tr>
+<td class="org-left">(24, *, *, 24)</td>
+<td class="org-left">2</td>
+</tr>
+
+<tr>
+<td class="org-left">(24, 2, *,  2)</td>
+<td class="org-left">=</td>
+</tr>
+
+<tr>
+<td class="org-left">(48, =, =, 48)</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+<p>
+Es decir, si se parte del estado inicial y se realizan las acciones
+</p>
+<pre class="example">
+3 + 2 1 * 2 =
+</pre>
+
+<p>
+se obtiene como resultado el número 48.
+</p>
+
+<p>
+Definir la relación <code>transición(+E1,+X,?E2)4 que se verifique si ~E2</code> es
+el estado obtenido aplicando la acción <code>X</code> al estado <code>E1</code>; es decir, si <code>E1</code>
+es <code>[UCE,UTA,UOA,VIM]</code>, entonces
+</p>
+<ul class="org-ul">
+<li>Si <code>X</code> es un dígito, entonces
+<ul class="org-ul">
+<li>si <code>UTA</code> es un dígito, <code>E2</code> es <code>[UCE,X,UOA,10*VIM+X]</code>;</li>
+<li>en otro caso, <code>E24 es ~[UCE,X,UOA,X]</code>.</li>
+</ul></li>
+<li>Si <code>X</code> no es un dígito, entonces
+<ul class="org-ul">
+<li>si <code>UOA</code> es una operación, <code>E2</code> es <code>[UOA(UCE,VIM),X,X,UOA(UCE,VIM)]</code></li>
+<li>en otro caso, <code>E24 es ~[VIM,X,X,VIM]</code>.</li>
+</ul></li>
+</ul>
+<p>
+Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- estado_inicial<span style="color: #707183;">(</span>E1<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E1,3,E2<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E2,+,E3<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E3,2,E4<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E4,1,E5<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E5,*,E6<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E6,2,E7<span style="color: #707183;">)</span>,
+   transici&#243;n<span style="color: #707183;">(</span>E7,=,E8<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+E1 = <span style="color: #707183;">[</span>0, =, =, 0<span style="color: #707183;">]</span>
+E2 = <span style="color: #707183;">[</span>0, 3, =, 3<span style="color: #707183;">]</span>
+E3 = <span style="color: #707183;">[</span>3, +, +, 3<span style="color: #707183;">]</span>
+E4 = <span style="color: #707183;">[</span>3, 2, +, 2<span style="color: #707183;">]</span>
+E5 = <span style="color: #707183;">[</span>3, 1, +, 21<span style="color: #707183;">]</span>
+E6 = <span style="color: #707183;">[</span>24, *, *, 24<span style="color: #707183;">]</span>
+E7 = <span style="color: #707183;">[</span>24, 2, *, 2<span style="color: #707183;">]</span>
+E8 = <span style="color: #707183;">[</span>48, =, =, 48<span style="color: #707183;">]</span>.
+</pre>
+</div>
+<hr />
+
+<p>
+<b>1ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transici&#243;n_1</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">UTA</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span> :-
+   <span style="color: #707183;">(</span> es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span> <span style="color: #a020f0;">-&gt;</span>
+     <span style="color: #7388d6;">(</span> es_d&#237;gito<span style="color: #909183;">(</span><span style="color: #a0522d;">UTA</span><span style="color: #909183;">)</span> <span style="color: #a020f0;">-&gt;</span>
+       <span style="color: #a0522d;">Y</span> is 10*<span style="color: #a0522d;">VIM</span>+<span style="color: #a0522d;">X</span>,
+       <span style="color: #a0522d;">E</span> = <span style="color: #909183;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">Y</span><span style="color: #909183;">]</span>
+     <span style="color: #a020f0;">;</span> <span style="color: #b22222;">% </span><span style="color: #b22222;">\+ es_d&#237;gito(UTA) -&gt;</span>
+       <span style="color: #a0522d;">E</span> = <span style="color: #909183;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">X</span><span style="color: #909183;">]</span> <span style="color: #7388d6;">)</span>
+   <span style="color: #a020f0;">;</span> <span style="color: #b22222;">% </span><span style="color: #b22222;">\+ es_d&#237;gito(X) -&gt;</span>
+     <span style="color: #7388d6;">(</span> es_operaci&#243;n<span style="color: #909183;">(</span><span style="color: #a0522d;">UOA</span><span style="color: #909183;">)</span> <span style="color: #a020f0;">-&gt;</span>
+       <span style="color: #a0522d;">T</span> =.. <span style="color: #909183;">[</span><span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">VIM</span><span style="color: #909183;">]</span>,
+       <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">T</span>,
+       <span style="color: #a0522d;">E</span> = <span style="color: #909183;">[</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #909183;">]</span>
+     <span style="color: #a020f0;">;</span> <span style="color: #b22222;">% </span><span style="color: #b22222;">\+ es_operaci&#243;n(UOA) -&gt;</span>
+       <span style="color: #a0522d;">E</span> = <span style="color: #909183;">[</span><span style="color: #a0522d;">VIM</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">VIM</span><span style="color: #909183;">]</span> <span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+<b>2ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transici&#243;n_2</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">UTA</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span> :-
+   <span style="color: #707183;">(</span> es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span>, es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">UTA</span><span style="color: #7388d6;">)</span> <span style="color: #a020f0;">-&gt;</span>
+     <span style="color: #a0522d;">Y</span> is 10*<span style="color: #a0522d;">VIM</span>+<span style="color: #a0522d;">X</span>,
+     <span style="color: #a0522d;">E</span> = <span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">Y</span><span style="color: #7388d6;">]</span>
+   <span style="color: #a020f0;">;</span> es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span>, \+ es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">UTA</span><span style="color: #7388d6;">)</span> <span style="color: #a020f0;">-&gt;</span>
+     <span style="color: #a0522d;">E</span> = <span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">X</span><span style="color: #7388d6;">]</span>
+   <span style="color: #a020f0;">;</span> \+ es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span>, es_operaci&#243;n<span style="color: #7388d6;">(</span><span style="color: #a0522d;">UOA</span><span style="color: #7388d6;">)</span> <span style="color: #a020f0;">-&gt;</span>
+     <span style="color: #a0522d;">T</span> =.. <span style="color: #7388d6;">[</span><span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,
+     <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">T</span>,
+     <span style="color: #a0522d;">E</span> = <span style="color: #7388d6;">[</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #7388d6;">]</span>
+   <span style="color: #a020f0;">;</span> \+ es_d&#237;gito<span style="color: #7388d6;">(</span><span style="color: #a0522d;">X</span><span style="color: #7388d6;">)</span>, es_resultado<span style="color: #7388d6;">(</span><span style="color: #a0522d;">UOA</span><span style="color: #7388d6;">)</span> <span style="color: #a020f0;">-&gt;</span>
+     <span style="color: #a0522d;">E</span> = <span style="color: #7388d6;">[</span><span style="color: #a0522d;">VIM</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span> <span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+<b>3ª solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transici&#243;n_3</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">UTA</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">Y</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">UTA</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">Y</span> is 10*<span style="color: #a0522d;">VIM</span>+<span style="color: #a0522d;">X</span>.
+<span style="color: #0000ff;">transici&#243;n_3</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">UTA</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">_VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">X</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   \+ es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">UTA</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">transici&#243;n_3</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">_UTA</span>,<span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">Y</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   \+ es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   es_operaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">UOA</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">T</span> =.. <span style="color: #707183;">[</span><span style="color: #a0522d;">UOA</span>,<span style="color: #a0522d;">UCE</span>,<span style="color: #a0522d;">VIM</span><span style="color: #707183;">]</span>,
+   <span style="color: #a0522d;">Y</span> is <span style="color: #a0522d;">T</span>.
+<span style="color: #0000ff;">transici&#243;n_3</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">_UCE</span>,<span style="color: #a0522d;">_UTA</span>,=,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">X</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">VIM</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">VIM</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   \+ es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<p>
+En lo que sige usaremos la primera.
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transici&#243;n</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span> :-
+   transici&#243;n_1<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">A</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.2.</b> Definir la relación <code>transiciones(+E1,+L,?E2)</code> que se
+verifique si <code>E2</code> es el estado obtenido aplicando las acciones de la
+lista <code>L</code> al estado <code>E1</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- estado_inicial<span style="color: #707183;">(</span>_E1<span style="color: #707183;">)</span>, transiciones<span style="color: #707183;">(</span>_E1,<span style="color: #7388d6;">[</span>3,+,2,1,*,2,=<span style="color: #7388d6;">]</span>,E2<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+E2 = <span style="color: #707183;">[</span>48, =, =, 48<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">transiciones</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E</span>,<span style="color: #7388d6;">[]</span>,<span style="color: #a0522d;">E</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">transiciones</span><span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">E3</span><span style="color: #707183;">)</span> :-
+   transici&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">E2</span><span style="color: #707183;">)</span>,
+   transiciones<span style="color: #707183;">(</span><span style="color: #a0522d;">E2</span>,<span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">E3</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.3.</b> Definir la relación <code>acciones(?L)</code> que se verifique si
+<code>L</code> es una lista cuyos elementos son acciones. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- acciones<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>2,+,3,7<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true 
+?- acciones<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>2,+,37<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">acciones</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span><span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">acciones</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   acci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   acciones<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.4.</b> Calcular el número de posibles listas de acciones de
+longitud 3. 
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">?- findall<span style="color: #707183;">(</span>_L,<span style="color: #7388d6;">(</span>length<span style="color: #909183;">(</span>_L,3<span style="color: #909183;">)</span>, acciones<span style="color: #909183;">(</span>_L<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,_LAL3<span style="color: #707183;">)</span>, length<span style="color: #707183;">(</span>_LAL3,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+N = 3375.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.5.</b> Definir la relación <code>empieza_por_dígito(?L)</code> que se
+verifique si el primer elemento de la lista <code>L</code> es un dígito.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">empieza_por_d&#237;gito</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_L</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span> :-
+   es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.6.</b> Definir la relación <code>tiene_operaciones_consecutivas(?L)</code>
+que se verifique si la lista <code>L</code> contiene dos operaciones consecutivas.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">tiene_operaciones_consecutivas</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">_A</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">Y</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_B</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   es_operaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>,
+   es_operaci&#243;n<span style="color: #707183;">(</span><span style="color: #a0522d;">Y</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.7.</b> Definir la relación <code>tiene_resultado_intermedio(?L)</code>
+que se verifique si la lista <code>L</code> contiene el símbolo <code>=</code> en una posición
+que no es la última.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">tiene_resultado_intermedio</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">_A</span>,<span style="color: #7388d6;">[</span>=,<span style="color: #a0522d;">_Y</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_B</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.8.</b> Definir la relación <code>divide_por_cero(?L)</code> que se
+verifique si en la lista <code>L</code> aparecen de manera consecutiva el símbolo
+<code>/</code> y un cero.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">divide_por_cero</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   append<span style="color: #707183;">(</span><span style="color: #a0522d;">_A</span>,<span style="color: #7388d6;">[</span>/,0<span style="color: #a020f0;">|</span><span style="color: #a0522d;">_B</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.9.</b> Definir la relación <code>termina_en_dígito_y_resultado(?L)</code>
+que se verifique si en la lista <code>L</code> los últimos elementos son un dígito
+y el símbolo <code>=</code>.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">termina_en_d&#237;gito_y_resultado</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   reverse<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #7388d6;">[</span>=,<span style="color: #a0522d;">X</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">_</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>,
+   es_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.10.</b> Definir la relación <code>acciones_válidas(L)</code> que se
+verifique si <code>L</code> es una lista de acciones válidas.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">acciones_v&#225;lidas</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   acciones<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   empieza_por_d&#237;gito<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span>tiene_operaciones_consecutivas<span style="color: #7388d6;">(</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span>tiene_resultado_intermedio<span style="color: #7388d6;">(</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span>divide_por_cero<span style="color: #7388d6;">(</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>,
+   termina_en_d&#237;gito_y_resultado<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.11.</b> Calcular el número de posibles listas de acciones
+válidas de longitud 3.
+</p>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">?- findall<span style="color: #707183;">(</span>_L,<span style="color: #7388d6;">(</span>length<span style="color: #909183;">(</span>_L,3<span style="color: #909183;">)</span>, acciones_v&#225;lidas<span style="color: #909183;">(</span>_L<span style="color: #909183;">)</span><span style="color: #7388d6;">)</span>,_LAL3<span style="color: #707183;">)</span>, length<span style="color: #707183;">(</span>_LAL3,N<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+N = 100.
+</pre>
+</div>
+
+<hr />
+<p>
+<b>Ejercicio 6.12.</b> Definir la relación <code>cálculo(+N,+M,-L)</code> que se
+verifique si <code>L</code> es una lista de <code>M</code> acciones válidas que aplicadas al
+estado inicial da como resultado el número <code>N</code>. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- c&#225;lculo<span style="color: #707183;">(</span>5,2,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>5,=<span style="color: #707183;">]</span> ;
+false.
+
+?- c&#225;lculo<span style="color: #707183;">(</span>5,3,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>0,5,=<span style="color: #707183;">]</span> ;
+false.
+
+?- c&#225;lculo<span style="color: #707183;">(</span>5,4,L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>0,0,5,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>0,+,5,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>1,+,4,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>1,*,5,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>2,+,3,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>3,+,2,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>4,+,1,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>5,+,0,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>5,-,0,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>5,*,1,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>5,/,1,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>6,-,1,=<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>7,-,2,=<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">c&#225;lculo</span><span style="color: #707183;">(</span><span style="color: #a0522d;">N</span>,<span style="color: #a0522d;">M</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   estado_inicial<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span><span style="color: #707183;">)</span>,
+   length<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">M</span><span style="color: #707183;">)</span>,
+   acciones_v&#225;lidas<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   transiciones<span style="color: #707183;">(</span><span style="color: #a0522d;">E1</span>,<span style="color: #a0522d;">L</span>,<span style="color: #7388d6;">[</span><span style="color: #a0522d;">N</span>,=,=,<span style="color: #a0522d;">N</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+</div>
+</div>
 </div>
 
 <div id="outline-container-org8d6d773" class="outline-2">
@@ -1490,7 +1977,7 @@ false.
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 19 de junio del 2022</p>
+  <p>Sevilla, 20 de junio del 2022</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
