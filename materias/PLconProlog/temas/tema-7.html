@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 20 de junio del 2022 -->
+<!-- 21 de junio del 2022 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 7: Aplicaciones: Grafos, reinas y mapas</title>
@@ -261,6 +261,7 @@
 <li><a href="#org540a736">4.4. Grafo recubridor</a></li>
 <li><a href="#orgc82f024">4.5. Formación de grupos minimales de asignaturas compatibles</a></li>
 <li><a href="#orged9ec6e">4.6. Simulación de una calculadora básica</a></li>
+<li><a href="#orgbcd5898">4.7. Problema de las subastas</a></li>
 </ul>
 </li>
 <li><a href="#org8d6d773">5. Bibliografía</a></li>
@@ -1940,6 +1941,204 @@ L = <span style="color: #707183;">[</span>7,-,2,=<span style="color: #707183;">]
 </div>
 </div>
 </div>
+
+<div id="outline-container-orgbcd5898" class="outline-3">
+<h3 id="orgbcd5898"><span class="section-number-3">4.7.</span> Problema de las subastas</h3>
+<div class="outline-text-3" id="text-4-7">
+<hr />
+<p>
+<b>Ejercicio 7.</b> En una subasta se hacen distintas ofertas. Cada oferta
+incluye un lote de productos y un precio por dicho lote. Las ofertas
+realizadas se representan mediante la relación <code>oferta(O,L,P)</code> que se
+verifica si <code>O</code> es una oferta por el lote <code>L</code> con un coste <code>P</code>. Por
+ejemplo, <code>oferta(a,[1,2,3],30)</code> representa la oferta <code>a</code> en la que se
+puja por el lote compuesto por los objetos 1, 2 y 3 por un valor de 30
+euros.
+</p>
+
+<p>
+Para la aceptación de las ofertas se observan las siguientes reglas:
+</p>
+<ul class="org-ul">
+<li>No puede aceptar dos ofertas que contienen un mismo objeto en sus
+lotes.</li>
+<li>Se prefieren las ofertas de mayor ganancia.</li>
+</ul>
+
+<p>
+Definir la relación <code>aceptada(-L)</code> que se verifique si <code>L</code> es una lista
+de ofertas aceptadas. Por ejemplo, si las ofertas realizadas se definen
+por
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">oferta</span><span style="color: #707183;">(</span>a,<span style="color: #7388d6;">[</span>1,2,3<span style="color: #7388d6;">]</span>,30<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">oferta</span><span style="color: #707183;">(</span>b,<span style="color: #7388d6;">[</span>1,2,3<span style="color: #7388d6;">]</span>,20<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">oferta</span><span style="color: #707183;">(</span>c,<span style="color: #7388d6;">[</span>4<span style="color: #7388d6;">]</span>,20<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">oferta</span><span style="color: #707183;">(</span>d,<span style="color: #7388d6;">[</span>2,4<span style="color: #7388d6;">]</span>,20<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">oferta</span><span style="color: #707183;">(</span>e,<span style="color: #7388d6;">[</span>1,2<span style="color: #7388d6;">]</span>,20<span style="color: #707183;">)</span>.
+</pre>
+</div>
+<p>
+entonces,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- aceptada<span style="color: #707183;">(</span>L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>a, c<span style="color: #707183;">]</span> 
+</pre>
+</div>
+<hr />
+
+<p>
+<b>Solución</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">aceptada</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   aceptable<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   ganancia<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span>,
+   not<span style="color: #707183;">(</span><span style="color: #7388d6;">(</span>aceptable<span style="color: #909183;">(</span><span style="color: #a0522d;">L1</span><span style="color: #909183;">)</span>, ganancia<span style="color: #909183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">G1</span><span style="color: #909183;">)</span>, <span style="color: #a0522d;">G1</span> &gt; <span style="color: #a0522d;">G</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><p>
+<code>aceptable(?L)</code> se verifica si <code>L</code> es una lista de ofertas aceptable; es
+decir, una lista de ofertas que no contienen objetos comunes en sus
+lotes. Por ejemplo, con la definición anterior de <code>ofertas/3</code>,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- aceptable<span style="color: #707183;">(</span>L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>a, c<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>b, c<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>b<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>c, e<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>c<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>d<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[</span>e<span style="color: #707183;">]</span> ;
+L = <span style="color: #707183;">[]</span>.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">aceptable</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   lista_de_ofertas<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   subconjunto<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   es_aceptable<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>lista_de_ofertas(-L)</code> se verifica si <code>L4 es la lista de todas las
+  ofertas. Por ejemplo, con la definición anterior de ~ofertas/3</code>,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- lista_de_ofertas<span style="color: #707183;">(</span>L<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+L = <span style="color: #707183;">[</span>a, b, c, d, e<span style="color: #707183;">]</span>.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">lista_de_ofertas</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   findall<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,oferta<span style="color: #7388d6;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">_</span><span style="color: #7388d6;">)</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>es_aceptable(+L)</code> se verifica si la lista de ofertas <code>L</code> es aceptable; es
+decir, no contiene ofertas con objetos comunes en sus lotes. Por
+ejemplo, con la definición anterior de <code>ofertas/3</code>,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_aceptable<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>c,e<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true.
+?- es_aceptable<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>c,d<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_aceptable</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   not<span style="color: #707183;">(</span>es_inaceptable<span style="color: #7388d6;">(</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>es_inaceptable(+L)</code> se verifica si <code>L</code> es una lista de ofertas
+inaceptable; es decir, contiene ofertas con objetos comunes en sus
+lotes. Por ejemplo, con la definición anterior de <code>ofertas/3</code>,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- es_inaceptable<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>c,d<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true 
+?- es_inaceptable<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>c,e<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">es_inaceptable</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L</span><span style="color: #707183;">)</span> :-
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">O1</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">O2</span>,<span style="color: #a0522d;">L</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">O1</span> \= <span style="color: #a0522d;">O2</span>,
+   oferta<span style="color: #707183;">(</span><span style="color: #a0522d;">O1</span>,<span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>,
+   oferta<span style="color: #707183;">(</span><span style="color: #a0522d;">O2</span>,<span style="color: #a0522d;">L2</span>,<span style="color: #a0522d;">_</span><span style="color: #707183;">)</span>,
+   se_solapan<span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>se_solapan(+L1,+L2)</code> se verifica si <code>L1</code> y <code>L2</code> se solapan; es decir,
+tienen elementos comunes. Por ejemplo,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- se_solapan<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>a,b,c<span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span>d,b,e<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+true 
+?- se_solapan<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>a,b,c<span style="color: #7388d6;">]</span>,<span style="color: #7388d6;">[</span>d,e<span style="color: #7388d6;">]</span><span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+false.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">se_solapan</span><span style="color: #707183;">(</span><span style="color: #a0522d;">L1</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span> :-
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L1</span><span style="color: #707183;">)</span>,
+   member<span style="color: #707183;">(</span><span style="color: #a0522d;">X</span>,<span style="color: #a0522d;">L2</span><span style="color: #707183;">)</span>.
+</pre>
+</div></li>
+
+<li><p>
+<code>ganancia(+L,-G)</code> se verifica si la ganancia de la lista de ofertas <code>L</code> es
+<code>G</code>. Por ejemplo, con la definición anterior de <code>ofertas/3</code>,
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">?- ganancia<span style="color: #707183;">(</span><span style="color: #7388d6;">[</span>a,c<span style="color: #7388d6;">]</span>,G<span style="color: #707183;">)</span><span style="color: #483d8b;">.</span>
+G = 50.
+</pre>
+</div>
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-prolog"><span style="color: #0000ff;">ganancia</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[]</span>,0<span style="color: #707183;">)</span>.
+<span style="color: #0000ff;">ganancia</span><span style="color: #707183;">(</span><span style="color: #7388d6;">[</span><span style="color: #a0522d;">O</span><span style="color: #a020f0;">|</span><span style="color: #a0522d;">L</span><span style="color: #7388d6;">]</span>,<span style="color: #a0522d;">G</span><span style="color: #707183;">)</span> :-
+   oferta<span style="color: #707183;">(</span><span style="color: #a0522d;">O</span>,<span style="color: #a0522d;">_</span>,<span style="color: #a0522d;">G1</span><span style="color: #707183;">)</span>,
+   ganancia<span style="color: #707183;">(</span><span style="color: #a0522d;">L</span>,<span style="color: #a0522d;">G2</span><span style="color: #707183;">)</span>,
+   <span style="color: #a0522d;">G</span> is <span style="color: #a0522d;">G1</span>+<span style="color: #a0522d;">G2</span>.
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
 </div>
 
 <div id="outline-container-org8d6d773" class="outline-2">
@@ -1977,7 +2176,7 @@ L = <span style="color: #707183;">[</span>7,-,2,=<span style="color: #707183;">]
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 20 de junio del 2022</p>
+  <p>Sevilla, 21 de junio del 2022</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
