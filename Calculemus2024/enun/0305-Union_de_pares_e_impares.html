@@ -198,38 +198,6 @@
                        type="text/css"
                        href="http://www.cs.us.es/~jalonso/estilos/estilo_3.css"
                   />
-<script>
-  window.MathJax = {
-    tex: {
-      ams: {
-        multlineWidth: '85%'
-      },
-      tags: 'ams',
-      tagSide: 'right',
-      tagIndent: '.8em'
-    },
-    chtml: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    svg: {
-      scale: 1.0,
-      displayAlign: 'center',
-      displayIndent: '0em'
-    },
-    output: {
-      font: 'mathjax-modern',
-      displayOverflow: 'overflow'
-    }
-  };
-</script>
-
-<script
-  id="MathJax-script"
-  async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -238,27 +206,36 @@
 </div>
 <div id="content" class="content">
 <p>
-Demostrar con Lean4 que si \(uₙ\) y \(vₙ\) convergen a \(0\), entonces
-\(uₙvₙ\) converge a \(0\).
+Los conjuntos de los números naturales, de los pares y de los impares se definen en Lean4 por
 </p>
+<div class="org-src-container">
+<pre class="src src-lean"><span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Naturales</span> : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | True<span style="color: #707183;">}</span>
+<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Pares</span>     : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | Even n<span style="color: #707183;">}</span>
+<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Impares</span>   : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | <span style="color: #008b8b;">&#172;</span>Even n<span style="color: #707183;">}</span>
+</pre>
+</div>
+
+<p>
+Demostrar con Lean4 que
+</p>
+<div class="org-src-container">
+<pre class="src src-lean">Pares &#8746; Impares <span style="color: #008b8b;">=</span> Naturales
+</pre>
+</div>
 
 <p>
 Para ello, completar la siguiente teoría de Lean4:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-lean"><span style="color: #a020f0;">import</span> Mathlib.Data.Real.Basic
-<span style="color: #a020f0;">import</span> Mathlib.Tactic
+<pre class="src src-lean"><span style="color: #a020f0;">import</span> Mathlib.Data.Nat.Parity
+<span style="color: #a020f0;">open</span> Set
 
-<span style="color: #a020f0;">variable</span> <span style="color: #707183;">{</span>u v : <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">&#8594;</span> <span style="color: #008b8b;">&#8477;</span><span style="color: #707183;">}</span>
+<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Naturales</span> : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | True<span style="color: #707183;">}</span>
+<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Pares</span>     : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | Even n<span style="color: #707183;">}</span>
+<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">Impares</span>   : Set <span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">:=</span> <span style="color: #707183;">{</span>n | <span style="color: #008b8b;">&#172;</span>Even n<span style="color: #707183;">}</span>
 
-<span style="color: #a020f0;">def</span> <span style="color: #0000ff;">limite</span> : <span style="color: #707183;">(</span><span style="color: #008b8b;">&#8469;</span> <span style="color: #008b8b;">&#8594;</span> <span style="color: #008b8b;">&#8477;</span><span style="color: #707183;">)</span> <span style="color: #008b8b;">&#8594;</span> <span style="color: #008b8b;">&#8477;</span> <span style="color: #008b8b;">&#8594;</span> <span style="color: #228b22;">Prop</span> <span style="color: #008b8b;">:=</span>
-  <span style="color: #a020f0;">fun</span> u c &#8614; <span style="color: #008b8b;">&#8704;</span> &#949; <span style="color: #008b8b;">&gt;</span> <span style="color: #008b8b;">0</span>, <span style="color: #008b8b;">&#8707;</span> N, <span style="color: #008b8b;">&#8704;</span> n <span style="color: #008b8b;">&#8805;</span> N, |u n <span style="color: #008b8b;">-</span> c| <span style="color: #008b8b;">&lt;</span> &#949;
-
-<span style="color: #a020f0;">example</span>
-  <span style="color: #707183;">(</span>hu : limite u <span style="color: #008b8b;">0</span><span style="color: #707183;">)</span>
-  <span style="color: #707183;">(</span>hv : limite v <span style="color: #008b8b;">0</span><span style="color: #707183;">)</span>
-  : limite <span style="color: #707183;">(</span>u <span style="color: #008b8b;">*</span> v<span style="color: #707183;">)</span> <span style="color: #008b8b;">0</span> <span style="color: #008b8b;">:=</span>
+<span style="color: #a020f0;">example</span> : Pares &#8746; Impares <span style="color: #008b8b;">=</span> Naturales <span style="color: #008b8b;">:=</span>
 <span style="color: #a020f0;">by</span> <span style="color: #ff0000; font-weight: bold;">sorry</span>
 </pre>
 </div>
