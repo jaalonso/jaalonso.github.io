@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 26: Programación de fractales en Haskell</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,72 +191,49 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 26: Programación de fractales en Haskell</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2348cd6">1. Introducción</a></li>
-<li><a href="#org0ae8dd5">2. Ejemplo simple: el fractal del árbol</a>
+<li><a href="#org667b98c">1. Introducción</a></li>
+<li><a href="#org0e805af">2. Ejemplo simple: el fractal del árbol</a>
 <ul>
-<li><a href="#orgff318e0">2.1. Tronco de un árbol</a></li>
-<li><a href="#orgb0bf49a">2.2. Tronco de árbol con ramas</a></li>
-<li><a href="#orgabe7ff2">2.3. Construcción iterada de un árbol</a></li>
-<li><a href="#org9613c82">2.4. Árbol como un fractal (recursión sobre el paso)</a></li>
-<li><a href="#orgc1a8f40">2.5. Árbol como un fractal coloreado (recursión sobre el paso y el color)</a></li>
+<li><a href="#orgd12ac14">2.1. Tronco de un árbol</a></li>
+<li><a href="#org32303c9">2.2. Tronco de árbol con ramas</a></li>
+<li><a href="#org9300c3c">2.3. Construcción iterada de un árbol</a></li>
+<li><a href="#org42c1281">2.4. Árbol como un fractal (recursión sobre el paso)</a></li>
+<li><a href="#org8e201da">2.5. Árbol como un fractal coloreado (recursión sobre el paso y el color)</a></li>
 </ul>
 </li>
-<li><a href="#orge02c249">3. Fractal de la curva de Koch</a></li>
-<li><a href="#orgedec971">4. Fractal del copo de nieve de Koch</a></li>
-<li><a href="#orgececba7">5. Triángulo de Sierpinski</a></li>
-<li><a href="#orge152fcb">6. Curva del dragón</a></li>
-<li><a href="#org0873bfd">7. Referencias</a></li>
+<li><a href="#org5cabe51">3. Fractal de la curva de Koch</a></li>
+<li><a href="#orgef5ffe4">4. Fractal del copo de nieve de Koch</a></li>
+<li><a href="#org2da2e14">5. Triángulo de Sierpinski</a></li>
+<li><a href="#org10314e2">6. Curva del dragón</a></li>
+<li><a href="#org56be328">7. Referencias</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org2348cd6" class="outline-2">
-<h2 id="org2348cd6"><span class="section-number-2">1.</span> Introducción</h2>
+<div id="outline-container-org667b98c" class="outline-2">
+<h2 id="org667b98c"><span class="section-number-2">1.</span> Introducción</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Un <a href="http://es.wikipedia.org/wiki/Fractal">fractal</a> es un objeto geométrico cuya estructura básica, fragmentada o
@@ -271,8 +249,8 @@ del Latín <i>fractus</i>, que significa quebrado o fracturado.</li>
 </div>
 </div>
 
-<div id="outline-container-org0ae8dd5" class="outline-2">
-<h2 id="org0ae8dd5"><span class="section-number-2">2.</span> Ejemplo simple: el fractal del árbol</h2>
+<div id="outline-container-org0e805af" class="outline-2">
+<h2 id="org0e805af"><span class="section-number-2">2.</span> Ejemplo simple: el fractal del árbol</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li>El fractal árbol es <br />
@@ -280,8 +258,8 @@ del Latín <i>fractus</i>, que significa quebrado o fracturado.</li>
 </ul>
 </div>
 
-<div id="outline-container-orgff318e0" class="outline-3">
-<h3 id="orgff318e0"><span class="section-number-3">2.1.</span> Tronco de un árbol</h3>
+<div id="outline-container-orgd12ac14" class="outline-3">
+<h3 id="orgd12ac14"><span class="section-number-3">2.1.</span> Tronco de un árbol</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li>Dibujo <br />
@@ -308,8 +286,8 @@ Programa <a href="./tema-26/codigo/Tronco.hs">Tronco.hs</a> <br />
 </div>
 </div>
 
-<div id="outline-container-orgb0bf49a" class="outline-3">
-<h3 id="orgb0bf49a"><span class="section-number-3">2.2.</span> Tronco de árbol con ramas</h3>
+<div id="outline-container-org32303c9" class="outline-3">
+<h3 id="org32303c9"><span class="section-number-3">2.2.</span> Tronco de árbol con ramas</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>Dibujo <br />
@@ -346,8 +324,8 @@ Programa <a href="./tema-26/codigo/TroncoConRamas.hs">TroncoConRamas.hs</a>
 </div>
 </div>
 
-<div id="outline-container-orgabe7ff2" class="outline-3">
-<h3 id="orgabe7ff2"><span class="section-number-3">2.3.</span> Construcción iterada de un árbol</h3>
+<div id="outline-container-org9300c3c" class="outline-3">
+<h3 id="org9300c3c"><span class="section-number-3">2.3.</span> Construcción iterada de un árbol</h3>
 <div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li>Dibujo <br />
@@ -395,8 +373,8 @@ Programa <a href="./tema-26/codigo/Arbol.hs">Arbol.hs</a>
 </div>
 </div>
 
-<div id="outline-container-org9613c82" class="outline-3">
-<h3 id="org9613c82"><span class="section-number-3">2.4.</span> Árbol como un fractal (recursión sobre el paso)</h3>
+<div id="outline-container-org42c1281" class="outline-3">
+<h3 id="org42c1281"><span class="section-number-3">2.4.</span> Árbol como un fractal (recursión sobre el paso)</h3>
 <div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
 <li><b>Objetivo</b>: Definir una única función con un argumento (el paso) que pinte los
@@ -453,8 +431,8 @@ Programa <a href="./tema-26/codigo/ArbolFractal.hs">ArbolFractal.hs</a>
 </div>
 </div>
 
-<div id="outline-container-orgc1a8f40" class="outline-3">
-<h3 id="orgc1a8f40"><span class="section-number-3">2.5.</span> Árbol como un fractal coloreado (recursión sobre el paso y el color)</h3>
+<div id="outline-container-org8e201da" class="outline-3">
+<h3 id="org8e201da"><span class="section-number-3">2.5.</span> Árbol como un fractal coloreado (recursión sobre el paso y el color)</h3>
 <div class="outline-text-3" id="text-2-5">
 <ul class="org-ul">
 <li><b>Objetivo</b>: Definir una única función con un argumento (el paso) que pinte los
@@ -520,8 +498,8 @@ Programa <a href="./tema-26/codigo/ArbolFractalColoreado.hs">ArbolFractalColorea
 </div>
 </div>
 
-<div id="outline-container-orge02c249" class="outline-2">
-<h2 id="orge02c249"><span class="section-number-2">3.</span> Fractal de la curva de Koch</h2>
+<div id="outline-container-org5cabe51" class="outline-2">
+<h2 id="org5cabe51"><span class="section-number-2">3.</span> Fractal de la curva de Koch</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>La <a href="http://bit.ly/SqWQWA">curva de Koch</a> es un fractal descrito por el matemático sueco <a href="http://bit.ly/SqX1kC">Helge von Koch</a>
@@ -596,8 +574,8 @@ Programa <a href="./tema-26/codigo/Curva_de_Koch.hs">Curva_de_Koch.hs</a>
 </div>
 </div>
 
-<div id="outline-container-orgedec971" class="outline-2">
-<h2 id="orgedec971"><span class="section-number-2">4.</span> Fractal del copo de nieve de Koch</h2>
+<div id="outline-container-orgef5ffe4" class="outline-2">
+<h2 id="orgef5ffe4"><span class="section-number-2">4.</span> Fractal del copo de nieve de Koch</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>Construcción: Tres curvas de Koch unidas forman el copo de nieve de Koch.</li>
@@ -664,8 +642,8 @@ Programa <a href="./tema-26/codigo/Copo_de_nieve_de_Koch.hs">Copo_de_nieve_de_Ko
 </div>
 </div>
 
-<div id="outline-container-orgececba7" class="outline-2">
-<h2 id="orgececba7"><span class="section-number-2">5.</span> Triángulo de Sierpinski</h2>
+<div id="outline-container-org2da2e14" class="outline-2">
+<h2 id="org2da2e14"><span class="section-number-2">5.</span> Triángulo de Sierpinski</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>El <a href="http://bit.ly/1r0RMHO">triángulo de Sierpinski</a> es un fractal que se puede construir a partir de un
@@ -739,8 +717,8 @@ Programa <a href="./tema-26/codigo/Sierpinski.hs">Sierpinski.hs</a>
 </div>
 </div>
 
-<div id="outline-container-orge152fcb" class="outline-2">
-<h2 id="orge152fcb"><span class="section-number-2">6.</span> Curva del dragón</h2>
+<div id="outline-container-org10314e2" class="outline-2">
+<h2 id="org10314e2"><span class="section-number-2">6.</span> Curva del dragón</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>La curva del dragón se puede construir plegando un papel como se muestra en
@@ -770,8 +748,8 @@ el siguiente vídeo <br />
 </div>
 </div>
 
-<div id="outline-container-org0873bfd" class="outline-2">
-<h2 id="org0873bfd"><span class="section-number-2">7.</span> Referencias</h2>
+<div id="outline-container-org56be328" class="outline-2">
+<h2 id="org56be328"><span class="section-number-2">7.</span> Referencias</h2>
 <div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li>C. Baker-Finch. <a href="http://cs.anu.edu.au/student/comp1100.2011/lectures/16-Fractals/16-Fractals.pdf">Graphics Package application: Fractals</a>.</li>
@@ -787,17 +765,17 @@ el siguiente vídeo <br />
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

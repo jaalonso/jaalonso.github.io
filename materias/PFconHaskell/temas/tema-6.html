@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 6: Funciones recursivas</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,114 +191,91 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 6: Funciones recursivas</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb67a8fe">1. Recursión numérica</a>
+<li><a href="#org31160be">1. Recursión numérica</a>
 <ul>
-<li><a href="#org213511b">1.1. Recursión numérica: El factorial</a></li>
-<li><a href="#orge00ad45">1.2. Recursión numérica: El producto</a></li>
+<li><a href="#orgcf2a33a">1.1. Recursión numérica: El factorial</a></li>
+<li><a href="#org0b70993">1.2. Recursión numérica: El producto</a></li>
 </ul>
 </li>
-<li><a href="#orgc781838">2. Recursión sobre lista</a>
+<li><a href="#orgddd410c">2. Recursión sobre lista</a>
 <ul>
-<li><a href="#orga6177a4">2.1. Recursión sobre listas: La función <code>product</code></a></li>
-<li><a href="#org57beed5">2.2. Recursión sobre listas: La función <code>length</code></a></li>
-<li><a href="#org4b9d168">2.3. Recursión sobre listas: La función <code>reverse</code></a></li>
-<li><a href="#org5835d17">2.4. Recursión sobre listas: <code>++</code></a></li>
-<li><a href="#orgda15530">2.5. Recursión sobre listas: Inserción ordenada</a></li>
-<li><a href="#orga58037c">2.6. Recursión sobre listas: Ordenación por inserción</a></li>
+<li><a href="#org8f175dc">2.1. Recursión sobre listas: La función <code>product</code></a></li>
+<li><a href="#org4aae135">2.2. Recursión sobre listas: La función <code>length</code></a></li>
+<li><a href="#org36e166c">2.3. Recursión sobre listas: La función <code>reverse</code></a></li>
+<li><a href="#org5e18dc9">2.4. Recursión sobre listas: <code>++</code></a></li>
+<li><a href="#org01260d3">2.5. Recursión sobre listas: Inserción ordenada</a></li>
+<li><a href="#orgb67d5e4">2.6. Recursión sobre listas: Ordenación por inserción</a></li>
 </ul>
 </li>
-<li><a href="#orgccbd1da">3. Recursión sobre varios argumentos</a>
+<li><a href="#org291a1ac">3. Recursión sobre varios argumentos</a>
 <ul>
-<li><a href="#org79677c5">3.1. Recursión sobre varios argumentos: La función <code>zip</code></a></li>
-<li><a href="#org06fbbc8">3.2. Recursión sobre varios argumentos: La función <code>drop</code></a></li>
+<li><a href="#org56e3213">3.1. Recursión sobre varios argumentos: La función <code>zip</code></a></li>
+<li><a href="#orgd48fe2f">3.2. Recursión sobre varios argumentos: La función <code>drop</code></a></li>
 </ul>
 </li>
-<li><a href="#orgab115f0">4. Recursión múltiple</a>
+<li><a href="#org77ea4fe">4. Recursión múltiple</a>
 <ul>
-<li><a href="#org7f3a193">4.1. Recursión múltiple: La función de Fibonacci</a></li>
-<li><a href="#org985475d">4.2. Recursión múltiple: Ordenación rápida</a></li>
+<li><a href="#org74b1163">4.1. Recursión múltiple: La función de Fibonacci</a></li>
+<li><a href="#org0be8d15">4.2. Recursión múltiple: Ordenación rápida</a></li>
 </ul>
 </li>
-<li><a href="#org706f6ca">5. Recursión mutua</a>
+<li><a href="#org6e355b2">5. Recursión mutua</a>
 <ul>
-<li><a href="#orgd47a885">5.1. Recursión mutua: Par e impar</a></li>
-<li><a href="#org352494e">5.2. Recursión mutua: Posiciones pares e impares</a></li>
+<li><a href="#org2546b89">5.1. Recursión mutua: Par e impar</a></li>
+<li><a href="#orgb519d28">5.2. Recursión mutua: Posiciones pares e impares</a></li>
 </ul>
 </li>
-<li><a href="#org690dc92">6. Heurísticas para las definiciones recursivas</a>
+<li><a href="#org03f3f4f">6. Heurísticas para las definiciones recursivas</a>
 <ul>
-<li><a href="#org959288e">6.1. Aplicación del método: La función <code>product</code></a></li>
-<li><a href="#org625ff2d">6.2. Aplicación del método: La función <code>drop</code></a></li>
-<li><a href="#orgf1a3141">6.3. Aplicación del método: La función <code>init</code></a></li>
+<li><a href="#orgefb414a">6.1. Aplicación del método: La función <code>product</code></a></li>
+<li><a href="#org2ddcb1e">6.2. Aplicación del método: La función <code>drop</code></a></li>
+<li><a href="#org93dee6c">6.3. Aplicación del método: La función <code>init</code></a></li>
 </ul>
 </li>
-<li><a href="#org2f23595">7. Recursión y dibujos</a>
+<li><a href="#org5a25d97">7. Recursión y dibujos</a>
 <ul>
-<li><a href="#org5d87e67">7.1. Fractal del árbol</a></li>
-<li><a href="#org1941d65">7.2. Fractal de círculos</a></li>
-<li><a href="#org8b372d5">7.3. Fractal de cuadrados</a></li>
-<li><a href="#org1ac504b">7.4. Fractal de cuadrados con 4 ramas</a></li>
-<li><a href="#org2e3f55d">7.5. Fractal del sobre</a></li>
-<li><a href="#org7944880">7.6. Fractal asimétrico</a></li>
+<li><a href="#orgcae3c27">7.1. Fractal del árbol</a></li>
+<li><a href="#org1e91b45">7.2. Fractal de círculos</a></li>
+<li><a href="#orge7a3bd2">7.3. Fractal de cuadrados</a></li>
+<li><a href="#orgf7aff2d">7.4. Fractal de cuadrados con 4 ramas</a></li>
+<li><a href="#org2470748">7.5. Fractal del sobre</a></li>
+<li><a href="#org2e70d5a">7.6. Fractal asimétrico</a></li>
 </ul>
 </li>
-<li><a href="#org72097d0">8. Material complementario</a></li>
-<li><a href="#org264722d">9. Bibliografía</a></li>
+<li><a href="#org32f13b6">8. Material complementario</a></li>
+<li><a href="#org95fe18f">9. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgb67a8fe" class="outline-2">
-<h2 id="orgb67a8fe"><span class="section-number-2">1.</span> Recursión numérica</h2>
+<div id="outline-container-org31160be" class="outline-2">
+<h2 id="org31160be"><span class="section-number-2">1.</span> Recursión numérica</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org213511b" class="outline-3">
-<h3 id="org213511b"><span class="section-number-3">1.1.</span> Recursión numérica: El factorial</h3>
+<div id="outline-container-orgcf2a33a" class="outline-3">
+<h3 id="orgcf2a33a"><span class="section-number-3">1.1.</span> Recursión numérica: El factorial</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li><p>
@@ -327,8 +305,8 @@ factorial 3
 </div>
 </div>
 
-<div id="outline-container-orge00ad45" class="outline-3">
-<h3 id="orge00ad45"><span class="section-number-3">1.2.</span> Recursión numérica: El producto</h3>
+<div id="outline-container-org0b70993" class="outline-3">
+<h3 id="org0b70993"><span class="section-number-3">1.2.</span> Recursión numérica: El producto</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><p>
@@ -357,12 +335,12 @@ Cálculo:
 </div>
 </div>
 
-<div id="outline-container-orgc781838" class="outline-2">
-<h2 id="orgc781838"><span class="section-number-2">2.</span> Recursión sobre lista</h2>
+<div id="outline-container-orgddd410c" class="outline-2">
+<h2 id="orgddd410c"><span class="section-number-2">2.</span> Recursión sobre lista</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orga6177a4" class="outline-3">
-<h3 id="orga6177a4"><span class="section-number-3">2.1.</span> Recursión sobre listas: La función <code>product</code></h3>
+<div id="outline-container-org8f175dc" class="outline-3">
+<h3 id="org8f175dc"><span class="section-number-3">2.1.</span> Recursión sobre listas: La función <code>product</code></h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -392,8 +370,8 @@ product [7,5,2]
 </div>
 </div>
 
-<div id="outline-container-org57beed5" class="outline-3">
-<h3 id="org57beed5"><span class="section-number-3">2.2.</span> Recursión sobre listas: La función <code>length</code></h3>
+<div id="outline-container-org4aae135" class="outline-3">
+<h3 id="org4aae135"><span class="section-number-3">2.2.</span> Recursión sobre listas: La función <code>length</code></h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li><p>
@@ -423,8 +401,8 @@ length [2,3,5]
 </div>
 </div>
 
-<div id="outline-container-org4b9d168" class="outline-3">
-<h3 id="org4b9d168"><span class="section-number-3">2.3.</span> Recursión sobre listas: La función <code>reverse</code></h3>
+<div id="outline-container-org36e166c" class="outline-3">
+<h3 id="org36e166c"><span class="section-number-3">2.3.</span> Recursión sobre listas: La función <code>reverse</code></h3>
 <div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li><p>
@@ -454,8 +432,8 @@ reverse [2,5,3]
 </div>
 </div>
 
-<div id="outline-container-org5835d17" class="outline-3">
-<h3 id="org5835d17"><span class="section-number-3">2.4.</span> Recursión sobre listas: <code>++</code></h3>
+<div id="outline-container-org5e18dc9" class="outline-3">
+<h3 id="org5e18dc9"><span class="section-number-3">2.4.</span> Recursión sobre listas: <code>++</code></h3>
 <div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
 <li><p>
@@ -485,8 +463,8 @@ Cálculo:
 </div>
 </div>
 
-<div id="outline-container-orgda15530" class="outline-3">
-<h3 id="orgda15530"><span class="section-number-3">2.5.</span> Recursión sobre listas: Inserción ordenada</h3>
+<div id="outline-container-org01260d3" class="outline-3">
+<h3 id="org01260d3"><span class="section-number-3">2.5.</span> Recursión sobre listas: Inserción ordenada</h3>
 <div class="outline-text-3" id="text-2-5">
 <ul class="org-ul">
 <li><p>
@@ -523,8 +501,8 @@ inserta 4 [1,3,5,7]
 </div>
 </div>
 
-<div id="outline-container-orga58037c" class="outline-3">
-<h3 id="orga58037c"><span class="section-number-3">2.6.</span> Recursión sobre listas: Ordenación por inserción</h3>
+<div id="outline-container-orgb67d5e4" class="outline-3">
+<h3 id="orgb67d5e4"><span class="section-number-3">2.6.</span> Recursión sobre listas: Ordenación por inserción</h3>
 <div class="outline-text-3" id="text-2-6">
 <ul class="org-ul">
 <li><p>
@@ -561,12 +539,12 @@ Cálculo:
 </div>
 </div>
 
-<div id="outline-container-orgccbd1da" class="outline-2">
-<h2 id="orgccbd1da"><span class="section-number-2">3.</span> Recursión sobre varios argumentos</h2>
+<div id="outline-container-org291a1ac" class="outline-2">
+<h2 id="org291a1ac"><span class="section-number-2">3.</span> Recursión sobre varios argumentos</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org79677c5" class="outline-3">
-<h3 id="org79677c5"><span class="section-number-3">3.1.</span> Recursión sobre varios argumentos: La función <code>zip</code></h3>
+<div id="outline-container-org56e3213" class="outline-3">
+<h3 id="org56e3213"><span class="section-number-3">3.1.</span> Recursión sobre varios argumentos: La función <code>zip</code></h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -596,8 +574,8 @@ zip [1,3,5] [2,4,6,8]
 </div>
 </div>
 
-<div id="outline-container-org06fbbc8" class="outline-3">
-<h3 id="org06fbbc8"><span class="section-number-3">3.2.</span> Recursión sobre varios argumentos: La función <code>drop</code></h3>
+<div id="outline-container-orgd48fe2f" class="outline-3">
+<h3 id="orgd48fe2f"><span class="section-number-3">3.2.</span> Recursión sobre varios argumentos: La función <code>drop</code></h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -630,12 +608,12 @@ drop 5 [1,4]
 </div>
 </div>
 
-<div id="outline-container-orgab115f0" class="outline-2">
-<h2 id="orgab115f0"><span class="section-number-2">4.</span> Recursión múltiple</h2>
+<div id="outline-container-org77ea4fe" class="outline-2">
+<h2 id="org77ea4fe"><span class="section-number-2">4.</span> Recursión múltiple</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org7f3a193" class="outline-3">
-<h3 id="org7f3a193"><span class="section-number-3">4.1.</span> Recursión múltiple: La función de Fibonacci</h3>
+<div id="outline-container-org74b1163" class="outline-3">
+<h3 id="org74b1163"><span class="section-number-3">4.1.</span> Recursión múltiple: La función de Fibonacci</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li>La sucesión de Fibonacci es: 0,1,1,2,3,5,8,13,21,&#x2026;. Sus dos primeros
@@ -663,8 +641,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org985475d" class="outline-3">
-<h3 id="org985475d"><span class="section-number-3">4.2.</span> Recursión múltiple: Ordenación rápida</h3>
+<div id="outline-container-org0be8d15" class="outline-3">
+<h3 id="org0be8d15"><span class="section-number-3">4.2.</span> Recursión múltiple: Ordenación rápida</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -683,12 +661,12 @@ Algoritmo de ordenación rápida:
 </div>
 </div>
 
-<div id="outline-container-org706f6ca" class="outline-2">
-<h2 id="org706f6ca"><span class="section-number-2">5.</span> Recursión mutua</h2>
+<div id="outline-container-org6e355b2" class="outline-2">
+<h2 id="org6e355b2"><span class="section-number-2">5.</span> Recursión mutua</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgd47a885" class="outline-3">
-<h3 id="orgd47a885"><span class="section-number-3">5.1.</span> Recursión mutua: Par e impar</h3>
+<div id="outline-container-org2546b89" class="outline-3">
+<h3 id="org2546b89"><span class="section-number-3">5.1.</span> Recursión mutua: Par e impar</h3>
 <div class="outline-text-3" id="text-5-1">
 <ul class="org-ul">
 <li><p>
@@ -725,8 +703,8 @@ par 3
 </div>
 </div>
 
-<div id="outline-container-org352494e" class="outline-3">
-<h3 id="org352494e"><span class="section-number-3">5.2.</span> Recursión mutua: Posiciones pares e impares</h3>
+<div id="outline-container-orgb519d28" class="outline-3">
+<h3 id="orgb519d28"><span class="section-number-3">5.2.</span> Recursión mutua: Posiciones pares e impares</h3>
 <div class="outline-text-3" id="text-5-2">
 <ul class="org-ul">
 <li><code>(pares xs)</code> son los elementos de <code>xs</code> que ocupan posiciones pares.</li>
@@ -761,12 +739,12 @@ pares [1,3,5,7]
 </div>
 </div>
 
-<div id="outline-container-org690dc92" class="outline-2">
-<h2 id="org690dc92"><span class="section-number-2">6.</span> Heurísticas para las definiciones recursivas</h2>
+<div id="outline-container-org03f3f4f" class="outline-2">
+<h2 id="org03f3f4f"><span class="section-number-2">6.</span> Heurísticas para las definiciones recursivas</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org959288e" class="outline-3">
-<h3 id="org959288e"><span class="section-number-3">6.1.</span> Aplicación del método: La función <code>product</code></h3>
+<div id="outline-container-orgefb414a" class="outline-3">
+<h3 id="orgefb414a"><span class="section-number-3">6.1.</span> Aplicación del método: La función <code>product</code></h3>
 <div class="outline-text-3" id="text-6-1">
 <ul class="org-ul">
 <li><p>
@@ -820,8 +798,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org625ff2d" class="outline-3">
-<h3 id="org625ff2d"><span class="section-number-3">6.2.</span> Aplicación del método: La función <code>drop</code></h3>
+<div id="outline-container-org2ddcb1e" class="outline-3">
+<h3 id="org2ddcb1e"><span class="section-number-3">6.2.</span> Aplicación del método: La función <code>drop</code></h3>
 <div class="outline-text-3" id="text-6-2">
 <ul class="org-ul">
 <li><p>
@@ -882,8 +860,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-orgf1a3141" class="outline-3">
-<h3 id="orgf1a3141"><span class="section-number-3">6.3.</span> Aplicación del método: La función <code>init</code></h3>
+<div id="outline-container-org93dee6c" class="outline-3">
+<h3 id="org93dee6c"><span class="section-number-3">6.3.</span> Aplicación del método: La función <code>init</code></h3>
 <div class="outline-text-3" id="text-6-3">
 <ul class="org-ul">
 <li><code>init</code> elimina el último elemento de una lista no vacía.</li>
@@ -939,8 +917,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org2f23595" class="outline-2">
-<h2 id="org2f23595"><span class="section-number-2">7.</span> Recursión y dibujos</h2>
+<div id="outline-container-org5a25d97" class="outline-2">
+<h2 id="org5a25d97"><span class="section-number-2">7.</span> Recursión y dibujos</h2>
 <div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li>En esta sección se amplían los programas de dibujo con
@@ -948,8 +926,8 @@ Paso 5: Generalizar y simplificar:
 </ul>
 </div>
 
-<div id="outline-container-org5d87e67" class="outline-3">
-<h3 id="org5d87e67"><span class="section-number-3">7.1.</span> Fractal del árbol</h3>
+<div id="outline-container-orgcae3c27" class="outline-3">
+<h3 id="orgcae3c27"><span class="section-number-3">7.1.</span> Fractal del árbol</h3>
 <div class="outline-text-3" id="text-7-1">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1009,8 +987,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org1941d65" class="outline-3">
-<h3 id="org1941d65"><span class="section-number-3">7.2.</span> Fractal de círculos</h3>
+<div id="outline-container-org1e91b45" class="outline-3">
+<h3 id="org1e91b45"><span class="section-number-3">7.2.</span> Fractal de círculos</h3>
 <div class="outline-text-3" id="text-7-2">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1044,8 +1022,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org8b372d5" class="outline-3">
-<h3 id="org8b372d5"><span class="section-number-3">7.3.</span> Fractal de cuadrados</h3>
+<div id="outline-container-orge7a3bd2" class="outline-3">
+<h3 id="orge7a3bd2"><span class="section-number-3">7.3.</span> Fractal de cuadrados</h3>
 <div class="outline-text-3" id="text-7-3">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1078,8 +1056,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org1ac504b" class="outline-3">
-<h3 id="org1ac504b"><span class="section-number-3">7.4.</span> Fractal de cuadrados con 4 ramas</h3>
+<div id="outline-container-orgf7aff2d" class="outline-3">
+<h3 id="orgf7aff2d"><span class="section-number-3">7.4.</span> Fractal de cuadrados con 4 ramas</h3>
 <div class="outline-text-3" id="text-7-4">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1114,8 +1092,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org2e3f55d" class="outline-3">
-<h3 id="org2e3f55d"><span class="section-number-3">7.5.</span> Fractal del sobre</h3>
+<div id="outline-container-org2470748" class="outline-3">
+<h3 id="org2470748"><span class="section-number-3">7.5.</span> Fractal del sobre</h3>
 <div class="outline-text-3" id="text-7-5">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1150,8 +1128,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org7944880" class="outline-3">
-<h3 id="org7944880"><span class="section-number-3">7.6.</span> Fractal asimétrico</h3>
+<div id="outline-container-org2e70d5a" class="outline-3">
+<h3 id="org2e70d5a"><span class="section-number-3">7.6.</span> Fractal asimétrico</h3>
 <div class="outline-text-3" id="text-7-6">
 <ul class="org-ul">
 <li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
@@ -1185,8 +1163,8 @@ Paso 5: Generalizar y simplificar:
 </div>
 </div>
 
-<div id="outline-container-org72097d0" class="outline-2">
-<h2 id="org72097d0"><span class="section-number-2">8.</span> Material complementario</h2>
+<div id="outline-container-org32f13b6" class="outline-2">
+<h2 id="org32f13b6"><span class="section-number-2">8.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 El código del tema se encuentra en este <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_1.hs">enlace</a>.
@@ -1203,8 +1181,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org264722d" class="outline-2">
-<h2 id="org264722d"><span class="section-number-2">9.</span> Bibliografía</h2>
+<div id="outline-container-org95fe18f" class="outline-2">
+<h2 id="org95fe18f"><span class="section-number-2">9.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-9">
 <ul class="org-ul">
 <li>R. Bird. <b>Introducción a la programación funcional con Haskell</b>. Prentice Hall, 2000.
@@ -1245,17 +1223,17 @@ Edition. Addison-Wesley, 1999.
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

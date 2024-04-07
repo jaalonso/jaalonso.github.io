@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 30: Resolución de problemas mediante programación dinámica</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,100 +191,77 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 30: Resolución de problemas mediante programación dinámica</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org853ce20">1. Introducción</a></li>
-<li><a href="#orgbb68cea">2. Los números de Fibonacci</a>
+<li><a href="#orgdc496c4">1. Introducción</a></li>
+<li><a href="#org3080460">2. Los números de Fibonacci</a>
 <ul>
-<li><a href="#orgb92fb6f">2.1. Enunciado</a></li>
-<li><a href="#orga71d4fd">2.2. Definición por recursión</a></li>
-<li><a href="#orgc1f3add">2.3. Definición con programación dinámica</a></li>
-<li><a href="#org96d747e">2.4. Comparación de eficiencia</a></li>
+<li><a href="#org1d3d4e9">2.1. Enunciado</a></li>
+<li><a href="#orga382fc8">2.2. Definición por recursión</a></li>
+<li><a href="#orgab64f35">2.3. Definición con programación dinámica</a></li>
+<li><a href="#org417dda1">2.4. Comparación de eficiencia</a></li>
 </ul>
 </li>
-<li><a href="#org748a636">3. Coeficientes binomiales</a>
+<li><a href="#org11741fc">3. Coeficientes binomiales</a>
 <ul>
-<li><a href="#orgb213e1c">3.1. Enunciado</a></li>
-<li><a href="#org56a49a3">3.2. Definición por recursión</a></li>
-<li><a href="#orgbdda37d">3.3. Definición con programación dinámica</a></li>
-<li><a href="#org4cebb30">3.4. Comparación de eficiencia</a></li>
+<li><a href="#orgd7de766">3.1. Enunciado</a></li>
+<li><a href="#org20b6cee">3.2. Definición por recursión</a></li>
+<li><a href="#org80bbf97">3.3. Definición con programación dinámica</a></li>
+<li><a href="#org2f8d1da">3.4. Comparación de eficiencia</a></li>
 </ul>
 </li>
-<li><a href="#org157c657">4. Longitud de la subsecuencia común máxima (SCM)</a>
+<li><a href="#org29fd7dc">4. Longitud de la subsecuencia común máxima (SCM)</a>
 <ul>
-<li><a href="#orgbe95157">4.1. Enunciado</a></li>
-<li><a href="#org730b807">4.2. Definición por recursión</a></li>
-<li><a href="#orgc74af9c">4.3. Definición con programación dinámica</a></li>
-<li><a href="#orgd0dff35">4.4. Comparación de eficiencia</a></li>
+<li><a href="#org522ea45">4.1. Enunciado</a></li>
+<li><a href="#org49d00c3">4.2. Definición por recursión</a></li>
+<li><a href="#org5d217a4">4.3. Definición con programación dinámica</a></li>
+<li><a href="#orgfbe5825">4.4. Comparación de eficiencia</a></li>
 </ul>
 </li>
-<li><a href="#org47470f6">5. Subsecuencia común máxima (SCM)</a>
+<li><a href="#org44d6180">5. Subsecuencia común máxima (SCM)</a>
 <ul>
-<li><a href="#org0ffdc1e">5.1. Enunciado</a></li>
-<li><a href="#org6f5b782">5.2. Definición por recursión</a></li>
-<li><a href="#org4bd06a5">5.3. Definición con programación dinámica</a></li>
-<li><a href="#org454314e">5.4. Comparación de eficiencia</a></li>
+<li><a href="#orgc0a361d">5.1. Enunciado</a></li>
+<li><a href="#org70527bb">5.2. Definición por recursión</a></li>
+<li><a href="#org46a0975">5.3. Definición con programación dinámica</a></li>
+<li><a href="#orgaf82ca5">5.4. Comparación de eficiencia</a></li>
 </ul>
 </li>
-<li><a href="#orgc3c9195">6. Distancia de Levenshtein</a>
+<li><a href="#org06b9c12">6. Distancia de Levenshtein</a>
 <ul>
-<li><a href="#org2e9d9c8">6.1. Enunciado</a></li>
-<li><a href="#orgc636553">6.2. Definición por recursión</a></li>
-<li><a href="#org9753bd6">6.3. Definición con programación dinámica</a></li>
-<li><a href="#orge93c305">6.4. Comparación de eficiencia</a></li>
+<li><a href="#orgb6442bb">6.1. Enunciado</a></li>
+<li><a href="#orgc0444ea">6.2. Definición por recursión</a></li>
+<li><a href="#org9302a4d">6.3. Definición con programación dinámica</a></li>
+<li><a href="#org3e1db52">6.4. Comparación de eficiencia</a></li>
 </ul>
 </li>
-<li><a href="#org225175d">7. Material complementario</a></li>
-<li><a href="#org2d280c3">8. Bibliografía</a></li>
+<li><a href="#org691bbfd">7. Material complementario</a></li>
+<li><a href="#org53e9161">8. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org853ce20" class="outline-2">
-<h2 id="org853ce20"><span class="section-number-2">1.</span> Introducción</h2>
+<div id="outline-container-orgdc496c4" class="outline-2">
+<h2 id="orgdc496c4"><span class="section-number-2">1.</span> Introducción</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 El objetivo de este tema es introducir la programación dinámica mediante
@@ -301,12 +279,12 @@ Se usarán las siguientes librerías auxiliares:
 </div>
 </div>
 
-<div id="outline-container-orgbb68cea" class="outline-2">
-<h2 id="orgbb68cea"><span class="section-number-2">2.</span> Los números de Fibonacci</h2>
+<div id="outline-container-org3080460" class="outline-2">
+<h2 id="org3080460"><span class="section-number-2">2.</span> Los números de Fibonacci</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgb92fb6f" class="outline-3">
-<h3 id="orgb92fb6f"><span class="section-number-3">2.1.</span> Enunciado</h3>
+<div id="outline-container-org1d3d4e9" class="outline-3">
+<h3 id="org1d3d4e9"><span class="section-number-3">2.1.</span> Enunciado</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 Los primeros términos de la sucesión de Fibonacci son
@@ -333,8 +311,8 @@ fib 6 == 8
 </div>
 </div>
 
-<div id="outline-container-orga71d4fd" class="outline-3">
-<h3 id="orga71d4fd"><span class="section-number-3">2.2.</span> Definición por recursión</h3>
+<div id="outline-container-orga382fc8" class="outline-3">
+<h3 id="orga382fc8"><span class="section-number-3">2.2.</span> Definición por recursión</h3>
 <div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">fib1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
@@ -346,8 +324,8 @@ fib 6 == 8
 </div>
 </div>
 
-<div id="outline-container-orgc1f3add" class="outline-3">
-<h3 id="orgc1f3add"><span class="section-number-3">2.3.</span> Definición con programación dinámica</h3>
+<div id="outline-container-orgab64f35" class="outline-3">
+<h3 id="orgab64f35"><span class="section-number-3">2.3.</span> Definición con programación dinámica</h3>
 <div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">fib2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
@@ -368,8 +346,8 @@ fib 6 == 8
 </div>
 </div>
 
-<div id="outline-container-org96d747e" class="outline-3">
-<h3 id="org96d747e"><span class="section-number-3">2.4.</span> Comparación de eficiencia</h3>
+<div id="outline-container-org417dda1" class="outline-3">
+<h3 id="org417dda1"><span class="section-number-3">2.4.</span> Comparación de eficiencia</h3>
 <div class="outline-text-3" id="text-2-4">
 <pre class="example">
 λ&gt; fib1 34
@@ -383,12 +361,12 @@ fib 6 == 8
 </div>
 </div>
 
-<div id="outline-container-org748a636" class="outline-2">
-<h2 id="org748a636"><span class="section-number-2">3.</span> Coeficientes binomiales</h2>
+<div id="outline-container-org11741fc" class="outline-2">
+<h2 id="org11741fc"><span class="section-number-2">3.</span> Coeficientes binomiales</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgb213e1c" class="outline-3">
-<h3 id="orgb213e1c"><span class="section-number-3">3.1.</span> Enunciado</h3>
+<div id="outline-container-orgd7de766" class="outline-3">
+<h3 id="orgd7de766"><span class="section-number-3">3.1.</span> Enunciado</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 El coeficiente binomial n sobre k es el número de subconjuntos de k
@@ -405,8 +383,8 @@ Definir la función
 </div>
 </div>
 
-<div id="outline-container-org56a49a3" class="outline-3">
-<h3 id="org56a49a3"><span class="section-number-3">3.2.</span> Definición por recursión</h3>
+<div id="outline-container-org20b6cee" class="outline-3">
+<h3 id="org20b6cee"><span class="section-number-3">3.2.</span> Definición por recursión</h3>
 <div class="outline-text-3" id="text-3-2">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">binomial1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
@@ -419,8 +397,8 @@ Definir la función
 </div>
 </div>
 
-<div id="outline-container-orgbdda37d" class="outline-3">
-<h3 id="orgbdda37d"><span class="section-number-3">3.3.</span> Definición con programación dinámica</h3>
+<div id="outline-container-org80bbf97" class="outline-3">
+<h3 id="org80bbf97"><span class="section-number-3">3.3.</span> Definición con programación dinámica</h3>
 <div class="outline-text-3" id="text-3-3">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">binomial2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
@@ -443,8 +421,8 @@ Definir la función
 </div>
 </div>
 
-<div id="outline-container-org4cebb30" class="outline-3">
-<h3 id="org4cebb30"><span class="section-number-3">3.4.</span> Comparación de eficiencia</h3>
+<div id="outline-container-org2f8d1da" class="outline-3">
+<h3 id="org2f8d1da"><span class="section-number-3">3.4.</span> Comparación de eficiencia</h3>
 <div class="outline-text-3" id="text-3-4">
 <pre class="example">
 λ&gt; binomial1 24 12
@@ -458,12 +436,12 @@ Definir la función
 </div>
 </div>
 
-<div id="outline-container-org157c657" class="outline-2">
-<h2 id="org157c657"><span class="section-number-2">4.</span> Longitud de la subsecuencia común máxima (SCM)</h2>
+<div id="outline-container-org29fd7dc" class="outline-2">
+<h2 id="org29fd7dc"><span class="section-number-2">4.</span> Longitud de la subsecuencia común máxima (SCM)</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgbe95157" class="outline-3">
-<h3 id="orgbe95157"><span class="section-number-3">4.1.</span> Enunciado</h3>
+<div id="outline-container-org522ea45" class="outline-3">
+<h3 id="org522ea45"><span class="section-number-3">4.1.</span> Enunciado</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 Si a una secuencia X de elementos (pongamos por ejemplo, caracteres) le
@@ -512,8 +490,8 @@ longitudSCM "aaa" "bbbb"           == 0
 </div>
 </div>
 
-<div id="outline-container-org730b807" class="outline-3">
-<h3 id="org730b807"><span class="section-number-3">4.2.</span> Definición por recursión</h3>
+<div id="outline-container-org49d00c3" class="outline-3">
+<h3 id="org49d00c3"><span class="section-number-3">4.2.</span> Definición por recursión</h3>
 <div class="outline-text-3" id="text-4-2">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">longitudSCM1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
@@ -527,8 +505,8 @@ longitudSCM "aaa" "bbbb"           == 0
 </div>
 </div>
 
-<div id="outline-container-orgc74af9c" class="outline-3">
-<h3 id="orgc74af9c"><span class="section-number-3">4.3.</span> Definición con programación dinámica</h3>
+<div id="outline-container-org5d217a4" class="outline-3">
+<h3 id="org5d217a4"><span class="section-number-3">4.3.</span> Definición con programación dinámica</h3>
 <div class="outline-text-3" id="text-4-3">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">longitudSCM2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
@@ -571,8 +549,8 @@ longitudSCM "aaa" "bbbb"           == 0
 </div>
 </div>
 
-<div id="outline-container-orgd0dff35" class="outline-3">
-<h3 id="orgd0dff35"><span class="section-number-3">4.4.</span> Comparación de eficiencia</h3>
+<div id="outline-container-orgfbe5825" class="outline-3">
+<h3 id="orgfbe5825"><span class="section-number-3">4.4.</span> Comparación de eficiencia</h3>
 <div class="outline-text-3" id="text-4-4">
 <pre class="example">
 λ&gt; longitudSCM1 (take 18 (cycle [1,3])) (take 18 (cycle [2,3]))
@@ -586,12 +564,12 @@ longitudSCM "aaa" "bbbb"           == 0
 </div>
 </div>
 
-<div id="outline-container-org47470f6" class="outline-2">
-<h2 id="org47470f6"><span class="section-number-2">5.</span> Subsecuencia común máxima (SCM)</h2>
+<div id="outline-container-org44d6180" class="outline-2">
+<h2 id="org44d6180"><span class="section-number-2">5.</span> Subsecuencia común máxima (SCM)</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-org0ffdc1e" class="outline-3">
-<h3 id="org0ffdc1e"><span class="section-number-3">5.1.</span> Enunciado</h3>
+<div id="outline-container-orgc0a361d" class="outline-3">
+<h3 id="orgc0a361d"><span class="section-number-3">5.1.</span> Enunciado</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 Definir la función
@@ -611,8 +589,8 @@ scm "aaa" "bbbb"           == ""
 </div>
 </div>
 
-<div id="outline-container-org6f5b782" class="outline-3">
-<h3 id="org6f5b782"><span class="section-number-3">5.2.</span> Definición por recursión</h3>
+<div id="outline-container-org70527bb" class="outline-3">
+<h3 id="org70527bb"><span class="section-number-3">5.2.</span> Definición por recursión</h3>
 <div class="outline-text-3" id="text-5-2">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">scm1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
@@ -634,8 +612,8 @@ scm "aaa" "bbbb"           == ""
 </div>
 </div>
 
-<div id="outline-container-org4bd06a5" class="outline-3">
-<h3 id="org4bd06a5"><span class="section-number-3">5.3.</span> Definición con programación dinámica</h3>
+<div id="outline-container-org46a0975" class="outline-3">
+<h3 id="org46a0975"><span class="section-number-3">5.3.</span> Definición con programación dinámica</h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">scm2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Eq</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
@@ -681,8 +659,8 @@ scm "aaa" "bbbb"           == ""
 </div>
 </div>
 
-<div id="outline-container-org454314e" class="outline-3">
-<h3 id="org454314e"><span class="section-number-3">5.4.</span> Comparación de eficiencia</h3>
+<div id="outline-container-orgaf82ca5" class="outline-3">
+<h3 id="orgaf82ca5"><span class="section-number-3">5.4.</span> Comparación de eficiencia</h3>
 <div class="outline-text-3" id="text-5-4">
 <pre class="example">
 λ&gt; length (scm1 (take 16 (cycle [1,3])) (take 16 (cycle [2,3])))
@@ -696,12 +674,12 @@ scm "aaa" "bbbb"           == ""
 </div>
 </div>
 
-<div id="outline-container-orgc3c9195" class="outline-2">
-<h2 id="orgc3c9195"><span class="section-number-2">6.</span> Distancia de Levenshtein</h2>
+<div id="outline-container-org06b9c12" class="outline-2">
+<h2 id="org06b9c12"><span class="section-number-2">6.</span> Distancia de Levenshtein</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org2e9d9c8" class="outline-3">
-<h3 id="org2e9d9c8"><span class="section-number-3">6.1.</span> Enunciado</h3>
+<div id="outline-container-orgb6442bb" class="outline-3">
+<h3 id="orgb6442bb"><span class="section-number-3">6.1.</span> Enunciado</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 La distancia de Levenshtein (o distancia de edición) es el número mínimo
@@ -747,8 +725,8 @@ levenshtein "agua" "manantial" ==  7
 </div>
 </div>
 
-<div id="outline-container-orgc636553" class="outline-3">
-<h3 id="orgc636553"><span class="section-number-3">6.2.</span> Definición por recursión</h3>
+<div id="outline-container-orgc0444ea" class="outline-3">
+<h3 id="orgc0444ea"><span class="section-number-3">6.2.</span> Definición por recursión</h3>
 <div class="outline-text-3" id="text-6-2">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">levenshtein1</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
@@ -764,8 +742,8 @@ levenshtein "agua" "manantial" ==  7
 </div>
 </div>
 
-<div id="outline-container-org9753bd6" class="outline-3">
-<h3 id="org9753bd6"><span class="section-number-3">6.3.</span> Definición con programación dinámica</h3>
+<div id="outline-container-org9302a4d" class="outline-3">
+<h3 id="org9302a4d"><span class="section-number-3">6.3.</span> Definición con programación dinámica</h3>
 <div class="outline-text-3" id="text-6-3">
 <div class="org-src-container">
 <pre class="src src-haskell"><span style="color: #0000ff;">levenshtein2</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">String</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
@@ -803,8 +781,8 @@ levenshtein "agua" "manantial" ==  7
 </div>
 </div>
 
-<div id="outline-container-orge93c305" class="outline-3">
-<h3 id="orge93c305"><span class="section-number-3">6.4.</span> Comparación de eficiencia</h3>
+<div id="outline-container-org3e1db52" class="outline-3">
+<h3 id="org3e1db52"><span class="section-number-3">6.4.</span> Comparación de eficiencia</h3>
 <div class="outline-text-3" id="text-6-4">
 <pre class="example">
 λ&gt; levenshtein1 (show (2^33)) (show (3^33))
@@ -818,8 +796,8 @@ levenshtein "agua" "manantial" ==  7
 </div>
 </div>
 
-<div id="outline-container-org225175d" class="outline-2">
-<h2 id="org225175d"><span class="section-number-2">7.</span> Material complementario</h2>
+<div id="outline-container-org691bbfd" class="outline-2">
+<h2 id="org691bbfd"><span class="section-number-2">7.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 El código del tema se encuentra en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_30.hs">este enlace</a>.
@@ -835,8 +813,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org2d280c3" class="outline-2">
-<h2 id="org2d280c3"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div id="outline-container-org53e9161" class="outline-2">
+<h2 id="org53e9161"><span class="section-number-2">8.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -851,17 +829,17 @@ Este tema también se encuentra en los siguientes formatos:
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

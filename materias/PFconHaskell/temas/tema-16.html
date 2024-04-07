@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 16: El tipo abstracto de datos de las colas de prioridad</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,87 +191,64 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 16: El tipo abstracto de datos de las colas de prioridad</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orge5304af">1. Especificación del TAD de las colas de prioridad</a>
+<li><a href="#orgdab94c3">1. Especificación del TAD de las colas de prioridad</a>
 <ul>
-<li><a href="#orgc3e705b">1.1. Signatura del TAD colas de prioridad</a></li>
-<li><a href="#org5ba269f">1.2. Propiedades del TAD de las colas de prioridad</a></li>
+<li><a href="#org0e5cbee">1.1. Signatura del TAD colas de prioridad</a></li>
+<li><a href="#org5bd5ea6">1.2. Propiedades del TAD de las colas de prioridad</a></li>
 </ul>
 </li>
-<li><a href="#orgc754d10">2. Implementaciones del TAD de las colas de prioridad</a>
+<li><a href="#orgcf9aa2d">2. Implementaciones del TAD de las colas de prioridad</a>
 <ul>
-<li><a href="#orgb4f2af4">2.1. Las colas de prioridad como listas</a></li>
-<li><a href="#org42689cd">2.2. Las colas de prioridad como montículos</a></li>
+<li><a href="#orgc446e54">2.1. Las colas de prioridad como listas</a></li>
+<li><a href="#org8d0a206">2.2. Las colas de prioridad como montículos</a></li>
 </ul>
 </li>
-<li><a href="#orge2240be">3. Comprobación de las implementaciones con QuickCheck</a>
+<li><a href="#org3e771d3">3. Comprobación de las implementaciones con QuickCheck</a>
 <ul>
-<li><a href="#orge74abd9">3.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#org087a2d8">3.2. Generador de colas de prioridad</a></li>
-<li><a href="#org6bd5334">3.3. Especificación de las propiedades de las colas de prioridad</a></li>
-<li><a href="#orgae14c0e">3.4. Comprobación de las propiedades</a></li>
+<li><a href="#orgfbb9e19">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#orge17b89f">3.2. Generador de colas de prioridad</a></li>
+<li><a href="#org0f0046f">3.3. Especificación de las propiedades de las colas de prioridad</a></li>
+<li><a href="#org323d5d0">3.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#orge4be96c">4. Material complementario</a></li>
-<li><a href="#org96eae8e">5. Referencias</a></li>
+<li><a href="#org0694138">4. Material complementario</a></li>
+<li><a href="#orge52ce93">5. Referencias</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orge5304af" class="outline-2">
-<h2 id="orge5304af"><span class="section-number-2">1.</span> Especificación del TAD de las colas de prioridad</h2>
+<div id="outline-container-orgdab94c3" class="outline-2">
+<h2 id="orgdab94c3"><span class="section-number-2">1.</span> Especificación del TAD de las colas de prioridad</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orgc3e705b" class="outline-3">
-<h3 id="orgc3e705b"><span class="section-number-3">1.1.</span> Signatura del TAD colas de prioridad</h3>
+<div id="outline-container-org0e5cbee" class="outline-3">
+<h3 id="org0e5cbee"><span class="section-number-3">1.1.</span> Signatura del TAD colas de prioridad</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-org6a2797c" class="outline-4">
-<h4 id="org6a2797c"><span class="section-number-4">1.1.1.</span> Descripción de las colas de prioridad</h4>
+<div id="outline-container-org79e53c1" class="outline-4">
+<h4 id="org79e53c1"><span class="section-number-4">1.1.1.</span> Descripción de las colas de prioridad</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <ul class="org-ul">
 <li>Una <b>cola de prioridad</b> es una cola en la que cada elemento tiene asociada
@@ -286,8 +264,8 @@ prioridad.</li>
 </div>
 </div>
 
-<div id="outline-container-org3792d33" class="outline-4">
-<h4 id="org3792d33"><span class="section-number-4">1.1.2.</span> Signatura de las colas de prioridad</h4>
+<div id="outline-container-org36cd797" class="outline-4">
+<h4 id="org36cd797"><span class="section-number-4">1.1.2.</span> Signatura de las colas de prioridad</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <ul class="org-ul">
 <li><p>
@@ -317,8 +295,8 @@ Signatura:
 </div>
 </div>
 
-<div id="outline-container-org5ba269f" class="outline-3">
-<h3 id="org5ba269f"><span class="section-number-3">1.2.</span> Propiedades del TAD de las colas de prioridad</h3>
+<div id="outline-container-org5bd5ea6" class="outline-3">
+<h3 id="org5bd5ea6"><span class="section-number-3">1.2.</span> Propiedades del TAD de las colas de prioridad</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><code>inserta x (inserta y c) == inserta y (inserta x c)</code></li>
@@ -335,12 +313,12 @@ Signatura:
 </div>
 </div>
 
-<div id="outline-container-orgc754d10" class="outline-2">
-<h2 id="orgc754d10"><span class="section-number-2">2.</span> Implementaciones del TAD de las colas de prioridad</h2>
+<div id="outline-container-orgcf9aa2d" class="outline-2">
+<h2 id="orgcf9aa2d"><span class="section-number-2">2.</span> Implementaciones del TAD de las colas de prioridad</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgb4f2af4" class="outline-3">
-<h3 id="orgb4f2af4"><span class="section-number-3">2.1.</span> Las colas de prioridad como listas</h3>
+<div id="outline-container-orgc446e54" class="outline-3">
+<h3 id="orgc446e54"><span class="section-number-3">2.1.</span> Las colas de prioridad como listas</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -490,8 +468,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org42689cd" class="outline-3">
-<h3 id="org42689cd"><span class="section-number-3">2.2.</span> Las colas de prioridad como montículos</h3>
+<div id="outline-container-org8d0a206" class="outline-3">
+<h3 id="org8d0a206"><span class="section-number-3">2.2.</span> Las colas de prioridad como montículos</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 La implementación de las colas de prioridad como montículos
@@ -502,12 +480,12 @@ La implementación de las colas de prioridad como montículos
 </div>
 </div>
 
-<div id="outline-container-orge2240be" class="outline-2">
-<h2 id="orge2240be"><span class="section-number-2">3.</span> Comprobación de las implementaciones con QuickCheck</h2>
+<div id="outline-container-org3e771d3" class="outline-2">
+<h2 id="org3e771d3"><span class="section-number-2">3.</span> Comprobación de las implementaciones con QuickCheck</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orge74abd9" class="outline-3">
-<h3 id="orge74abd9"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-orgfbb9e19" class="outline-3">
+<h3 id="orgfbb9e19"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -542,8 +520,8 @@ Importación de las librerías de comprobación
 </div>
 </div>
 
-<div id="outline-container-org087a2d8" class="outline-3">
-<h3 id="org087a2d8"><span class="section-number-3">3.2.</span> Generador de colas de prioridad</h3>
+<div id="outline-container-orge17b89f" class="outline-3">
+<h3 id="orge17b89f"><span class="section-number-3">3.2.</span> Generador de colas de prioridad</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -588,8 +566,8 @@ Comprobación.
 </div>
 </div>
 
-<div id="outline-container-org6bd5334" class="outline-3">
-<h3 id="org6bd5334"><span class="section-number-3">3.3.</span> Especificación de las propiedades de las colas de prioridad</h3>
+<div id="outline-container-org0f0046f" class="outline-3">
+<h3 id="org0f0046f"><span class="section-number-3">3.3.</span> Especificación de las propiedades de las colas de prioridad</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -673,8 +651,8 @@ Si se añade un elemento a una cola de prioridad se obtiene una cola no vacía.
 </div>
 </div>
 
-<div id="outline-container-orgae14c0e" class="outline-3">
-<h3 id="orgae14c0e"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-org323d5d0" class="outline-3">
+<h3 id="org323d5d0"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -722,8 +700,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orge4be96c" class="outline-2">
-<h2 id="orge4be96c"><span class="section-number-2">4.</span> Material complementario</h2>
+<div id="outline-container-org0694138" class="outline-2">
+<h2 id="org0694138"><span class="section-number-2">4.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 El código del tema se encuentra en este los siguientes enlaces
@@ -744,8 +722,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org96eae8e" class="outline-2">
-<h2 id="org96eae8e"><span class="section-number-2">5.</span> Referencias</h2>
+<div id="outline-container-orge52ce93" class="outline-2">
+<h2 id="orge52ce93"><span class="section-number-2">5.</span> Referencias</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -760,17 +738,17 @@ Este tema también se encuentra en los siguientes formatos:
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

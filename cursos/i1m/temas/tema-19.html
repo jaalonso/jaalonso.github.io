@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 21 de enero del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 19: El tipo abstracto de los árboles binarios de búsqueda</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,33 +191,10 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -229,47 +207,47 @@
    <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 19: El tipo abstracto de los árboles binarios de búsqueda</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org8341de6">1. Especificación del TAD de los árboles binarios de búsqueda</a>
+<li><a href="#org924241a">1. Especificación del TAD de los árboles binarios de búsqueda</a>
 <ul>
-<li><a href="#org9f9c3fe">1.1. Signatura del TAD de los árboles binarios de búsqueda</a></li>
-<li><a href="#org97990d6">1.2. Propiedades del TAD de los árboles binarios de búsqueda</a></li>
+<li><a href="#org44f0bf2">1.1. Signatura del TAD de los árboles binarios de búsqueda</a></li>
+<li><a href="#org679f536">1.2. Propiedades del TAD de los árboles binarios de búsqueda</a></li>
 </ul>
 </li>
-<li><a href="#org97cf775">2. Implementación del TAD de los árboles binarios de búsqueda</a>
+<li><a href="#org7ef8691">2. Implementación del TAD de los árboles binarios de búsqueda</a>
 <ul>
-<li><a href="#org3aecc68">2.1. Los ABB como tipo de dato algebraico</a></li>
+<li><a href="#org6f2dca0">2.1. Los ABB como tipo de dato algebraico</a></li>
 </ul>
 </li>
-<li><a href="#org68b511c">3. Comprobación de la implementación con QuickCheck</a>
+<li><a href="#orgde82c1a">3. Comprobación de la implementación con QuickCheck</a>
 <ul>
-<li><a href="#orgd602690">3.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#orgfb73214">3.2. Generador de árboles binarios de búsqueda</a></li>
-<li><a href="#org264a3d6">3.3. Especificación de las propiedades de los árboles de búsqueda</a></li>
-<li><a href="#org690e0ea">3.4. Comprobación de las propiedades</a></li>
+<li><a href="#org61cf6fa">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#orgd224faf">3.2. Generador de árboles binarios de búsqueda</a></li>
+<li><a href="#orgbf3f350">3.3. Especificación de las propiedades de los árboles de búsqueda</a></li>
+<li><a href="#org53b745d">3.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#org857ce93">4. Material complementario</a></li>
-<li><a href="#org282afe1">5. Bibliografía</a></li>
+<li><a href="#org8bdf236">4. Material complementario</a></li>
+<li><a href="#orgabc229c">5. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org8341de6" class="outline-2">
-<h2 id="org8341de6"><span class="section-number-2">1.</span> Especificación del TAD de los árboles binarios de búsqueda</h2>
+<div id="outline-container-org924241a" class="outline-2">
+<h2 id="org924241a"><span class="section-number-2">1.</span> Especificación del TAD de los árboles binarios de búsqueda</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org9f9c3fe" class="outline-3">
-<h3 id="org9f9c3fe"><span class="section-number-3">1.1.</span> Signatura del TAD de los árboles binarios de búsqueda</h3>
+<div id="outline-container-org44f0bf2" class="outline-3">
+<h3 id="org44f0bf2"><span class="section-number-3">1.1.</span> Signatura del TAD de los árboles binarios de búsqueda</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-org1ba772f" class="outline-4">
-<h4 id="org1ba772f"><span class="section-number-4">1.1.1.</span> Descripción de los árboles binarios de búsqueda</h4>
+<div id="outline-container-orgba988dc" class="outline-4">
+<h4 id="orgba988dc"><span class="section-number-4">1.1.1.</span> Descripción de los árboles binarios de búsqueda</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <ul class="org-ul">
 <li>Un árbol binario de búsqueda (ABB) es un árbol binario tal que el valor
@@ -297,8 +275,8 @@ valores.</li>
 </div>
 </div>
 
-<div id="outline-container-orgdb20e0f" class="outline-4">
-<h4 id="orgdb20e0f"><span class="section-number-4">1.1.2.</span> Signatura del TAD de los árboles binarios de búsqueda</h4>
+<div id="outline-container-org4296d99" class="outline-4">
+<h4 id="org4296d99"><span class="section-number-4">1.1.2.</span> Signatura del TAD de los árboles binarios de búsqueda</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <ul class="org-ul">
 <li><p>
@@ -336,8 +314,8 @@ búsqueda <code>a</code> en el recorrido inorden.</li>
 </div>
 </div>
 
-<div id="outline-container-org97990d6" class="outline-3">
-<h3 id="org97990d6"><span class="section-number-3">1.2.</span> Propiedades del TAD de los árboles binarios de búsqueda</h3>
+<div id="outline-container-org679f536" class="outline-3">
+<h3 id="org679f536"><span class="section-number-3">1.2.</span> Propiedades del TAD de los árboles binarios de búsqueda</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><code>valido vacio</code></li>
@@ -368,12 +346,12 @@ búsqueda <code>a</code> en el recorrido inorden.</li>
 </div>
 </div>
 
-<div id="outline-container-org97cf775" class="outline-2">
-<h2 id="org97cf775"><span class="section-number-2">2.</span> Implementación del TAD de los árboles binarios de búsqueda</h2>
+<div id="outline-container-org7ef8691" class="outline-2">
+<h2 id="org7ef8691"><span class="section-number-2">2.</span> Implementación del TAD de los árboles binarios de búsqueda</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org3aecc68" class="outline-3">
-<h3 id="org3aecc68"><span class="section-number-3">2.1.</span> Los ABB como tipo de dato algebraico</h3>
+<div id="outline-container-org6f2dca0" class="outline-3">
+<h3 id="org6f2dca0"><span class="section-number-3">2.1.</span> Los ABB como tipo de dato algebraico</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -669,12 +647,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org68b511c" class="outline-2">
-<h2 id="org68b511c"><span class="section-number-2">3.</span> Comprobación de la implementación con QuickCheck</h2>
+<div id="outline-container-orgde82c1a" class="outline-2">
+<h2 id="orgde82c1a"><span class="section-number-2">3.</span> Comprobación de la implementación con QuickCheck</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgd602690" class="outline-3">
-<h3 id="orgd602690"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-org61cf6fa" class="outline-3">
+<h3 id="org61cf6fa"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -708,8 +686,8 @@ Importación de librerías auxiliares.
 </div>
 </div>
 
-<div id="outline-container-orgfb73214" class="outline-3">
-<h3 id="orgfb73214"><span class="section-number-3">3.2.</span> Generador de árboles binarios de búsqueda</h3>
+<div id="outline-container-orgd224faf" class="outline-3">
+<h3 id="orgd224faf"><span class="section-number-3">3.2.</span> Generador de árboles binarios de búsqueda</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -804,8 +782,8 @@ Propiedad. El generador <code>listaOrdenada</code> produce listas ordenadas.
 </div>
 </div>
 
-<div id="outline-container-org264a3d6" class="outline-3">
-<h3 id="org264a3d6"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los árboles de búsqueda</h3>
+<div id="outline-container-orgbf3f350" class="outline-3">
+<h3 id="orgbf3f350"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los árboles de búsqueda</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -955,8 +933,8 @@ Un elemento pertenece a <code>(elementos a)</code> syss es un valor de <code>a</
 </div>
 </div>
 
-<div id="outline-container-org690e0ea" class="outline-3">
-<h3 id="org690e0ea"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-org53b745d" class="outline-3">
+<h3 id="org53b745d"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -1033,8 +1011,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-org857ce93" class="outline-2">
-<h2 id="org857ce93"><span class="section-number-2">4.</span> Material complementario</h2>
+<div id="outline-container-org8bdf236" class="outline-2">
+<h2 id="org8bdf236"><span class="section-number-2">4.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 El código del tema se encuentra en los siguientes enlaces
@@ -1055,8 +1033,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org282afe1" class="outline-2">
-<h2 id="org282afe1"><span class="section-number-2">5.</span> Bibliografía</h2>
+<div id="outline-container-orgabc229c" class="outline-2">
+<h2 id="orgabc229c"><span class="section-number-2">5.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -1081,7 +1059,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 21 de enero del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

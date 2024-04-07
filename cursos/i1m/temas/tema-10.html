@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 21 de enero del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 10: Evaluación perezosa</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,33 +191,10 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -229,61 +207,61 @@
    <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 10: Evaluación perezosa</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org87a5bc4">1. Estrategias de evaluación</a>
+<li><a href="#org25761cb">1. Estrategias de evaluación</a>
 <ul>
-<li><a href="#orga231037">1.1. Estrategias de evaluación</a></li>
-<li><a href="#org7237f12">1.2. Evaluación con lambda expresiones</a></li>
+<li><a href="#org7af9648">1.1. Estrategias de evaluación</a></li>
+<li><a href="#org359ed80">1.2. Evaluación con lambda expresiones</a></li>
 </ul>
 </li>
-<li><a href="#orga7dae7c">2. Terminación</a>
+<li><a href="#orge6fd1e9">2. Terminación</a>
 <ul>
-<li><a href="#org5d2448e">2.1. Procesamiento con el infinito</a></li>
+<li><a href="#org001dbfc">2.1. Procesamiento con el infinito</a></li>
 </ul>
 </li>
-<li><a href="#org0d8a8de">3. Número de reducciones</a>
+<li><a href="#org934c4e9">3. Número de reducciones</a>
 <ul>
-<li><a href="#orgca6faa5">3.1. Número de reducciones según las estrategias</a></li>
-<li><a href="#org3d63140">3.2. Evaluación perezosa e impaciente</a></li>
+<li><a href="#org4ad278c">3.1. Número de reducciones según las estrategias</a></li>
+<li><a href="#org2f1a027">3.2. Evaluación perezosa e impaciente</a></li>
 </ul>
 </li>
-<li><a href="#orgbff9fad">4. Estructuras infinitas</a>
+<li><a href="#org46ab6a5">4. Estructuras infinitas</a>
 <ul>
-<li><a href="#orgd8ad8e0">4.1. Programación con estructuras infinitas</a></li>
-<li><a href="#org21acce3">4.2. Evaluación con estructuras infinitas</a></li>
+<li><a href="#org36ccdf4">4.1. Programación con estructuras infinitas</a></li>
+<li><a href="#org973d597">4.2. Evaluación con estructuras infinitas</a></li>
 </ul>
 </li>
-<li><a href="#orgbcfa219">5. Programación modular</a>
+<li><a href="#org21d2e67">5. Programación modular</a>
 <ul>
-<li><a href="#orgdb35310">5.1. Programación modular</a></li>
-<li><a href="#orgb125174">5.2. Terminación de evaluaciones con estructuras infinitas</a></li>
-<li><a href="#orgc405795">5.3. La criba de Erastótenes</a></li>
+<li><a href="#orgdb1b193">5.1. Programación modular</a></li>
+<li><a href="#orgea90753">5.2. Terminación de evaluaciones con estructuras infinitas</a></li>
+<li><a href="#org585b0b0">5.3. La criba de Erastótenes</a></li>
 </ul>
 </li>
-<li><a href="#org830a429">6. Aplicación estricta</a>
+<li><a href="#org3ddd34c">6. Aplicación estricta</a>
 <ul>
-<li><a href="#org17e7267">6.1. Ejemplo de programa sin aplicación estricta</a></li>
-<li><a href="#org1e23325">6.2. Comparación de consumo de memoria</a></li>
-<li><a href="#orgecb0b0b">6.3. Plegado estricto</a></li>
+<li><a href="#orgda50218">6.1. Ejemplo de programa sin aplicación estricta</a></li>
+<li><a href="#org2a64924">6.2. Comparación de consumo de memoria</a></li>
+<li><a href="#org91ac9dd">6.3. Plegado estricto</a></li>
 </ul>
 </li>
-<li><a href="#orgdbcb714">7. Material complementario</a></li>
-<li><a href="#orgea7c506">8. Bibliografía</a></li>
+<li><a href="#org5408c22">7. Material complementario</a></li>
+<li><a href="#org73d86cf">8. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org87a5bc4" class="outline-2">
-<h2 id="org87a5bc4"><span class="section-number-2">1.</span> Estrategias de evaluación</h2>
+<div id="outline-container-org25761cb" class="outline-2">
+<h2 id="org25761cb"><span class="section-number-2">1.</span> Estrategias de evaluación</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orga231037" class="outline-3">
-<h3 id="orga231037"><span class="section-number-3">1.1.</span> Estrategias de evaluación</h3>
+<div id="outline-container-org7af9648" class="outline-3">
+<h3 id="org7af9648"><span class="section-number-3">1.1.</span> Estrategias de evaluación</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li><p>
@@ -318,8 +296,8 @@ mult (1+2,2+3)
 </div>
 </div>
 
-<div id="outline-container-org7237f12" class="outline-3">
-<h3 id="org7237f12"><span class="section-number-3">1.2.</span> Evaluación con lambda expresiones</h3>
+<div id="outline-container-org359ed80" class="outline-3">
+<h3 id="org359ed80"><span class="section-number-3">1.2.</span> Evaluación con lambda expresiones</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><p>
@@ -347,12 +325,12 @@ mult' (1+2) (2+3)
 </div>
 </div>
 
-<div id="outline-container-orga7dae7c" class="outline-2">
-<h2 id="orga7dae7c"><span class="section-number-2">2.</span> Terminación</h2>
+<div id="outline-container-orge6fd1e9" class="outline-2">
+<h2 id="orge6fd1e9"><span class="section-number-2">2.</span> Terminación</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org5d2448e" class="outline-3">
-<h3 id="org5d2448e"><span class="section-number-3">2.1.</span> Procesamiento con el infinito</h3>
+<div id="outline-container-org001dbfc" class="outline-3">
+<h3 id="org001dbfc"><span class="section-number-3">2.1.</span> Procesamiento con el infinito</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -414,12 +392,12 @@ Evaluación Haskell con infinito:
 </div>
 </div>
 
-<div id="outline-container-org0d8a8de" class="outline-2">
-<h2 id="org0d8a8de"><span class="section-number-2">3.</span> Número de reducciones</h2>
+<div id="outline-container-org934c4e9" class="outline-2">
+<h2 id="org934c4e9"><span class="section-number-2">3.</span> Número de reducciones</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgca6faa5" class="outline-3">
-<h3 id="orgca6faa5"><span class="section-number-3">3.1.</span> Número de reducciones según las estrategias</h3>
+<div id="outline-container-org4ad278c" class="outline-3">
+<h3 id="org4ad278c"><span class="section-number-3">3.1.</span> Número de reducciones según las estrategias</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -455,8 +433,8 @@ cuadrado (1+2)
 </div>
 </div>
 
-<div id="outline-container-org3d63140" class="outline-3">
-<h3 id="org3d63140"><span class="section-number-3">3.2.</span> Evaluación perezosa e impaciente</h3>
+<div id="outline-container-org2f1a027" class="outline-3">
+<h3 id="org2f1a027"><span class="section-number-3">3.2.</span> Evaluación perezosa e impaciente</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li>En la evaluación mediante paso de parámetros por nombre los argumentos pueden
@@ -486,12 +464,12 @@ cuadrado (1+2)
 </div>
 </div>
 
-<div id="outline-container-orgbff9fad" class="outline-2">
-<h2 id="orgbff9fad"><span class="section-number-2">4.</span> Estructuras infinitas</h2>
+<div id="outline-container-org46ab6a5" class="outline-2">
+<h2 id="org46ab6a5"><span class="section-number-2">4.</span> Estructuras infinitas</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgd8ad8e0" class="outline-3">
-<h3 id="orgd8ad8e0"><span class="section-number-3">4.1.</span> Programación con estructuras infinitas</h3>
+<div id="outline-container-org36ccdf4" class="outline-3">
+<h3 id="org36ccdf4"><span class="section-number-3">4.1.</span> Programación con estructuras infinitas</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -525,8 +503,8 @@ Evaluación en Haskell:
 </div>
 </div>
 
-<div id="outline-container-org21acce3" class="outline-3">
-<h3 id="org21acce3"><span class="section-number-3">4.2.</span> Evaluación con estructuras infinitas</h3>
+<div id="outline-container-org973d597" class="outline-3">
+<h3 id="org973d597"><span class="section-number-3">4.2.</span> Evaluación con estructuras infinitas</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -561,12 +539,12 @@ Evaluación Haskell:
 </div>
 </div>
 
-<div id="outline-container-orgbcfa219" class="outline-2">
-<h2 id="orgbcfa219"><span class="section-number-2">5.</span> Programación modular</h2>
+<div id="outline-container-org21d2e67" class="outline-2">
+<h2 id="org21d2e67"><span class="section-number-2">5.</span> Programación modular</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgdb35310" class="outline-3">
-<h3 id="orgdb35310"><span class="section-number-3">5.1.</span> Programación modular</h3>
+<div id="outline-container-orgdb1b193" class="outline-3">
+<h3 id="orgdb1b193"><span class="section-number-3">5.1.</span> Programación modular</h3>
 <div class="outline-text-3" id="text-5-1">
 <ul class="org-ul">
 <li>La evaluación perezosa permite separar el control de los datos.</li>
@@ -599,8 +577,8 @@ take 2 unos
 </div>
 </div>
 
-<div id="outline-container-orgb125174" class="outline-3">
-<h3 id="orgb125174"><span class="section-number-3">5.2.</span> Terminación de evaluaciones con estructuras infinitas</h3>
+<div id="outline-container-orgea90753" class="outline-3">
+<h3 id="orgea90753"><span class="section-number-3">5.2.</span> Terminación de evaluaciones con estructuras infinitas</h3>
 <div class="outline-text-3" id="text-5-2">
 <ul class="org-ul">
 <li><p>
@@ -638,8 +616,8 @@ Ejemplo de no terminación:
 </div>
 </div>
 
-<div id="outline-container-orgc405795" class="outline-3">
-<h3 id="orgc405795"><span class="section-number-3">5.3.</span> La criba de Erastótenes</h3>
+<div id="outline-container-org585b0b0" class="outline-3">
+<h3 id="org585b0b0"><span class="section-number-3">5.3.</span> La criba de Erastótenes</h3>
 <div class="outline-text-3" id="text-5-3">
 <ul class="org-ul">
 <li><p>
@@ -696,12 +674,12 @@ primos
 </div>
 </div>
 
-<div id="outline-container-org830a429" class="outline-2">
-<h2 id="org830a429"><span class="section-number-2">6.</span> Aplicación estricta</h2>
+<div id="outline-container-org3ddd34c" class="outline-2">
+<h2 id="org3ddd34c"><span class="section-number-2">6.</span> Aplicación estricta</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org17e7267" class="outline-3">
-<h3 id="org17e7267"><span class="section-number-3">6.1.</span> Ejemplo de programa sin aplicación estricta</h3>
+<div id="outline-container-orgda50218" class="outline-3">
+<h3 id="orgda50218"><span class="section-number-3">6.1.</span> Ejemplo de programa sin aplicación estricta</h3>
 <div class="outline-text-3" id="text-6-1">
 <ul class="org-ul">
 <li><p>
@@ -783,8 +761,8 @@ sumaE [2,3,5]
 </div>
 </div>
 
-<div id="outline-container-org1e23325" class="outline-3">
-<h3 id="org1e23325"><span class="section-number-3">6.2.</span> Comparación de consumo de memoria</h3>
+<div id="outline-container-org2a64924" class="outline-3">
+<h3 id="org2a64924"><span class="section-number-3">6.2.</span> Comparación de consumo de memoria</h3>
 <div class="outline-text-3" id="text-6-2">
 <ul class="org-ul">
 <li><p>
@@ -804,8 +782,8 @@ La comparación es
 </div>
 </div>
 
-<div id="outline-container-orgecb0b0b" class="outline-3">
-<h3 id="orgecb0b0b"><span class="section-number-3">6.3.</span> Plegado estricto</h3>
+<div id="outline-container-org91ac9dd" class="outline-3">
+<h3 id="org91ac9dd"><span class="section-number-3">6.3.</span> Plegado estricto</h3>
 <div class="outline-text-3" id="text-6-3">
 <ul class="org-ul">
 <li><p>
@@ -836,8 +814,8 @@ Comparación de plegado y plegado estricto:
 </div>
 </div>
 
-<div id="outline-container-orgdbcb714" class="outline-2">
-<h2 id="orgdbcb714"><span class="section-number-2">7.</span> Material complementario</h2>
+<div id="outline-container-org5408c22" class="outline-2">
+<h2 id="org5408c22"><span class="section-number-2">7.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 El código del tema se encuentra en este <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_10.hs">enlace</a>.
@@ -854,8 +832,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-orgea7c506" class="outline-2">
-<h2 id="orgea7c506"><span class="section-number-2">8.</span> Bibliografía</h2>
+<div id="outline-container-org73d86cf" class="outline-2">
+<h2 id="org73d86cf"><span class="section-number-2">8.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-8">
 <ul class="org-ul">
 <li>R. Bird. <b>Introducción a la programación funcional con Haskell</b>. Prentice
@@ -904,7 +882,7 @@ Edition. Addison-Wesley, 1999.
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 21 de enero del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

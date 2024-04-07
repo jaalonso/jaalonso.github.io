@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de julio del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 10: Formalización en Prolog de la lógica proposicional</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,102 +191,90 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
 </script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        displayAlign: "center",
-        displayIndent: "0em",
 
-        "HTML-CSS": { scale: 100,
-                        linebreaks: { automatic: "false" },
-                        webFont: "TeX"
-                       },
-        SVG: {scale: 100,
-              linebreaks: { automatic: "false" },
-              font: "TeX"},
-        NativeMML: {scale: 100},
-        TeX: { equationNumbers: {autoNumber: "AMS"},
-               MultLineWidth: "85%",
-               TagSide: "right",
-               TagIndent: ".8em"
-             }
-});
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 10: Formalización en Prolog de la lógica proposicional</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org41272e1">1. Sintaxis de la lógica proposicional</a></li>
-<li><a href="#org5fcbc75">2. Semántica de la lógica proposicional</a>
+<li><a href="#org075ed1e">1. Sintaxis de la lógica proposicional</a></li>
+<li><a href="#org285b7ba">2. Semántica de la lógica proposicional</a>
 <ul>
-<li><a href="#org9bca959">2.1. Valores y funciones de verdad</a></li>
-<li><a href="#orgeb88c04">2.2. Valor de una fórmula en una interpretación</a></li>
-<li><a href="#org7c13288">2.3. Interpretaciones principales de una fórmula</a></li>
-<li><a href="#org5345d99">2.4. Modelo de una fórmula</a></li>
-<li><a href="#orgdc10fdd">2.5. Cálculo de los modelos de una fórmula</a></li>
-<li><a href="#org4bedaa7">2.6. Satisfacibilidad</a></li>
-<li><a href="#orge57f394">2.7. Contramodelo de una fórmula</a></li>
-<li><a href="#org1628d6a">2.8. Fórmulas válidas (tautologías)</a></li>
-<li><a href="#org8739c41">2.9. Interpretaciones principales de un conjunto de fórmulas</a></li>
-<li><a href="#org29f48ff">2.10. Modelo de un conjunto de fórmulas</a></li>
-<li><a href="#org5307223">2.11. Cálculo de modelos de conjuntos de fórmulas</a></li>
-<li><a href="#org20185c5">2.12. Consistencia de un conjunto de fórmulas</a></li>
-<li><a href="#org8e3dc8f">2.13. Consecuencia lógica</a></li>
-<li><a href="#org037d720">2.14. El problema de los veraces y mentirosos</a></li>
+<li><a href="#orgce27b1f">2.1. Valores y funciones de verdad</a></li>
+<li><a href="#orga58231f">2.2. Valor de una fórmula en una interpretación</a></li>
+<li><a href="#orge9e3033">2.3. Interpretaciones principales de una fórmula</a></li>
+<li><a href="#org7ea80b7">2.4. Modelo de una fórmula</a></li>
+<li><a href="#orga3788cf">2.5. Cálculo de los modelos de una fórmula</a></li>
+<li><a href="#orgb0e5d59">2.6. Satisfacibilidad</a></li>
+<li><a href="#org1c450c8">2.7. Contramodelo de una fórmula</a></li>
+<li><a href="#org99de5c7">2.8. Fórmulas válidas (tautologías)</a></li>
+<li><a href="#org5db7678">2.9. Interpretaciones principales de un conjunto de fórmulas</a></li>
+<li><a href="#org2aa9de4">2.10. Modelo de un conjunto de fórmulas</a></li>
+<li><a href="#orgc3b8c10">2.11. Cálculo de modelos de conjuntos de fórmulas</a></li>
+<li><a href="#orga2bf897">2.12. Consistencia de un conjunto de fórmulas</a></li>
+<li><a href="#org2cf3500">2.13. Consecuencia lógica</a></li>
+<li><a href="#org13582ca">2.14. El problema de los veraces y mentirosos</a></li>
 </ul>
 </li>
-<li><a href="#orge30f882">3. Tableros semánticos</a>
+<li><a href="#org93c964f">3. Tableros semánticos</a>
 <ul>
-<li><a href="#org603ceb6">3.1. Demostraciones mediante tableros semánticos</a></li>
-<li><a href="#org4e9e85f">3.2. Notación uniforme</a></li>
-<li><a href="#org50d20ae">3.3. Procedimiento de completación de tableros</a></li>
-<li><a href="#orgfa1f536">3.4. Tableros cerrados</a></li>
-<li><a href="#org8f52475">3.5. Teorema por tableros</a></li>
-<li><a href="#org74a1615">3.6. Deducción por tableros</a></li>
+<li><a href="#orgc2e86be">3.1. Demostraciones mediante tableros semánticos</a></li>
+<li><a href="#orgb027eba">3.2. Notación uniforme</a></li>
+<li><a href="#org850330c">3.3. Procedimiento de completación de tableros</a></li>
+<li><a href="#orgb3c84c3">3.4. Tableros cerrados</a></li>
+<li><a href="#org9e7bd0c">3.5. Teorema por tableros</a></li>
+<li><a href="#orgcc2373e">3.6. Deducción por tableros</a></li>
 </ul>
 </li>
-<li><a href="#org6080c10">4. Bibliografía</a></li>
+<li><a href="#org65ba615">4. Bibliografía</a></li>
 </ul>
 </div>
 </div>
@@ -294,8 +283,8 @@ Nota: El código correspondiente a este capítulo se encuentra en
 <a href="https://swish.swi-prolog.org/p/PLP_logica_proposicional.pl">logica_proposicional.pl</a>. 
 </p>
 
-<div id="outline-container-org41272e1" class="outline-2">
-<h2 id="org41272e1"><span class="section-number-2">1.</span> Sintaxis de la lógica proposicional</h2>
+<div id="outline-container-org075ed1e" class="outline-2">
+<h2 id="org075ed1e"><span class="section-number-2">1.</span> Sintaxis de la lógica proposicional</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Alfabeto proposicional:
@@ -415,16 +404,16 @@ Declaración de operadores:
 </div>
 </div>
 
-<div id="outline-container-org5fcbc75" class="outline-2">
-<h2 id="org5fcbc75"><span class="section-number-2">2.</span> Semántica de la lógica proposicional</h2>
+<div id="outline-container-org285b7ba" class="outline-2">
+<h2 id="org285b7ba"><span class="section-number-2">2.</span> Semántica de la lógica proposicional</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org9bca959" class="outline-3">
-<h3 id="org9bca959"><span class="section-number-3">2.1.</span> Valores y funciones de verdad</h3>
+<div id="outline-container-orgce27b1f" class="outline-3">
+<h3 id="orgce27b1f"><span class="section-number-3">2.1.</span> Valores y funciones de verdad</h3>
 <div class="outline-text-3" id="text-2-1">
 </div>
-<div id="outline-container-orge386fd9" class="outline-4">
-<h4 id="orge386fd9"><span class="section-number-4">2.1.1.</span> Valores de verdad</h4>
+<div id="outline-container-org8bb4233" class="outline-4">
+<h4 id="org8bb4233"><span class="section-number-4">2.1.1.</span> Valores de verdad</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <ul class="org-ul">
 <li>Valores de verdad:
@@ -445,8 +434,8 @@ Declaración de operadores:
 </div>
 </div>
 
-<div id="outline-container-orgf07e629" class="outline-4">
-<h4 id="orgf07e629"><span class="section-number-4">2.1.2.</span> Funciones de verdad (negación)</h4>
+<div id="outline-container-orga32d4cb" class="outline-4">
+<h4 id="orga32d4cb"><span class="section-number-4">2.1.2.</span> Funciones de verdad (negación)</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <ul class="org-ul">
 <li><p>
@@ -491,8 +480,8 @@ Función de verdad de la negación:
 </div>
 </div>
 
-<div id="outline-container-org39b5f8d" class="outline-4">
-<h4 id="org39b5f8d"><span class="section-number-4">2.1.3.</span> Funciones de verdad de las conectivas binarias</h4>
+<div id="outline-container-orga065f04" class="outline-4">
+<h4 id="orga065f04"><span class="section-number-4">2.1.3.</span> Funciones de verdad de las conectivas binarias</h4>
 <div class="outline-text-4" id="text-2-1-3">
 <ul class="org-ul">
 <li><p>
@@ -582,12 +571,12 @@ Las funciones de verdad de las conectivas binarias son
 </div>
 </div>
 
-<div id="outline-container-orgeb88c04" class="outline-3">
-<h3 id="orgeb88c04"><span class="section-number-3">2.2.</span> Valor de una fórmula en una interpretación</h3>
+<div id="outline-container-orga58231f" class="outline-3">
+<h3 id="orga58231f"><span class="section-number-3">2.2.</span> Valor de una fórmula en una interpretación</h3>
 <div class="outline-text-3" id="text-2-2">
 </div>
-<div id="outline-container-org89af35a" class="outline-4">
-<h4 id="org89af35a"><span class="section-number-4">2.2.1.</span> Representación de las interpretaciones</h4>
+<div id="outline-container-org39a28c0" class="outline-4">
+<h4 id="org39a28c0"><span class="section-number-4">2.2.1.</span> Representación de las interpretaciones</h4>
 <div class="outline-text-4" id="text-2-2-1">
 <ul class="org-ul">
 <li>Las <b>interpretaciones</b> son listas de pares de variables y valores de
@@ -596,8 +585,8 @@ verdad. Por ejemplo, <code>[(p,1),(r,0),(u,1)]</code> es una interpretación.</l
 </div>
 </div>
 
-<div id="outline-container-org51f0c65" class="outline-4">
-<h4 id="org51f0c65"><span class="section-number-4">2.2.2.</span> Valor de una fórmula en una interpretación</h4>
+<div id="outline-container-org04c3d16" class="outline-4">
+<h4 id="org04c3d16"><span class="section-number-4">2.2.2.</span> Valor de una fórmula en una interpretación</h4>
 <div class="outline-text-4" id="text-2-2-2">
 <ul class="org-ul">
 <li><p>
@@ -632,12 +621,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org7c13288" class="outline-3">
-<h3 id="org7c13288"><span class="section-number-3">2.3.</span> Interpretaciones principales de una fórmula</h3>
+<div id="outline-container-orge9e3033" class="outline-3">
+<h3 id="orge9e3033"><span class="section-number-3">2.3.</span> Interpretaciones principales de una fórmula</h3>
 <div class="outline-text-3" id="text-2-3">
 </div>
-<div id="outline-container-org45a7bbf" class="outline-4">
-<h4 id="org45a7bbf"><span class="section-number-4">2.3.1.</span> Interpretaciones de una fórmula</h4>
+<div id="outline-container-org0950393" class="outline-4">
+<h4 id="org0950393"><span class="section-number-4">2.3.1.</span> Interpretaciones de una fórmula</h4>
 <div class="outline-text-4" id="text-2-3-1">
 <ul class="org-ul">
 <li>I es una <b>interpretación principal</b> de F si es una aplicación del
@@ -699,8 +688,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org9f40934" class="outline-4">
-<h4 id="org9f40934"><span class="section-number-4">2.3.2.</span> Símbolos de una fórmula</h4>
+<div id="outline-container-orgfab45b2" class="outline-4">
+<h4 id="orgfab45b2"><span class="section-number-4">2.3.2.</span> Símbolos de una fórmula</h4>
 <div class="outline-text-4" id="text-2-3-2">
 <ul class="org-ul">
 <li><p>
@@ -735,8 +724,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org20e6047" class="outline-4">
-<h4 id="org20e6047"><span class="section-number-4">2.3.3.</span> Interpretación de una lista de símbolos</h4>
+<div id="outline-container-org973c128" class="outline-4">
+<h4 id="org973c128"><span class="section-number-4">2.3.3.</span> Interpretación de una lista de símbolos</h4>
 <div class="outline-text-4" id="text-2-3-3">
 <ul class="org-ul">
 <li><p>
@@ -767,8 +756,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org5345d99" class="outline-3">
-<h3 id="org5345d99"><span class="section-number-3">2.4.</span> Modelo de una fórmula</h3>
+<div id="outline-container-org7ea80b7" class="outline-3">
+<h3 id="org7ea80b7"><span class="section-number-3">2.4.</span> Modelo de una fórmula</h3>
 <div class="outline-text-3" id="text-2-4">
 <ul class="org-ul">
 <li><p>
@@ -796,8 +785,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgdc10fdd" class="outline-3">
-<h3 id="orgdc10fdd"><span class="section-number-3">2.5.</span> Cálculo de los modelos de una fórmula</h3>
+<div id="outline-container-orga3788cf" class="outline-3">
+<h3 id="orga3788cf"><span class="section-number-3">2.5.</span> Cálculo de los modelos de una fórmula</h3>
 <div class="outline-text-3" id="text-2-5">
 <ul class="org-ul">
 <li><p>
@@ -847,8 +836,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org4bedaa7" class="outline-3">
-<h3 id="org4bedaa7"><span class="section-number-3">2.6.</span> Satisfacibilidad</h3>
+<div id="outline-container-orgb0e5d59" class="outline-3">
+<h3 id="orgb0e5d59"><span class="section-number-3">2.6.</span> Satisfacibilidad</h3>
 <div class="outline-text-3" id="text-2-6">
 <ul class="org-ul">
 <li><p>
@@ -875,8 +864,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orge57f394" class="outline-3">
-<h3 id="orge57f394"><span class="section-number-3">2.7.</span> Contramodelo de una fórmula</h3>
+<div id="outline-container-org1c450c8" class="outline-3">
+<h3 id="org1c450c8"><span class="section-number-3">2.7.</span> Contramodelo de una fórmula</h3>
 <div class="outline-text-3" id="text-2-7">
 <ul class="org-ul">
 <li><p>
@@ -906,8 +895,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org1628d6a" class="outline-3">
-<h3 id="org1628d6a"><span class="section-number-3">2.8.</span> Fórmulas válidas (tautologías)</h3>
+<div id="outline-container-org99de5c7" class="outline-3">
+<h3 id="org99de5c7"><span class="section-number-3">2.8.</span> Fórmulas válidas (tautologías)</h3>
 <div class="outline-text-3" id="text-2-8">
 <ul class="org-ul">
 <li><p>
@@ -943,8 +932,8 @@ Una definición alternativa es
 </div>
 </div>
 
-<div id="outline-container-org8739c41" class="outline-3">
-<h3 id="org8739c41"><span class="section-number-3">2.9.</span> Interpretaciones principales de un conjunto de fórmulas</h3>
+<div id="outline-container-org5db7678" class="outline-3">
+<h3 id="org5db7678"><span class="section-number-3">2.9.</span> Interpretaciones principales de un conjunto de fórmulas</h3>
 <div class="outline-text-3" id="text-2-9">
 <ul class="org-ul">
 <li>Una <b>interpretación principal</b> de un conjunto de fórmulas es una
@@ -1024,8 +1013,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org29f48ff" class="outline-3">
-<h3 id="org29f48ff"><span class="section-number-3">2.10.</span> Modelo de un conjunto de fórmulas</h3>
+<div id="outline-container-org2aa9de4" class="outline-3">
+<h3 id="org2aa9de4"><span class="section-number-3">2.10.</span> Modelo de un conjunto de fórmulas</h3>
 <div class="outline-text-3" id="text-2-10">
 <ul class="org-ul">
 <li><p>
@@ -1054,8 +1043,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org5307223" class="outline-3">
-<h3 id="org5307223"><span class="section-number-3">2.11.</span> Cálculo de modelos de conjuntos de fórmulas</h3>
+<div id="outline-container-orgc3b8c10" class="outline-3">
+<h3 id="orgc3b8c10"><span class="section-number-3">2.11.</span> Cálculo de modelos de conjuntos de fórmulas</h3>
 <div class="outline-text-3" id="text-2-11">
 <ul class="org-ul">
 <li><p>
@@ -1103,8 +1092,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org20185c5" class="outline-3">
-<h3 id="org20185c5"><span class="section-number-3">2.12.</span> Consistencia de un conjunto de fórmulas</h3>
+<div id="outline-container-orga2bf897" class="outline-3">
+<h3 id="orga2bf897"><span class="section-number-3">2.12.</span> Consistencia de un conjunto de fórmulas</h3>
 <div class="outline-text-3" id="text-2-12">
 <ul class="org-ul">
 <li><p>
@@ -1140,8 +1129,8 @@ inconsistente (es decir, no tiene modelos).
 </div>
 </div>
 
-<div id="outline-container-org8e3dc8f" class="outline-3">
-<h3 id="org8e3dc8f"><span class="section-number-3">2.13.</span> Consecuencia lógica</h3>
+<div id="outline-container-org2cf3500" class="outline-3">
+<h3 id="org2cf3500"><span class="section-number-3">2.13.</span> Consecuencia lógica</h3>
 <div class="outline-text-3" id="text-2-13">
 <ul class="org-ul">
 <li><p>
@@ -1201,8 +1190,8 @@ Una definición alternativa de <code>es_consecuencia</code> es
 </div>
 </div>
 
-<div id="outline-container-org037d720" class="outline-3">
-<h3 id="org037d720"><span class="section-number-3">2.14.</span> El problema de los veraces y mentirosos</h3>
+<div id="outline-container-org13582ca" class="outline-3">
+<h3 id="org13582ca"><span class="section-number-3">2.14.</span> El problema de los veraces y mentirosos</h3>
 <div class="outline-text-3" id="text-2-14">
 <ul class="org-ul">
 <li><p>
@@ -1247,12 +1236,12 @@ Por tanto, A y B son veraces y C es mentiroso.
 </div>
 </div>
 
-<div id="outline-container-orge30f882" class="outline-2">
-<h2 id="orge30f882"><span class="section-number-2">3.</span> Tableros semánticos</h2>
+<div id="outline-container-org93c964f" class="outline-2">
+<h2 id="org93c964f"><span class="section-number-2">3.</span> Tableros semánticos</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org603ceb6" class="outline-3">
-<h3 id="org603ceb6"><span class="section-number-3">3.1.</span> Demostraciones mediante tableros semánticos</h3>
+<div id="outline-container-orgc2e86be" class="outline-3">
+<h3 id="orgc2e86be"><span class="section-number-3">3.1.</span> Demostraciones mediante tableros semánticos</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>Demostración de fórmula válida: <br />
@@ -1280,12 +1269,12 @@ syss {p, q, ¬ p} y \{p, q, ¬ r} son inconsistentes</li>
 </div>
 </div>
 
-<div id="outline-container-org4e9e85f" class="outline-3">
-<h3 id="org4e9e85f"><span class="section-number-3">3.2.</span> Notación uniforme</h3>
+<div id="outline-container-orgb027eba" class="outline-3">
+<h3 id="orgb027eba"><span class="section-number-3">3.2.</span> Notación uniforme</h3>
 <div class="outline-text-3" id="text-3-2">
 </div>
-<div id="outline-container-orgd0c2478" class="outline-4">
-<h4 id="orgd0c2478"><span class="section-number-4">3.2.1.</span> Literales</h4>
+<div id="outline-container-org0773d3f" class="outline-4">
+<h4 id="org0773d3f"><span class="section-number-4">3.2.1.</span> Literales</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <ul class="org-ul">
 <li>Los <b>literales</b> son los átomos y sus negaciones.</li>
@@ -1304,8 +1293,8 @@ syss {p, q, ¬ p} y \{p, q, ¬ r} son inconsistentes</li>
 </div>
 </div>
 
-<div id="outline-container-orgfb7273a" class="outline-4">
-<h4 id="orgfb7273a"><span class="section-number-4">3.2.2.</span> Dobles negaciones</h4>
+<div id="outline-container-orgaeb920c" class="outline-4">
+<h4 id="orgaeb920c"><span class="section-number-4">3.2.2.</span> Dobles negaciones</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <ul class="org-ul">
 <li>La fórmula F es una <b>doble negación</b> si existe una fórmula G tal
@@ -1316,8 +1305,8 @@ que F es de la forma ¬¬G.</li>
 </div>
 </div>
 
-<div id="outline-container-org614071e" class="outline-4">
-<h4 id="org614071e"><span class="section-number-4">3.2.3.</span> Fórmulas alfa</h4>
+<div id="outline-container-org363932f" class="outline-4">
+<h4 id="org363932f"><span class="section-number-4">3.2.3.</span> Fórmulas alfa</h4>
 <div class="outline-text-4" id="text-3-2-3">
 <ul class="org-ul">
 <li><p>
@@ -1379,8 +1368,8 @@ componentes son <code>A1</code> y <code>A2</code>.
 </div>
 </div>
 
-<div id="outline-container-orgf8e4830" class="outline-4">
-<h4 id="orgf8e4830"><span class="section-number-4">3.2.4.</span> Fórmulas beta</h4>
+<div id="outline-container-orgd4dd4b9" class="outline-4">
+<h4 id="orgd4dd4b9"><span class="section-number-4">3.2.4.</span> Fórmulas beta</h4>
 <div class="outline-text-4" id="text-3-2-4">
 <ul class="org-ul">
 <li><p>
@@ -1457,8 +1446,8 @@ componentes son <code>B1</code> y <code>B2</code>.
 </div>
 </div>
 
-<div id="outline-container-org50d20ae" class="outline-3">
-<h3 id="org50d20ae"><span class="section-number-3">3.3.</span> Procedimiento de completación de tableros</h3>
+<div id="outline-container-org850330c" class="outline-3">
+<h3 id="org850330c"><span class="section-number-3">3.3.</span> Procedimiento de completación de tableros</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li>Un conjunto de fórmulas es <b>cerrado</b> si contiene una fórmula y su
@@ -1654,8 +1643,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgfa1f536" class="outline-3">
-<h3 id="orgfa1f536"><span class="section-number-3">3.4.</span> Tableros cerrados</h3>
+<div id="outline-container-orgb3c84c3" class="outline-3">
+<h3 id="orgb3c84c3"><span class="section-number-3">3.4.</span> Tableros cerrados</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -1674,12 +1663,12 @@ decir, si todas sus hojas están etiquetadas con <code>cerrado</code> o <code>va
 </div>
 </div>
 
-<div id="outline-container-org8f52475" class="outline-3">
-<h3 id="org8f52475"><span class="section-number-3">3.5.</span> Teorema por tableros</h3>
+<div id="outline-container-org9e7bd0c" class="outline-3">
+<h3 id="org9e7bd0c"><span class="section-number-3">3.5.</span> Teorema por tableros</h3>
 <div class="outline-text-3" id="text-3-5">
 </div>
-<div id="outline-container-org51e7573" class="outline-4">
-<h4 id="org51e7573"><span class="section-number-4">3.5.1.</span> Prueba mediante tableros</h4>
+<div id="outline-container-org69eec59" class="outline-4">
+<h4 id="org69eec59"><span class="section-number-4">3.5.1.</span> Prueba mediante tableros</h4>
 <div class="outline-text-4" id="text-3-5-1">
 <ul class="org-ul">
 <li><p>
@@ -1714,8 +1703,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org4cf8d01" class="outline-4">
-<h4 id="org4cf8d01"><span class="section-number-4">3.5.2.</span> Teorema mediante tableros</h4>
+<div id="outline-container-org5ca1ca4" class="outline-4">
+<h4 id="org5ca1ca4"><span class="section-number-4">3.5.2.</span> Teorema mediante tableros</h4>
 <div class="outline-text-4" id="text-3-5-2">
 <ul class="org-ul">
 <li><p>
@@ -1746,12 +1735,12 @@ una fórmula es válida syss es teorema mediante tableros semánticos.</li>
 </div>
 </div>
 
-<div id="outline-container-org74a1615" class="outline-3">
-<h3 id="org74a1615"><span class="section-number-3">3.6.</span> Deducción por tableros</h3>
+<div id="outline-container-orgcc2373e" class="outline-3">
+<h3 id="orgcc2373e"><span class="section-number-3">3.6.</span> Deducción por tableros</h3>
 <div class="outline-text-3" id="text-3-6">
 </div>
-<div id="outline-container-orgbd3381e" class="outline-4">
-<h4 id="orgbd3381e"><span class="section-number-4">3.6.1.</span> Deducción por tableros</h4>
+<div id="outline-container-org747ac35" class="outline-4">
+<h4 id="org747ac35"><span class="section-number-4">3.6.1.</span> Deducción por tableros</h4>
 <div class="outline-text-4" id="text-3-6-1">
 <ul class="org-ul">
 <li><p>
@@ -1789,8 +1778,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org56b6408" class="outline-4">
-<h4 id="org56b6408"><span class="section-number-4">3.6.2.</span> Deducibilidad por tableros</h4>
+<div id="outline-container-org73f227d" class="outline-4">
+<h4 id="org73f227d"><span class="section-number-4">3.6.2.</span> Deducibilidad por tableros</h4>
 <div class="outline-text-4" id="text-3-6-2">
 <ul class="org-ul">
 <li><p>
@@ -1811,8 +1800,8 @@ tableros a partir de S.</li>
 </div>
 </div>
 
-<div id="outline-container-org6080c10" class="outline-2">
-<h2 id="org6080c10"><span class="section-number-2">4.</span> Bibliografía</h2>
+<div id="outline-container-org65ba615" class="outline-2">
+<h2 id="org65ba615"><span class="section-number-2">4.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>J.A. Alonso y J. Borrego.
@@ -1845,16 +1834,17 @@ tableros a partir de S.</li>
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de julio del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 27 de junio del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 14: Programación de metaintérpretes</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,73 +191,51 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 14: Programación de metaintérpretes</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org02103fd">1. Base de conocimiento del sistema eléctrico</a></li>
-<li><a href="#org1ec867c">2. Metaintérpretes simples</a>
+<li><a href="#org3469ba0">1. Base de conocimiento del sistema eléctrico</a></li>
+<li><a href="#org123ede9">2. Metaintérpretes simples</a>
 <ul>
-<li><a href="#orgc62acd1">2.1. Metaintéprete básico</a></li>
-<li><a href="#org3c8669b">2.2. Metaintéprete ampliado</a></li>
-<li><a href="#orgb4fe554">2.3. Metaintérprete con profundidad acotada</a></li>
+<li><a href="#org78b639e">2.1. Metaintéprete básico</a></li>
+<li><a href="#orgb89e638">2.2. Metaintéprete ampliado</a></li>
+<li><a href="#orgbd9f99f">2.3. Metaintérprete con profundidad acotada</a></li>
 </ul>
 </li>
-<li><a href="#orgc9dd7a0">3. Metaintérprete con preguntas</a></li>
-<li><a href="#orgaadf2f4">4. Metaintérprete con explicación</a>
+<li><a href="#orgcf33bac">3. Metaintérprete con preguntas</a></li>
+<li><a href="#org4014868">4. Metaintérprete con explicación</a>
 <ul>
-<li><a href="#orgff709f0">4.1. Metaintéprete con árbol de prueba</a></li>
-<li><a href="#org8ebeb7f">4.2. Metaintérprete con explicación de <i>cómo</i> deduce.</a></li>
-<li><a href="#org230eedb">4.3. Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</a></li>
+<li><a href="#org1c88995">4.1. Metaintéprete con árbol de prueba</a></li>
+<li><a href="#org34d2d89">4.2. Metaintérprete con explicación de <i>cómo</i> deduce.</a></li>
+<li><a href="#org6636951">4.3. Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</a></li>
 </ul>
 </li>
-<li><a href="#org05a9d8f">5. Bibliografía</a></li>
+<li><a href="#org778cfe1">5. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org02103fd" class="outline-2">
-<h2 id="org02103fd"><span class="section-number-2">1.</span> Base de conocimiento del sistema eléctrico</h2>
+<div id="outline-container-org3469ba0" class="outline-2">
+<h2 id="org3469ba0"><span class="section-number-2">1.</span> Base de conocimiento del sistema eléctrico</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>El sistema eléctrico que se va a representar es el siguiente (Poole-98
@@ -358,12 +337,12 @@ corriente.
 </div>
 </div>
 
-<div id="outline-container-org1ec867c" class="outline-2">
-<h2 id="org1ec867c"><span class="section-number-2">2.</span> Metaintérpretes simples</h2>
+<div id="outline-container-org123ede9" class="outline-2">
+<h2 id="org123ede9"><span class="section-number-2">2.</span> Metaintérpretes simples</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgc62acd1" class="outline-3">
-<h3 id="orgc62acd1"><span class="section-number-3">2.1.</span> Metaintéprete básico</h3>
+<div id="outline-container-org78b639e" class="outline-3">
+<h3 id="org78b639e"><span class="section-number-3">2.1.</span> Metaintéprete básico</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -472,8 +451,8 @@ false.
 </div>
 </div>
 
-<div id="outline-container-org3c8669b" class="outline-3">
-<h3 id="org3c8669b"><span class="section-number-3">2.2.</span> Metaintéprete ampliado</h3>
+<div id="outline-container-orgb89e638" class="outline-3">
+<h3 id="orgb89e638"><span class="section-number-3">2.2.</span> Metaintéprete ampliado</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>Ampliación del lenguaje base:
@@ -542,8 +521,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgb4fe554" class="outline-3">
-<h3 id="orgb4fe554"><span class="section-number-3">2.3.</span> Metaintérprete con profundidad acotada</h3>
+<div id="outline-container-orgbd9f99f" class="outline-3">
+<h3 id="orgbd9f99f"><span class="section-number-3">2.3.</span> Metaintérprete con profundidad acotada</h3>
 <div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li><p>
@@ -658,8 +637,8 @@ false.
 </div>
 </div>
 
-<div id="outline-container-orgc9dd7a0" class="outline-2">
-<h2 id="orgc9dd7a0"><span class="section-number-2">3.</span> Metaintérprete con preguntas</h2>
+<div id="outline-container-orgcf33bac" class="outline-2">
+<h2 id="orgcf33bac"><span class="section-number-2">3.</span> Metaintérprete con preguntas</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li><p>
@@ -786,12 +765,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgaadf2f4" class="outline-2">
-<h2 id="orgaadf2f4"><span class="section-number-2">4.</span> Metaintérprete con explicación</h2>
+<div id="outline-container-org4014868" class="outline-2">
+<h2 id="org4014868"><span class="section-number-2">4.</span> Metaintérprete con explicación</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgff709f0" class="outline-3">
-<h3 id="orgff709f0"><span class="section-number-3">4.1.</span> Metaintéprete con árbol de prueba</h3>
+<div id="outline-container-org1c88995" class="outline-3">
+<h3 id="org1c88995"><span class="section-number-3">4.1.</span> Metaintéprete con árbol de prueba</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -840,8 +819,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org8ebeb7f" class="outline-3">
-<h3 id="org8ebeb7f"><span class="section-number-3">4.2.</span> Metaintérprete con explicación de <i>cómo</i> deduce.</h3>
+<div id="outline-container-org34d2d89" class="outline-3">
+<h3 id="org34d2d89"><span class="section-number-3">4.2.</span> Metaintérprete con explicación de <i>cómo</i> deduce.</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -960,8 +939,8 @@ estructura <code>E</code>
 </div>
 </div>
 
-<div id="outline-container-org230eedb" class="outline-3">
-<h3 id="org230eedb"><span class="section-number-3">4.3.</span> Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</h3>
+<div id="outline-container-org6636951" class="outline-3">
+<h3 id="org6636951"><span class="section-number-3">4.3.</span> Metaintérprete con explicación de <i>por qué</i> plantea una pregunta</h3>
 <div class="outline-text-3" id="text-4-3">
 <ul class="org-ul">
 <li><p>
@@ -1145,15 +1124,30 @@ los <code>Antecesores</code>.
 </div>
 </div>
 
-<div id="outline-container-org05a9d8f" class="outline-2">
-<h2 id="org05a9d8f"><span class="section-number-2">5.</span> Bibliografía</h2>
+<div id="outline-container-org778cfe1" class="outline-2">
+<h2 id="org778cfe1"><span class="section-number-2">5.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
+<li>T. Cornell.
+<a href="http://www.tcl-sfs.uni-tuebingen.de/~cornell/prolog/coursenotes.ps.gz">Introduction to Prolog</a>.
+(Universität Tübingen, 1998).
+<ul class="org-ul">
+<li>Cap. 12: Metaleanguage, metalogic an metaprogramming.</li>
+<li>Cap. 13: Prolog as an assembler for logic programming systems.</li>
+</ul></li>
+
 <li>D. Poole, A. Mackworth y R. Goebel.
 <a href="https://www.cs.ubc.ca/~poole/ci.html">Computational intelligence (A logical approach)</a>.       
 (Oxford University Press, 1998)
 <ul class="org-ul">
 <li>Cap. 5: Knowledge engineering.</li>
+</ul></li>
+
+<li>Y. Shoham.
+<a href="https://books.google.co.ve/books?id=kySjBQAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">Artificial intelligence techniques in Prolog</a>.
+(Morgan Kaufmann, 1994).
+<ul class="org-ul">
+<li>Cap. 3: Backward-chaining methods.</li>
 </ul></li>
 
 <li>M. Triska
@@ -1166,16 +1160,17 @@ los <code>Antecesores</code>.
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 27 de junio del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

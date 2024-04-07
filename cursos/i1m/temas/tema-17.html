@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 21 de enero del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 17: El tipo abstracto de datos de los conjuntos</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,33 +191,10 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -229,46 +207,46 @@
    <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 17: El tipo abstracto de datos de los conjuntos</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orge51e58b">1. Especificación del TAD de los conjuntos</a>
+<li><a href="#orge435625">1. Especificación del TAD de los conjuntos</a>
 <ul>
-<li><a href="#org483860b">1.1. Signatura del TAD de los conjuntos</a></li>
-<li><a href="#orgc07b4f4">1.2. Propiedades del TAD de los conjuntos</a></li>
+<li><a href="#org09ce7a1">1.1. Signatura del TAD de los conjuntos</a></li>
+<li><a href="#org70a8fef">1.2. Propiedades del TAD de los conjuntos</a></li>
 </ul>
 </li>
-<li><a href="#org24dea6a">2. Implementaciones del TAD de los conjuntos</a>
+<li><a href="#orgfb07eee">2. Implementaciones del TAD de los conjuntos</a>
 <ul>
-<li><a href="#org2753b77">2.1. Los conjuntos como listas no ordenadas con duplicados</a></li>
-<li><a href="#orgeff15af">2.2. Los conjuntos como listas no ordenadas sin duplicados</a></li>
-<li><a href="#org7bbe34e">2.3. Los conjuntos como listas ordenadas sin duplicados</a></li>
+<li><a href="#orgaaa704d">2.1. Los conjuntos como listas no ordenadas con duplicados</a></li>
+<li><a href="#org47a9f09">2.2. Los conjuntos como listas no ordenadas sin duplicados</a></li>
+<li><a href="#org19c6ba5">2.3. Los conjuntos como listas ordenadas sin duplicados</a></li>
 </ul>
 </li>
-<li><a href="#org5d62e08">3. Comprobación de las implementaciones con QuickCheck</a>
+<li><a href="#orgafa6392">3. Comprobación de las implementaciones con QuickCheck</a>
 <ul>
-<li><a href="#orgc983096">3.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#orgeaa8950">3.2. Generador de conjuntos</a></li>
-<li><a href="#org8e084c7">3.3. Especificación de las propiedades de los conjuntos</a></li>
-<li><a href="#orgcca5f2d">3.4. Comprobación de las propiedades</a></li>
+<li><a href="#org6d96613">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#org61a2a04">3.2. Generador de conjuntos</a></li>
+<li><a href="#org33e22ac">3.3. Especificación de las propiedades de los conjuntos</a></li>
+<li><a href="#org847b344">3.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#orgf11ebb5">4. Complejidades</a></li>
-<li><a href="#org059c49a">5. Material complementario</a></li>
-<li><a href="#org12b2ed1">6. Bibliografía</a></li>
+<li><a href="#orgc599a76">4. Complejidades</a></li>
+<li><a href="#org2154d89">5. Material complementario</a></li>
+<li><a href="#orgadac5d3">6. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orge51e58b" class="outline-2">
-<h2 id="orge51e58b"><span class="section-number-2">1.</span> Especificación del TAD de los conjuntos</h2>
+<div id="outline-container-orge435625" class="outline-2">
+<h2 id="orge435625"><span class="section-number-2">1.</span> Especificación del TAD de los conjuntos</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org483860b" class="outline-3">
-<h3 id="org483860b"><span class="section-number-3">1.1.</span> Signatura del TAD de los conjuntos</h3>
+<div id="outline-container-org09ce7a1" class="outline-3">
+<h3 id="org09ce7a1"><span class="section-number-3">1.1.</span> Signatura del TAD de los conjuntos</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li><p>
@@ -297,8 +275,8 @@ conjunto <code>c</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-orgc07b4f4" class="outline-3">
-<h3 id="orgc07b4f4"><span class="section-number-3">1.2.</span> Propiedades del TAD de los conjuntos</h3>
+<div id="outline-container-org70a8fef" class="outline-3">
+<h3 id="org70a8fef"><span class="section-number-3">1.2.</span> Propiedades del TAD de los conjuntos</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><code>inserta x (inserta x c) == inserta x c</code></li>
@@ -325,12 +303,12 @@ conjunto <code>c</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-org24dea6a" class="outline-2">
-<h2 id="org24dea6a"><span class="section-number-2">2.</span> Implementaciones del TAD de los conjuntos</h2>
+<div id="outline-container-orgfb07eee" class="outline-2">
+<h2 id="orgfb07eee"><span class="section-number-2">2.</span> Implementaciones del TAD de los conjuntos</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org2753b77" class="outline-3">
-<h3 id="org2753b77"><span class="section-number-3">2.1.</span> Los conjuntos como listas no ordenadas con duplicados</h3>
+<div id="outline-container-orgaaa704d" class="outline-3">
+<h3 id="orgaaa704d"><span class="section-number-3">2.1.</span> Los conjuntos como listas no ordenadas con duplicados</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li>Nota: El código está en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_17/ConjuntoConListasNoOrdenadasConDuplicados.hs">ConjuntoConListasNoOrdenadasConDuplicados.hs</a>.</li>
@@ -535,8 +513,8 @@ Los conjuntos son comparables por igualdad.
 </div>
 </div>
 
-<div id="outline-container-orgeff15af" class="outline-3">
-<h3 id="orgeff15af"><span class="section-number-3">2.2.</span> Los conjuntos como listas no ordenadas sin duplicados</h3>
+<div id="outline-container-org47a9f09" class="outline-3">
+<h3 id="org47a9f09"><span class="section-number-3">2.2.</span> Los conjuntos como listas no ordenadas sin duplicados</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li>Nota: El código está en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_17/ConjuntoConListasNoOrdenadasSinDuplicados.hs">ConjuntoConListasNoOrdenadasSinDuplicados.hs</a>.</li>
@@ -742,8 +720,8 @@ Los conjuntos son comparables por igualdad.
 </div>
 </div>
 
-<div id="outline-container-org7bbe34e" class="outline-3">
-<h3 id="org7bbe34e"><span class="section-number-3">2.3.</span> Los conjuntos como listas ordenadas sin duplicados</h3>
+<div id="outline-container-org19c6ba5" class="outline-3">
+<h3 id="org19c6ba5"><span class="section-number-3">2.3.</span> Los conjuntos como listas ordenadas sin duplicados</h3>
 <div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li>Nota: El código está en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_17/ConjuntoConListasOrdenadasSinDuplicados.hs">ConjuntoConListasOrdenadasSinDuplicados</a>.</li>
@@ -913,12 +891,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org5d62e08" class="outline-2">
-<h2 id="org5d62e08"><span class="section-number-2">3.</span> Comprobación de las implementaciones con QuickCheck</h2>
+<div id="outline-container-orgafa6392" class="outline-2">
+<h2 id="orgafa6392"><span class="section-number-2">3.</span> Comprobación de las implementaciones con QuickCheck</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgc983096" class="outline-3">
-<h3 id="orgc983096"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-org6d96613" class="outline-3">
+<h3 id="org6d96613"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li>Nota: El código se encuentra en <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_17/ConjuntoPropiedades.hs">ConjuntoPropiedades.hs</a>.</li>
@@ -955,8 +933,8 @@ Importación de la librería de comprobación
 </div>
 </div>
 
-<div id="outline-container-orgeaa8950" class="outline-3">
-<h3 id="orgeaa8950"><span class="section-number-3">3.2.</span> Generador de conjuntos</h3>
+<div id="outline-container-org61a2a04" class="outline-3">
+<h3 id="org61a2a04"><span class="section-number-3">3.2.</span> Generador de conjuntos</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -986,8 +964,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org8e084c7" class="outline-3">
-<h3 id="org8e084c7"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los conjuntos</h3>
+<div id="outline-container-org33e22ac" class="outline-3">
+<h3 id="org33e22ac"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los conjuntos</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -1081,8 +1059,8 @@ Los conjuntos construidos con <code>inserta</code> no son vacío.
 </div>
 </div>
 
-<div id="outline-container-orgcca5f2d" class="outline-3">
-<h3 id="orgcca5f2d"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-org847b344" class="outline-3">
+<h3 id="org847b344"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -1132,8 +1110,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orgf11ebb5" class="outline-2">
-<h2 id="orgf11ebb5"><span class="section-number-2">4.</span> Complejidades</h2>
+<div id="outline-container-orgc599a76" class="outline-2">
+<h2 id="orgc599a76"><span class="section-number-2">4.</span> Complejidades</h2>
 <div class="outline-text-2" id="text-4">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -1210,8 +1188,8 @@ donde
 </div>
 </div>
 
-<div id="outline-container-org059c49a" class="outline-2">
-<h2 id="org059c49a"><span class="section-number-2">5.</span> Material complementario</h2>
+<div id="outline-container-org2154d89" class="outline-2">
+<h2 id="org2154d89"><span class="section-number-2">5.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 El código del tema se encuentra en los siguientes enlaces
@@ -1234,8 +1212,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org12b2ed1" class="outline-2">
-<h2 id="org12b2ed1"><span class="section-number-2">6.</span> Bibliografía</h2>
+<div id="outline-container-orgadac5d3" class="outline-2">
+<h2 id="orgadac5d3"><span class="section-number-2">6.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -1260,7 +1238,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 21 de enero del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

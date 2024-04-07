@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 18: El tipo abstracto de datos de las tablas</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,90 +191,67 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 18: El tipo abstracto de datos de las tablas</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgd48a804">1. El tipo predefinido de las tablas ("arrays")</a>
+<li><a href="#orgdd1de90">1. El tipo predefinido de las tablas ("arrays")</a>
 <ul>
-<li><a href="#orgcbcca97">1.1. La clase de los índices de las tablas</a></li>
-<li><a href="#org20344e9">1.2. El tipo predefinido de las tablas ("arrays")</a></li>
+<li><a href="#org84cd90d">1.1. La clase de los índices de las tablas</a></li>
+<li><a href="#orgbb83d0c">1.2. El tipo predefinido de las tablas ("arrays")</a></li>
 </ul>
 </li>
-<li><a href="#orgd9c2f4f">2. Especificación del TAD de las tablas</a>
+<li><a href="#org38b8725">2. Especificación del TAD de las tablas</a>
 <ul>
-<li><a href="#orga19bae5">2.1. Signatura del TAD de las tablas</a></li>
-<li><a href="#orgd98af07">2.2. Propiedades del TAD de las tablas</a></li>
+<li><a href="#org1c010ef">2.1. Signatura del TAD de las tablas</a></li>
+<li><a href="#orgbf870a7">2.2. Propiedades del TAD de las tablas</a></li>
 </ul>
 </li>
-<li><a href="#org367c4b7">3. Implementaciones del TAD de las tablas</a>
+<li><a href="#orgead2634">3. Implementaciones del TAD de las tablas</a>
 <ul>
-<li><a href="#orgbdcf9f3">3.1. Las tablas como funciones</a></li>
-<li><a href="#org2cd5da7">3.2. Las tablas como listas de asociación</a></li>
-<li><a href="#orgcf83ca1">3.3. Las tablas como matrices</a></li>
+<li><a href="#org6f08507">3.1. Las tablas como funciones</a></li>
+<li><a href="#orga0bee94">3.2. Las tablas como listas de asociación</a></li>
+<li><a href="#org8a04df3">3.3. Las tablas como matrices</a></li>
 </ul>
 </li>
-<li><a href="#orgf7cd740">4. Comprobación de las implementaciones con QuickCheck</a>
+<li><a href="#org1630b52">4. Comprobación de las implementaciones con QuickCheck</a>
 <ul>
-<li><a href="#org69fb9a5">4.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#orgae90ff2">4.2. Generador de tablas</a></li>
-<li><a href="#orgabfaba9">4.3. Especificación de las propiedades de las tablas</a></li>
-<li><a href="#orgc96c193">4.4. Comprobación de las propiedades</a></li>
+<li><a href="#org3870e3c">4.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#org9c43b0b">4.2. Generador de tablas</a></li>
+<li><a href="#orgf60e672">4.3. Especificación de las propiedades de las tablas</a></li>
+<li><a href="#orgf8456fa">4.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#orgef0bd23">5. Material complementario</a></li>
-<li><a href="#org2c31da1">6. Bibliografía</a></li>
+<li><a href="#orgf98f941">5. Material complementario</a></li>
+<li><a href="#org1a743e1">6. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgd48a804" class="outline-2">
-<h2 id="orgd48a804"><span class="section-number-2">1.</span> El tipo predefinido de las tablas ("arrays")</h2>
+<div id="outline-container-orgdd1de90" class="outline-2">
+<h2 id="orgdd1de90"><span class="section-number-2">1.</span> El tipo predefinido de las tablas ("arrays")</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orgcbcca97" class="outline-3">
-<h3 id="orgcbcca97"><span class="section-number-3">1.1.</span> La clase de los índices de las tablas</h3>
+<div id="outline-container-org84cd90d" class="outline-3">
+<h3 id="org84cd90d"><span class="section-number-3">1.1.</span> La clase de los índices de las tablas</h3>
 <div class="outline-text-3" id="text-1-1">
 <ul class="org-ul">
 <li>La clase de los índices de las tablas es <code>Ix</code>.</li>
@@ -343,8 +321,8 @@ rangeSize ((0,0),(1,2))  ==  6
 </div>
 </div>
 
-<div id="outline-container-org20344e9" class="outline-3">
-<h3 id="org20344e9"><span class="section-number-3">1.2.</span> El tipo predefinido de las tablas ("arrays")</h3>
+<div id="outline-container-orgbb83d0c" class="outline-3">
+<h3 id="orgbb83d0c"><span class="section-number-3">1.2.</span> El tipo predefinido de las tablas ("arrays")</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li>La librería de las tablas es <code>Data.Array</code>.</li>
@@ -363,8 +341,8 @@ Para usar las tablas hay que escribir al principio del fichero
 </ul>
 </div>
 
-<div id="outline-container-org95f4cca" class="outline-4">
-<h4 id="org95f4cca"><span class="section-number-4">1.2.1.</span> Creación de tablas</h4>
+<div id="outline-container-orged34799" class="outline-4">
+<h4 id="orged34799"><span class="section-number-4">1.2.1.</span> Creación de tablas</h4>
 <div class="outline-text-4" id="text-1-2-1">
 <ul class="org-ul">
 <li><p>
@@ -382,8 +360,8 @@ array (1,3) [(1,2),(2,4),(3,6)]
 </div>
 </div>
 
-<div id="outline-container-orgafb03ba" class="outline-4">
-<h4 id="orgafb03ba"><span class="section-number-4">1.2.2.</span> Ejemplos de definiciones de tablas</h4>
+<div id="outline-container-org7232f86" class="outline-4">
+<h4 id="org7232f86"><span class="section-number-4">1.2.2.</span> Ejemplos de definiciones de tablas</h4>
 <div class="outline-text-4" id="text-1-2-2">
 <ul class="org-ul">
 <li><p>
@@ -436,8 +414,8 @@ Exception: (Array.!): undefined array element
 </div>
 </div>
 
-<div id="outline-container-orgcd0ec14" class="outline-4">
-<h4 id="orgcd0ec14"><span class="section-number-4">1.2.3.</span> Descomposición de tablas</h4>
+<div id="outline-container-org1d67ed2" class="outline-4">
+<h4 id="org1d67ed2"><span class="section-number-4">1.2.3.</span> Descomposición de tablas</h4>
 <div class="outline-text-4" id="text-1-2-3">
 <ul class="org-ul">
 <li><p>
@@ -489,8 +467,8 @@ elems m  ==  [1,2,3,2,4,6]
 </div>
 </div>
 
-<div id="outline-container-org9281649" class="outline-4">
-<h4 id="org9281649"><span class="section-number-4">1.2.4.</span> Modificación de tablas</h4>
+<div id="outline-container-org76304bb" class="outline-4">
+<h4 id="org76304bb"><span class="section-number-4">1.2.4.</span> Modificación de tablas</h4>
 <div class="outline-text-4" id="text-1-2-4">
 <ul class="org-ul">
 <li><p>
@@ -511,8 +489,8 @@ array ((1,1),(2,3))
 </div>
 </div>
 
-<div id="outline-container-org8b986c3" class="outline-4">
-<h4 id="org8b986c3"><span class="section-number-4">1.2.5.</span> Definición de tabla por recursión</h4>
+<div id="outline-container-org4fc18f9" class="outline-4">
+<h4 id="org4fc18f9"><span class="section-number-4">1.2.5.</span> Definición de tabla por recursión</h4>
 <div class="outline-text-4" id="text-1-2-5">
 <ul class="org-ul">
 <li><p>
@@ -537,8 +515,8 @@ array (0,7) [(0,1),(1,1),(2,2),(3,3),
 </div>
 </div>
 
-<div id="outline-container-org001d899" class="outline-4">
-<h4 id="org001d899"><span class="section-number-4">1.2.6.</span> Otras funciones de creación de tablas</h4>
+<div id="outline-container-orgacc0c3d" class="outline-4">
+<h4 id="orgacc0c3d"><span class="section-number-4">1.2.6.</span> Otras funciones de creación de tablas</h4>
 <div class="outline-text-4" id="text-1-2-6">
 <ul class="org-ul">
 <li><p>
@@ -556,8 +534,8 @@ array ((1,2),(2,4)) [((1,2),5),((1,3),6),((1,4),7),
 </div>
 </div>
 
-<div id="outline-container-org1b22b12" class="outline-4">
-<h4 id="org1b22b12"><span class="section-number-4">1.2.7.</span> Construcción acumulativa de tablas</h4>
+<div id="outline-container-org65eb755" class="outline-4">
+<h4 id="org65eb755"><span class="section-number-4">1.2.7.</span> Construcción acumulativa de tablas</h4>
 <div class="outline-text-4" id="text-1-2-7">
 <ul class="org-ul">
 <li><p>
@@ -594,12 +572,12 @@ array (0,5) [(0,0),(1,2),(2,1),(3,1),(4,2),(5,1)]
 </div>
 </div>
 
-<div id="outline-container-orgd9c2f4f" class="outline-2">
-<h2 id="orgd9c2f4f"><span class="section-number-2">2.</span> Especificación del TAD de las tablas</h2>
+<div id="outline-container-org38b8725" class="outline-2">
+<h2 id="org38b8725"><span class="section-number-2">2.</span> Especificación del TAD de las tablas</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orga19bae5" class="outline-3">
-<h3 id="orga19bae5"><span class="section-number-3">2.1.</span> Signatura del TAD de las tablas</h3>
+<div id="outline-container-org1c010ef" class="outline-3">
+<h3 id="org1c010ef"><span class="section-number-3">2.1.</span> Signatura del TAD de las tablas</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -623,8 +601,8 @@ valor de <code>i</code> por <code>v</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-orgd98af07" class="outline-3">
-<h3 id="orgd98af07"><span class="section-number-3">2.2.</span> Propiedades del TAD de las tablas</h3>
+<div id="outline-container-orgbf870a7" class="outline-3">
+<h3 id="orgbf870a7"><span class="section-number-3">2.2.</span> Propiedades del TAD de las tablas</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li><code>modifica (i,v') (modifica (i,v) t) = modifica (i,v') t</code></li>
@@ -641,12 +619,12 @@ valor de <code>i</code> por <code>v</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-org367c4b7" class="outline-2">
-<h2 id="org367c4b7"><span class="section-number-2">3.</span> Implementaciones del TAD de las tablas</h2>
+<div id="outline-container-orgead2634" class="outline-2">
+<h2 id="orgead2634"><span class="section-number-2">3.</span> Implementaciones del TAD de las tablas</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgbdcf9f3" class="outline-3">
-<h3 id="orgbdcf9f3"><span class="section-number-3">3.1.</span> Las tablas como funciones</h3>
+<div id="outline-container-org6f08507" class="outline-3">
+<h3 id="org6f08507"><span class="section-number-3">3.1.</span> Las tablas como funciones</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -758,8 +736,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org2cd5da7" class="outline-3">
-<h3 id="org2cd5da7"><span class="section-number-3">3.2.</span> Las tablas como listas de asociación</h3>
+<div id="outline-container-orga0bee94" class="outline-3">
+<h3 id="orga0bee94"><span class="section-number-3">3.2.</span> Las tablas como listas de asociación</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -895,8 +873,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgcf83ca1" class="outline-3">
-<h3 id="orgcf83ca1"><span class="section-number-3">3.3.</span> Las tablas como matrices</h3>
+<div id="outline-container-org8a04df3" class="outline-3">
+<h3 id="org8a04df3"><span class="section-number-3">3.3.</span> Las tablas como matrices</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -1052,12 +1030,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgf7cd740" class="outline-2">
-<h2 id="orgf7cd740"><span class="section-number-2">4.</span> Comprobación de las implementaciones con QuickCheck</h2>
+<div id="outline-container-org1630b52" class="outline-2">
+<h2 id="org1630b52"><span class="section-number-2">4.</span> Comprobación de las implementaciones con QuickCheck</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org69fb9a5" class="outline-3">
-<h3 id="org69fb9a5"><span class="section-number-3">4.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-org3870e3c" class="outline-3">
+<h3 id="org3870e3c"><span class="section-number-3">4.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -1091,8 +1069,8 @@ Importación de la librería de comprobación
 </div>
 </div>
 
-<div id="outline-container-orgae90ff2" class="outline-3">
-<h3 id="orgae90ff2"><span class="section-number-3">4.2.</span> Generador de tablas</h3>
+<div id="outline-container-org9c43b0b" class="outline-3">
+<h3 id="org9c43b0b"><span class="section-number-3">4.2.</span> Generador de tablas</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -1120,8 +1098,8 @@ Tbl [(1,0),(2,-1),(3,1),(4,1),(5,0)]
 </div>
 </div>
 
-<div id="outline-container-orgabfaba9" class="outline-3">
-<h3 id="orgabfaba9"><span class="section-number-3">4.3.</span> Especificación de las propiedades de las tablas</h3>
+<div id="outline-container-orgf60e672" class="outline-3">
+<h3 id="orgf60e672"><span class="section-number-3">4.3.</span> Especificación de las propiedades de las tablas</h3>
 <div class="outline-text-3" id="text-4-3">
 <ul class="org-ul">
 <li><p>
@@ -1177,8 +1155,8 @@ obtenida añadiéndole el par <code>(i,v)</code> a la tabla <code>t'</code> (que
 </div>
 </div>
 
-<div id="outline-container-orgc96c193" class="outline-3">
-<h3 id="orgc96c193"><span class="section-number-3">4.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-orgf8456fa" class="outline-3">
+<h3 id="orgf8456fa"><span class="section-number-3">4.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-4-4">
 <ul class="org-ul">
 <li><p>
@@ -1216,8 +1194,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orgef0bd23" class="outline-2">
-<h2 id="orgef0bd23"><span class="section-number-2">5.</span> Material complementario</h2>
+<div id="outline-container-orgf98f941" class="outline-2">
+<h2 id="orgf98f941"><span class="section-number-2">5.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 El código del tema se encuentra en los siguientes enlaces
@@ -1240,8 +1218,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org2c31da1" class="outline-2">
-<h2 id="org2c31da1"><span class="section-number-2">6.</span> Bibliografía</h2>
+<div id="outline-container-org1a743e1" class="outline-2">
+<h2 id="org1a743e1"><span class="section-number-2">6.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -1256,17 +1234,17 @@ Este tema también se encuentra en los siguientes formatos:
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

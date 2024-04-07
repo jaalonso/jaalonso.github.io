@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 15 de diciembre del 2021 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 29: Las librerías de conjuntos y diccionarios en Haskell</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,33 +191,10 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -229,40 +207,40 @@
    <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 29: Las librerías de conjuntos y diccionarios en Haskell</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org34f097b">1. Introducción de los conjuntos</a></li>
-<li><a href="#org1299206">2. El tipo de los conjuntos</a></li>
-<li><a href="#org63e7e2e">3. Funciones sobre conjuntos</a>
+<li><a href="#org2e370ea">1. Introducción de los conjuntos</a></li>
+<li><a href="#orgd8655cf">2. El tipo de los conjuntos</a></li>
+<li><a href="#orgcd06fd1">3. Funciones sobre conjuntos</a>
 <ul>
-<li><a href="#org5a33f18">3.1. Funciones básicas</a></li>
-<li><a href="#org1189a69">3.2. Complejidades</a></li>
-<li><a href="#org4a4679f">3.3. De listas a conjuntos y viceversa</a></li>
-<li><a href="#orgfe4fc6c">3.4. Operaciones y relaciones usuales</a></li>
-<li><a href="#orgf1c3c81">3.5. Más funciones sobre conjuntos</a></li>
+<li><a href="#org2901812">3.1. Funciones básicas</a></li>
+<li><a href="#orgf1838f7">3.2. Complejidades</a></li>
+<li><a href="#org82e98c9">3.3. De listas a conjuntos y viceversa</a></li>
+<li><a href="#orgf1c4827">3.4. Operaciones y relaciones usuales</a></li>
+<li><a href="#org6135a90">3.5. Más funciones sobre conjuntos</a></li>
 </ul>
 </li>
-<li><a href="#org3d95966">4. Introducción de los diccionarios</a></li>
-<li><a href="#org0cac2ac">5. El tipo de los diccionarios</a></li>
-<li><a href="#orgea2e8e4">6. Funciones sobre diccionarios</a>
+<li><a href="#org0012b13">4. Introducción de los diccionarios</a></li>
+<li><a href="#org2ef7065">5. El tipo de los diccionarios</a></li>
+<li><a href="#orgff37528">6. Funciones sobre diccionarios</a>
 <ul>
-<li><a href="#org24c762a">6.1. Funciones básicas</a></li>
-<li><a href="#org2c841f9">6.2. De listas a diccionarios y viceversa</a></li>
-<li><a href="#org44d6ce2">6.3. Operaciones y relaciones usuales</a></li>
-<li><a href="#orgfc39d83">6.4. Más funciones sobre diccionarios</a></li>
+<li><a href="#org88c404b">6.1. Funciones básicas</a></li>
+<li><a href="#org01d850c">6.2. De listas a diccionarios y viceversa</a></li>
+<li><a href="#org61bc5b3">6.3. Operaciones y relaciones usuales</a></li>
+<li><a href="#orgd32db70">6.4. Más funciones sobre diccionarios</a></li>
 </ul>
 </li>
-<li><a href="#org829e1ee">7. Referencia</a></li>
+<li><a href="#orgaf87607">7. Referencia</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org34f097b" class="outline-2">
-<h2 id="org34f097b"><span class="section-number-2">1.</span> Introducción de los conjuntos</h2>
+<div id="outline-container-org2e370ea" class="outline-2">
+<h2 id="org2e370ea"><span class="section-number-2">1.</span> Introducción de los conjuntos</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Los <b>conjuntos</b> permiten almacenar elementos en los que no importa el orden ni
@@ -290,8 +268,8 @@ y <code>Data.List</code>, se suele importar de forma cualificada.
 </div>
 </div>
 
-<div id="outline-container-org1299206" class="outline-2">
-<h2 id="org1299206"><span class="section-number-2">2.</span> El tipo de los conjuntos</h2>
+<div id="outline-container-orgd8655cf" class="outline-2">
+<h2 id="orgd8655cf"><span class="section-number-2">2.</span> El tipo de los conjuntos</h2>
 <div class="outline-text-2" id="text-2">
 <ul class="org-ul">
 <li><p>
@@ -311,12 +289,12 @@ True
 </div>
 </div>
 
-<div id="outline-container-org63e7e2e" class="outline-2">
-<h2 id="org63e7e2e"><span class="section-number-2">3.</span> Funciones sobre conjuntos</h2>
+<div id="outline-container-orgcd06fd1" class="outline-2">
+<h2 id="orgcd06fd1"><span class="section-number-2">3.</span> Funciones sobre conjuntos</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org5a33f18" class="outline-3">
-<h3 id="org5a33f18"><span class="section-number-3">3.1.</span> Funciones básicas</h3>
+<div id="outline-container-org2901812" class="outline-3">
+<h3 id="org2901812"><span class="section-number-3">3.1.</span> Funciones básicas</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -373,8 +351,8 @@ False
 </div>
 </div>
 
-<div id="outline-container-org1189a69" class="outline-3">
-<h3 id="org1189a69"><span class="section-number-3">3.2.</span> Complejidades</h3>
+<div id="outline-container-orgf1838f7" class="outline-3">
+<h3 id="orgf1838f7"><span class="section-number-3">3.2.</span> Complejidades</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -466,8 +444,8 @@ donde las representaciones de conjuntos son
 </div>
 </div>
 
-<div id="outline-container-org4a4679f" class="outline-3">
-<h3 id="org4a4679f"><span class="section-number-3">3.3.</span> De listas a conjuntos y viceversa</h3>
+<div id="outline-container-org82e98c9" class="outline-3">
+<h3 id="org82e98c9"><span class="section-number-3">3.3.</span> De listas a conjuntos y viceversa</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -502,8 +480,8 @@ crecientemente. Por ejemplo,
 </div>
 </div>
 
-<div id="outline-container-orgfe4fc6c" class="outline-3">
-<h3 id="orgfe4fc6c"><span class="section-number-3">3.4.</span> Operaciones y relaciones usuales</h3>
+<div id="outline-container-orgf1c4827" class="outline-3">
+<h3 id="orgf1c4827"><span class="section-number-3">3.4.</span> Operaciones y relaciones usuales</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -605,8 +583,8 @@ fromList [2,6,8]
 </div>
 </div>
 
-<div id="outline-container-orgf1c3c81" class="outline-3">
-<h3 id="orgf1c3c81"><span class="section-number-3">3.5.</span> Más funciones sobre conjuntos</h3>
+<div id="outline-container-org6135a90" class="outline-3">
+<h3 id="org6135a90"><span class="section-number-3">3.5.</span> Más funciones sobre conjuntos</h3>
 <div class="outline-text-3" id="text-3-5">
 <ul class="org-ul">
 <li>En <a href="http://bit.ly/1DsjKTs">Manual de la librería de conjuntos Data.Set</a> se describen las funciones de
@@ -619,8 +597,8 @@ complejidad.</li>
 </div>
 </div>
 
-<div id="outline-container-org3d95966" class="outline-2">
-<h2 id="org3d95966"><span class="section-number-2">4.</span> Introducción de los diccionarios</h2>
+<div id="outline-container-org0012b13" class="outline-2">
+<h2 id="org0012b13"><span class="section-number-2">4.</span> Introducción de los diccionarios</h2>
 <div class="outline-text-2" id="text-4">
 <ul class="org-ul">
 <li>Los <b>diccionarios</b> (también llamados <b>listas de asociación</b>) son listas
@@ -655,8 +633,8 @@ Debido a que <code>Data.Map</code> exporta funciones que colisionan con las de <
 </div>
 </div>
 
-<div id="outline-container-org0cac2ac" class="outline-2">
-<h2 id="org0cac2ac"><span class="section-number-2">5.</span> El tipo de los diccionarios</h2>
+<div id="outline-container-org2ef7065" class="outline-2">
+<h2 id="org2ef7065"><span class="section-number-2">5.</span> El tipo de los diccionarios</h2>
 <div class="outline-text-2" id="text-5">
 <ul class="org-ul">
 <li><p>
@@ -675,12 +653,12 @@ True
 </div>
 </div>
 
-<div id="outline-container-orgea2e8e4" class="outline-2">
-<h2 id="orgea2e8e4"><span class="section-number-2">6.</span> Funciones sobre diccionarios</h2>
+<div id="outline-container-orgff37528" class="outline-2">
+<h2 id="orgff37528"><span class="section-number-2">6.</span> Funciones sobre diccionarios</h2>
 <div class="outline-text-2" id="text-6">
 </div>
-<div id="outline-container-org24c762a" class="outline-3">
-<h3 id="org24c762a"><span class="section-number-3">6.1.</span> Funciones básicas</h3>
+<div id="outline-container-org88c404b" class="outline-3">
+<h3 id="org88c404b"><span class="section-number-3">6.1.</span> Funciones básicas</h3>
 <div class="outline-text-3" id="text-6-1">
 <ul class="org-ul">
 <li><p>
@@ -744,8 +722,8 @@ False
 </div>
 </div>
 
-<div id="outline-container-org2c841f9" class="outline-3">
-<h3 id="org2c841f9"><span class="section-number-3">6.2.</span> De listas a diccionarios y viceversa</h3>
+<div id="outline-container-org01d850c" class="outline-3">
+<h3 id="org01d850c"><span class="section-number-3">6.2.</span> De listas a diccionarios y viceversa</h3>
 <div class="outline-text-3" id="text-6-2">
 <ul class="org-ul">
 <li><p>
@@ -789,8 +767,8 @@ claves. Por ejemplo,
 </div>
 </div>
 
-<div id="outline-container-org44d6ce2" class="outline-3">
-<h3 id="org44d6ce2"><span class="section-number-3">6.3.</span> Operaciones y relaciones usuales</h3>
+<div id="outline-container-org61bc5b3" class="outline-3">
+<h3 id="org61bc5b3"><span class="section-number-3">6.3.</span> Operaciones y relaciones usuales</h3>
 <div class="outline-text-3" id="text-6-3">
 <ul class="org-ul">
 <li><p>
@@ -876,8 +854,8 @@ fromList [(3,2)]
 </div>
 </div>
 
-<div id="outline-container-orgfc39d83" class="outline-3">
-<h3 id="orgfc39d83"><span class="section-number-3">6.4.</span> Más funciones sobre diccionarios</h3>
+<div id="outline-container-orgd32db70" class="outline-3">
+<h3 id="orgd32db70"><span class="section-number-3">6.4.</span> Más funciones sobre diccionarios</h3>
 <div class="outline-text-3" id="text-6-4">
 <ul class="org-ul">
 <li>En <a href="http://bit.ly/1DsjKTs">Manual de la librería de diccionarios Data.Map</a> se describen las funciones
@@ -890,8 +868,8 @@ de la librería mediante ejemplos.</li>
 </div>
 </div>
 
-<div id="outline-container-org829e1ee" class="outline-2">
-<h2 id="org829e1ee"><span class="section-number-2">7.</span> Referencia</h2>
+<div id="outline-container-orgaf87607" class="outline-2">
+<h2 id="orgaf87607"><span class="section-number-2">7.</span> Referencia</h2>
 <div class="outline-text-2" id="text-7">
 <ul class="org-ul">
 <li>M. Lipovača <a href="http://bit.ly/1IK2ZEB">¡Aprende Haskell por el bien de todos!</a>:
@@ -917,7 +895,7 @@ de la librería mediante ejemplos.</li>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 15 de diciembre del 2021</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

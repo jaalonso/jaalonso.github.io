@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de marzo del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 20: El tipo abstracto de los montículos</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,92 +191,69 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 20: El tipo abstracto de los montículos</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgd7f5aeb">1. Especificación del TAD de los montículos</a>
+<li><a href="#orge918325">1. Especificación del TAD de los montículos</a>
 <ul>
-<li><a href="#orga4392f5">1.1. Signatura del TAD de los montículos</a></li>
-<li><a href="#org2b766ad">1.2. Propiedades del TAD de los montículos</a></li>
+<li><a href="#org985b4fa">1.1. Signatura del TAD de los montículos</a></li>
+<li><a href="#org6631a2f">1.2. Propiedades del TAD de los montículos</a></li>
 </ul>
 </li>
-<li><a href="#org0e39ea1">2. Implementación del TAD de los montículos</a>
+<li><a href="#org5a41304">2. Implementación del TAD de los montículos</a>
 <ul>
-<li><a href="#org9cc72ac">2.1. Los montículos como tipo de dato algebraico</a></li>
+<li><a href="#org72110bd">2.1. Los montículos como tipo de dato algebraico</a></li>
 </ul>
 </li>
-<li><a href="#org9f7bb48">3. Comprobación de la implementación con QuickCheck</a>
+<li><a href="#org1caeacb">3. Comprobación de la implementación con QuickCheck</a>
 <ul>
-<li><a href="#orga2a5c7f">3.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#orged22c93">3.2. Generador de montículos</a></li>
-<li><a href="#org1ba0cc6">3.3. Especificación de las propiedades de los montículos</a></li>
-<li><a href="#org8b75d85">3.4. Comprobación de las propiedades</a></li>
+<li><a href="#org84f1143">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#org16d65e6">3.2. Generador de montículos</a></li>
+<li><a href="#orge0ea21f">3.3. Especificación de las propiedades de los montículos</a></li>
+<li><a href="#org64594a5">3.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#org9b8bf4b">4. Implementación de las colas de prioridad mediante montículos</a>
+<li><a href="#org1b00332">4. Implementación de las colas de prioridad mediante montículos</a>
 <ul>
-<li><a href="#org55c95f3">4.1. Las colas de prioridad como montículos</a></li>
-<li><a href="#orgeae767d">4.2. Comprobación de las propiedades</a></li>
+<li><a href="#org03ebe16">4.1. Las colas de prioridad como montículos</a></li>
+<li><a href="#org17ff61c">4.2. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#orge54afac">5. Material complementario</a></li>
-<li><a href="#org77d1fc0">6. Bibliografía</a></li>
+<li><a href="#org44cd136">5. Material complementario</a></li>
+<li><a href="#org7b73f43">6. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgd7f5aeb" class="outline-2">
-<h2 id="orgd7f5aeb"><span class="section-number-2">1.</span> Especificación del TAD de los montículos</h2>
+<div id="outline-container-orge918325" class="outline-2">
+<h2 id="orge918325"><span class="section-number-2">1.</span> Especificación del TAD de los montículos</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-orga4392f5" class="outline-3">
-<h3 id="orga4392f5"><span class="section-number-3">1.1.</span> Signatura del TAD de los montículos</h3>
+<div id="outline-container-org985b4fa" class="outline-3">
+<h3 id="org985b4fa"><span class="section-number-3">1.1.</span> Signatura del TAD de los montículos</h3>
 <div class="outline-text-3" id="text-1-1">
 </div>
-<div id="outline-container-org238910f" class="outline-4">
-<h4 id="org238910f"><span class="section-number-4">1.1.1.</span> Descripción de los montículos</h4>
+<div id="outline-container-org34b9b43" class="outline-4">
+<h4 id="org34b9b43"><span class="section-number-4">1.1.1.</span> Descripción de los montículos</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 Un montículo es un árbol binario en el que los valores de cada nodo es
@@ -297,8 +275,8 @@ el de la izquierda es un montículo, pero el de la derecha no lo es.
 </div>
 </div>
 
-<div id="outline-container-orga6047ec" class="outline-4">
-<h4 id="orga6047ec"><span class="section-number-4">1.1.2.</span> Signatura del TAD de los montículos</h4>
+<div id="outline-container-orgdb8eedd" class="outline-4">
+<h4 id="orgdb8eedd"><span class="section-number-4">1.1.2.</span> Signatura del TAD de los montículos</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <ul class="org-ul">
 <li><p>
@@ -336,8 +314,8 @@ hijos.</li>
 </div>
 </div>
 
-<div id="outline-container-org2b766ad" class="outline-3">
-<h3 id="org2b766ad"><span class="section-number-3">1.2.</span> Propiedades del TAD de los montículos</h3>
+<div id="outline-container-org6631a2f" class="outline-3">
+<h3 id="org6631a2f"><span class="section-number-3">1.2.</span> Propiedades del TAD de los montículos</h3>
 <div class="outline-text-3" id="text-1-2">
 <ul class="org-ul">
 <li><code>esVacio vacio</code></li>
@@ -361,12 +339,12 @@ hijos.</li>
 </div>
 </div>
 
-<div id="outline-container-org0e39ea1" class="outline-2">
-<h2 id="org0e39ea1"><span class="section-number-2">2.</span> Implementación del TAD de los montículos</h2>
+<div id="outline-container-org5a41304" class="outline-2">
+<h2 id="org5a41304"><span class="section-number-2">2.</span> Implementación del TAD de los montículos</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org9cc72ac" class="outline-3">
-<h3 id="org9cc72ac"><span class="section-number-3">2.1.</span> Los montículos como tipo de dato algebraico</h3>
+<div id="outline-container-org72110bd" class="outline-3">
+<h3 id="org72110bd"><span class="section-number-3">2.1.</span> Los montículos como tipo de dato algebraico</h3>
 <div class="outline-text-3" id="text-2-1">
 <ul class="org-ul">
 <li><p>
@@ -668,12 +646,12 @@ Los montículos son comparables por igualdad.
 </div>
 </div>
 
-<div id="outline-container-org9f7bb48" class="outline-2">
-<h2 id="org9f7bb48"><span class="section-number-2">3.</span> Comprobación de la implementación con QuickCheck</h2>
+<div id="outline-container-org1caeacb" class="outline-2">
+<h2 id="org1caeacb"><span class="section-number-2">3.</span> Comprobación de la implementación con QuickCheck</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orga2a5c7f" class="outline-3">
-<h3 id="orga2a5c7f"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-org84f1143" class="outline-3">
+<h3 id="org84f1143"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -706,8 +684,8 @@ Importación de librerías auxiliares.
 </div>
 </div>
 
-<div id="outline-container-orged22c93" class="outline-3">
-<h3 id="orged22c93"><span class="section-number-3">3.2.</span> Generador de montículos</h3>
+<div id="outline-container-org16d65e6" class="outline-3">
+<h3 id="org16d65e6"><span class="section-number-3">3.2.</span> Generador de montículos</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -758,8 +736,8 @@ Su definición es
 </ul>
 </div>
 
-<div id="outline-container-org064da5b" class="outline-4">
-<h4 id="org064da5b"><span class="section-number-4">3.2.1.</span> Corrección del generador de montículos</h4>
+<div id="outline-container-orgb0d5604" class="outline-4">
+<h4 id="orgb0d5604"><span class="section-number-4">3.2.1.</span> Corrección del generador de montículos</h4>
 <div class="outline-text-4" id="text-3-2-1">
 <ul class="org-ul">
 <li><p>
@@ -782,8 +760,8 @@ Comprobación:
 </div>
 </div>
 
-<div id="outline-container-org09d3761" class="outline-4">
-<h4 id="org09d3761"><span class="section-number-4">3.2.2.</span> Generador de montículos no vacíos</h4>
+<div id="outline-container-orgce91211" class="outline-4">
+<h4 id="orgce91211"><span class="section-number-4">3.2.2.</span> Generador de montículos no vacíos</h4>
 <div class="outline-text-4" id="text-3-2-2">
 <ul class="org-ul">
 <li><p>
@@ -810,8 +788,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgf32b2f6" class="outline-4">
-<h4 id="orgf32b2f6"><span class="section-number-4">3.2.3.</span> Corrección del generador de montículos no vacíos</h4>
+<div id="outline-container-orga8b82bd" class="outline-4">
+<h4 id="orga8b82bd"><span class="section-number-4">3.2.3.</span> Corrección del generador de montículos no vacíos</h4>
 <div class="outline-text-4" id="text-3-2-3">
 <ul class="org-ul">
 <li><p>
@@ -837,8 +815,8 @@ Comprobación:
 </div>
 </div>
 
-<div id="outline-container-org1ba0cc6" class="outline-3">
-<h3 id="org1ba0cc6"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los montículos</h3>
+<div id="outline-container-orge0ea21f" class="outline-3">
+<h3 id="orge0ea21f"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los montículos</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li><p>
@@ -911,8 +889,8 @@ caso contrario.
 </div>
 </div>
 
-<div id="outline-container-org8b75d85" class="outline-3">
-<h3 id="org8b75d85"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-org64594a5" class="outline-3">
+<h3 id="org64594a5"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -962,12 +940,12 @@ True
 </div>
 </div>
 
-<div id="outline-container-org9b8bf4b" class="outline-2">
-<h2 id="org9b8bf4b"><span class="section-number-2">4.</span> Implementación de las colas de prioridad mediante montículos</h2>
+<div id="outline-container-org1b00332" class="outline-2">
+<h2 id="org1b00332"><span class="section-number-2">4.</span> Implementación de las colas de prioridad mediante montículos</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org55c95f3" class="outline-3">
-<h3 id="org55c95f3"><span class="section-number-3">4.1.</span> Las colas de prioridad como montículos</h3>
+<div id="outline-container-org03ebe16" class="outline-3">
+<h3 id="org03ebe16"><span class="section-number-3">4.1.</span> Las colas de prioridad como montículos</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -1131,8 +1109,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgeae767d" class="outline-3">
-<h3 id="orgeae767d"><span class="section-number-3">4.2.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-org17ff61c" class="outline-3">
+<h3 id="org17ff61c"><span class="section-number-3">4.2.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -1182,8 +1160,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orge54afac" class="outline-2">
-<h2 id="orge54afac"><span class="section-number-2">5.</span> Material complementario</h2>
+<div id="outline-container-org44cd136" class="outline-2">
+<h2 id="org44cd136"><span class="section-number-2">5.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 El código del tema se encuentra en los siguientes enlaces
@@ -1205,8 +1183,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org77d1fc0" class="outline-2">
-<h2 id="org77d1fc0"><span class="section-number-2">6.</span> Bibliografía</h2>
+<div id="outline-container-org7b73f43" class="outline-2">
+<h2 id="org7b73f43"><span class="section-number-2">6.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -1222,17 +1200,17 @@ Este tema también se encuentra en los siguientes formatos:
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PFconHaskell/">Inicial</a> |
-   <a href="/materias/PFconHaskell/temas_apuntes_codigos.html">Temas  </a> |
-   <a href="/materias/PFconHaskell/manuales.html">Manuales  </a> |
-   <a href="/materias/PFconHaskell/ejercicios.html">Ejercicios  </a> |
-   <a href="/materias/PFconHaskell/examenes.html">Exámenes  </a> |
-   <a href="/materias/PFconHaskell/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de marzo del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

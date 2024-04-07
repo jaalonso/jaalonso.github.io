@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 21 de enero del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 14: El tipo abstracto de datos de las pilas</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,33 +191,10 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
@@ -229,41 +207,41 @@
    <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 14: El tipo abstracto de datos de las pilas</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org36a1aed">1. Tipos abstractos de datos (TAD)</a></li>
-<li><a href="#org7f24390">2. Especificación del TAD de las pilas</a>
+<li><a href="#org2ec43d5">1. Tipos abstractos de datos (TAD)</a></li>
+<li><a href="#org0eb9d8c">2. Especificación del TAD de las pilas</a>
 <ul>
-<li><a href="#orgae5578d">2.1. Signatura del TAD pilas</a></li>
-<li><a href="#orgd160c0f">2.2. Propiedades del TAD de las pilas</a></li>
+<li><a href="#org6213560">2.1. Signatura del TAD pilas</a></li>
+<li><a href="#org88c0494">2.2. Propiedades del TAD de las pilas</a></li>
 </ul>
 </li>
-<li><a href="#orge2b77ba">3. Implementaciones del TAD de las pilas</a>
+<li><a href="#org132a9e3">3. Implementaciones del TAD de las pilas</a>
 <ul>
-<li><a href="#orgf91f2f8">3.1. Las pilas como tipos de datos algebraicos</a></li>
-<li><a href="#orge0833e4">3.2. Las pilas como listas</a></li>
+<li><a href="#org934a47f">3.1. Las pilas como tipos de datos algebraicos</a></li>
+<li><a href="#org74d8f86">3.2. Las pilas como listas</a></li>
 </ul>
 </li>
-<li><a href="#orgb085498">4. Comprobación de las implementaciones con QuickCheck</a>
+<li><a href="#orgdc743d2">4. Comprobación de las implementaciones con QuickCheck</a>
 <ul>
-<li><a href="#org508fa15">4.1. Pragma y librerías auxiliares</a></li>
-<li><a href="#org8f8c7e5">4.2. Generador de pilas</a></li>
-<li><a href="#org401384d">4.3. Especificación de las propiedades de las pilas</a></li>
-<li><a href="#org3decc11">4.4. Comprobación de las propiedades</a></li>
+<li><a href="#org60160df">4.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#org6594cf9">4.2. Generador de pilas</a></li>
+<li><a href="#org0eb1e3d">4.3. Especificación de las propiedades de las pilas</a></li>
+<li><a href="#orgcfbc6e7">4.4. Comprobación de las propiedades</a></li>
 </ul>
 </li>
-<li><a href="#orgd2d321e">5. Material complementario</a></li>
-<li><a href="#org519fe95">6. Referencias</a></li>
+<li><a href="#org3aabe06">5. Material complementario</a></li>
+<li><a href="#orgc4fede4">6. Referencias</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org36a1aed" class="outline-2">
-<h2 id="org36a1aed"><span class="section-number-2">1.</span> Tipos abstractos de datos (TAD)</h2>
+<div id="outline-container-org2ec43d5" class="outline-2">
+<h2 id="org2ec43d5"><span class="section-number-2">1.</span> Tipos abstractos de datos (TAD)</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>La <b>abstracción</b> es un mecanismo para comprender problemas que involucran una
@@ -292,16 +270,16 @@ cómo</b>).</li>
 </div>
 </div>
 
-<div id="outline-container-org7f24390" class="outline-2">
-<h2 id="org7f24390"><span class="section-number-2">2.</span> Especificación del TAD de las pilas</h2>
+<div id="outline-container-org0eb9d8c" class="outline-2">
+<h2 id="org0eb9d8c"><span class="section-number-2">2.</span> Especificación del TAD de las pilas</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgae5578d" class="outline-3">
-<h3 id="orgae5578d"><span class="section-number-3">2.1.</span> Signatura del TAD pilas</h3>
+<div id="outline-container-org6213560" class="outline-3">
+<h3 id="org6213560"><span class="section-number-3">2.1.</span> Signatura del TAD pilas</h3>
 <div class="outline-text-3" id="text-2-1">
 </div>
-<div id="outline-container-org0101398" class="outline-4">
-<h4 id="org0101398"><span class="section-number-4">2.1.1.</span> Descripción informal de las pilas</h4>
+<div id="outline-container-orgdb9b3e9" class="outline-4">
+<h4 id="orgdb9b3e9"><span class="section-number-4">2.1.1.</span> Descripción informal de las pilas</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <ul class="org-ul">
 <li>Una <b>pila</b> es una estructura de datos, caracterizada por ser una secuencia de
@@ -316,8 +294,8 @@ Out), debido a que el último elemento en entrar será el primero en salir.</li>
 </div>
 </div>
 
-<div id="outline-container-org1d946f1" class="outline-4">
-<h4 id="org1d946f1"><span class="section-number-4">2.1.2.</span> Signatura del TAD de las pilas</h4>
+<div id="outline-container-org7ce314a" class="outline-4">
+<h4 id="org7ce314a"><span class="section-number-4">2.1.2.</span> Signatura del TAD de las pilas</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <ul class="org-ul">
 <li><p>
@@ -345,8 +323,8 @@ Signatura:
 </div>
 </div>
 
-<div id="outline-container-orgd160c0f" class="outline-3">
-<h3 id="orgd160c0f"><span class="section-number-3">2.2.</span> Propiedades del TAD de las pilas</h3>
+<div id="outline-container-org88c0494" class="outline-3">
+<h3 id="org88c0494"><span class="section-number-3">2.2.</span> Propiedades del TAD de las pilas</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li><code>cima (apila x p) == x</code></li>
@@ -358,12 +336,12 @@ Signatura:
 </div>
 </div>
 
-<div id="outline-container-orge2b77ba" class="outline-2">
-<h2 id="orge2b77ba"><span class="section-number-2">3.</span> Implementaciones del TAD de las pilas</h2>
+<div id="outline-container-org132a9e3" class="outline-2">
+<h2 id="org132a9e3"><span class="section-number-2">3.</span> Implementaciones del TAD de las pilas</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgf91f2f8" class="outline-3">
-<h3 id="orgf91f2f8"><span class="section-number-3">3.1.</span> Las pilas como tipos de datos algebraicos</h3>
+<div id="outline-container-org934a47f" class="outline-3">
+<h3 id="org934a47f"><span class="section-number-3">3.1.</span> Las pilas como tipos de datos algebraicos</h3>
 <div class="outline-text-3" id="text-3-1">
 <ul class="org-ul">
 <li><p>
@@ -510,8 +488,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orge0833e4" class="outline-3">
-<h3 id="orge0833e4"><span class="section-number-3">3.2.</span> Las pilas como listas</h3>
+<div id="outline-container-org74d8f86" class="outline-3">
+<h3 id="org74d8f86"><span class="section-number-3">3.2.</span> Las pilas como listas</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -654,12 +632,12 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-orgb085498" class="outline-2">
-<h2 id="orgb085498"><span class="section-number-2">4.</span> Comprobación de las implementaciones con QuickCheck</h2>
+<div id="outline-container-orgdc743d2" class="outline-2">
+<h2 id="orgdc743d2"><span class="section-number-2">4.</span> Comprobación de las implementaciones con QuickCheck</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-org508fa15" class="outline-3">
-<h3 id="org508fa15"><span class="section-number-3">4.1.</span> Pragma y librerías auxiliares</h3>
+<div id="outline-container-org60160df" class="outline-3">
+<h3 id="org60160df"><span class="section-number-3">4.1.</span> Pragma y librerías auxiliares</h3>
 <div class="outline-text-3" id="text-4-1">
 <ul class="org-ul">
 <li><p>
@@ -692,8 +670,8 @@ Importación de la librería de comprobación
 </div>
 </div>
 
-<div id="outline-container-org8f8c7e5" class="outline-3">
-<h3 id="org8f8c7e5"><span class="section-number-3">4.2.</span> Generador de pilas</h3>
+<div id="outline-container-org6594cf9" class="outline-3">
+<h3 id="org6594cf9"><span class="section-number-3">4.2.</span> Generador de pilas</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -725,8 +703,8 @@ Su definición es
 </div>
 </div>
 
-<div id="outline-container-org401384d" class="outline-3">
-<h3 id="org401384d"><span class="section-number-3">4.3.</span> Especificación de las propiedades de las pilas</h3>
+<div id="outline-container-org0eb1e3d" class="outline-3">
+<h3 id="org0eb1e3d"><span class="section-number-3">4.3.</span> Especificación de las propiedades de las pilas</h3>
 <div class="outline-text-3" id="text-4-3">
 <ul class="org-ul">
 <li><p>
@@ -773,8 +751,8 @@ La pila que resulta de añadir un elemento en un pila cualquiera no es vacía.
 </div>
 </div>
 
-<div id="outline-container-org3decc11" class="outline-3">
-<h3 id="org3decc11"><span class="section-number-3">4.4.</span> Comprobación de las propiedades</h3>
+<div id="outline-container-orgcfbc6e7" class="outline-3">
+<h3 id="orgcfbc6e7"><span class="section-number-3">4.4.</span> Comprobación de las propiedades</h3>
 <div class="outline-text-3" id="text-4-4">
 <ul class="org-ul">
 <li><p>
@@ -810,8 +788,8 @@ True
 </div>
 </div>
 
-<div id="outline-container-orgd2d321e" class="outline-2">
-<h2 id="orgd2d321e"><span class="section-number-2">5.</span> Material complementario</h2>
+<div id="outline-container-org3aabe06" class="outline-2">
+<h2 id="org3aabe06"><span class="section-number-2">5.</span> Material complementario</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 El código del tema se encuentra en este los siguientes enlaces
@@ -833,8 +811,8 @@ Este tema también se encuentra en los siguientes formatos:
 </div>
 </div>
 
-<div id="outline-container-org519fe95" class="outline-2">
-<h2 id="org519fe95"><span class="section-number-2">6.</span> Referencias</h2>
+<div id="outline-container-orgc4fede4" class="outline-2">
+<h2 id="orgc4fede4"><span class="section-number-2">6.</span> Referencias</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
@@ -863,7 +841,7 @@ Este tema también se encuentra en los siguientes formatos:
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 21 de enero del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>

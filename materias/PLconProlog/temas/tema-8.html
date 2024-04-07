@@ -3,14 +3,14 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
 <head>
-<!-- 03 de julio del 2022 -->
+<!-- 07 de abril del 2024 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Tema 8: Resolución de problemas de espacios de estados</title>
-<meta name="generator" content="Org mode" />
 <meta name="author" content="José A. Alonso" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -31,8 +31,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -41,21 +42,21 @@
   pre.src {
     position: relative;
     overflow: auto;
-    padding-top: 1.2em;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
   pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -190,121 +191,99 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
 <link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript">
-// @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&amp;dn=gpl-3.0.txt GPL-v3-or-Later
-<!--/*--><![CDATA[/*><!--*/
-     function CodeHighlightOn(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.add("code-highlighted");
-         target.classList.add("code-highlighted");
-       }
-     }
-     function CodeHighlightOff(elem, id)
-     {
-       var target = document.getElementById(id);
-       if(null != target) {
-         elem.classList.remove("code-highlighted");
-         target.classList.remove("code-highlighted");
-       }
-     }
-    /*]]>*///-->
-// @license-end
-</script>
 </head>
 <body>
 <div id="preamble" class="status">
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </div>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">Tema 8: Resolución de problemas de espacios de estados</h1>
-<div id="table-of-contents">
+<div id="table-of-contents" role="doc-toc">
 <h2>&Iacute;ndice</h2>
-<div id="text-table-of-contents">
+<div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgff657ec">1. Ejemplo de problema mediante espacios de estados: el 8 puzzle</a></li>
-<li><a href="#orgc1e0328">2. Búsqueda en profundidad sin ciclos</a>
+<li><a href="#orgc7c7468">1. Ejemplo de problema mediante espacios de estados: el 8 puzzle</a></li>
+<li><a href="#org8369d37">2. Búsqueda en profundidad sin ciclos</a>
 <ul>
-<li><a href="#orgb036c08">2.1. El problema del árbol</a></li>
-<li><a href="#org614f3db">2.2. Procedimiento de búsqueda en profundidad sin ciclos</a></li>
-<li><a href="#orgc97b70e">2.3. Solución del problema del árbol mediante búsqueda en profundidad sin ciclos</a></li>
-<li><a href="#org7a4ce40">2.4. El problema de las 4 reinas</a></li>
-<li><a href="#orgc022815">2.5. Solución del problema de las 4 reinas por búsqueda en profundidad sin ciclos.</a></li>
+<li><a href="#orgf3b8faf">2.1. El problema del árbol</a></li>
+<li><a href="#org2f370c8">2.2. Procedimiento de búsqueda en profundidad sin ciclos</a></li>
+<li><a href="#orga2eea2a">2.3. Solución del problema del árbol mediante búsqueda en profundidad sin ciclos</a></li>
+<li><a href="#orgd884e84">2.4. El problema de las 4 reinas</a></li>
+<li><a href="#org74c3f1f">2.5. Solución del problema de las 4 reinas por búsqueda en profundidad sin ciclos.</a></li>
 </ul>
 </li>
-<li><a href="#org57051c2">3. Búsqueda en profundidad con ciclos</a>
+<li><a href="#org8955894">3. Búsqueda en profundidad con ciclos</a>
 <ul>
-<li><a href="#org4421283">3.1. El problema del grafo</a></li>
-<li><a href="#org1cd9c16">3.2. No solución del problema del grafo mediante búsqueda en profundidad sin ciclos</a></li>
-<li><a href="#org59c9eab">3.3. Procedimiento de búsqueda en profundidad con ciclos</a></li>
-<li><a href="#orgae61fca">3.4. Solución del problema del grafo mediante búsqueda en profundidad con ciclos</a></li>
-<li><a href="#orgefd68dc">3.5. El problema de las jarras</a></li>
-<li><a href="#org782abfa">3.6. Solución del problema de las jarras por búsqueda en profundidad con ciclos</a></li>
+<li><a href="#orgf1ecac2">3.1. El problema del grafo</a></li>
+<li><a href="#orgf5d2fcd">3.2. No solución del problema del grafo mediante búsqueda en profundidad sin ciclos</a></li>
+<li><a href="#org3cbe1a8">3.3. Procedimiento de búsqueda en profundidad con ciclos</a></li>
+<li><a href="#orgb2caff4">3.4. Solución del problema del grafo mediante búsqueda en profundidad con ciclos</a></li>
+<li><a href="#org11c882d">3.5. El problema de las jarras</a></li>
+<li><a href="#org7da5d56">3.6. Solución del problema de las jarras por búsqueda en profundidad con ciclos</a></li>
 </ul>
 </li>
-<li><a href="#org024429e">4. Búsqueda en anchura</a>
+<li><a href="#org099b1f9">4. Búsqueda en anchura</a>
 <ul>
-<li><a href="#orgc9c02bc">4.1. El problema del paseo</a></li>
-<li><a href="#org15a7f1f">4.2. No solución del problema del paseo mediante búsqueda en profundidad</a></li>
-<li><a href="#org830b1a2">4.3. Procedimiento de búsqueda en anchura</a></li>
-<li><a href="#org7eaac83">4.4. Solución del problema del paseo mediante búsqueda en anchura.</a></li>
+<li><a href="#org7b35084">4.1. El problema del paseo</a></li>
+<li><a href="#orgd7fff58">4.2. No solución del problema del paseo mediante búsqueda en profundidad</a></li>
+<li><a href="#orgd903874">4.3. Procedimiento de búsqueda en anchura</a></li>
+<li><a href="#orgd603dea">4.4. Solución del problema del paseo mediante búsqueda en anchura.</a></li>
 </ul>
 </li>
-<li><a href="#org52e0a2f">5. Búsqueda óptima (de menor coste)</a>
+<li><a href="#orgb5b97cc">5. Búsqueda óptima (de menor coste)</a>
 <ul>
-<li><a href="#orgbc7d8a0">5.1. Problema del viaje</a></li>
-<li><a href="#orgd6c3b87">5.2. Solución del problema del viaje mediante búsqueda en profundidad y en anchura</a></li>
-<li><a href="#orgf224d1a">5.3. Primer procedimiento de búsqueda óptima</a></li>
-<li><a href="#orga3ac264">5.4. Solución del problema del viaje mediante búsqueda óptima</a></li>
-<li><a href="#org67d9751">5.5. Segundo procedimiento de búsqueda óptima</a></li>
-<li><a href="#org5e01890">5.6. Comparación de procedimientos de búsqueda óptima</a></li>
+<li><a href="#org08485b7">5.1. Problema del viaje</a></li>
+<li><a href="#org172c374">5.2. Solución del problema del viaje mediante búsqueda en profundidad y en anchura</a></li>
+<li><a href="#org60a04a2">5.3. Primer procedimiento de búsqueda óptima</a></li>
+<li><a href="#orgcdb50de">5.4. Solución del problema del viaje mediante búsqueda óptima</a></li>
+<li><a href="#org6e957f8">5.5. Segundo procedimiento de búsqueda óptima</a></li>
+<li><a href="#org9173fad">5.6. Comparación de procedimientos de búsqueda óptima</a></li>
 </ul>
 </li>
-<li><a href="#org5b14ebd">6. Búsqueda en escalada (con heurística).</a>
+<li><a href="#orga1dbde8">6. Búsqueda en escalada (con heurística).</a>
 <ul>
-<li><a href="#org3581ed3">6.1. Heurística del problema del viaje</a></li>
-<li><a href="#org5aa4932">6.2. Solución del problema del viaje mediante búsqueda en Escalada</a></li>
+<li><a href="#orgbeb6ac9">6.1. Heurística del problema del viaje</a></li>
+<li><a href="#org9c4f6b5">6.2. Solución del problema del viaje mediante búsqueda en Escalada</a></li>
 </ul>
 </li>
-<li><a href="#org247b9b4">7. Búsqueda por primero el mejor</a>
+<li><a href="#org253e227">7. Búsqueda por primero el mejor</a>
 <ul>
-<li><a href="#orgee67e37">7.1. Problema de las fichas</a></li>
-<li><a href="#org859a917">7.2. Procedimiento de búsqueda por primero el mejor</a></li>
-<li><a href="#org02f637f">7.3. Solución del problema de las fichas mediante búsqueda por primero el mejor</a></li>
+<li><a href="#orge689d97">7.1. Problema de las fichas</a></li>
+<li><a href="#org6f60cb6">7.2. Procedimiento de búsqueda por primero el mejor</a></li>
+<li><a href="#orgc365d94">7.3. Solución del problema de las fichas mediante búsqueda por primero el mejor</a></li>
 </ul>
 </li>
-<li><a href="#orgcbf6f0c">8. Algoritmo A*</a>
+<li><a href="#org78bd97b">8. Algoritmo A*</a>
 <ul>
-<li><a href="#org2b0db6a">8.1. El problema del 8 puzzle</a></li>
-<li><a href="#orgc94a148">8.2. El algoritmo A*</a></li>
-<li><a href="#org3a829e4">8.3. Solucióm del 8 puzzle mediante el algoritmo A*</a></li>
+<li><a href="#org97fb123">8.1. El problema del 8 puzzle</a></li>
+<li><a href="#org3b72905">8.2. El algoritmo A*</a></li>
+<li><a href="#org789c1f3">8.3. Solucióm del 8 puzzle mediante el algoritmo A*</a></li>
 </ul>
 </li>
-<li><a href="#org7c13385">9. Ejercicios</a>
+<li><a href="#org8ddde40">9. Ejercicios</a>
 <ul>
-<li><a href="#org6b7eee0">9.1. Problemas de los bloques</a></li>
-<li><a href="#org610e881">9.2. Problema de las 8 reinas</a></li>
+<li><a href="#org4b3a902">9.1. Problemas de los bloques</a></li>
+<li><a href="#orge4674b9">9.2. Problema de las 8 reinas</a></li>
 </ul>
 </li>
-<li><a href="#org57027cb">10. Bibliografía</a></li>
+<li><a href="#org64a98cb">10. Bibliografía</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgff657ec" class="outline-2">
-<h2 id="orgff657ec"><span class="section-number-2">1.</span> Ejemplo de problema mediante espacios de estados: el 8 puzzle</h2>
+<div id="outline-container-orgc7c7468" class="outline-2">
+<h2 id="orgc7c7468"><span class="section-number-2">1.</span> Ejemplo de problema mediante espacios de estados: el 8 puzzle</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Para el 8 puzzle se usa un cajón cuadrado en el que hay situados 8
@@ -336,21 +315,21 @@ particular, consideramos el estado inicial y final siguientes: <br />
 
 <li>Número de estados = 9! = 362.880.</li>
 
-<li>Nota: El estudio del problema continúa en la <a href="#orgcbf6f0c">última sección</a>.</li>
+<li>Nota: El estudio del problema continúa en la <a href="#org78bd97b">última sección</a>.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgc1e0328" class="outline-2">
-<h2 id="orgc1e0328"><span class="section-number-2">2.</span> Búsqueda en profundidad sin ciclos</h2>
+<div id="outline-container-org8369d37" class="outline-2">
+<h2 id="org8369d37"><span class="section-number-2">2.</span> Búsqueda en profundidad sin ciclos</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgb036c08" class="outline-3">
-<h3 id="orgb036c08"><span class="section-number-3">2.1.</span> El problema del árbol</h3>
+<div id="outline-container-orgf3b8faf" class="outline-3">
+<h3 id="orgf3b8faf"><span class="section-number-3">2.1.</span> El problema del árbol</h3>
 <div class="outline-text-3" id="text-2-1">
 </div>
-<div id="outline-container-org03448d5" class="outline-4">
-<h4 id="org03448d5"><span class="section-number-4">2.1.1.</span> Descripción del problema del árbol</h4>
+<div id="outline-container-org4e10a08" class="outline-4">
+<h4 id="org4e10a08"><span class="section-number-4">2.1.1.</span> Descripción del problema del árbol</h4>
 <div class="outline-text-4" id="text-2-1-1">
 <ul class="org-ul">
 <li>El problema del árbol consiste en encontrar caminos (desde <code>a</code> hasta
@@ -360,8 +339,8 @@ particular, consideramos el estado inicial y final siguientes: <br />
 </div>
 </div>
 
-<div id="outline-container-orgaa9472f" class="outline-4">
-<h4 id="orgaa9472f"><span class="section-number-4">2.1.2.</span> Representación del problema del árbol</h4>
+<div id="outline-container-orgb792d6b" class="outline-4">
+<h4 id="orgb792d6b"><span class="section-number-4">2.1.2.</span> Representación del problema del árbol</h4>
 <div class="outline-text-4" id="text-2-1-2">
 <ul class="org-ul">
 <li>El problema se representa mediante las relaciones <code>estado_inicial/1</code>,
@@ -408,8 +387,8 @@ particular, consideramos el estado inicial y final siguientes: <br />
 </div>
 </div>
 
-<div id="outline-container-org614f3db" class="outline-3">
-<h3 id="org614f3db"><span class="section-number-3">2.2.</span> Procedimiento de búsqueda en profundidad sin ciclos</h3>
+<div id="outline-container-org2f370c8" class="outline-3">
+<h3 id="org2f370c8"><span class="section-number-3">2.2.</span> Procedimiento de búsqueda en profundidad sin ciclos</h3>
 <div class="outline-text-3" id="text-2-2">
 <ul class="org-ul">
 <li><p>
@@ -452,8 +431,8 @@ partir de <code>E1</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-orgc97b70e" class="outline-3">
-<h3 id="orgc97b70e"><span class="section-number-3">2.3.</span> Solución del problema del árbol mediante búsqueda en profundidad sin ciclos</h3>
+<div id="outline-container-orga2eea2a" class="outline-3">
+<h3 id="orga2eea2a"><span class="section-number-3">2.3.</span> Solución del problema del árbol mediante búsqueda en profundidad sin ciclos</h3>
 <div class="outline-text-3" id="text-2-3">
 <ul class="org-ul">
 <li><p>
@@ -489,12 +468,12 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org7a4ce40" class="outline-3">
-<h3 id="org7a4ce40"><span class="section-number-3">2.4.</span> El problema de las 4 reinas</h3>
+<div id="outline-container-orgd884e84" class="outline-3">
+<h3 id="orgd884e84"><span class="section-number-3">2.4.</span> El problema de las 4 reinas</h3>
 <div class="outline-text-3" id="text-2-4">
 </div>
-<div id="outline-container-org9efee7a" class="outline-4">
-<h4 id="org9efee7a"><span class="section-number-4">2.4.1.</span> Descripción del problema de las 4 reinas</h4>
+<div id="outline-container-org2b14083" class="outline-4">
+<h4 id="org2b14083"><span class="section-number-4">2.4.1.</span> Descripción del problema de las 4 reinas</h4>
 <div class="outline-text-4" id="text-2-4-1">
 <ul class="org-ul">
 <li>El problema de las 4 reinas consiste en colocar 4 reinas en un tablero
@@ -508,8 +487,8 @@ reinas (1,1) y (2,3).</li>
 </div>
 </div>
 
-<div id="outline-container-orgeec6fa6" class="outline-4">
-<h4 id="orgeec6fa6"><span class="section-number-4">2.4.2.</span> Representación del problema de las 4 reinas</h4>
+<div id="outline-container-org07102f5" class="outline-4">
+<h4 id="org07102f5"><span class="section-number-4">2.4.2.</span> Representación del problema de las 4 reinas</h4>
 <div class="outline-text-4" id="text-2-4-2">
 <ul class="org-ul">
 <li>El problema se representa mediante las relaciones <code>estado_inicial/1</code>,
@@ -567,8 +546,8 @@ colocada en <code>(n+1,Y)</code> no ataca a las colocadas en <code>(1,Y1)</code>
 </div>
 </div>
 
-<div id="outline-container-orgc022815" class="outline-3">
-<h3 id="orgc022815"><span class="section-number-3">2.5.</span> Solución del problema de las 4 reinas por búsqueda en profundidad sin ciclos.</h3>
+<div id="outline-container-org74c3f1f" class="outline-3">
+<h3 id="org74c3f1f"><span class="section-number-3">2.5.</span> Solución del problema de las 4 reinas por búsqueda en profundidad sin ciclos.</h3>
 <div class="outline-text-3" id="text-2-5">
 <ul class="org-ul">
 <li><p>
@@ -587,16 +566,16 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org57051c2" class="outline-2">
-<h2 id="org57051c2"><span class="section-number-2">3.</span> Búsqueda en profundidad con ciclos</h2>
+<div id="outline-container-org8955894" class="outline-2">
+<h2 id="org8955894"><span class="section-number-2">3.</span> Búsqueda en profundidad con ciclos</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org4421283" class="outline-3">
-<h3 id="org4421283"><span class="section-number-3">3.1.</span> El problema del grafo</h3>
+<div id="outline-container-orgf1ecac2" class="outline-3">
+<h3 id="orgf1ecac2"><span class="section-number-3">3.1.</span> El problema del grafo</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org4ee1717" class="outline-4">
-<h4 id="org4ee1717"><span class="section-number-4">3.1.1.</span> Descripción del problema del grafo</h4>
+<div id="outline-container-org348b993" class="outline-4">
+<h4 id="org348b993"><span class="section-number-4">3.1.1.</span> Descripción del problema del grafo</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>El problema del grafo consiste en encontrar caminos (desde <code>a</code> hasta
@@ -606,8 +585,8 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org2c74b26" class="outline-4">
-<h4 id="org2c74b26"><span class="section-number-4">3.1.2.</span> Representación del problema del grafo</h4>
+<div id="outline-container-org7a89810" class="outline-4">
+<h4 id="org7a89810"><span class="section-number-4">3.1.2.</span> Representación del problema del grafo</h4>
 <div class="outline-text-4" id="text-3-1-2">
 <ul class="org-ul">
 <li>El problema se representa mediante las relaciones <code>estado_inicial/1</code>,
@@ -655,8 +634,8 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org1cd9c16" class="outline-3">
-<h3 id="org1cd9c16"><span class="section-number-3">3.2.</span> No solución del problema del grafo mediante búsqueda en profundidad sin ciclos</h3>
+<div id="outline-container-orgf5d2fcd" class="outline-3">
+<h3 id="orgf5d2fcd"><span class="section-number-3">3.2.</span> No solución del problema del grafo mediante búsqueda en profundidad sin ciclos</h3>
 <div class="outline-text-3" id="text-3-2">
 <ul class="org-ul">
 <li><p>
@@ -684,8 +663,8 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org59c9eab" class="outline-3">
-<h3 id="org59c9eab"><span class="section-number-3">3.3.</span> Procedimiento de búsqueda en profundidad con ciclos</h3>
+<div id="outline-container-org3cbe1a8" class="outline-3">
+<h3 id="org3cbe1a8"><span class="section-number-3">3.3.</span> Procedimiento de búsqueda en profundidad con ciclos</h3>
 <div class="outline-text-3" id="text-3-3">
 <ul class="org-ul">
 <li>Un <i>nodo</i> es una lista de estados <code>[E(n),...,E(1)]</code> de forma que
@@ -733,8 +712,8 @@ inversa de <code>N</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-orgae61fca" class="outline-3">
-<h3 id="orgae61fca"><span class="section-number-3">3.4.</span> Solución del problema del grafo mediante búsqueda en profundidad con ciclos</h3>
+<div id="outline-container-orgb2caff4" class="outline-3">
+<h3 id="orgb2caff4"><span class="section-number-3">3.4.</span> Solución del problema del grafo mediante búsqueda en profundidad con ciclos</h3>
 <div class="outline-text-3" id="text-3-4">
 <ul class="org-ul">
 <li><p>
@@ -774,12 +753,12 @@ false.
 </div>
 </div>
 
-<div id="outline-container-orgefd68dc" class="outline-3">
-<h3 id="orgefd68dc"><span class="section-number-3">3.5.</span> El problema de las jarras</h3>
+<div id="outline-container-org11c882d" class="outline-3">
+<h3 id="org11c882d"><span class="section-number-3">3.5.</span> El problema de las jarras</h3>
 <div class="outline-text-3" id="text-3-5">
 </div>
-<div id="outline-container-org4229686" class="outline-4">
-<h4 id="org4229686"><span class="section-number-4">3.5.1.</span> Descripción del problema de las jarras</h4>
+<div id="outline-container-org4f50b2c" class="outline-4">
+<h4 id="org4f50b2c"><span class="section-number-4">3.5.1.</span> Descripción del problema de las jarras</h4>
 <div class="outline-text-4" id="text-3-5-1">
 <p>
 En el problema de las jarras
@@ -794,8 +773,8 @@ exactamente 2 litros de agua en la jarra de 4 litros de capacidad.</li>
 </div>
 </div>
 
-<div id="outline-container-org6a23f0b" class="outline-4">
-<h4 id="org6a23f0b"><span class="section-number-4">3.5.2.</span> Representación del problema de las jarras</h4>
+<div id="outline-container-org468b7b5" class="outline-4">
+<h4 id="org468b7b5"><span class="section-number-4">3.5.2.</span> Representación del problema de las jarras</h4>
 <div class="outline-text-4" id="text-3-5-2">
 <ul class="org-ul">
 <li>El estado inicial es <code>0-0</code>.</li>
@@ -870,8 +849,8 @@ exactamente 2 litros de agua en la jarra de 4 litros de capacidad.</li>
 </div>
 </div>
 
-<div id="outline-container-org782abfa" class="outline-3">
-<h3 id="org782abfa"><span class="section-number-3">3.6.</span> Solución del problema de las jarras por búsqueda en profundidad con ciclos</h3>
+<div id="outline-container-org7da5d56" class="outline-3">
+<h3 id="org7da5d56"><span class="section-number-3">3.6.</span> Solución del problema de las jarras por búsqueda en profundidad con ciclos</h3>
 <div class="outline-text-3" id="text-3-6">
 <ul class="org-ul">
 <li><p>
@@ -892,16 +871,16 @@ S = <span style="color: #707183;">[</span>0-0,4-0,1-3,4-3,0-3,3-0,3-3,4-2,0-2,2-
 </div>
 </div>
 
-<div id="outline-container-org024429e" class="outline-2">
-<h2 id="org024429e"><span class="section-number-2">4.</span> Búsqueda en anchura</h2>
+<div id="outline-container-org099b1f9" class="outline-2">
+<h2 id="org099b1f9"><span class="section-number-2">4.</span> Búsqueda en anchura</h2>
 <div class="outline-text-2" id="text-4">
 </div>
-<div id="outline-container-orgc9c02bc" class="outline-3">
-<h3 id="orgc9c02bc"><span class="section-number-3">4.1.</span> El problema del paseo</h3>
+<div id="outline-container-org7b35084" class="outline-3">
+<h3 id="org7b35084"><span class="section-number-3">4.1.</span> El problema del paseo</h3>
 <div class="outline-text-3" id="text-4-1">
 </div>
-<div id="outline-container-orgf49407b" class="outline-4">
-<h4 id="orgf49407b"><span class="section-number-4">4.1.1.</span> Descripción del problema del paseo</h4>
+<div id="outline-container-orgb23434c" class="outline-4">
+<h4 id="orgb23434c"><span class="section-number-4">4.1.1.</span> Descripción del problema del paseo</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <ul class="org-ul">
 <li>Una persona puede moverse en línea recta dando cada vez un paso hacia
@@ -912,8 +891,8 @@ llegar a la posición -3.</li>
 </div>
 </div>
 
-<div id="outline-container-org95f39fc" class="outline-4">
-<h4 id="org95f39fc"><span class="section-number-4">4.1.2.</span> Representación del problema del paseo</h4>
+<div id="outline-container-org0b19f9c" class="outline-4">
+<h4 id="org0b19f9c"><span class="section-number-4">4.1.2.</span> Representación del problema del paseo</h4>
 <div class="outline-text-4" id="text-4-1-2">
 <ul class="org-ul">
 <li><p>
@@ -948,8 +927,8 @@ llegar a la posición -3.</li>
 </div>
 </div>
 
-<div id="outline-container-org15a7f1f" class="outline-3">
-<h3 id="org15a7f1f"><span class="section-number-3">4.2.</span> No solución del problema del paseo mediante búsqueda en profundidad</h3>
+<div id="outline-container-orgd7fff58" class="outline-3">
+<h3 id="orgd7fff58"><span class="section-number-3">4.2.</span> No solución del problema del paseo mediante búsqueda en profundidad</h3>
 <div class="outline-text-3" id="text-4-2">
 <ul class="org-ul">
 <li><p>
@@ -976,8 +955,8 @@ true.
 </div>
 </div>
 
-<div id="outline-container-org830b1a2" class="outline-3">
-<h3 id="org830b1a2"><span class="section-number-3">4.3.</span> Procedimiento de búsqueda en anchura</h3>
+<div id="outline-container-orgd903874" class="outline-3">
+<h3 id="orgd903874"><span class="section-number-3">4.3.</span> Procedimiento de búsqueda en anchura</h3>
 <div class="outline-text-3" id="text-4-3">
 <ul class="org-ul">
 <li>Un <i>nodo</i> es una lista de estados <code>[E(n),...,E(1)]</code> de forma que
@@ -1050,8 +1029,8 @@ camino que lleva a dicho elemento ni a <code>Abiertos</code>.
 </div>
 </div>
 
-<div id="outline-container-org7eaac83" class="outline-3">
-<h3 id="org7eaac83"><span class="section-number-3">4.4.</span> Solución del problema del paseo mediante búsqueda en anchura.</h3>
+<div id="outline-container-orgd603dea" class="outline-3">
+<h3 id="orgd603dea"><span class="section-number-3">4.4.</span> Solución del problema del paseo mediante búsqueda en anchura.</h3>
 <div class="outline-text-3" id="text-4-4">
 <ul class="org-ul">
 <li><p>
@@ -1087,16 +1066,16 @@ S = <span style="color: #707183;">[</span>0,-1,-2,-3<span style="color: #707183;
 </div>
 </div>
 
-<div id="outline-container-org52e0a2f" class="outline-2">
-<h2 id="org52e0a2f"><span class="section-number-2">5.</span> Búsqueda óptima (de menor coste)</h2>
+<div id="outline-container-orgb5b97cc" class="outline-2">
+<h2 id="orgb5b97cc"><span class="section-number-2">5.</span> Búsqueda óptima (de menor coste)</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgbc7d8a0" class="outline-3">
-<h3 id="orgbc7d8a0"><span class="section-number-3">5.1.</span> Problema del viaje</h3>
+<div id="outline-container-org08485b7" class="outline-3">
+<h3 id="org08485b7"><span class="section-number-3">5.1.</span> Problema del viaje</h3>
 <div class="outline-text-3" id="text-5-1">
 </div>
-<div id="outline-container-orgb82ae8d" class="outline-4">
-<h4 id="orgb82ae8d"><span class="section-number-4">5.1.1.</span> Descripción del problema del viaje:</h4>
+<div id="outline-container-org7f8f701" class="outline-4">
+<h4 id="org7f8f701"><span class="section-number-4">5.1.1.</span> Descripción del problema del viaje:</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <ul class="org-ul">
 <li>Nos encontramos en una capital andaluza (p.e. Sevilla) y deseamos
@@ -1107,8 +1086,8 @@ capital a sus vecinas, como se muestra en el siguiente mapa <br />
 </div>
 </div>
 
-<div id="outline-container-org8441b07" class="outline-4">
-<h4 id="org8441b07"><span class="section-number-4">5.1.2.</span> Representación del problema del viaje</h4>
+<div id="outline-container-org189a361" class="outline-4">
+<h4 id="org189a361"><span class="section-number-4">5.1.2.</span> Representación del problema del viaje</h4>
 <div class="outline-text-4" id="text-5-1-2">
 <ul class="org-ul">
 <li><p>
@@ -1260,8 +1239,8 @@ siguiente tabla:
 </div>
 </div>
 
-<div id="outline-container-orgd6c3b87" class="outline-3">
-<h3 id="orgd6c3b87"><span class="section-number-3">5.2.</span> Solución del problema del viaje mediante búsqueda en profundidad y en anchura</h3>
+<div id="outline-container-org172c374" class="outline-3">
+<h3 id="org172c374"><span class="section-number-3">5.2.</span> Solución del problema del viaje mediante búsqueda en profundidad y en anchura</h3>
 <div class="outline-text-3" id="text-5-2">
 <ul class="org-ul">
 <li><p>
@@ -1282,8 +1261,8 @@ S = <span style="color: #707183;">[</span>sevilla,c&#243;rdoba,granada,almer&#23
 </div>
 </div>
 
-<div id="outline-container-orgf224d1a" class="outline-3">
-<h3 id="orgf224d1a"><span class="section-number-3">5.3.</span> Primer procedimiento de búsqueda óptima</h3>
+<div id="outline-container-org60a04a2" class="outline-3">
+<h3 id="org60a04a2"><span class="section-number-3">5.3.</span> Primer procedimiento de búsqueda óptima</h3>
 <div class="outline-text-3" id="text-5-3">
 <ul class="org-ul">
 <li><p>
@@ -1320,8 +1299,8 @@ menor coste.
 </div>
 </div>
 
-<div id="outline-container-orga3ac264" class="outline-3">
-<h3 id="orga3ac264"><span class="section-number-3">5.4.</span> Solución del problema del viaje mediante búsqueda óptima</h3>
+<div id="outline-container-orgcdb50de" class="outline-3">
+<h3 id="orgcdb50de"><span class="section-number-3">5.4.</span> Solución del problema del viaje mediante búsqueda óptima</h3>
 <div class="outline-text-3" id="text-5-4">
 <ul class="org-ul">
 <li><p>
@@ -1348,8 +1327,8 @@ C = 363.537398328421
 </div>
 </div>
 
-<div id="outline-container-org67d9751" class="outline-3">
-<h3 id="org67d9751"><span class="section-number-3">5.5.</span> Segundo procedimiento de búsqueda óptima</h3>
+<div id="outline-container-org6e957f8" class="outline-3">
+<h3 id="org6e957f8"><span class="section-number-3">5.5.</span> Segundo procedimiento de búsqueda óptima</h3>
 <div class="outline-text-3" id="text-5-5">
 <ul class="org-ul">
 <li>Un <i>nodo</i> es un término de la forma <code>C-[E(n),...,E(1)]</code> tal
@@ -1428,8 +1407,8 @@ pertenece a <code>[E|R]</code> y <code>C1</code> es la suma de <code>C</code> y 
 </div>
 </div>
 
-<div id="outline-container-org5e01890" class="outline-3">
-<h3 id="org5e01890"><span class="section-number-3">5.6.</span> Comparación de procedimientos de búsqueda óptima</h3>
+<div id="outline-container-org9173fad" class="outline-3">
+<h3 id="org9173fad"><span class="section-number-3">5.6.</span> Comparación de procedimientos de búsqueda óptima</h3>
 <div class="outline-text-3" id="text-5-6">
 <ul class="org-ul">
 <li><p>
@@ -1456,8 +1435,8 @@ S = <span style="color: #707183;">[</span>sevilla,m&#225;laga,granada,almer&#237
 </div>
 </div>
 
-<div id="outline-container-org5b14ebd" class="outline-2">
-<h2 id="org5b14ebd"><span class="section-number-2">6.</span> Búsqueda en escalada (con heurística).</h2>
+<div id="outline-container-orga1dbde8" class="outline-2">
+<h2 id="orga1dbde8"><span class="section-number-2">6.</span> Búsqueda en escalada (con heurística).</h2>
 <div class="outline-text-2" id="text-6">
 <ul class="org-ul">
 <li>La <i>heurística</i> de un estado es una estimación del mínimo coste de las
@@ -1520,8 +1499,8 @@ tiene sucesores con heurística menor que <code>H1</code>, entonces</li>
 </ul>
 </div>
 
-<div id="outline-container-org3581ed3" class="outline-3">
-<h3 id="org3581ed3"><span class="section-number-3">6.1.</span> Heurística del problema del viaje</h3>
+<div id="outline-container-orgbeb6ac9" class="outline-3">
+<h3 id="orgbeb6ac9"><span class="section-number-3">6.1.</span> Heurística del problema del viaje</h3>
 <div class="outline-text-3" id="text-6-1">
 <ul class="org-ul">
 <li><p>
@@ -1538,8 +1517,8 @@ decir, la distancia de <code>E</code> al estado final).
 </div>
 </div>
 
-<div id="outline-container-org5aa4932" class="outline-3">
-<h3 id="org5aa4932"><span class="section-number-3">6.2.</span> Solución del problema del viaje mediante búsqueda en Escalada</h3>
+<div id="outline-container-org9c4f6b5" class="outline-3">
+<h3 id="org9c4f6b5"><span class="section-number-3">6.2.</span> Solución del problema del viaje mediante búsqueda en Escalada</h3>
 <div class="outline-text-3" id="text-6-2">
 <ul class="org-ul">
 <li><p>
@@ -1569,16 +1548,16 @@ S = <span style="color: #707183;">[</span>sevilla,m&#225;laga,granada,almer&#237
 </div>
 </div>
 
-<div id="outline-container-org247b9b4" class="outline-2">
-<h2 id="org247b9b4"><span class="section-number-2">7.</span> Búsqueda por primero el mejor</h2>
+<div id="outline-container-org253e227" class="outline-2">
+<h2 id="org253e227"><span class="section-number-2">7.</span> Búsqueda por primero el mejor</h2>
 <div class="outline-text-2" id="text-7">
 </div>
-<div id="outline-container-orgee67e37" class="outline-3">
-<h3 id="orgee67e37"><span class="section-number-3">7.1.</span> Problema de las fichas</h3>
+<div id="outline-container-orge689d97" class="outline-3">
+<h3 id="orge689d97"><span class="section-number-3">7.1.</span> Problema de las fichas</h3>
 <div class="outline-text-3" id="text-7-1">
 </div>
-<div id="outline-container-orgdba87f8" class="outline-4">
-<h4 id="orgdba87f8"><span class="section-number-4">7.1.1.</span> Descripción del problema de las fichas</h4>
+<div id="outline-container-orgf44929d" class="outline-4">
+<h4 id="orgf44929d"><span class="section-number-4">7.1.1.</span> Descripción del problema de las fichas</h4>
 <div class="outline-text-4" id="text-7-1-1">
 <p>
 Se considera un tablero con 7 cuadrados consecutivos. Inicialmente, en
@@ -1615,8 +1594,8 @@ saltando, como máximo, sobre otras dos.
 </div>
 </div>
 
-<div id="outline-container-org4d02a8e" class="outline-4">
-<h4 id="org4d02a8e"><span class="section-number-4">7.1.2.</span> Representación del problema de las Fichas</h4>
+<div id="outline-container-org01a93bc" class="outline-4">
+<h4 id="org01a93bc"><span class="section-number-4">7.1.2.</span> Representación del problema de las Fichas</h4>
 <div class="outline-text-4" id="text-7-1-2">
 <ul class="org-ul">
 <li>Un estado es una lista de siete elementos representando cada una de
@@ -1746,8 +1725,8 @@ su valor es 1+2+2 = 5.
 </div>
 </div>
 
-<div id="outline-container-org859a917" class="outline-3">
-<h3 id="org859a917"><span class="section-number-3">7.2.</span> Procedimiento de búsqueda por primero el mejor</h3>
+<div id="outline-container-org6f60cb6" class="outline-3">
+<h3 id="org6f60cb6"><span class="section-number-3">7.2.</span> Procedimiento de búsqueda por primero el mejor</h3>
 <div class="outline-text-3" id="text-7-2">
 <ul class="org-ul">
 <li>Un <i>nodo</i> es un término <code>H-[E(n),...,E(1)]</code> de forma que <code>E(1)</code> es
@@ -1834,8 +1813,8 @@ pertenecen si a <code>Abiertos</code> ni a <code>Cerrados</code>.
 </div>
 </div>
 
-<div id="outline-container-org02f637f" class="outline-3">
-<h3 id="org02f637f"><span class="section-number-3">7.3.</span> Solución del problema de las fichas mediante búsqueda por primero el mejor</h3>
+<div id="outline-container-orgc365d94" class="outline-3">
+<h3 id="orgc365d94"><span class="section-number-3">7.3.</span> Solución del problema de las fichas mediante búsqueda por primero el mejor</h3>
 <div class="outline-text-3" id="text-7-3">
 <ul class="org-ul">
 <li><p>
@@ -1869,25 +1848,25 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span>
 </div>
 </div>
 
-<div id="outline-container-orgcbf6f0c" class="outline-2">
-<h2 id="orgcbf6f0c"><span class="section-number-2">8.</span> Algoritmo A*</h2>
+<div id="outline-container-org78bd97b" class="outline-2">
+<h2 id="org78bd97b"><span class="section-number-2">8.</span> Algoritmo A*</h2>
 <div class="outline-text-2" id="text-8">
 </div>
-<div id="outline-container-org2b0db6a" class="outline-3">
-<h3 id="org2b0db6a"><span class="section-number-3">8.1.</span> El problema del 8 puzzle</h3>
+<div id="outline-container-org97fb123" class="outline-3">
+<h3 id="org97fb123"><span class="section-number-3">8.1.</span> El problema del 8 puzzle</h3>
 <div class="outline-text-3" id="text-8-1">
 </div>
-<div id="outline-container-orgdaaacaa" class="outline-4">
-<h4 id="orgdaaacaa"><span class="section-number-4">8.1.1.</span> Descripción del problema del 8 puzzle</h4>
+<div id="outline-container-org43b9a1f" class="outline-4">
+<h4 id="org43b9a1f"><span class="section-number-4">8.1.1.</span> Descripción del problema del 8 puzzle</h4>
 <div class="outline-text-4" id="text-8-1-1">
 <ul class="org-ul">
-<li>La descripción del problema se encuentra al <a href="#orgff657ec">principio del tema</a>.</li>
+<li>La descripción del problema se encuentra al <a href="#orgc7c7468">principio del tema</a>.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgc8e0110" class="outline-4">
-<h4 id="orgc8e0110"><span class="section-number-4">8.1.2.</span> Representación del problema del 9 puzzle</h4>
+<div id="outline-container-org7ac3015" class="outline-4">
+<h4 id="org7ac3015"><span class="section-number-4">8.1.2.</span> Representación del problema del 9 puzzle</h4>
 <div class="outline-text-4" id="text-8-1-2">
 <ul class="org-ul">
 <li>Un estado es una lista de los elementos del tablero de arriba a abajo
@@ -2035,8 +2014,8 @@ En este caso, todos los costes valen 1.
 </div>
 </div>
 
-<div id="outline-container-orgc94a148" class="outline-3">
-<h3 id="orgc94a148"><span class="section-number-3">8.2.</span> El algoritmo A*</h3>
+<div id="outline-container-org3b72905" class="outline-3">
+<h3 id="org3b72905"><span class="section-number-3">8.2.</span> El algoritmo A*</h3>
 <div class="outline-text-3" id="text-8-2">
 <ul class="org-ul">
 <li>Un <i>nodo</i> es un término de la forma <code>F/C-[E(n),...,E(1)]</code> donde
@@ -2117,8 +2096,8 @@ elemento de <code>N</code> que no pertenecen al resto de <code>N</code>).
 </div>
 </div>
 
-<div id="outline-container-org3a829e4" class="outline-3">
-<h3 id="org3a829e4"><span class="section-number-3">8.3.</span> Solucióm del 8 puzzle mediante el algoritmo A*</h3>
+<div id="outline-container-org789c1f3" class="outline-3">
+<h3 id="org789c1f3"><span class="section-number-3">8.3.</span> Solucióm del 8 puzzle mediante el algoritmo A*</h3>
 <div class="outline-text-3" id="text-8-3">
 <ul class="org-ul">
 <li><p>
@@ -2171,12 +2150,12 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span>
 </div>
 </div>
 
-<div id="outline-container-org7c13385" class="outline-2">
-<h2 id="org7c13385"><span class="section-number-2">9.</span> Ejercicios</h2>
+<div id="outline-container-org8ddde40" class="outline-2">
+<h2 id="org8ddde40"><span class="section-number-2">9.</span> Ejercicios</h2>
 <div class="outline-text-2" id="text-9">
 </div>
-<div id="outline-container-org6b7eee0" class="outline-3">
-<h3 id="org6b7eee0"><span class="section-number-3">9.1.</span> Problemas de los bloques</h3>
+<div id="outline-container-org4b3a902" class="outline-3">
+<h3 id="org4b3a902"><span class="section-number-3">9.1.</span> Problemas de los bloques</h3>
 <div class="outline-text-3" id="text-9-1">
 <hr />
 <p>
@@ -2376,8 +2355,8 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[</span>
 </div>
 </div>
 
-<div id="outline-container-org610e881" class="outline-3">
-<h3 id="org610e881"><span class="section-number-3">9.2.</span> Problema de las 8 reinas</h3>
+<div id="outline-container-orge4674b9" class="outline-3">
+<h3 id="orge4674b9"><span class="section-number-3">9.2.</span> Problema de las 8 reinas</h3>
 <div class="outline-text-3" id="text-9-2">
 <hr />
 <p>
@@ -2508,8 +2487,8 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[]</span
 </div>
 </div>
 
-<div id="outline-container-org57027cb" class="outline-2">
-<h2 id="org57027cb"><span class="section-number-2">10.</span> Bibliografía</h2>
+<div id="outline-container-org64a98cb" class="outline-2">
+<h2 id="org64a98cb"><span class="section-number-2">10.</span> Bibliografía</h2>
 <div class="outline-text-2" id="text-10">
 <ul class="org-ul">
 <li>I. Bratko.
@@ -2550,7 +2529,7 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[]</span
 </ul></li>
 
 <li>Y. Shoham.
-<a href="https://books.google.co.ve/books?id=kySjBQAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">Artificial intelligence techniques in Prolog</a>
+<a href="https://books.google.co.ve/books?id=kySjBQAAQBAJ&amp;printsec=frontcover&amp;hl=es#v=onepage&amp;q&amp;f=false">Artificial intelligence techniques in Prolog</a>.
 (Morgan Kaufmann, 1994)
 <ul class="org-ul">
 <li>Cap. 2 "Search".</li>
@@ -2562,6 +2541,13 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[]</span
 <ul class="org-ul">
 <li>Cap. 12: AI applications of Prolog: State-space search.</li>
 </ul></li>
+
+<li>J.M. Spivey
+<a href="https://spivey.oriel.ox.ac.uk/wiki/files/logprog/logic.pdf">Introduction to logic programming through Prolog</a>.
+(Prentice-Hall International, 1996).
+<ul class="org-ul">
+<li>Cap. 9: Searching problemas.</li>
+</ul></li>
 </ul>
 </div>
 </div>
@@ -2570,16 +2556,17 @@ S = <span style="color: #707183;">[</span><span style="color: #7388d6;">[]</span
 <hr>
 <center>
 <p><a href="/"><i class="fa fa-home"></i></a> |
-   <a href="/materias/PLconProlog/">Inicial</a> |
-   <a href="/materias/PLconProlog/temas.html">Temas  </a> |
-   <a href="/materias/PLconProlog/sistemas.html">Sistemas </a> |
-   <a href="/materias/PLconProlog/cursos.html">Cursos </a> |
-   <a href="/materias/PLconProlog/doc.html">Documentación  </a>
+   <a href="/cursos/i1m/">Inicial</a> |
+   <a href="/cursos/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/cursos/i1m/manuales.html">Manuales  </a> |
+   <a href="/cursos/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/cursos/i1m/examenes.html">Exámenes  </a> |
+   <a href="/cursos/i1m/doc.html">Documentación  </a>
 </p>
 </center>
 <div id="extras">
   <p><a href="/">José A. Alonso Jiménez</a>
-  <p>Sevilla, 03 de julio del 2022</p>
+  <p>Sevilla, 07 de abril del 2024</p>
   <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
 </div>
 </div>
