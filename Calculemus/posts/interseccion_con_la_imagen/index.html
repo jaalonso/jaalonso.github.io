@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>f[s] ∩ t = f[s ∩ f⁻¹[t]] | Calculemus (Demostraciones con Lean4 e Isabelle/HOL)</title>
+<link href="../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/Calculemus24/posts/interseccion_con_la_imagen/">
+<link rel="icon" href="../../favicon.ico" sizes="48x48">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/Calculemus24/meta-twitter.png">
+<meta name="twitter:title" content="f[s] ∩ t = f[s ∩ f⁻¹[t]] | Calculemus (Demostraciones con Lean4 e Isabelle/HOL)">
+<meta name="author" content="José A. Alonso">
+<link rel="next" href="../prueba-de-resaltado/" title="Prueba de resaltado y de matemática" type="text/html">
+<meta property="og:site_name" content="Calculemus (Demostraciones con Lean4 e Isabelle/HOL)">
+<meta property="og:title" content="f[s] ∩ t = f[s ∩ f⁻¹[t]]">
+<meta property="og:url" content="https://jaalonso.github.io/Calculemus24/posts/interseccion_con_la_imagen/">
+<meta property="og:description" content="Demostrar con Lean4 que
+\[ f[s] ∩ t = f[s ∩ f⁻¹[t]] \]
+Para ello, completar la siguiente teoría de Lean4:
+{{&lt; highlight lean4 &gt;}}
+import Mathlib.Data.Set.Function
+import Mathlib.Tactic
+open Set
+variab">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-04-09T14:30:28+02:00">
+<meta property="article:tag" content="Comprensión">
+<meta property="article:tag" content="Orden_superior">
+<meta property="article:tag" content="Recursión">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../" title="Calculemus (Demostraciones con Lean4 e Isabelle/HOL)" rel="home">
+
+        <span id="blog-title">Calculemus (Demostraciones con Lean4 e Isabelle/HOL)</span>
+    </a></h1>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../archive.html">Archivo</a></li>
+                <li><a href="../../categories/">Etiquetas</a></li>
+                <li><a href="../../about/">Acerca de</a></li>
+                <li><a href="../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">f[s] ∩ t = f[s ∩ f⁻¹[t]]</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-04-09T14:30:28+02:00" itemprop="datePublished" title="09-04-2024">09-04-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que
+\[ f[s] ∩ t = f[s ∩ f⁻¹[t]] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<p>{{&lt; highlight lean4 &gt;}}
+import Mathlib.Data.Set.Function
+import Mathlib.Tactic</p>
+<p>open Set</p>
+<p>variable {α β : Type _}
+variable (f : α → β)
+variable (s : Set α)
+variable (t : Set β)</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by sorry
+{{&lt;/ highlight &gt;}}</p>
+<!--more-->
+
+<h3>1. Demostración en lenguaje natural</h3>
+<p>Tenemos que demostrar que, para toda \(y\),
+\[ y ∈ f[s] ∩ t ↔ y ∈ f[s ∩ f⁻¹[t]] \]
+Lo haremos probando las dos implicaciones.</p>
+<p>(⟹) Supongamos que \(y ∈ f[s] ∩ t\). Entonces, se tiene que
+\begin{align}
+   &amp;y ∈ f[s] \tag{1} \\
+   &amp;y ∈ t    \tag{2}
+\end{align}
+Por (1), existe un \(x\) tal que
+\begin{align}
+   &amp;x ∈ s     \tag{3} \\
+   &amp;f(x) = y  \tag{4}
+\end{align}
+Por (2) y (4),
+\[ f(x) ∈ t \]
+y, por tanto,
+\[ x ∈ f⁻¹[t] \]
+que, junto con (3), da
+\{ x ∈ s ∩ f⁻¹[t] \]
+y, por tanto,
+\[ f(x) ∈ f[s ∩ f⁻¹[t]] \]
+que, junto con (4), da
+\[ y ∈ f[s ∩ f⁻¹[t]] \]</p>
+<p>(⟸) Supongamos que \(y ∈ f[s ∩ f⁻¹[t]]\). Entonces, existe un \(x\) tal que
+\begin{align}
+   &amp;x ∈ s ∩ f⁻¹[t] \tag{5} \\
+   &amp;f(x) = y       \tag{6}
+\end{align}
+Por (1), se tiene que
+\begin{align}
+   &amp;x ∈ s      \tag{7} \\
+   &amp;x ∈ f⁻¹[t] \tag{8}
+\end{align}
+Por (7) se tiene que
+\[ f(x) ∈ f[s] \]
+y, junto con (6), se tiene que
+\[ y ∈ f[s] \tag{9} \]
+Por (8), se tiene que
+\[ f(x) ∈ t \]
+y, junto con (6), se tiene que
+\[ y ∈ t \tag{10} \]
+Por (9) y (19), se tiene que
+\[ y ∈ f[s] ∩ t \]</p>
+<h3>2. Demostraciones con Lean4</h3>
+<p>{{&lt; highlight haskell &gt;}}
+import Mathlib.Data.Set.Function
+import Mathlib.Tactic</p>
+<p>open Set</p>
+<p>variable {α β : Type _}
+variable (f : α → β)
+variable (s : Set α)
+variable (t : Set β)</p>
+<p>-- 1ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by
+  ext y
+  -- y : β
+  -- ⊢ y ∈ f '' s ∩ t ↔ y ∈ f '' (s ∩ f ⁻¹' t)
+  have h1 : y ∈ f '' s ∩ t → y ∈ f '' (s ∩ f ⁻¹' t) := by
+    intro hy
+    -- hy : y ∈ f '' s ∩ t
+    -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t)
+    have h1a : y ∈ f '' s := hy.1
+    obtain ⟨x : α, hx: x ∈ s ∧ f x = y⟩ := h1a
+    have h1b : x ∈ s := hx.1
+    have h1c : f x = y := hx.2
+    have h1d : y ∈ t := hy.2
+    have h1e : f x ∈ t := by rwa [←h1c] at h1d
+    have h1f : x ∈ s ∩ f ⁻¹' t := mem_inter h1b h1e
+    have h1g : f x ∈ f '' (s ∩ f ⁻¹' t) := mem_image_of_mem f h1f
+    show y ∈ f '' (s ∩ f ⁻¹' t)
+    rwa [h1c] at h1g
+  have h2 : y ∈ f '' (s ∩ f ⁻¹' t) → y ∈ f '' s ∩ t :=  by
+    intro hy
+    -- hy : y ∈ f '' (s ∩ f ⁻¹' t)
+    -- ⊢ y ∈ f '' s ∩ t
+    obtain ⟨x : α, hx : x ∈ s ∩ f ⁻¹' t ∧ f x = y⟩ := hy
+    have h2a : x ∈ s := hx.1.1
+    have h2b : f x ∈ f '' s := mem_image_of_mem f h2a
+    have h2c : y ∈ f '' s := by rwa [hx.2] at h2b
+    have h2d : x ∈ f ⁻¹' t := hx.1.2
+    have h2e : f x ∈ t := mem_preimage.mp h2d
+    have h2f : y ∈ t := by rwa [hx.2] at h2e
+    show y ∈ f '' s ∩ t
+    exact mem_inter h2c h2f
+  show y ∈ f '' s ∩ t ↔ y ∈ f '' (s ∩ f ⁻¹' t)
+  exact ⟨h1, h2⟩</p>
+<p>-- 2ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by
+  ext y
+  -- y : β
+  -- ⊢ y ∈ f '' s ∩ t ↔ y ∈ f '' (s ∩ f ⁻¹' t)
+  constructor
+  . -- ⊢ y ∈ f '' s ∩ t → y ∈ f '' (s ∩ f ⁻¹' t)
+    intro hy
+    -- hy : y ∈ f '' s ∩ t
+    -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t)
+    cases' hy with hyfs yt
+    -- hyfs : y ∈ f '' s
+    -- yt : y ∈ t
+    cases' hyfs with x hx
+    -- x : α
+    -- hx : x ∈ s ∧ f x = y
+    cases' hx with xs fxy
+    -- xs : x ∈ s
+    -- fxy : f x = y
+    use x
+    -- ⊢ x ∈ s ∩ f ⁻¹' t ∧ f x = y
+    constructor
+    . -- ⊢ x ∈ s ∩ f ⁻¹' t
+      constructor
+      . -- ⊢ x ∈ s
+        exact xs
+      . -- ⊢ x ∈ f ⁻¹' t
+        rw [mem_preimage]
+        -- ⊢ f x ∈ t
+        rw [fxy]
+        -- ⊢ y ∈ t
+        exact yt
+    . -- ⊢ f x = y
+      exact fxy
+  . -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t) → y ∈ f '' s ∩ t
+    intro hy
+    -- hy : y ∈ f '' (s ∩ f ⁻¹' t)
+    -- ⊢ y ∈ f '' s ∩ t
+    cases' hy with x hx
+    -- x : α
+    -- hx : x ∈ s ∩ f ⁻¹' t ∧ f x = y
+    constructor
+    . -- ⊢ y ∈ f '' s
+      use x
+      -- ⊢ x ∈ s ∧ f x = y
+      constructor
+      . -- ⊢ x ∈ s
+        exact hx.1.1
+      . -- ⊢ f x = y
+        exact hx.2
+    . -- ⊢ y ∈ t
+      cases' hx with hx1 fxy
+      -- hx1 : x ∈ s ∩ f ⁻¹' t
+      -- fxy : f x = y
+      rw [←fxy]
+      -- ⊢ f x ∈ t
+      rw [←mem_preimage]
+      -- ⊢ x ∈ f ⁻¹' t
+      exact hx1.2</p>
+<p>-- 3ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by
+  ext y
+  -- y : β
+  -- ⊢ y ∈ f '' s ∩ t ↔ y ∈ f '' (s ∩ f ⁻¹' t)
+  constructor
+  . -- ⊢ y ∈ f '' s ∩ t → y ∈ f '' (s ∩ f ⁻¹' t)
+    rintro ⟨⟨x, xs, fxy⟩, yt⟩
+    -- yt : y ∈ t
+    -- x : α
+    -- xs : x ∈ s
+    -- fxy : f x = y
+    -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t)
+    use x
+    -- ⊢ x ∈ s ∩ f ⁻¹' t ∧ f x = y
+    constructor
+    . -- ⊢ x ∈ s ∩ f ⁻¹' t
+      constructor
+      . -- ⊢ x ∈ s
+        exact xs
+      . -- ⊢ x ∈ f ⁻¹' t
+        rw [mem_preimage]
+        -- ⊢ f x ∈ t
+        rw [fxy]
+        -- ⊢ y ∈ t
+        exact yt
+    . -- ⊢ f x = y
+      exact fxy
+  . -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t) → y ∈ f '' s ∩ t
+    rintro ⟨x, ⟨xs, xt⟩, fxy⟩
+    -- x : α
+    -- fxy : f x = y
+    -- xs : x ∈ s
+    -- xt : x ∈ f ⁻¹' t
+    -- ⊢ y ∈ f '' s ∩ t
+    constructor
+    . -- ⊢ y ∈ f '' s
+      use x, xs
+      -- ⊢ f x = y
+      exact fxy
+    . -- ⊢ y ∈ t
+      rw [←fxy]
+      -- ⊢ f x ∈ t
+      rw [←mem_preimage]
+      -- ⊢ x ∈ f ⁻¹' t
+      exact xt</p>
+<p>-- 4ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by
+  ext y
+  -- y : β
+  -- ⊢ y ∈ f '' s ∩ t ↔ y ∈ f '' (s ∩ f ⁻¹' t)
+  constructor
+  . -- ⊢ y ∈ f '' s ∩ t → y ∈ f '' (s ∩ f ⁻¹' t)
+    rintro ⟨⟨x, xs, fxy⟩, yt⟩
+    -- yt : y ∈ t
+    -- x : α
+    -- xs : x ∈ s
+    -- fxy : f x = y
+    -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t)
+    aesop
+  . -- ⊢ y ∈ f '' (s ∩ f ⁻¹' t) → y ∈ f '' s ∩ t
+    rintro ⟨x, ⟨xs, xt⟩, fxy⟩
+    -- x : α
+    -- fxy : f x = y
+    -- xs : x ∈ s
+    -- xt : x ∈ f ⁻¹' t
+    -- ⊢ y ∈ f '' s ∩ t
+    aesop</p>
+<p>-- 5ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+by ext ; constructor &lt;;&gt; aesop</p>
+<p>-- 6ª demostración
+-- ===============</p>
+<p>example : (f '' s) ∩ t = f '' (s ∩ f ⁻¹' t) :=
+(image_inter_preimage f s t).symm</p>
+<p>-- Lemas usados
+-- ============</p>
+<p>-- variable (x : α)
+-- variable (v : Set α)
+-- #check (image_inter_preimage f s t : f '' (s ∩ f ⁻¹' t) = f '' s ∩ t)
+-- #check (mem_image_of_mem f : x ∈ s → f x ∈ f '' s)
+-- #check (mem_inter : x ∈ s → x ∈ v → x ∈ s ∩ v)
+-- #check (mem_preimage : x ∈ f ⁻¹' t ↔ f x ∈ t)
+{{&lt;/ highlight &gt;}}</p>
+<p>Se puede interactuar con las demostraciones anteriores en
+<a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Interseccion_con_la_imagen.lean">Lean 4 Web</a>.</p>
+<h3>3. Demostraciones con Isabelle/HOL</h3>
+<p>{{&lt; highlight ocaml &gt;}}
+theory Interseccion_con_la_imagen
+imports Main
+begin</p>
+<p>(<em> 1ª demostración </em>)</p>
+<p>lemma "(f <code>s) ∩ v = f</code> (s ∩ f -<code>v)"
+proof (rule equalityI)
+  show "(f</code> s) ∩ v ⊆ f <code>(s ∩ f -</code> v)"
+  proof (rule subsetI)
+    fix y
+    assume "y ∈ (f <code>s) ∩ v"
+    then show "y ∈ f</code> (s ∩ f -<code>v)"
+    proof (rule IntE)
+      assume "y ∈ v"
+      assume "y ∈ f</code> s"
+      then show "y ∈ f <code>(s ∩ f -</code> v)"
+      proof (rule imageE)
+        fix x
+        assume "x ∈ s"
+        assume "y = f x"
+        then have "f x ∈ v"
+          using ‹y ∈ v› by (rule subst)
+        then have "x ∈ f -<code>v"
+          by (rule vimageI2)
+        with ‹x ∈ s› have "x ∈ s ∩ f -</code> v"
+          by (rule IntI)
+        then have "f x ∈ f <code>(s ∩ f -</code> v)"
+          by (rule imageI)
+        with ‹y = f x› show "y ∈ f <code>(s ∩ f -</code> v)"
+          by (rule ssubst)
+      qed
+    qed
+  qed
+next
+  show "f <code>(s ∩ f -</code> v) ⊆ (f <code>s) ∩ v"
+  proof (rule subsetI)
+    fix y
+    assume "y ∈ f</code> (s ∩ f -<code>v)"
+    then show "y ∈ (f</code> s) ∩ v"
+    proof (rule imageE)
+      fix x
+      assume "y = f x"
+      assume hx : "x ∈ s ∩ f -<code>v"
+      have "y ∈ f</code> s"
+      proof -
+        have "x ∈ s"
+          using hx by (rule IntD1)
+        then have "f x ∈ f <code>s"
+          by (rule imageI)
+        with ‹y = f x› show "y ∈ f</code> s"
+          by (rule ssubst)
+      qed
+      moreover
+      have "y ∈ v"
+      proof -
+        have "x ∈ f -<code>v"
+          using hx by (rule IntD2)
+        then have "f x ∈ v"
+          by (rule vimageD)
+        with ‹y = f x› show "y ∈ v"
+          by (rule ssubst)
+      qed
+      ultimately show "y ∈ (f</code> s) ∩ v"
+        by (rule IntI)
+    qed
+  qed
+qed</p>
+<p>(<em> 2ª demostración </em>)</p>
+<p>lemma "(f <code>s) ∩ v = f</code> (s ∩ f -<code>v)"
+proof
+  show "(f</code> s) ∩ v ⊆ f <code>(s ∩ f -</code> v)"
+  proof
+    fix y
+    assume "y ∈ (f <code>s) ∩ v"
+    then show "y ∈ f</code> (s ∩ f -<code>v)"
+    proof
+      assume "y ∈ v"
+      assume "y ∈ f</code> s"
+      then show "y ∈ f <code>(s ∩ f -</code> v)"
+      proof
+        fix x
+        assume "x ∈ s"
+        assume "y = f x"
+        then have "f x ∈ v" using ‹y ∈ v› by simp
+        then have "x ∈ f -<code>v" by simp
+        with ‹x ∈ s› have "x ∈ s ∩ f -</code> v" by simp
+        then have "f x ∈ f <code>(s ∩ f -</code> v)" by simp
+        with ‹y = f x› show "y ∈ f <code>(s ∩ f -</code> v)" by simp
+      qed
+    qed
+  qed
+next
+  show "f <code>(s ∩ f -</code> v) ⊆ (f <code>s) ∩ v"
+  proof
+    fix y
+    assume "y ∈ f</code> (s ∩ f -<code>v)"
+    then show "y ∈ (f</code> s) ∩ v"
+    proof
+      fix x
+      assume "y = f x"
+      assume hx : "x ∈ s ∩ f -<code>v"
+      have "y ∈ f</code> s"
+      proof -
+        have "x ∈ s" using hx by simp
+        then have "f x ∈ f <code>s" by simp
+        with ‹y = f x› show "y ∈ f</code> s" by simp
+      qed
+      moreover
+      have "y ∈ v"
+      proof -
+        have "x ∈ f -<code>v" using hx by simp
+        then have "f x ∈ v" by simp
+        with ‹y = f x› show "y ∈ v" by simp
+      qed
+      ultimately show "y ∈ (f</code> s) ∩ v" by simp
+    qed
+  qed
+qed</p>
+<p>(<em> 3ª demostración </em>)</p>
+<p>lemma "(f <code>s) ∩ v = f</code> (s ∩ f -<code>v)"
+proof
+  show "(f</code> s) ∩ v ⊆ f <code>(s ∩ f -</code> v)"
+  proof
+    fix y
+    assume "y ∈ (f <code>s) ∩ v"
+    then show "y ∈ f</code> (s ∩ f -<code>v)"
+    proof
+      assume "y ∈ v"
+      assume "y ∈ f</code> s"
+      then show "y ∈ f <code>(s ∩ f -</code> v)"
+      proof
+        fix x
+        assume "x ∈ s"
+        assume "y = f x"
+        then show "y ∈ f <code>(s ∩ f -</code> v)"
+          using ‹x ∈ s› ‹y ∈ v› by simp
+      qed
+    qed
+  qed
+next
+  show "f <code>(s ∩ f -</code> v) ⊆ (f <code>s) ∩ v"
+  proof
+    fix y
+    assume "y ∈ f</code> (s ∩ f -<code>v)"
+    then show "y ∈ (f</code> s) ∩ v"
+    proof
+      fix x
+      assume "y = f x"
+      assume hx : "x ∈ s ∩ f -<code>v"
+      then have "y ∈ f</code> s" using ‹y = f x› by simp
+      moreover
+      have "y ∈ v" using hx ‹y = f x› by simp
+      ultimately show "y ∈ (f ` s) ∩ v" by simp
+    qed
+  qed
+qed</p>
+<p>(<em> 4ª demostración </em>)</p>
+<p>lemma "(f <code>s) ∩ v = f</code> (s ∩ f -` v)"
+  by auto</p>
+<p>end
+{{&lt;/ highlight &gt;}}</p>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/comprension/" rel="tag">Comprensión</a></li>
+            <li><a class="tag p-category" href="../../categories/orden_superior/" rel="tag">Orden_superior</a></li>
+            <li><a class="tag p-category" href="../../categories/recursion/" rel="tag">Recursión</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="next">
+                <a href="../prueba-de-resaltado/" rel="next" title="Prueba de resaltado y de matemática">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
