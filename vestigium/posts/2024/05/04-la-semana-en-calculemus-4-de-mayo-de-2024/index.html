@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La semana en Calculemus (4 de mayo de 2024) | Vestigium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/vestigium/posts/2024/05/04-la-semana-en-calculemus-4-de-mayo-de-2024/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/vestigium/meta-twitter.png">
+<meta name="twitter:title" content="La semana en Calculemus (4 de mayo de 2024) | Vestigium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../04-resumen-de-lecturas-compartidas-durante-abril-de-2024/" title="Resumen de lecturas compartidas durante abril de 2024" type="text/html">
+<meta property="og:site_name" content="Vestigium">
+<meta property="og:title" content="La semana en Calculemus (4 de mayo de 2024)">
+<meta property="og:url" content="https://jaalonso.github.io/vestigium/posts/2024/05/04-la-semana-en-calculemus-4-de-mayo-de-2024/">
+<meta property="og:description" content="Esta semana he publicado en Calculemus las demostraciones con Lean4 de las siguientes propiedades:
+
+1. Imagen de la interseccion general mediante aplicaciones inyectivas
+2. Imagen inversa de la unión ">
+<meta property="og:image" content="https://jaalonso.github.io/vestigium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-05-04T11:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Vestigium" rel="home">
+
+        <span id="blog-title">Vestigium</span>
+    </a></h1>
+    <div>Cuaderno de Investigación en Lógica Computacional</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">La semana en Calculemus (4 de mayo de 2024)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-05-04T11:00:00+02:00" itemprop="datePublished" title="04-05-2024">04-05-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Esta semana he publicado en <a href="https://jaalonso.github.io/calculemus">Calculemus</a> las demostraciones con Lean4 de las siguientes propiedades:</p>
+<ul>
+<li><a href="#ej1">1. Imagen de la interseccion general mediante aplicaciones inyectivas</a></li>
+<li><a href="#ej2">2. Imagen inversa de la unión general</a></li>
+<li><a href="#ej3">3. Imagen inversa de la intersección general</a></li>
+<li><a href="#ej4">4. Teorema de Cantor</a></li>
+<li><a href="#ej5">5. En los monoides, los inversos a la izquierda y a la derecha son iguales</a></li>
+</ul>
+<p>A continuación se muestran las soluciones.</p>
+<!-- TEASER_END -->
+<p><a name="ej1"></a></p>
+<h2>1. Imagen de la interseccion general mediante aplicaciones inyectivas</h2>
+<p>Demostrar con Lean4 que si \(f\) es inyectiva, entonces
+\[⋂ᵢf[Aᵢ] ⊆ f\left[⋂ᵢAᵢ\right] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">A</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">injf</span> <span class="o">:</span> <span class="n">Injective</span> <span class="n">f</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">⊆</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+<span class="gr">sorry</span>
+</pre></div>
+
+<h3>1.1. Demostración en lenguaje natural</h3>
+<p>Sea \(y ∈ ⋂ᵢf[Aᵢ]\). Entonces,
+\begin{align}
+   &amp; (∀i ∈ I)y ∈ f[Aᵢ]  \tag{1} \newline
+   &amp; y ∈ f[Aᵢ]
+\end{align}
+Por tanto, existe un \(x ∈ Aᵢ\) tal que
+\[ f(x) = y \tag{2} \]</p>
+<p>Veamos que \(x ∈ ⋂ᵢAᵢ\). Para ello, sea \(j ∈ I\). Por (1),
+\[ y ∈ f[Aⱼ] \]
+Luego, existe un \(z\) tal que
+\begin{align}
+   &amp;z ∈ Aⱼ    \tag{3} \newline
+   &amp;f(z) = y
+\end{align}
+Pot (2),
+\[ f(x) = f(z) \]
+y, por ser \(f\) inyectiva,
+\[ x = z \]
+y, por (3),
+\[ x ∈ Aⱼ \]</p>
+<p>Puesto que \(x ∈ ⋂ᵢAᵢ\) se tiene que \(f(x) ∈ f\left[⋂ᵢAᵢ\right]\) y, por (2), \(y ∈ f\left[⋂ᵢAᵢ\right]\).</p>
+<h3>1.2. Demostraciones con Lean4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">A</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">injf</span> <span class="o">:</span> <span class="n">Injective</span> <span class="n">f</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">⊆</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">y</span> <span class="n">hy</span>
+  <span class="c1">-- y : β</span>
+  <span class="c1">-- hy : y ∈ ⋂ (i : I), f '' A i</span>
+  <span class="c1">-- ⊢ y ∈ f '' ⋂ (i : I), A i</span>
+  <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="bp">∀</span> <span class="o">(</span><span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">),</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">mem_iInter.mp</span> <span class="n">hy</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">h1</span> <span class="n">i</span>
+  <span class="n">obtain</span> <span class="o">⟨</span><span class="n">x</span> <span class="o">:</span> <span class="n">α</span><span class="o">,</span> <span class="n">h3</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="n">i</span> <span class="bp">∧</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">y</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">h2</span>
+  <span class="k">have</span> <span class="n">h4</span> <span class="o">:</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">:=</span> <span class="n">h3.2</span>
+  <span class="k">have</span> <span class="n">h5</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span> <span class="kd">by</span>
+    <span class="n">intro</span> <span class="n">j</span>
+    <span class="k">have</span> <span class="n">h5a</span> <span class="o">:</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">j</span> <span class="o">:=</span> <span class="n">h1</span> <span class="n">j</span>
+    <span class="n">obtain</span> <span class="o">⟨</span><span class="n">z</span> <span class="o">:</span> <span class="n">α</span><span class="o">,</span> <span class="n">h5b</span> <span class="o">:</span> <span class="n">z</span> <span class="bp">∈</span> <span class="n">A</span> <span class="n">j</span> <span class="bp">∧</span> <span class="n">f</span> <span class="n">z</span> <span class="bp">=</span> <span class="n">y</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">h5a</span>
+    <span class="k">have</span> <span class="n">h5c</span> <span class="o">:</span> <span class="n">z</span> <span class="bp">∈</span> <span class="n">A</span> <span class="n">j</span> <span class="o">:=</span> <span class="n">h5b.1</span>
+    <span class="k">have</span> <span class="n">h5d</span> <span class="o">:</span> <span class="n">f</span> <span class="n">z</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">:=</span> <span class="n">h5b.2</span>
+    <span class="k">have</span> <span class="n">h5e</span> <span class="o">:</span> <span class="n">f</span> <span class="n">z</span> <span class="bp">=</span> <span class="n">f</span> <span class="n">x</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rwa</span> <span class="o">[</span><span class="bp">←</span><span class="n">h4</span><span class="o">]</span> <span class="n">at</span> <span class="n">h5d</span>
+    <span class="k">have</span> <span class="n">h5f</span> <span class="o">:</span> <span class="n">z</span> <span class="bp">=</span> <span class="n">x</span> <span class="o">:=</span> <span class="n">injf</span> <span class="n">h5e</span>
+    <span class="k">show</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="n">j</span>
+    <span class="n">rwa</span> <span class="o">[</span><span class="n">h5f</span><span class="o">]</span> <span class="n">at</span> <span class="n">h5c</span>
+  <span class="k">have</span> <span class="n">h6</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">∈</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">mem_iInter.mpr</span> <span class="n">h5</span>
+  <span class="k">have</span> <span class="n">h7</span> <span class="o">:</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span> <span class="n">mem_image_of_mem</span> <span class="n">f</span> <span class="n">h6</span>
+  <span class="k">show</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span>
+  <span class="n">rwa</span> <span class="o">[</span><span class="n">h4</span><span class="o">]</span> <span class="n">at</span> <span class="n">h7</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">injf</span> <span class="o">:</span> <span class="n">Injective</span> <span class="n">f</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">⊆</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">y</span> <span class="n">hy</span>
+  <span class="c1">-- y : β</span>
+  <span class="c1">-- hy : y ∈ ⋂ (i : I), f '' A i</span>
+  <span class="c1">-- ⊢ y ∈ f '' ⋂ (i : I), A i</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iInter</span><span class="o">]</span> <span class="n">at</span> <span class="n">hy</span>
+  <span class="c1">-- hy : ∀ (i : I), y ∈ f '' A i</span>
+  <span class="n">rcases</span> <span class="n">hy</span> <span class="n">i</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">x</span><span class="o">,</span> <span class="bp">-</span><span class="o">,</span> <span class="n">fxy</span><span class="o">⟩</span>
+  <span class="c1">-- x : α</span>
+  <span class="c1">-- fxy : f x = y</span>
+  <span class="n">use</span> <span class="n">x</span>
+  <span class="c1">-- ⊢ x ∈ ⋂ (i : I), A i ∧ f x = y</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ ⋂ (i : I), A i</span>
+    <span class="n">apply</span> <span class="n">mem_iInter_of_mem</span>
+    <span class="c1">-- ⊢ ∀ (i : I), x ∈ A i</span>
+    <span class="n">intro</span> <span class="n">j</span>
+    <span class="c1">-- j : I</span>
+    <span class="c1">-- ⊢ x ∈ A j</span>
+    <span class="n">rcases</span> <span class="n">hy</span> <span class="n">j</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">z</span><span class="o">,</span> <span class="n">zAj</span><span class="o">,</span> <span class="n">fzy</span><span class="o">⟩</span>
+    <span class="c1">-- z : α</span>
+    <span class="c1">-- zAj : z ∈ A j</span>
+    <span class="c1">-- fzy : f z = y</span>
+    <span class="n">convert</span> <span class="n">zAj</span>
+    <span class="c1">-- ⊢ x = z</span>
+    <span class="n">apply</span> <span class="n">injf</span>
+    <span class="c1">-- ⊢ f x = f z</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">fxy</span><span class="o">]</span>
+    <span class="c1">-- ⊢ y = f z</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">fzy</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ f x = y</span>
+    <span class="n">exact</span> <span class="n">fxy</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">i</span> <span class="o">:</span> <span class="n">I</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">injf</span> <span class="o">:</span> <span class="n">Injective</span> <span class="n">f</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">''</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="bp">⊆</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">A</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intro</span> <span class="n">y</span>
+  <span class="c1">-- y : β</span>
+  <span class="c1">-- ⊢ y ∈ ⋂ (i : I), f '' A i → y ∈ f '' ⋂ (i : I), A i</span>
+  <span class="n">simp</span>
+  <span class="c1">-- ⊢ (∀ (i : I), ∃ x, x ∈ A i ∧ f x = y) → ∃ x, (∀ (i : I), x ∈ A i) ∧ f x = y</span>
+  <span class="n">intro</span> <span class="n">h</span>
+  <span class="c1">-- h : ∀ (i : I), ∃ x, x ∈ A i ∧ f x = y</span>
+  <span class="c1">-- ⊢ ∃ x, (∀ (i : I), x ∈ A i) ∧ f x = y</span>
+  <span class="n">rcases</span> <span class="n">h</span> <span class="n">i</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">x</span><span class="o">,</span> <span class="bp">-</span><span class="o">,</span> <span class="n">fxy</span><span class="o">⟩</span>
+  <span class="c1">-- x : α</span>
+  <span class="c1">-- fxy : f x = y</span>
+  <span class="n">use</span> <span class="n">x</span>
+  <span class="c1">-- ⊢ (∀ (i : I), x ∈ A i) ∧ f x = y</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ ∀ (i : I), x ∈ A i</span>
+    <span class="n">intro</span> <span class="n">j</span>
+    <span class="c1">-- j : I</span>
+    <span class="c1">-- ⊢ x ∈ A j</span>
+    <span class="n">rcases</span> <span class="n">h</span> <span class="n">j</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">z</span><span class="o">,</span> <span class="n">zAi</span><span class="o">,</span> <span class="n">fzy</span><span class="o">⟩</span>
+    <span class="c1">-- z : α</span>
+    <span class="c1">-- zAi : z ∈ A j</span>
+    <span class="c1">-- fzy : f z = y</span>
+    <span class="k">have</span> <span class="o">:</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">f</span> <span class="n">z</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">fxy</span><span class="o">,</span> <span class="n">fzy</span><span class="o">]</span>
+    <span class="c1">-- this : f x = f z</span>
+    <span class="k">have</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">z</span> <span class="o">:=</span> <span class="n">injf</span> <span class="n">this</span>
+    <span class="c1">-- this : x = z</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">this</span><span class="o">]</span>
+    <span class="c1">-- ⊢ z ∈ A j</span>
+    <span class="n">exact</span> <span class="n">zAi</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ f x = y</span>
+    <span class="n">exact</span> <span class="n">fxy</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- variable (s : Set α)</span>
+<span class="c1">-- #check (mem_iInter : x ∈ ⋂ i, A i ↔ ∀ i, x ∈ A i)</span>
+<span class="c1">-- #check (mem_iInter_of_mem : (∀ i, x ∈ A i) → x ∈ ⋂ i, A i)</span>
+<span class="c1">-- #check (mem_image_of_mem f : x  ∈ s → f x ∈ f '' s)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Imagen_de_la_interseccion_general_mediante_inyectiva.lean">Lean 4 Web</a>.</p>
+<h3>1.3. Demostraciones con Isabelle/HOL</h3>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Imagen_de_la_interseccion_general_mediante_inyectiva</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">          </span><span class="s">"inj f"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"(⋂ i ∈ I. f ` A i) ⊆ f ` (⋂ i ∈ I. A i)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"y ∈ (⋂ i ∈ I. f ` A i)"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"y ∈ f ` A i"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_D</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"y ∈ f ` (⋂ i ∈ I. A i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">imageE</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"y = f x"</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ A i"</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. A i)"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_I</span><span class="o">)</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">j</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ I"</span>
+<span class="w">      </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span>
+<span class="w">      </span><span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">        </span><span class="k">have</span><span class="w"> </span><span class="s">"y ∈ f ` A j"</span>
+<span class="w">          </span><span class="k">using</span><span class="w"> </span><span class="s">‹y ∈ (⋂i∈I. f ` A i)›</span><span class="w"> </span><span class="s">‹j ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_D</span><span class="o">)</span>
+<span class="w">        </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span>
+<span class="w">        </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">imageE</span><span class="o">)</span>
+<span class="w">          </span><span class="k">fix</span><span class="w"> </span><span class="n">z</span>
+<span class="w">          </span><span class="k">assume</span><span class="w"> </span><span class="s">"y = f z"</span>
+<span class="w">          </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ A j"</span>
+<span class="w">          </span><span class="k">have</span><span class="w"> </span><span class="s">"f z = f x"</span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="s">‹y = f z›</span><span class="w"> </span><span class="s">‹y = f x›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subst</span><span class="o">)</span>
+<span class="w">          </span><span class="k">with</span><span class="w"> </span><span class="s">‹inj f›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"z = x"</span>
+<span class="w">            </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">injD</span><span class="o">)</span>
+<span class="w">          </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span>
+<span class="w">            </span><span class="k">using</span><span class="w"> </span><span class="s">‹z ∈ A j›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subst</span><span class="o">)</span>
+<span class="w">        </span><span class="k">qed</span>
+<span class="w">      </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ f ` (⋂ i ∈ I. A i)"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">imageI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹y = f x›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"y ∈ f ` (⋂ i ∈ I. A i)"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">ssubst</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">          </span><span class="s">"inj f"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"(⋂ i ∈ I. f ` A i) ⊆ f ` (⋂ i ∈ I. A i)"</span>
+<span class="k">proof</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"y ∈ (⋂ i ∈ I. f ` A i)"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"y ∈ f ` A i"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"y ∈ f ` (⋂ i ∈ I. A i)"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"y = f x"</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ A i"</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. A i)"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">j</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ I"</span>
+<span class="w">      </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span>
+<span class="w">      </span><span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">        </span><span class="k">have</span><span class="w"> </span><span class="s">"y ∈ f ` A j"</span>
+<span class="w">          </span><span class="k">using</span><span class="w"> </span><span class="s">‹y ∈ (⋂i∈I. f ` A i)›</span><span class="w"> </span><span class="s">‹j ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">        </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span>
+<span class="w">        </span><span class="k">proof</span>
+<span class="w">          </span><span class="k">fix</span><span class="w"> </span><span class="n">z</span>
+<span class="w">          </span><span class="k">assume</span><span class="w"> </span><span class="s">"y = f z"</span>
+<span class="w">          </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ A j"</span>
+<span class="w">          </span><span class="k">have</span><span class="w"> </span><span class="s">"f z = f x"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹y = f z›</span><span class="w"> </span><span class="s">‹y = f x›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">          </span><span class="k">with</span><span class="w"> </span><span class="s">‹inj f›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"z = x"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">injD</span><span class="o">)</span>
+<span class="w">          </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ A j"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹z ∈ A j›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">        </span><span class="k">qed</span>
+<span class="w">      </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ f ` (⋂ i ∈ I. A i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹y = f x›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"y ∈ f ` (⋂ i ∈ I. A i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">          </span><span class="s">"inj f"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"(⋂ i ∈ I. f ` A i) ⊆ f ` (⋂ i ∈ I. A i)"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">image_INT</span><span class="o">)</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<p><a name="ej2"></a></p>
+<h2>2. Imagen inversa de la unión general</h2>
+<p>Demostrar con Lean4 que
+\[ f⁻¹\left[⋃ᵢ Bᵢ\right] = ⋃ᵢ f⁻¹[Bᵢ] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">B</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">β</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<h3>2.1. Demostración en lenguaje natural</h3>
+<p>Tenemos que demostrar que, para todo \(x\),
+\[ x ∈ f⁻¹\left[⋃ᵢ Bᵢ\right] ↔ x ∈ ⋃ᵢ f⁻¹[Bᵢ] \]
+y lo haremos demostrando las dos implicaciones.</p>
+<p>(⟹) Supongamos que \(x ∈ f⁻¹\left[⋃ᵢ Bᵢ\right]\). Entonces, por la definición de la imagen inversa,
+\[ f(x) ∈ ⋃ᵢ Bᵢ \]
+y, por la definición de la unión, existe un \(i\) tal que
+\[ f(x) ∈ Bᵢ \]
+y, por la definición de la imagen inversa,
+\[ x ∈ f⁻¹[Bᵢ] \]
+y, por la definición de la unión,
+\[ x ∈ ⋃ᵢ f⁻¹[Bᵢ] \]</p>
+<p>(⟸) Supongamos que \(x ∈ ⋃ᵢ f⁻¹[Bᵢ]\). Entonces, por la definición de la unión, existe un \(i\) tal que
+\[ x ∈ f⁻¹[Bᵢ] \]
+y, por la definición de la imagen inversa,
+\[ f(x) ∈ Bᵢ \]
+y, por la definición de la unión,
+\[ f(x) ∈ ⋃ᵢ Bᵢ \]
+y, por la definición de la imagen inversa,
+\[ x ∈ f⁻¹\left[⋃ᵢ Bᵢ\right] \]</p>
+<h3>2.2. Demostraciones con Lean4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">B</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">β</span><span class="o">)</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">ext</span> <span class="n">x</span>
+  <span class="c1">-- x : α</span>
+  <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋃ (i : I), B i ↔ x ∈ ⋃ (i : I), f ⁻¹' B i</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋃ (i : I), B i → x ∈ ⋃ (i : I), f ⁻¹' B i</span>
+    <span class="n">intro</span> <span class="n">hx</span>
+    <span class="c1">-- hx : x ∈ f ⁻¹' ⋃ (i : I), B i</span>
+    <span class="c1">-- ⊢ x ∈ ⋃ (i : I), f ⁻¹' B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : f x ∈ ⋃ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iUnion</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : ∃ i, f x ∈ B i</span>
+    <span class="n">cases'</span> <span class="n">hx</span> <span class="k">with</span> <span class="n">i</span> <span class="n">fxBi</span>
+    <span class="c1">-- i : I</span>
+    <span class="c1">-- fxBi : f x ∈ B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iUnion</span><span class="o">]</span>
+    <span class="c1">-- ⊢ ∃ i, x ∈ f ⁻¹' B i</span>
+    <span class="n">use</span> <span class="n">i</span>
+    <span class="c1">-- ⊢ x ∈ f ⁻¹' B i</span>
+    <span class="n">apply</span> <span class="n">mem_preimage.mpr</span>
+    <span class="c1">-- ⊢ f x ∈ B i</span>
+    <span class="n">exact</span> <span class="n">fxBi</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ ⋃ (i : I), f ⁻¹' B i → x ∈ f ⁻¹' ⋃ (i : I), B i</span>
+    <span class="n">intro</span> <span class="n">hx</span>
+    <span class="c1">-- hx : x ∈ ⋃ (i : I), f ⁻¹' B i</span>
+    <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋃ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span>
+    <span class="c1">-- ⊢ f x ∈ ⋃ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iUnion</span><span class="o">]</span>
+    <span class="c1">-- ⊢ ∃ i, f x ∈ B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iUnion</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : ∃ i, x ∈ f ⁻¹' B i</span>
+    <span class="n">cases'</span> <span class="n">hx</span> <span class="k">with</span> <span class="n">i</span> <span class="n">xBi</span>
+    <span class="c1">-- i : I</span>
+    <span class="c1">-- xBi : x ∈ f ⁻¹' B i</span>
+    <span class="n">use</span> <span class="n">i</span>
+    <span class="c1">-- ⊢ f x ∈ B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span> <span class="n">at</span> <span class="n">xBi</span>
+    <span class="c1">-- xBi : f x ∈ B i</span>
+    <span class="n">exact</span> <span class="n">xBi</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="n">preimage_iUnion</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋃</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>  <span class="n">simp</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- variable (s : Set β)</span>
+<span class="c1">-- variable (A : I → Set α)</span>
+<span class="c1">-- #check (mem_iUnion : x ∈ ⋃ i, A i ↔ ∃ i, x ∈ A i)</span>
+<span class="c1">-- #check (mem_preimage : x ∈ f ⁻¹' s ↔ f x ∈ s)</span>
+<span class="c1">-- #check (preimage_iUnion : f ⁻¹' (⋃ i, B i) = ⋃ i, f ⁻¹' (B i))</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Imagen_inversa_de_la_union_general.lean">Lean 4 Web</a>.</p>
+<h3>2.3. Demostraciones con Isabelle/HOL</h3>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Imagen_inversa_de_la_union_general</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) = (⋃ i ∈ I. f -` B i)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">equalityI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) ⊆ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋃ i ∈ I. B i)"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageD</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_E</span><span class="o">)</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"f x ∈ B i"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageI2</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_I</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(⋃ i ∈ I. f -` B i) ⊆ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_E</span><span class="o">)</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ B i"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageD</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋃ i ∈ I. B i)"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_I</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageI2</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) = (⋃ i ∈ I. f -` B i)"</span>
+<span class="k">proof</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) ⊆ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋃ i ∈ I. B i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"f x ∈ B i"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_I</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(⋃ i ∈ I. f -` B i) ⊆ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ B i"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋃ i ∈ I. B i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">UN_I</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋃ i ∈ I. B i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) = (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">vimage_UN</span><span class="o">)</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋃ i ∈ I. B i) = (⋃ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<p><a name="ej3"></a></p>
+<h2>3. Imagen inversa de la intersección general</h2>
+<p>Demostrar con Lean4 que
+\[ f⁻¹\left[\bigcap_{i \in I} B_i\right] = \bigcap_{i \in I} f⁻¹[B_i] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">B</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">β</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<h3>3.1. Demostración en lenguaje natural</h3>
+<p>Se demuestra mediante la siguiente cadena de equivalencias
+\begin{align}
+   x ∈ f⁻¹\left[\bigcap_{i \in I} B_i\right]
+   &amp;↔ f(x) ∈ \bigcap_{i \in I} B_i            \newline
+   &amp;↔ (∀ i) f(x) ∈ B_i                       \newline
+   &amp;↔ (∀ i) x ∈ f⁻¹[B_i]                     \newline
+   &amp;↔ x ∈ \bigcap_{i \in I} f⁻¹[B_i]
+\end{align}</p>
+<h3>3.2. Demostraciones con Lean4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="n">I</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">B</span> <span class="o">:</span> <span class="n">I</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">β</span><span class="o">)</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">ext</span> <span class="n">x</span>
+  <span class="c1">-- x : α</span>
+  <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋂ (i : I), B i ↔ x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+  <span class="k">calc</span>  <span class="o">(</span><span class="n">x</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span>
+     <span class="bp">↔</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">∈</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span>       <span class="o">:=</span> <span class="n">mem_preimage</span>
+   <span class="n">_</span> <span class="bp">↔</span> <span class="o">(</span><span class="bp">∀</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span>     <span class="o">:=</span> <span class="n">mem_iInter</span>
+   <span class="n">_</span> <span class="bp">↔</span> <span class="o">(</span><span class="bp">∀</span> <span class="n">i</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span> <span class="n">iff_of_eq</span> <span class="n">rfl</span>
+   <span class="n">_</span> <span class="bp">↔</span> <span class="n">x</span> <span class="bp">∈</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="n">B</span> <span class="n">i</span>   <span class="o">:=</span> <span class="n">mem_iInter.symm</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">ext</span> <span class="n">x</span>
+  <span class="c1">-- x : α</span>
+  <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋂ (i : I), B i ↔ x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋂ (i : I), B i → x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+    <span class="n">intro</span> <span class="n">hx</span>
+    <span class="c1">-- hx : x ∈ f ⁻¹' ⋂ (i : I), B i</span>
+    <span class="c1">-- ⊢ x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+    <span class="n">apply</span> <span class="n">mem_iInter_of_mem</span>
+    <span class="c1">-- ⊢ ∀ (i : I), x ∈ f ⁻¹' B i</span>
+    <span class="n">intro</span> <span class="n">i</span>
+    <span class="c1">-- i : I</span>
+    <span class="c1">-- ⊢ x ∈ f ⁻¹' B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span>
+    <span class="c1">-- ⊢ f x ∈ B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : f x ∈ ⋂ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iInter</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : ∀ (i : I), f x ∈ B i</span>
+    <span class="n">exact</span> <span class="n">hx</span> <span class="n">i</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ ⋂ (i : I), f ⁻¹' B i → x ∈ f ⁻¹' ⋂ (i : I), B i</span>
+    <span class="n">intro</span> <span class="n">hx</span>
+    <span class="c1">-- hx : x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+    <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋂ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_preimage</span><span class="o">]</span>
+    <span class="c1">-- ⊢ f x ∈ ⋂ (i : I), B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iInter</span><span class="o">]</span>
+    <span class="c1">-- ⊢ ∀ (i : I), f x ∈ B i</span>
+    <span class="n">intro</span> <span class="n">i</span>
+    <span class="c1">-- i : I</span>
+    <span class="c1">-- ⊢ f x ∈ B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">mem_preimage</span><span class="o">]</span>
+    <span class="c1">-- ⊢ x ∈ f ⁻¹' B i</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">mem_iInter</span><span class="o">]</span> <span class="n">at</span> <span class="n">hx</span>
+    <span class="c1">-- hx : ∀ (i : I), x ∈ f ⁻¹' B i</span>
+    <span class="n">exact</span> <span class="n">hx</span> <span class="n">i</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">ext</span> <span class="n">x</span>
+  <span class="c1">-- ⊢ x ∈ f ⁻¹' ⋂ (i : I), B i ↔ x ∈ ⋂ (i : I), f ⁻¹' B i</span>
+  <span class="n">simp</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="bp">⋂</span> <span class="n">i</span><span class="o">,</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="o">(</span><span class="n">B</span> <span class="n">i</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="o">{</span> <span class="n">ext</span> <span class="bp">;</span> <span class="n">simp</span> <span class="o">}</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- variable (s : Set β)</span>
+<span class="c1">-- variable (A : I → Set α)</span>
+<span class="c1">-- variable (a b : Prop)</span>
+<span class="c1">-- #check (iff_of_eq : a = b → (a ↔ b))</span>
+<span class="c1">-- #check (mem_iInter : x ∈ ⋂ i, A i ↔ ∀ i, x ∈ A i)</span>
+<span class="c1">-- #check (mem_iInter_of_mem : (∀ i, x ∈ A i) → x ∈ ⋂ i, A i)</span>
+<span class="c1">-- #check (mem_preimage : x ∈ f ⁻¹' s ↔ f x ∈ s)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Imagen_inversa_de_la_interseccion_general.lean">Lean 4 Web</a>.</p>
+<h3>3.3. Demostraciones con Isabelle/HOL</h3>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Imagen_inversa_de_la_interseccion_general</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) = (⋂ i ∈ I. f -` B i)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">equalityI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) ⊆ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ f -` (⋂ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_I</span><span class="o">)</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋂ i ∈ I. B i)"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="s">‹x ∈ f -` (⋂ i ∈ I. B i)›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageD</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ B i"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_D</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageI2</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(⋂ i ∈ I. f -` B i) ⊆ f -` (⋂ i ∈ I. B i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋂ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_I</span><span class="o">)</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹x ∈ (⋂ i ∈ I. f -` B i)›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">INT_D</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"f x ∈ B i"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageD</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋂ i ∈ I. B i)"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">vimageI2</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) = (⋂ i ∈ I. f -` B i)"</span>
+<span class="k">proof</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) ⊆ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subsetI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="n">hx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"x ∈ f -` (⋂ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋂ i ∈ I. B i)"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">hx</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ B i"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹i ∈ I›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(⋂ i ∈ I. f -` B i) ⊆ f -` (⋂ i ∈ I. B i)"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"f x ∈ (⋂ i ∈ I. B i)"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"i ∈ I"</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹x ∈ (⋂ i ∈ I. f -` B i)›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ f -` B i"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"f x ∈ B i"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ f -` (⋂ i ∈ I. B i)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3 demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) = (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">vimage_INT</span><span class="o">)</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"f -` (⋂ i ∈ I. B i) = (⋂ i ∈ I. f -` B i)"</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<p><a name="ej4"></a></p>
+<h2>4. Teorema de Cantor</h2>
+<p>Demostrar con Lean4 el teorema de Cantor; es decir, que no existe ninguna aplicación suprayectiva de un conjunto en el conjunto de sus subconjuntos.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">open</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">,</span> <span class="bp">¬</span><span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<h3>4.1. Demostración en lenguaje natural</h3>
+<p>Sea \(f\) una función de \(A\) en el conjunto de los subconjuntos  \(A\). Tenemos que demostrar que \(f\) no es suprayectiva. Lo haremos por reducción al absurdo. Para ello, supongamos que \(f\) es suprayectiva y consideremos el conjunto
+\[ S := \{i ∈ A | i ∉ f(i)\} \tag{1} \]
+Entonces, tiene que existir un \(j ∈ A\) tal que
+\[ f(j) = S \tag{2} \]
+Se pueden dar dos casos: \(j ∈ S\) ó \(j ∉ S\). Veamos que ambos son imposibles.</p>
+<p>Caso 1: Supongamos que \(j ∈ S\). Entonces, por (1)
+\[ j ∉ f(j) \]
+y, por (2),
+\[ j ∉ S \]
+que es una contradicción.</p>
+<p>Caso 2: Supongamos que \(j ∉ S\). Entonces, por (1)
+\[ j ∈ f(j) \]
+y, por (2),
+\[ j ∈ S \]
+que es una contradicción.</p>
+<h3>4.2. Demostraciones con Lean4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Basic</span>
+<span class="kn">open</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">,</span> <span class="bp">¬</span><span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">f</span> <span class="n">hf</span>
+  <span class="c1">-- f : α → Set α</span>
+  <span class="c1">-- hf : Surjective f</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="k">let</span> <span class="n">S</span> <span class="o">:=</span> <span class="o">{</span><span class="n">i</span> <span class="bp">|</span> <span class="n">i</span> <span class="bp">∉</span> <span class="n">f</span> <span class="n">i</span><span class="o">}</span>
+  <span class="n">unfold</span> <span class="n">Surjective</span> <span class="n">at</span> <span class="n">hf</span>
+  <span class="c1">-- hf : ∀ (b : Set α), ∃ a, f a = b</span>
+  <span class="n">cases'</span> <span class="n">hf</span> <span class="n">S</span> <span class="k">with</span> <span class="n">j</span> <span class="n">hj</span>
+  <span class="c1">-- j : α</span>
+  <span class="c1">-- hj : f j = S</span>
+  <span class="n">by_cases</span> <span class="n">j</span> <span class="bp">∈</span> <span class="n">S</span>
+  <span class="bp">.</span> <span class="c1">-- h : j ∈ S</span>
+    <span class="n">dsimp</span> <span class="n">at</span> <span class="n">h</span>
+    <span class="c1">-- h : ¬j ∈ f j</span>
+    <span class="n">apply</span> <span class="n">h</span>
+    <span class="c1">-- ⊢ j ∈ f j</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">hj</span><span class="o">]</span>
+    <span class="c1">-- ⊢ j ∈ S</span>
+    <span class="n">exact</span> <span class="n">h</span>
+  <span class="bp">.</span> <span class="c1">-- h : ¬j ∈ S</span>
+    <span class="n">apply</span> <span class="n">h</span>
+    <span class="c1">-- ⊢ j ∈ S</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">hj</span><span class="o">]</span> <span class="n">at</span> <span class="n">h</span>
+    <span class="c1">-- h : ¬j ∈ f j</span>
+    <span class="n">exact</span> <span class="n">h</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">,</span> <span class="bp">¬</span> <span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">f</span> <span class="n">hf</span>
+  <span class="c1">-- f : α → Set α</span>
+  <span class="c1">-- hf : Surjective f</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="k">let</span> <span class="n">S</span> <span class="o">:=</span> <span class="o">{</span><span class="n">i</span> <span class="bp">|</span> <span class="n">i</span> <span class="bp">∉</span> <span class="n">f</span> <span class="n">i</span><span class="o">}</span>
+  <span class="n">cases'</span> <span class="n">hf</span> <span class="n">S</span> <span class="k">with</span> <span class="n">j</span> <span class="n">hj</span>
+  <span class="c1">-- j : α</span>
+  <span class="c1">-- hj : f j = S</span>
+  <span class="n">by_cases</span> <span class="n">j</span> <span class="bp">∈</span> <span class="n">S</span>
+  <span class="bp">.</span> <span class="c1">-- h : j ∈ S</span>
+    <span class="n">apply</span> <span class="n">h</span>
+    <span class="c1">-- ⊢ j ∈ f j</span>
+    <span class="n">rwa</span> <span class="o">[</span><span class="n">hj</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- h : ¬j ∈ S</span>
+    <span class="n">apply</span> <span class="n">h</span>
+    <span class="n">rwa</span> <span class="o">[</span><span class="bp">←</span><span class="n">hj</span><span class="o">]</span> <span class="n">at</span> <span class="n">h</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">,</span> <span class="bp">¬</span> <span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">f</span> <span class="n">hf</span>
+  <span class="c1">-- f : α → Set α</span>
+  <span class="c1">-- hf : Surjective f</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="k">let</span> <span class="n">S</span> <span class="o">:=</span> <span class="o">{</span><span class="n">i</span> <span class="bp">|</span> <span class="n">i</span> <span class="bp">∉</span> <span class="n">f</span> <span class="n">i</span><span class="o">}</span>
+  <span class="n">cases'</span> <span class="n">hf</span> <span class="n">S</span> <span class="k">with</span> <span class="n">j</span> <span class="n">hj</span>
+  <span class="c1">-- j : α</span>
+  <span class="c1">-- hj : f j = S</span>
+  <span class="k">have</span> <span class="n">h</span> <span class="o">:</span> <span class="o">(</span><span class="n">j</span> <span class="bp">∈</span> <span class="n">S</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">j</span> <span class="bp">∉</span> <span class="n">S</span><span class="o">)</span> <span class="o">:=</span>
+    <span class="k">calc</span>  <span class="o">(</span><span class="n">j</span> <span class="bp">∈</span> <span class="n">S</span><span class="o">)</span>
+       <span class="bp">=</span> <span class="o">(</span><span class="n">j</span> <span class="bp">∉</span> <span class="n">f</span> <span class="n">j</span><span class="o">)</span> <span class="o">:=</span> <span class="n">Set.mem_setOf_eq</span>
+     <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">j</span> <span class="bp">∉</span> <span class="n">S</span><span class="o">)</span>   <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="n">j</span> <span class="bp">∉</span> <span class="bp">.</span><span class="o">)</span> <span class="n">hj</span>
+  <span class="n">exact</span> <span class="n">iff_not_self</span> <span class="o">(</span><span class="n">iff_of_eq</span> <span class="n">h</span><span class="o">)</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Set</span> <span class="n">α</span><span class="o">,</span> <span class="bp">¬</span> <span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="n">cantor_surjective</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- variable (p : α → Prop)</span>
+<span class="c1">-- variable (a b : Prop)</span>
+<span class="c1">-- #check (Set.mem_setOf_eq : (x ∈ {y : α | p y}) = p x)</span>
+<span class="c1">-- #check (iff_of_eq : a = b → (a ↔ b))</span>
+<span class="c1">-- #check (iff_not_self : ¬(a ↔ ¬a))</span>
+<span class="c1">-- #check (cantor_surjective : ∀ f : α → Set α, ¬ Surjective f)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Teorema_de_Cantor.lean">Lean 4 Web</a>.</p>
+<h3>4.3. Demostraciones con Isabelle/HOL</h3>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Teorema_de_Cantor</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="o">?</span><span class="n">S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{i. i ∉ f i}"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∃ j. ?S = f j"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="s">‹surj f›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">surjD</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"?S = f j"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">cases</span><span class="w"> </span><span class="s">"j ∈ ?S"</span><span class="o">)</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">    </span><span class="k">moreover</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ f j"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="s">‹j ∈ ?S›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subst</span><span class="o">)</span>
+<span class="w">    </span><span class="k">ultimately</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">next</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∉ ?S"</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">subst</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">CollectI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹j ∉ ?S›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="o">?</span><span class="n">S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{i. i ∉ f i}"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∃ j. ?S = f j"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="s">‹surj f›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">surjD</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"?S = f j"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ ?S"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ ?S"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">ssubst</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="s">‹j ∈ ?S›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">moreover</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">CollectI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ f j"</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">ssubst</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="s">‹j ∈ f j›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">ultimately</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="k">proof</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="o">?</span><span class="n">S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{i. i ∉ f i}"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∃ j. ?S = f j"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹surj f›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">surjD</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"?S = f j"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ ?S"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">with</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ ?S"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹j ∈ ?S›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">moreover</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"j ∉ f j"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"j ∈ f j"</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∉ f j"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹j ∈ f j›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">ultimately</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="o">?</span><span class="n">S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{i. i ∉ f i}"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∃ j. ?S = f j"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="s">‹surj f›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">surjD</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"?S = f j"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S = (j ∉ f j)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">mem_Collect_eq</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (j ∉ ?S)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="o">)</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">simp_thms</span><span class="o">(</span><span class="n">10</span><span class="o">))</span>
+<span class="k">qed</span>
+
+<span class="c">(* 5ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="k">proof</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="o">?</span><span class="n">S</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{i. i ∉ f i}"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∃ j. ?S = f j"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹surj f›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">surjD</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"?S = f j"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"j ∈ ?S = (j ∉ f j)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (j ∉ ?S)"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹?S = f j›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* 6ª demostración *)</span>
+
+<span class="kn">theorem</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'α ⇒ 'α set"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"¬ surj f"</span>
+<span class="w">  </span><span class="k">unfolding</span><span class="w"> </span><span class="n">surj_def</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="n">best</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<p><a name="ej5"></a></p>
+<h2>5. En los monoides, los inversos a la izquierda y a la derecha son iguales</h2>
+<p>Un <a href="https://en.wikipedia.org/wiki/Monoid">monoide</a> es un conjunto junto con una operación binaria que es asociativa y tiene elemento neutro.</p>
+<p>En Lean4, está definida la clase de los monoides (como <code>Monoid</code>) y sus propiedades características son</p>
+<div class="code"><pre class="code literal-block">   <span class="n">mul_assoc</span> <span class="o">:</span> <span class="o">(</span><span class="n">a</span> <span class="bp">*</span> <span class="n">b</span><span class="o">)</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="n">a</span> <span class="bp">*</span> <span class="o">(</span><span class="n">b</span> <span class="bp">*</span> <span class="n">c</span><span class="o">)</span>
+   <span class="n">one_mul</span> <span class="o">:</span>   <span class="mi">1</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">a</span>
+   <span class="n">mul_one</span> <span class="o">:</span>   <span class="n">a</span> <span class="bp">*</span> <span class="mi">1</span> <span class="bp">=</span> <span class="n">a</span>
+</pre></div>
+
+<p>Demostrar que si \(M\) es un monoide, \(a ∈ M\), \(b\) es un inverso de \(a\) por la izquierda y \(c\) es un inverso de \(a\) por la derecha, entonces \(b = c\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.Group.Defs</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">M</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span> <span class="o">[</span><span class="n">Monoid</span> <span class="n">M</span><span class="o">]</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="o">:</span> <span class="n">M</span><span class="o">}</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<h3>5.1. Demostración en lenguaje natural</h3>
+<p>Por la siguiente cadena de igualdades
+\begin{align}
+   b &amp;= b * 1          &amp;&amp;\text{[por mul_one]} \newline
+     &amp;= b * (a * c)    &amp;&amp;\text{[por hipótesis]} \newline
+     &amp;= (b * a) * c    &amp;&amp;\text{[por mul_assoc]} \newline
+     &amp;= 1 * c          &amp;&amp;\text{[por hipótesis]} \newline
+     &amp;= c              &amp;&amp;\text{[por one_mul]} \newline
+\end{align}</p>
+<h3>5.2. Demostraciones con Lean4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.Group.Defs</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">M</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span> <span class="o">[</span><span class="n">Monoid</span> <span class="n">M</span><span class="o">]</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="n">b</span> <span class="n">c</span> <span class="o">:</span> <span class="n">M</span><span class="o">}</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="k">calc</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">b</span> <span class="bp">*</span> <span class="mi">1</span>       <span class="o">:=</span> <span class="o">(</span><span class="n">mul_one</span> <span class="n">b</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+     <span class="n">_</span> <span class="bp">=</span> <span class="n">b</span> <span class="bp">*</span> <span class="o">(</span><span class="n">a</span> <span class="bp">*</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="n">b</span> <span class="bp">*</span> <span class="bp">.</span><span class="o">)</span> <span class="n">hac.symm</span>
+     <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">b</span> <span class="bp">*</span> <span class="n">a</span><span class="o">)</span> <span class="bp">*</span> <span class="n">c</span> <span class="o">:=</span> <span class="o">(</span><span class="n">mul_assoc</span> <span class="n">b</span> <span class="n">a</span> <span class="n">c</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+     <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">*</span> <span class="n">c</span>       <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">*</span> <span class="n">c</span><span class="o">)</span> <span class="n">hba</span>
+     <span class="n">_</span> <span class="bp">=</span> <span class="n">c</span>           <span class="o">:=</span> <span class="n">one_mul</span> <span class="n">c</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="k">calc</span> <span class="n">b</span>  <span class="bp">=</span> <span class="n">b</span> <span class="bp">*</span> <span class="mi">1</span>       <span class="o">:=</span> <span class="kd">by</span> <span class="n">aesop</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">b</span> <span class="bp">*</span> <span class="o">(</span><span class="n">a</span> <span class="bp">*</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">aesop</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">b</span> <span class="bp">*</span> <span class="n">a</span><span class="o">)</span> <span class="bp">*</span> <span class="n">c</span> <span class="o">:=</span> <span class="o">(</span><span class="n">mul_assoc</span> <span class="n">b</span> <span class="n">a</span> <span class="n">c</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">*</span> <span class="n">c</span>       <span class="o">:=</span> <span class="kd">by</span> <span class="n">aesop</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">c</span>           <span class="o">:=</span> <span class="kd">by</span> <span class="n">aesop</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">one_mul</span> <span class="n">c</span><span class="o">]</span>
+  <span class="c1">-- ⊢ b = 1 * c</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">hba</span><span class="o">]</span>
+  <span class="c1">-- ⊢ b = (b * a) * c</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="n">mul_assoc</span><span class="o">]</span>
+  <span class="c1">-- ⊢ b = b * (a * c)</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="n">hac</span><span class="o">]</span>
+  <span class="c1">-- ⊢ b = b * 1</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="n">mul_one</span> <span class="n">b</span><span class="o">]</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">one_mul</span> <span class="n">c</span><span class="o">,</span> <span class="bp">←</span><span class="n">hba</span><span class="o">,</span> <span class="n">mul_assoc</span><span class="o">,</span> <span class="n">hac</span><span class="o">,</span> <span class="n">mul_one</span> <span class="n">b</span><span class="o">]</span>
+
+<span class="c1">-- 5ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hba</span> <span class="o">:</span> <span class="n">b</span> <span class="bp">*</span> <span class="n">a</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hac</span> <span class="o">:</span> <span class="n">a</span> <span class="bp">*</span> <span class="n">c</span> <span class="bp">=</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">b</span> <span class="bp">=</span> <span class="n">c</span> <span class="o">:=</span>
+<span class="n">left_inv_eq_right_inv</span> <span class="n">hba</span> <span class="n">hac</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- #check (left_inv_eq_right_inv : b * a = 1 → a * c = 1 → b = c)</span>
+<span class="c1">-- #check (mul_assoc a b c : (a * b) * c = a * (b * c))</span>
+<span class="c1">-- #check (mul_one a : a * 1 = a)</span>
+<span class="c1">-- #check (one_mul a : 1 * a = a)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/En_los_monoides_los_inversos_a_la_izquierda_y_a_la_derecha_son_iguales.lean">Lean 4 Web</a>.</p>
+<h3>5.3. Demostraciones con Isabelle/HOL</h3>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">En_los_monoides_los_inversos_a_la_izquierda_y_a_la_derecha_son_iguales</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="k">context</span><span class="w"> </span><span class="n">monoid</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"b * a = 1"</span>
+<span class="w">          </span><span class="s">"a * c = 1"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"b = c"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">  </span><span class="k">have</span><span class="w">      </span><span class="s">"b  = b * 1"</span><span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">right_neutral</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = b * (a * c)"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="s">‹a * c = 1›</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (b * a) * c"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">assoc</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = 1 * c"</span><span class="w">       </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="s">‹b * a = 1›</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = c"</span><span class="w">           </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">left_neutral</span><span class="o">)</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"b = c"</span><span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"b * a = 1"</span>
+<span class="w">          </span><span class="s">"a * c = 1"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"b = c"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">  </span><span class="k">have</span><span class="w">      </span><span class="s">"b  = b * 1"</span><span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = b * (a * c)"</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="s">‹a * c = 1›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (b * a) * c"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">assoc</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = 1 * c"</span><span class="w">       </span><span class="k">using</span><span class="w"> </span><span class="s">‹b * a = 1›</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = c"</span><span class="w">           </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"b = c"</span><span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"b * a = 1"</span>
+<span class="w">          </span><span class="s">"a * c = 1"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"b = c"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">assoc</span><span class="w"> </span><span class="n">left_neutral</span><span class="w"> </span><span class="n">right_neutral</span><span class="o">)</span>
+
+<span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../04-resumen-de-lecturas-compartidas-durante-abril-de-2024/" rel="prev" title="Resumen de lecturas compartidas durante abril de 2024">Publicación anterior</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
