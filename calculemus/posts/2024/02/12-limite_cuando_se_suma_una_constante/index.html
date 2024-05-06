@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de uₙ+c es a+c | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/02/12-limite_cuando_se_suma_una_constante/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de uₙ+c es a+c | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../06-unicidad_del_limite_de_las_sucesiones_convergentes/" title="Unicidad del límite de las sucesiones convergentes" type="text/html">
+<link rel="next" href="../15-limite_multiplicado_por_una_constante/" title="Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de cuₙ es ca" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de uₙ+">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/02/12-limite_cuando_se_suma_una_constante/">
+<meta property="og:description" content="Demostrar con Lean4 que si el límite de la sucesión \(uₙ\) es \(a\) y \(c ∈ ℝ\), entonces el límite de \(uₙ+c\) es \(a+c\).
+Para ello, completar la siguiente teoría de Lean4:
+import Mathlib.Data.Real.">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-02-12T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de uₙ+c es a+c</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-02-12T06:00:00+02:00" itemprop="datePublished" title="12-02-2024">12-02-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que si el límite de la sucesión \(uₙ\) es \(a\) y \(c ∈ ℝ\), entonces el límite de \(uₙ+c\) es \(a+c\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">:</span> <span class="o">(</span><span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="bp">→</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="kt">Prop</span> <span class="o">:=</span>
+  <span class="k">fun</span> <span class="n">u</span> <span class="n">c</span> <span class="bp">↦</span> <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">↦</span> <span class="n">u</span> <span class="n">i</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Sea \(ε ∈ ℝ\) tal que \(ε &gt; 0\). Tenemos que demostrar que
+\[ (∃ N)(∀ n ≥ N)[|(u(n) + c) - (a + c)| &lt; ε] \tag{1} \]
+Puesto que el límite de la sucesión \(u\) es \(a\), existe un \(k\) tal que
+\[ (∀ n ≥ k)[|u(n) - a| &lt; ε] \tag{2} \]
+Veamos que con k se verifica (1); es decir, que
+\[ (∀ n ≥ k)[|(u(n) + c) - (a + c)| &lt; ε] \]
+Sea \(n ≥ k\). Entonces, por (2),
+\[ |u(n) - a| &lt; ε \tag{3} \]
+y, por consiguiente,
+\begin{align}
+   |(u(n) + c) - (a + c)| &amp;= |u(n) - a|   \newline
+                          &amp;&lt; ε            &amp;&amp;\text{[por (3)]}
+\end{align}</p>
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">:</span> <span class="o">(</span><span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="bp">→</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="kt">Prop</span> <span class="o">:=</span>
+  <span class="k">fun</span> <span class="n">u</span> <span class="n">c</span> <span class="bp">↦</span> <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">↦</span> <span class="n">u</span> <span class="n">i</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → |(fun i =&gt; u i + c) n - (a + c)| &lt; ε</span>
+  <span class="n">dsimp</span>
+  <span class="c1">-- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → |u n + c - (a + c)| &lt; ε</span>
+  <span class="n">cases'</span> <span class="n">h</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="n">k</span> <span class="n">hk</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ (n : ℕ), n ≥ k → |u n - a| &lt; ε</span>
+  <span class="n">use</span> <span class="n">k</span>
+  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n + c - (a + c)| &lt; ε</span>
+  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="k">calc</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">+</span> <span class="n">c</span> <span class="bp">-</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span><span class="bp">|</span>
+       <span class="bp">=</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span>         <span class="o">:=</span> <span class="kd">by</span> <span class="n">norm_num</span>
+     <span class="n">_</span> <span class="bp">&lt;</span> <span class="n">ε</span>                 <span class="o">:=</span> <span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">↦</span> <span class="n">u</span> <span class="n">i</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → |(fun i =&gt; u i + c) n - (a + c)| &lt; ε</span>
+  <span class="n">dsimp</span>
+  <span class="c1">-- ⊢ ∃ N, ∀ (n : ℕ), n ≥ N → |u n + c - (a + c)| &lt; ε</span>
+  <span class="n">cases'</span> <span class="n">h</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="n">k</span> <span class="n">hk</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ (n : ℕ), n ≥ k → |u n - a| &lt; ε</span>
+  <span class="n">use</span> <span class="n">k</span>
+  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n + c - (a + c)| &lt; ε</span>
+  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="c1">-- ⊢ |u n + c - (a + c)| &lt; ε</span>
+  <span class="n">convert</span> <span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span> <span class="n">using</span> <span class="mi">2</span>
+  <span class="c1">-- ⊢ u n + c - (a + c) = u n - a</span>
+  <span class="n">ring</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">↦</span> <span class="n">u</span> <span class="n">i</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="n">dsimp</span>
+  <span class="n">convert</span> <span class="n">h</span> <span class="n">ε</span> <span class="n">hε</span> <span class="n">using</span> <span class="mi">6</span>
+  <span class="n">ring</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">↦</span> <span class="n">u</span> <span class="n">i</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="bp">+</span> <span class="n">c</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="k">fun</span> <span class="n">ε</span> <span class="n">hε</span> <span class="bp">↦</span> <span class="o">(</span><span class="kd">by</span> <span class="n">convert</span> <span class="n">h</span> <span class="n">ε</span> <span class="n">hε</span> <span class="n">using</span> <span class="mi">6</span><span class="bp">;</span> <span class="n">ring</span><span class="o">)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Limite_cuando_se_suma_una_constante.lean" rel="noopener noreferrer" target="_blank">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Limite_cuando_se_suma_una_constante</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span><span class="w"> </span><span class="n">HOL.Real</span>
+<span class="k">begin</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(nat ⇒ real) ⇒ real ⇒ bool"</span>
+<span class="w">  </span><span class="kp">where</span><span class="w"> </span><span class="s">"limite u c ⟷ (∀ε&gt;0. ∃k::nat. ∀n≥k. ¦u n - c¦ &lt; ε)"</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ i.  u i + c)  (a + c)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">limite_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"∀ε&gt;0. ∃k. ∀n≥k. ¦(u n + c) - (a + c)¦ &lt; ε"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦u n - a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exE</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥k. ¦(u n + c) - (a + c)¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦(u n + c) - (a + c)¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ i.  u i + c)  (a + c)"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../06-unicidad_del_limite_de_las_sucesiones_convergentes/" rel="prev" title="Unicidad del límite de las sucesiones convergentes">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../15-limite_multiplicado_por_una_constante/" rel="next" title="Si el límite de la sucesión uₙ es a y c ∈ ℝ, entonces el límite de cuₙ es ca">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
