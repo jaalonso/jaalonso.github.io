@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mayor órbita de la sucesión de Collatz | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2024/03/24-mayor_orbita_de_la_sucesion_de_collatz/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Mayor órbita de la sucesión de Collatz | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../19-exponente_en_la_factorizacion/" title="Exponente en la factorización" type="text/html">
+<link rel="next" href="../29-maximos_locales/" title="Máximos locales" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Mayor órbita de la sucesión de Collatz">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2024/03/24-mayor_orbita_de_la_sucesion_de_collatz/">
+<meta property="og:description" content="Se considera la siguiente operación, aplicable a cualquier número entero positivo:
+
+Si el número es par, se divide entre 2.
+Si el número es impar, se multiplica por 3 y se suma 1.
+
+Dado un número cual">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-03-24T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Mayor órbita de la sucesión de Collatz</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-03-24T06:00:00+02:00" itemprop="datePublished" title="24-03-2024">24-03-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Se considera la siguiente operación, aplicable a cualquier número entero positivo:</p>
+<ul>
+<li>Si el número es par, se divide entre 2.</li>
+<li>Si el número es impar, se multiplica por 3 y se suma 1.</li>
+</ul>
+<p>Dado un número cualquiera, podemos calcular su órbita; es decir, las imágenes sucesivas al iterar la función. Por ejemplo, la órbita de 13 es</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="o">...</span>
+</pre></div>
+
+<p>Si observamos este ejemplo, la órbita de 13 es periódica, es decir,
+se repite indefinidamente a partir de un momento dado). La conjetura
+de Collatz dice que siempre alcanzaremos el 1 para cualquier número
+con el que comencemos. Ejemplos:</p>
+<ul>
+<li>Empezando en n = 6 se obtiene 6, 3, 10, 5, 16, 8, 4, 2, 1.</li>
+<li>Empezando en n = 11 se obtiene: 11, 34, 17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1.</li>
+<li>Empezando en n = 27, la sucesión tiene 112 pasos, llegando hasta
+  9232 antes de descender a 1:  27, 82, 41, 124, 62, 31, 94, 47, 142, 71, 214, 107, 322, 161, 484, 242, 121, 364, 182, 91, 274, 137, 412, 206, 103, 310, 155, 466, 233, 700, 350, 175, 526, 263, 790, 395, 1186, 593, 1780, 890, 445, 1336, 668, 334, 167, 502, 251, 754, 377, 1132, 566, 283, 850, 425, 1276, 638, 319, 958, 479, 1438, 719, 2158, 1079, 3238, 1619, 4858, 2429, 7288, 3644, 1822, 911, 2734, 1367, 4102, 2051, 6154, 3077, 9232, 4616, 2308, 1154, 577, 1732, 866, 433, 1300, 650, 325, 976, 488, 244, 122, 61, 184, 92, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1.</li>
+</ul>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mayoresGeneradores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>tal que (mayoresGeneradores n) es la lista de los números menores o iguales que n cuyas órbitas de Collatz son las de mayor longitud. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mayoresGeneradores</span><span class="w"> </span><span class="mi">20</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">]</span>
+<span class="w">   </span><span class="n">mayoresGeneradores</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">837799</span><span class="p">]</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<p><a name="haskell"></a></p>
+<h2>1. Soluciones en Haskell</h2>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Mayor_orbita_de_la_sucesion_de_Collatz</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.MemoCombinators</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Memo</span><span class="w"> </span><span class="p">(</span><span class="n">integral</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericLength</span><span class="p">,</span><span class="w"> </span><span class="nf">genericTake</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">mayoresGeneradores1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">mayoresGeneradores1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericTake</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">longitudesOrbitas</span>
+<span class="w">        </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">ps</span><span class="p">)</span>
+
+<span class="c1">-- longitudesOrbita es la lista de los números junto a las longitudes de</span>
+<span class="c1">-- las órbitas de Collatz que generan. Por ejemplo,</span>
+<span class="c1">--    λ&gt; take 10 longitudesOrbitas</span>
+<span class="c1">--    [(1,1),(2,2),(3,8),(4,3),(5,6),(6,9),(7,17),(8,4),(9,20),(10,7)]</span>
+<span class="nf">longitudesOrbitas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">longitudesOrbitas</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="p">(</span><span class="n">collatz</span><span class="w"> </span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]]</span>
+
+<span class="c1">-- (siguiente n) es el siguiente de n en la sucesión de Collatz. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    siguiente 13  ==  40</span>
+<span class="c1">--    siguiente 40  ==  20</span>
+<span class="nf">siguiente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">siguiente</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="c1">-- (collatz1 n) es la órbita de Collatz de n hasta alcanzar el</span>
+<span class="c1">-- 1. Por ejemplo,</span>
+<span class="c1">--    collatz 13  ==  [13,40,20,10,5,16,8,4,2,1]</span>
+
+<span class="c1">-- 1ª definición de collatz</span>
+<span class="nf">collatz1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">collatz1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">collatz1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">collatz1</span><span class="w"> </span><span class="p">(</span><span class="n">siguiente</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- 2ª definición de collatz</span>
+<span class="nf">collatz2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">collatz2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">/=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">iterate</span><span class="w"> </span><span class="n">siguiente</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1">-- Usaremos la 2ª definición de collatz</span>
+<span class="nf">collatz</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">collatz</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">collatz2</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">mayoresGeneradores2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">mayoresGeneradores2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">longitudOrbita</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">        </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">ps</span><span class="p">)</span>
+
+<span class="c1">-- (longitudOrbita x) es la longitud de la órbita de x. Por ejemplo,</span>
+<span class="c1">--    longitudOrbita 13  ==  10</span>
+<span class="nf">longitudOrbita</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">longitudOrbita</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="nf">longitudOrbita</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">longitudOrbita</span><span class="w"> </span><span class="p">(</span><span class="n">siguiente</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">mayoresGeneradores3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">mayoresGeneradores3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">longitudOrbita2</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">        </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">ps</span><span class="p">)</span>
+
+<span class="nf">longitudOrbita2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">longitudOrbita2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Memo</span><span class="o">.</span><span class="n">integral</span><span class="w"> </span><span class="n">longitudOrbita2'</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">longitudOrbita2'</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="n">longitudOrbita2'</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">longitudOrbita2</span><span class="w"> </span><span class="p">(</span><span class="n">siguiente</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">mayoresGeneradores</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayoresGeneradores</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayoresGeneradores1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayoresGeneradores2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayoresGeneradores3</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    3 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de definiciones</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_mayoresGeneradores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_mayoresGeneradores</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">mayoresGeneradores1</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">mayoresGeneradores2</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">mayoresGeneradores3</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_mayoresGeneradores</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comprobación de eficiencia</span>
+<span class="c1">-- ==========================</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; mayoresGeneradores (10^5)</span>
+<span class="c1">--    [77031]</span>
+<span class="c1">--    (5.43 secs, 6,232,320,064 bytes)</span>
+<span class="c1">--    λ&gt; mayoresGeneradores2 (10^5)</span>
+<span class="c1">--    [77031]</span>
+<span class="c1">--    (7.68 secs, 5,238,991,616 bytes)</span>
+<span class="c1">--    λ&gt; mayoresGeneradores3 (10^5)</span>
+<span class="c1">--    [77031]</span>
+<span class="c1">--    (0.88 secs, 571,788,736 bytes)</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h2>2. Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span><span class="p">,</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">default_timer</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+<span class="c1"># 1ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># siguiente(n) es el siguiente de n en la sucesión de Collatz. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    siguiente(13)  ==  40</span>
+<span class="c1">#    siguiente(40)  ==  20</span>
+<span class="k">def</span> <span class="nf">siguiente</span> <span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="c1"># collatz1(n) es la órbita de Collatz de n hasta alcanzar el</span>
+<span class="c1"># 1. Por ejemplo,</span>
+<span class="c1">#    collatz1(13)  ==  [13,40,20,10,5,16,8,4,2,1]</span>
+<span class="k">def</span> <span class="nf">collatz1</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">+</span> <span class="n">collatz1</span><span class="p">(</span><span class="n">siguiente</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1"># longitudesOrbita() es la lista de los números junto a las longitudes de</span>
+<span class="c1"># las órbitas de Collatz que generan. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; list(islice(longitudesOrbitas(), 10))</span>
+<span class="c1">#    [(1,1),(2,2),(3,8),(4,3),(5,6),(6,9),(7,17),(8,4),(9,20),(10,7)]</span>
+<span class="k">def</span> <span class="nf">longitudesOrbitas</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">collatz1</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">mayoresGeneradores1</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">longitudesOrbitas</span><span class="p">(),</span> <span class="n">n</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">m</span><span class="p">]</span>
+
+<span class="c1"># 2ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="k">def</span> <span class="nf">collatz2</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">siguiente</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="k">def</span> <span class="nf">longitudesOrbitas2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">collatz2</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">mayoresGeneradores2</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">longitudesOrbitas2</span><span class="p">(),</span> <span class="n">n</span><span class="p">))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">m</span><span class="p">]</span>
+
+<span class="c1"># 3ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># longitudOrbita(x) es la longitud de la órbita de x. Por ejemplo,</span>
+<span class="c1">#    longitudOrbita(13)  ==  10</span>
+<span class="k">def</span> <span class="nf">longitudOrbita</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">longitudOrbita</span><span class="p">(</span><span class="n">siguiente</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">mayoresGeneradores3</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">longitudOrbita</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">m</span><span class="p">]</span>
+
+<span class="c1"># 4ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># longitudOrbita2(x) es la longitud de la órbita de x. Por ejemplo,</span>
+<span class="c1">#    longitudOrbita2(13)  ==  10</span>
+<span class="k">def</span> <span class="nf">longitudOrbita2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">siguiente</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">mayoresGeneradores4</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">longitudOrbita2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">m</span><span class="p">]</span>
+
+<span class="c1"># 5ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">longitudOrbita3</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">longitudOrbita3</span><span class="p">(</span><span class="n">siguiente</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">mayoresGeneradores5</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">longitudOrbita3</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">m</span><span class="p">]</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_mayoresGeneradores</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">mayoresGeneradores</span> <span class="ow">in</span> <span class="p">[</span><span class="n">mayoresGeneradores1</span><span class="p">,</span>
+                               <span class="n">mayoresGeneradores2</span><span class="p">,</span>
+                               <span class="n">mayoresGeneradores3</span><span class="p">,</span>
+                               <span class="n">mayoresGeneradores4</span><span class="p">,</span>
+                               <span class="n">mayoresGeneradores5</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">mayoresGeneradores</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_mayoresGeneradores()</span>
+<span class="c1">#    Verificado</span>
+
+<span class="c1"># Equivalencia de definiciones</span>
+<span class="c1"># ============================</span>
+
+<span class="c1"># La propiedad es</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_mayoresGeneradores_equiv</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">mayoresGeneradores1</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">mayoresGeneradores2</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="n">r</span>
+    <span class="k">assert</span> <span class="n">mayoresGeneradores3</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="n">r</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_mayoresGeneradores_equiv()</span>
+<span class="c1">#    &gt;&gt;&gt;</span>
+
+<span class="c1"># Comprobación de eficiencia</span>
+<span class="c1"># ==========================</span>
+
+<span class="k">def</span> <span class="nf">tiempo</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tiempo (en segundos) de evaluar la expresión e."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">default_timer</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('mayoresGeneradores1(10**5)')</span>
+<span class="c1">#    4.08 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('mayoresGeneradores2(10**5)')</span>
+<span class="c1">#    1.95 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('mayoresGeneradores3(10**5)')</span>
+<span class="c1">#    2.16 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('mayoresGeneradores4(10**5)')</span>
+<span class="c1">#    1.71 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('mayoresGeneradores5(10**5)')</span>
+<span class="c1">#    0.14 segundos</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../19-exponente_en_la_factorizacion/" rel="prev" title="Exponente en la factorización">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../29-maximos_locales/" rel="next" title="Máximos locales">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
