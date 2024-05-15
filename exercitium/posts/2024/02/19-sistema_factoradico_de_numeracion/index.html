@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema factorádico de numeración | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2024/02/19-sistema_factoradico_de_numeracion/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Sistema factorádico de numeración | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../14-suma_de_cadenas/" title="Suma de cadenas" type="text/html">
+<link rel="next" href="../24-duplicacion_de_cada_elemento/" title="Duplicación de cada elemento" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Sistema factorádico de numeración">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2024/02/19-sistema_factoradico_de_numeracion/">
+<meta property="og:description" content='El sistema factorádico es un sistema numérico basado en factoriales en el que el n-ésimo dígito, empezando desde la derecha, debe ser multiplicado por n! Por ejemplo, el número "341010" en el sistema '>
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-02-19T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Sistema factorádico de numeración</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-02-19T06:00:00+02:00" itemprop="datePublished" title="19-02-2024">19-02-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El <a href="https://bit.ly/3KQZRue">sistema factorádico</a> es un sistema numérico basado en factoriales en el que el n-ésimo dígito, empezando desde la derecha, debe ser multiplicado por n! Por ejemplo, el número "341010" en el sistema factorádico es 463 en el sistema decimal ya que</p>
+<div class="code"><pre class="code literal-block">   3×5! + 4×4! + 1×3! + 0×2! + 1×1! + 0×0! = 463
+</pre></div>
+
+<p>En este sistema numérico, el dígito de más a la derecha es siempre 0, el segundo 0 o 1, el tercero 0,1 o 2 y así sucesivamente.</p>
+<p>Con los dígitos del 0 al 9 el mayor número que podemos codificar es el 10!-1 = 3628799. En cambio, si lo ampliamos con las letras A a Z podemos codificar hasta 36!-1 = 37199332678990121746799944815083519999999910.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">factoradicoAdecimal</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="w">   </span><span class="n">decimalAfactoradico</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(factoradicoAdecimal cs) es el número decimal correspondiente al número factorádico cs. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; factoradicoAdecimal "341010"
+     463
+     λ&gt; factoradicoAdecimal "2441000"
+     2022
+     λ&gt; factoradicoAdecimal "A0000000000"
+     36288000
+     λ&gt; map factoradicoAdecimal ["10","100","110","200","210","1000","1010","1100","1110","1200"]
+     [1,2,3,4,5,6,7,8,9,10]
+     λ&gt; factoradicoAdecimal "3KXWVUTSRQPONMLKJIHGFEDCBA9876543210"
+     37199332678990121746799944815083519999999
+</pre></div>
+
+<ul>
+<li>(decimalAfactoradico n) es el número factorádico correpondiente al número decimal n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; decimalAfactoradico 463
+     "341010"
+     λ&gt; decimalAfactoradico 2022
+     "2441000"
+     λ&gt; decimalAfactoradico 36288000
+     "A0000000000"
+     λ&gt; map decimalAfactoradico [1..10]
+     ["10","100","110","200","210","1000","1010","1100","1110","1200"]
+     λ&gt; decimalAfactoradico 37199332678990121746799944815083519999999
+     "3KXWVUTSRQPONMLKJIHGFEDCBA9876543210"
+</pre></div>
+
+<p>Comprobar con QuickCheck que, para cualquier entero positivo n,</p>
+<div class="code"><pre class="code literal-block">   factoradicoAdecimal (decimalAfactoradico n) == n
+</pre></div>
+
+<p><a name="haskell"></a></p>
+<h2>1. Soluciones en Haskell</h2>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Sistema_factoradico_de_numeracion</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericIndex</span><span class="p">,</span><span class="w"> </span><span class="nf">genericLength</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="p">((</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="kt">Map</span><span class="p">,</span><span class="w"> </span><span class="n">fromList</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª definición de factoradicoAdecimal</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">factoradicoAdecimal1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">factoradicoAdecimal1</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">caracterAentero</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">        </span><span class="n">n</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">        </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">facts</span><span class="p">)</span>
+
+<span class="c1">-- (caracterAentero c) es la posición del carácter c en la lista de</span>
+<span class="c1">-- caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">--    caracterAentero '0'  ==  0</span>
+<span class="c1">--    caracterAentero '1'  ==  1</span>
+<span class="c1">--    caracterAentero '9'  ==  9</span>
+<span class="c1">--    caracterAentero 'A'  ==  10</span>
+<span class="c1">--    caracterAentero 'B'  ==  11</span>
+<span class="c1">--    caracterAentero 'Z'  ==  35</span>
+<span class="nf">caracterAentero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">caracterAentero</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="n">caracteres</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">]</span>
+
+<span class="c1">-- caracteres es la lista de caracteres</span>
+<span class="c1">-- ['0', '1',..., '9', 'A', 'B',..., 'Z']</span>
+<span class="nf">caracteres</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">caracteres</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="sc">'A'</span><span class="o">..</span><span class="sc">'Z'</span><span class="p">]</span>
+
+<span class="c1">-- facts es la lista de los factoriales. Por ejemplo,</span>
+<span class="c1">--    λ&gt; take 12 facts</span>
+<span class="c1">--    [1,1,2,6,24,120,720,5040,40320,362880,3628800,39916800]</span>
+<span class="nf">facts</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">facts</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">scanl</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- 2ª definición de factoradicoAdecimal</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">factoradicoAdecimal2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">factoradicoAdecimal2</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">caracterAentero2</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">          </span><span class="n">n</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">          </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">facts</span><span class="p">)</span>
+
+<span class="c1">-- (caracterAentero2 c) es la posición del carácter c en la lista de</span>
+<span class="c1">-- caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">--    caracterAentero2 '0'  ==  0</span>
+<span class="c1">--    caracterAentero2 '1'  ==  1</span>
+<span class="c1">--    caracterAentero2 '9'  ==  9</span>
+<span class="c1">--    caracterAentero2 'A'  ==  10</span>
+<span class="c1">--    caracterAentero2 'B'  ==  11</span>
+<span class="c1">--    caracterAentero2 'Z'  ==  35</span>
+<span class="nf">caracterAentero2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">caracterAentero2</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">caracteresEnteros</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">c</span>
+
+<span class="c1">-- caracteresEnteros es el diccionario cuyas claves son los caracteres y</span>
+<span class="c1">-- las claves son los números de 0 a 35.</span>
+<span class="nf">caracteresEnteros</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">caracteresEnteros</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">(</span><span class="n">zip</span><span class="w"> </span><span class="p">([</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="sc">'A'</span><span class="o">..</span><span class="sc">'Z'</span><span class="p">])</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">])</span>
+
+<span class="c1">-- 3ª definición de factoradicoAdecimal</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">factoradicoAdecimal3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">factoradicoAdecimal3</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">facts</span><span class="w"> </span><span class="p">(</span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">caracterAentero3</span><span class="w"> </span><span class="n">cs</span><span class="p">)))</span>
+
+<span class="c1">-- (caracterAentero3 c) es la posición del carácter c en la lista de</span>
+<span class="c1">-- caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">--    caracterAentero3 '0'  ==  0</span>
+<span class="c1">--    caracterAentero3 '1'  ==  1</span>
+<span class="c1">--    caracterAentero3 '9'  ==  9</span>
+<span class="c1">--    caracterAentero3 'A'  ==  10</span>
+<span class="c1">--    caracterAentero3 'B'  ==  11</span>
+<span class="c1">--    caracterAentero3 'Z'  ==  35</span>
+<span class="nf">caracterAentero3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">caracterAentero3</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">genericLength</span><span class="w"> </span><span class="p">(</span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">/=</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">caracteres</span><span class="p">)</span>
+
+<span class="c1">-- 4ª definición de factoradicoAdecimal</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">factoradicoAdecimal4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">factoradicoAdecimal4</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sum</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">facts</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">caracterAentero4</span>
+
+<span class="c1">-- (caracterAentero4 c) es la posición del carácter c en la lista de</span>
+<span class="c1">-- caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">--    caracterAentero4 '0'  ==  0</span>
+<span class="c1">--    caracterAentero4 '1'  ==  1</span>
+<span class="c1">--    caracterAentero4 '9'  ==  9</span>
+<span class="c1">--    caracterAentero4 'A'  ==  10</span>
+<span class="c1">--    caracterAentero4 'B'  ==  11</span>
+<span class="c1">--    caracterAentero4 'Z'  ==  35</span>
+<span class="nf">caracterAentero4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">caracterAentero4</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">genericLength</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">flip</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="n">caracteres</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="o">/=</span><span class="p">)</span>
+
+<span class="c1">-- 1ª definición de decimalAfactoradico</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">decimalAfactoradico1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">decimalAfactoradico1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">facts</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">enteroAcaracter</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- (enteroAcaracter k) es el k-ésimo elemento de la lista</span>
+<span class="c1">-- ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">--    enteroAcaracter 0   ==  '0'</span>
+<span class="c1">--    enteroAcaracter 1   ==  '1'</span>
+<span class="c1">--    enteroAcaracter 9   ==  '9'</span>
+<span class="c1">--    enteroAcaracter 10  ==  'A'</span>
+<span class="c1">--    enteroAcaracter 11  ==  'B'</span>
+<span class="c1">--    enteroAcaracter 35  ==  'Z'</span>
+<span class="nf">enteroAcaracter</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">enteroAcaracter</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">caracteres</span><span class="w"> </span><span class="p">`</span><span class="n">genericIndex</span><span class="p">`</span><span class="w"> </span><span class="n">k</span>
+
+<span class="c1">-- 2ª definición de decimalAfactoradico</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">decimalAfactoradico2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">decimalAfactoradico2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">facts</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">enteroAcaracter2</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- (enteroAcaracter2 k) es el k-ésimo elemento de la lista</span>
+<span class="c1">-- ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">--    enteroAcaracter2 0   ==  '0'</span>
+<span class="c1">--    enteroAcaracter2 1   ==  '1'</span>
+<span class="c1">--    enteroAcaracter2 9   ==  '9'</span>
+<span class="c1">--    enteroAcaracter2 10  ==  'A'</span>
+<span class="c1">--    enteroAcaracter2 11  ==  'B'</span>
+<span class="c1">--    enteroAcaracter2 35  ==  'Z'</span>
+<span class="nf">enteroAcaracter2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">enteroAcaracter2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">enterosCaracteres</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">k</span>
+
+<span class="c1">-- enterosCaracteres es el diccionario cuyas claves son los número de 0</span>
+<span class="c1">-- a 35 y las claves son los caracteres.</span>
+<span class="nf">enterosCaracteres</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">enterosCaracteres</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">(</span><span class="n">zip</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="n">caracteres</span><span class="p">)</span>
+
+<span class="c1">-- 3ª definición de decimalAfactoradico</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">decimalAfactoradico3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">decimalAfactoradico3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">enteroAcaracter3</span><span class="w"> </span><span class="n">r</span><span class="kt">:</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="p">`</span><span class="n">divMod</span><span class="p">`</span><span class="w"> </span><span class="n">m</span><span class="p">)</span>
+
+<span class="c1">-- (enteroAcaracter3 k) es el k-ésimo elemento de la lista</span>
+<span class="c1">-- ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">--    enteroAcaracter3 0   ==  '0'</span>
+<span class="c1">--    enteroAcaracter3 1   ==  '1'</span>
+<span class="c1">--    enteroAcaracter3 9   ==  '9'</span>
+<span class="c1">--    enteroAcaracter3 10  ==  'A'</span>
+<span class="c1">--    enteroAcaracter3 11  ==  'B'</span>
+<span class="c1">--    enteroAcaracter3 35  ==  'Z'</span>
+<span class="nf">enteroAcaracter3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">enteroAcaracter3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">caracteres</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">fromInteger</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- 4ª definición de decimalAfactoradico</span>
+<span class="c1">-- ====================================</span>
+
+<span class="nf">decimalAfactoradico4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">decimalAfactoradico4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span>
+<span class="w">        </span><span class="n">f</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">enteroAcaracter4</span><span class="w"> </span><span class="n">r</span><span class="kt">:</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="p">`</span><span class="n">divMod</span><span class="p">`</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- (enteroAcaracter4 k) es el k-ésimo elemento de la lista</span>
+<span class="c1">-- ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">--    enteroAcaracter4 0   ==  '0'</span>
+<span class="c1">--    enteroAcaracter4 1   ==  '1'</span>
+<span class="c1">--    enteroAcaracter4 9   ==  '9'</span>
+<span class="c1">--    enteroAcaracter4 10  ==  'A'</span>
+<span class="c1">--    enteroAcaracter4 11  ==  'B'</span>
+<span class="c1">--    enteroAcaracter4 35  ==  'Z'</span>
+<span class="nf">enteroAcaracter4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">enteroAcaracter4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">caracteres</span><span class="w"> </span><span class="p">`</span><span class="n">genericIndex</span><span class="p">`)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG1</span><span class="w"> </span><span class="n">factoradicoAdecimal</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">factoradicoAdecimal</span><span class="w"> </span><span class="s">"341010"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">463</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">factoradicoAdecimal</span><span class="w"> </span><span class="s">"2441000"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">2022</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">factoradicoAdecimal</span><span class="w"> </span><span class="s">"A0000000000"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">36288000</span>
+
+<span class="nf">specG2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG2</span><span class="w"> </span><span class="n">decimalAfactoradico</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">decimalAfactoradico</span><span class="w"> </span><span class="mi">463</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"341010"</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">decimalAfactoradico</span><span class="w"> </span><span class="mi">2022</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"2441000"</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">decimalAfactoradico</span><span class="w"> </span><span class="mi">36288000</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"A0000000000"</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG1</span><span class="w"> </span><span class="n">factoradicoAdecimal1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG1</span><span class="w"> </span><span class="n">factoradicoAdecimal2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG1</span><span class="w"> </span><span class="n">factoradicoAdecimal3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG1</span><span class="w"> </span><span class="n">factoradicoAdecimal4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG2</span><span class="w"> </span><span class="n">decimalAfactoradico1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG2</span><span class="w"> </span><span class="n">decimalAfactoradico2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG2</span><span class="w"> </span><span class="n">decimalAfactoradico3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG2</span><span class="w"> </span><span class="n">decimalAfactoradico4</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    24 examples, 0 failures</span>
+
+<span class="c1">-- Propiedad de inverso</span>
+<span class="c1">-- ====================</span>
+
+<span class="nf">prop_factoradico</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_factoradico</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">factoradicoAdecimal1</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAfactoradico1</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">factoradicoAdecimal2</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAfactoradico2</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">factoradicoAdecimal3</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAfactoradico3</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">factoradicoAdecimal4</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAfactoradico4</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_factoradico</span>
+<span class="c1">--    +++ OK, passed 100 tests; 101 discarded.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (decimalAfactoradico1 (10^300000))</span>
+<span class="c1">--    68191</span>
+<span class="c1">--    (2.46 secs, 9,088,634,744 bytes)</span>
+<span class="c1">--    λ&gt; length (decimalAfactoradico2 (10^300000))</span>
+<span class="c1">--    68191</span>
+<span class="c1">--    (2.36 secs, 9,088,634,800 bytes)</span>
+<span class="c1">--    λ&gt; length (decimalAfactoradico3 (10^300000))</span>
+<span class="c1">--    68191</span>
+<span class="c1">--    (2.18 secs, 4,490,856,416 bytes)</span>
+<span class="c1">--    λ&gt; length (decimalAfactoradico4 (10^300000))</span>
+<span class="c1">--    68191</span>
+<span class="c1">--    (1.98 secs, 4,490,311,536 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; length (show (factoradicoAdecimal1 (show (10^50000))))</span>
+<span class="c1">--    213237</span>
+<span class="c1">--    (0.93 secs, 2,654,156,680 bytes)</span>
+<span class="c1">--    λ&gt; length (show (factoradicoAdecimal2 (show (10^50000))))</span>
+<span class="c1">--    213237</span>
+<span class="c1">--    (0.51 secs, 2,633,367,168 bytes)</span>
+<span class="c1">--    λ&gt; length (show (factoradicoAdecimal3 (show (10^50000))))</span>
+<span class="c1">--    213237</span>
+<span class="c1">--    (0.93 secs, 2,635,792,192 bytes)</span>
+<span class="c1">--    λ&gt; length (show (factoradicoAdecimal4 (show (10^50000))))</span>
+<span class="c1">--    213237</span>
+<span class="c1">--    (0.43 secs, 2,636,996,848 bytes)</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h2>2. Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span><span class="p">,</span> <span class="n">takewhile</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">factorial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+<span class="c1"># 1ª definición de factoradicoAdecimal</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># caracterAentero(c) es la posición del carácter c en la lista de</span>
+<span class="c1"># caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">#    caracterAentero('0')  ==  0</span>
+<span class="c1">#    caracterAentero('1')  ==  1</span>
+<span class="c1">#    caracterAentero('9')  ==  9</span>
+<span class="c1">#    caracterAentero('A')  ==  10</span>
+<span class="c1">#    caracterAentero('B')  ==  11</span>
+<span class="c1">#    caracterAentero('Z')  ==  35</span>
+<span class="k">def</span> <span class="nf">caracterAentero</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span> <span class="o">+</span>  <span class="mi">10</span>
+
+<span class="k">def</span> <span class="nf">factoradicoAdecimal1</span><span class="p">(</span><span class="n">cs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">caracterAentero</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
+    <span class="n">n</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">([</span><span class="n">factorial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)))</span>
+
+<span class="c1"># 2ª definición de factoradicoAdecimal</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># caracteres es la cadena de los caracteres.</span>
+<span class="n">caracteres</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>
+
+<span class="c1"># caracteresEnteros es el diccionario cuyas claves son los caracteres y</span>
+<span class="c1"># los valores son los números de 0 a 35.</span>
+<span class="n">caracteresEnteros</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">caracteres</span><span class="p">)}</span>
+
+<span class="c1"># caracterAentero2(c) es la posición del carácter c en la lista de</span>
+<span class="c1"># caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">#    caracterAentero2('0')  ==  0</span>
+<span class="c1">#    caracterAentero2('1')  ==  1</span>
+<span class="c1">#    caracterAentero2('9')  ==  9</span>
+<span class="c1">#    caracterAentero2('A')  ==  10</span>
+<span class="c1">#    caracterAentero2('B')  ==  11</span>
+<span class="c1">#    caracterAentero2('Z')  ==  35</span>
+<span class="k">def</span> <span class="nf">caracterAentero2</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">caracteresEnteros</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">factoradicoAdecimal2</span><span class="p">(</span><span class="n">cs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">caracterAentero2</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
+    <span class="n">n</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">([</span><span class="n">factorial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)))</span>
+
+<span class="c1"># 3ª definición de factoradicoAdecimal</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># caracterAentero3(c) es la posición del carácter c en la lista de</span>
+<span class="c1"># caracteres ['0', '1',..., '9', 'A', 'B',..., 'Z']. Por ejemplo,</span>
+<span class="c1">#    caracterAentero3('0')  ==  0</span>
+<span class="c1">#    caracterAentero3('1')  ==  1</span>
+<span class="c1">#    caracterAentero3('9')  ==  9</span>
+<span class="c1">#    caracterAentero3('A')  ==  10</span>
+<span class="c1">#    caracterAentero3('B')  ==  11</span>
+<span class="c1">#    caracterAentero3('Z')  ==  35</span>
+<span class="k">def</span> <span class="nf">caracterAentero3</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">takewhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">c</span><span class="p">,</span> <span class="n">caracteres</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">factoradicoAdecimal3</span><span class="p">(</span><span class="n">cs</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="n">factorial</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">))],</span>
+                                     <span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">caracterAentero3</span><span class="p">,</span> <span class="n">cs</span><span class="p">)))))</span>
+
+<span class="c1"># 1ª definición de decimalAfactoradico</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># enteroAcaracter(k) es el k-ésimo elemento de la lista</span>
+<span class="c1"># ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">#    enteroAcaracter(0)   ==  '0'</span>
+<span class="c1">#    enteroAcaracter(1)   ==  '1'</span>
+<span class="c1">#    enteroAcaracter(9)   ==  '9'</span>
+<span class="c1">#    enteroAcaracter(10)  ==  'A'</span>
+<span class="c1">#    enteroAcaracter(11)  ==  'B'</span>
+<span class="c1">#    enteroAcaracter(35)  ==  'Z'</span>
+<span class="k">def</span> <span class="nf">enteroAcaracter</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">caracteres</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<span class="c1"># facts() es la lista de los factoriales. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; list(takewhile(lambda x : x &lt; 900, facts()))</span>
+<span class="c1">#    [1, 1, 2, 6, 24, 120, 720]</span>
+<span class="k">def</span> <span class="nf">facts</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">decimalAfactoradico1</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"0"</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">m</span> <span class="o">//</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">enteroAcaracter</span><span class="p">(</span><span class="n">m</span> <span class="o">//</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">aux</span><span class="p">(</span><span class="n">m</span> <span class="o">%</span> <span class="n">y</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">takewhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="n">facts</span><span class="p">())))))</span>
+
+<span class="c1"># 2ª definición de decimalAfactoradico</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># enterosCaracteres es el diccionario cuyas claves son los número de 0</span>
+<span class="c1"># a 35 y las claves son los caracteres.</span>
+<span class="n">enterosCaracteres</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">caracteres</span><span class="p">))</span>
+
+<span class="c1"># enteroAcaracter2(k) es el k-ésimo elemento de la lista</span>
+<span class="c1"># ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">#    enteroAcaracter2(0)   ==  '0'</span>
+<span class="c1">#    enteroAcaracter2(1)   ==  '1'</span>
+<span class="c1">#    enteroAcaracter2(9)   ==  '9'</span>
+<span class="c1">#    enteroAcaracter2(10)  ==  'A'</span>
+<span class="c1">#    enteroAcaracter2(11)  ==  'B'</span>
+<span class="c1">#    enteroAcaracter2(35)  ==  'Z'</span>
+<span class="k">def</span> <span class="nf">enteroAcaracter2</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">enterosCaracteres</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">decimalAfactoradico2</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"0"</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span>
+        <span class="k">return</span> <span class="n">enteroAcaracter2</span><span class="p">(</span><span class="n">m</span> <span class="o">//</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">aux</span><span class="p">(</span><span class="n">m</span> <span class="o">%</span> <span class="n">y</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">takewhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="n">facts</span><span class="p">())))))</span>
+
+<span class="c1"># 3ª definición de decimalAfactoradico</span>
+<span class="c1"># ====================================</span>
+
+<span class="c1"># enteroAcaracter3(k) es el k-ésimo elemento de la lista</span>
+<span class="c1"># ['0', '1',..., '9', 'A', 'B',..., 'Z']. . Por ejemplo,</span>
+<span class="c1">#    enteroAcaracter3(0)   ==  '0'</span>
+<span class="c1">#    enteroAcaracter3(1)   ==  '1'</span>
+<span class="c1">#    enteroAcaracter3(9)   ==  '9'</span>
+<span class="c1">#    enteroAcaracter3(10)  ==  'A'</span>
+<span class="c1">#    enteroAcaracter3(11)  ==  'B'</span>
+<span class="c1">#    enteroAcaracter3(35)  ==  'Z'</span>
+<span class="k">def</span> <span class="nf">enteroAcaracter3</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">caracteres</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">decimalAfactoradico3</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">xs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"0"</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">,</span> <span class="o">*</span><span class="n">ys</span> <span class="o">=</span> <span class="n">xs</span>
+        <span class="k">return</span> <span class="n">enteroAcaracter3</span><span class="p">(</span><span class="n">m</span> <span class="o">//</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">aux</span><span class="p">(</span><span class="n">m</span> <span class="o">%</span> <span class="n">y</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">takewhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="n">facts</span><span class="p">())))))</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_factoradico</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">factoradicoAdecimal</span> <span class="ow">in</span> <span class="p">[</span><span class="n">factoradicoAdecimal1</span><span class="p">,</span>
+                                <span class="n">factoradicoAdecimal2</span><span class="p">,</span>
+                                <span class="n">factoradicoAdecimal3</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">factoradicoAdecimal</span><span class="p">(</span><span class="s2">"341010"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">463</span>
+        <span class="k">assert</span> <span class="n">factoradicoAdecimal</span><span class="p">(</span><span class="s2">"2441000"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2022</span>
+        <span class="k">assert</span> <span class="n">factoradicoAdecimal</span><span class="p">(</span><span class="s2">"A0000000000"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">36288000</span>
+    <span class="k">for</span> <span class="n">decimalAfactoradico</span> <span class="ow">in</span> <span class="p">[</span><span class="n">decimalAfactoradico1</span><span class="p">,</span>
+                                <span class="n">decimalAfactoradico2</span><span class="p">,</span>
+                                <span class="n">decimalAfactoradico3</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">decimalAfactoradico</span><span class="p">(</span><span class="mi">463</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"341010"</span>
+        <span class="k">assert</span> <span class="n">decimalAfactoradico</span><span class="p">(</span><span class="mi">2022</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"2441000"</span>
+        <span class="k">assert</span> <span class="n">decimalAfactoradico</span><span class="p">(</span><span class="mi">36288000</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"A0000000000"</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_factoradico()</span>
+<span class="c1">#    Verificado</span>
+
+<span class="c1"># Propiedad de inverso</span>
+<span class="c1"># ====================</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_factoradico_equiv</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">factoradicoAdecimal1</span><span class="p">(</span><span class="n">decimalAfactoradico1</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">==</span> <span class="n">n</span>
+    <span class="k">assert</span> <span class="n">factoradicoAdecimal2</span><span class="p">(</span><span class="n">decimalAfactoradico3</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">==</span> <span class="n">n</span>
+    <span class="k">assert</span> <span class="n">factoradicoAdecimal3</span><span class="p">(</span><span class="n">decimalAfactoradico3</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">==</span> <span class="n">n</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_factoradico_equiv()</span>
+<span class="c1">#    &gt;&gt;&gt;</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../14-suma_de_cadenas/" rel="prev" title="Suma de cadenas">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../24-duplicacion_de_cada_elemento/" rel="next" title="Duplicación de cada elemento">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

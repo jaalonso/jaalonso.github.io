@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Representaciones de un número como suma de dos cuadrados | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2024/01/04-representaciones_de_un_numero_como_suma_de_dos_cuadrados/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Representaciones de un número como suma de dos cuadrados | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../../../2023/12/29-sumas_de_dos_primos/" title="Sumas de dos primos" type="text/html">
+<link rel="next" href="../09-la_serie_de_thue_morse/" title="La serie de Thue-Morse" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Representaciones de un número como suma de dos cuadrados">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2024/01/04-representaciones_de_un_numero_como_suma_de_dos_cuadrados/">
+<meta property="og:description" content="Definir la función
+   representaciones :: Integer -&gt; [(Integer,Integer)]
+
+
+tal que representaciones n es la lista de pares de números naturales (x,y) tales que n = x² + y². Por ejemplo.
+   representac">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-01-04T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Representaciones de un número como suma de dos cuadrados</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-01-04T06:00:00+02:00" itemprop="datePublished" title="04-01-2024">04-01-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">representaciones</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">Integer</span><span class="p">,</span><span class="n">Integer</span><span class="p">)]</span>
+</pre></div>
+
+<p>tal que <code>representaciones n</code> es la lista de pares de números naturales (x,y) tales que n = x² + y². Por ejemplo.</p>
+<div class="code"><pre class="code literal-block">   representaciones  20              ==  [(2,4)]
+   representaciones  25              ==  [(0,5),(3,4)]
+   representaciones 325              ==  [(1,18),(6,17),(10,15)]
+   length (representaciones (10^14)) == 8
+</pre></div>
+
+<p>Comprobar con QuickCheck que un número natural n se puede representar como suma de dos cuadrados si, y sólo si, en la factorización prima de n todos los exponentes de sus factores primos congruentes con 3 módulo 4 son pares.</p>
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h2>Soluciones en Haskell</h2>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Representaciones_de_un_numero_como_suma_de_dos_cuadrados</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericLength</span><span class="p">,</span><span class="w"> </span><span class="nf">group</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Numbers.Primes</span><span class="w"> </span><span class="p">(</span><span class="nf">primeFactors</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="p">),</span><span class="w"> </span><span class="nf">quickCheck</span><span class="p">)</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">representaciones1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">representaciones1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">representaciones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">representaciones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">raiz</span><span class="w"> </span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">raiz</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)],</span>
+<span class="w">                </span><span class="kr">let</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
+<span class="w">                </span><span class="n">esCuadrado</span><span class="w"> </span><span class="n">z</span><span class="p">]</span>
+
+<span class="c1">-- (raiz x) es la raíz cuadrada entera de x. Por ejemplo,</span>
+<span class="c1">--    raiz 25  ==  5</span>
+<span class="c1">--    raiz 24  ==  4</span>
+<span class="c1">--    raiz 26  ==  5</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">c</span>
+<span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">a</span>
+<span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+<span class="w">              </span><span class="kr">where</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">                    </span><span class="n">d</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">2</span>
+
+<span class="c1">-- Nota: La siguiente definición de raíz cuadrada falla para números</span>
+<span class="c1">-- grandes.</span>
+<span class="c1">--    raiz' :: Integer -&gt; Integer</span>
+<span class="c1">--    raiz' = floor . sqrt . fromIntegral</span>
+<span class="c1">-- Por ejemplo,</span>
+<span class="c1">--    λ&gt; raiz' (10^50)</span>
+<span class="c1">--    9999999999999998758486016</span>
+<span class="c1">--    λ&gt; raiz (10^50)</span>
+<span class="c1">--    10000000000000000000000000</span>
+
+<span class="c1">-- (esCuadrado x) se verifica si x es un número al cuadrado. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    esCuadrado 25  ==  True</span>
+<span class="c1">--    esCuadrado 26  ==  False</span>
+<span class="nf">esCuadrado</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esCuadrado</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">raiz</span><span class="w"> </span><span class="n">x</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">representaciones3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">representaciones3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="n">raiz</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">compare</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">                          </span><span class="kt">LT</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">y</span>
+<span class="w">                          </span><span class="kt">EQ</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                          </span><span class="kt">GT</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">-- Verificación                                                     --</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">representaciones</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">representaciones</span><span class="w">  </span><span class="mi">20</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">representaciones</span><span class="w">  </span><span class="mi">25</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">representaciones</span><span class="w"> </span><span class="mi">325</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">18</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">17</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">)]</span>
+
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">representaciones1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">representaciones2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">representaciones3</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    9 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_representaciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_representaciones</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">representaciones1</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">representaciones2</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">representaciones3</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_representaciones</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; representaciones1 4000</span>
+<span class="c1">--    [(20,60),(36,52)]</span>
+<span class="c1">--    (4.95 secs, 2,434,929,624 bytes)</span>
+<span class="c1">--    λ&gt; representaciones2 4000</span>
+<span class="c1">--    [(20,60),(36,52)]</span>
+<span class="c1">--    (0.00 secs, 599,800 bytes)</span>
+<span class="c1">--    λ&gt; representaciones3 4000</span>
+<span class="c1">--    [(20,60),(36,52)]</span>
+<span class="c1">--    (0.01 secs, 591,184 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; length (representaciones2 (10^14))</span>
+<span class="c1">--    8</span>
+<span class="c1">--    (6.64 secs, 5,600,837,088 bytes)</span>
+<span class="c1">--    λ&gt; length (representaciones3 (10^14))</span>
+<span class="c1">--    8</span>
+<span class="c1">--    (9.37 secs, 4,720,548,264 bytes)</span>
+
+<span class="c1">-- Comprobación de la propiedad</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_representacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_representacion</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">representaciones2</span><span class="w"> </span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">==</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacion</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- (factorizacion n) es la factorización prima de n. Por ejemplo,</span>
+<span class="c1">--    factorizacion 600  ==  [(2,3),(3,1),(5,2)]</span>
+<span class="nf">factorizacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">factorizacion</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">xs</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="p">(</span><span class="n">primeFactors</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_representacion</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h2>Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span><span class="p">,</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">default_timer</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">factorint</span>
+
+<span class="c1"># 1ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="k">def</span> <span class="nf">representaciones1</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">]</span>
+
+<span class="c1"># 2ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># raiz(x) es la raíz cuadrada entera de x. Por ejemplo,</span>
+<span class="c1">#    raiz(25)     ==  5</span>
+<span class="c1">#    raiz(24)     ==  4</span>
+<span class="c1">#    raiz(26)     ==  5</span>
+<span class="c1">#    raiz(10**46) == 100000000000000000000000</span>
+<span class="k">def</span> <span class="nf">raiz</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">c</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">c</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="n">a</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">aux</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">aux</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Nota. La siguiente definición de raíz cuadrada entera falla para</span>
+<span class="c1"># números grandes. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; raiz2(10**46)</span>
+<span class="c1">#    99999999999999991611392</span>
+<span class="k">def</span> <span class="nf">raiz2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">floor</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="c1"># esCuadrado(x) se verifica si x es un número al cuadrado. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    esCuadrado(25)     == True</span>
+<span class="c1">#    esCuadrado(26)     == False</span>
+<span class="c1">#    esCuadrado(10**46) == True</span>
+<span class="c1">#    esCuadrado(10**47) == False</span>
+<span class="k">def</span> <span class="nf">esCuadrado</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">raiz</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span>
+
+<span class="k">def</span> <span class="nf">representaciones2</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">raiz</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+        <span class="k">if</span> <span class="n">esCuadrado</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">raiz</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="c1"># 3ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="k">def</span> <span class="nf">representaciones3</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">raiz</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">raiz</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">z</span> <span class="o">*</span> <span class="n">z</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">r</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_representaciones</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">representaciones1</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones1</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones1</span><span class="p">(</span><span class="mi">325</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">18</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">17</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones2</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones2</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones2</span><span class="p">(</span><span class="mi">325</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">18</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">17</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones3</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones3</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">representaciones3</span><span class="p">(</span><span class="mi">325</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">18</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">17</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_representaciones()</span>
+<span class="c1">#    Verificado</span>
+
+<span class="c1"># Equivalencia de las definiciones de representaciones</span>
+<span class="c1"># ====================================================</span>
+
+<span class="c1"># La propiedad es</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_representaciones_equiv</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">representaciones1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">representaciones2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">xs</span>
+    <span class="k">assert</span> <span class="n">representaciones3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">xs</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_representaciones_equiv()</span>
+<span class="c1">#    &gt;&gt;&gt;</span>
+
+<span class="c1"># Comparación de eficiencia de las definiciones de representaciones</span>
+<span class="c1"># =================================================================</span>
+
+<span class="k">def</span> <span class="nf">tiempo</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tiempo (en segundos) de evaluar la expresión e."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">default_timer</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+<span class="c1"># La comparación es</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('representaciones1(5000)')</span>
+<span class="c1">#    1.27 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('representaciones2(5000)')</span>
+<span class="c1">#    0.00 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('representaciones3(5000)')</span>
+<span class="c1">#    0.00 segundos</span>
+<span class="c1">#</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('len(representaciones2(10**12))')</span>
+<span class="c1">#    11.54 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('len(representaciones3(10**12))')</span>
+<span class="c1">#    12.08 segundos</span>
+
+<span class="c1"># Comprobación de la propiedad</span>
+<span class="c1"># ============================</span>
+
+<span class="c1"># La propiedad es</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="mi">1000</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_representaciones_prop</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">factores</span> <span class="o">=</span> <span class="n">factorint</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">representaciones2</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> \
+        <span class="nb">all</span><span class="p">(</span><span class="n">p</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">factores</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_representaciones_prop()</span>
+<span class="c1">#    &gt;&gt;&gt;</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../../2023/12/29-sumas_de_dos_primos/" rel="prev" title="Sumas de dos primos">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../09-la_serie_de_thue_morse/" rel="next" title="La serie de Thue-Morse">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
