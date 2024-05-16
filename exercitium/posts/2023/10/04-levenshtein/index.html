@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La distancia Levenshtein (con programación dinámica) | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/10/04-levenshtein/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="La distancia Levenshtein (con programación dinámica) | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="next" href="../09-programacion_dinamica_caminos_en_una_reticula/" title="Caminos en una retícula (con programación dinámica)" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="La distancia Levenshtein (con programación dinámica)">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/10/04-levenshtein/">
+<meta property="og:description" content="La distancia de Levenshtein (o distancia de edición) es el  mínimo de operaciones requeridas para transformar una cadena de caracteres en otra. Las operaciones de edición que se pueden hacer son:
+
+ins">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-10-04T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">La distancia Levenshtein (con programación dinámica)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-10-04T06:00:00+02:00" itemprop="datePublished" title="04-10-2023">04-10-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>La distancia de Levenshtein (o distancia de edición) es el  mínimo de operaciones requeridas para transformar una cadena de caracteres en otra. Las operaciones de edición que se pueden hacer son:</p>
+<ul>
+<li>insertar un carácter (por ejemplo, de "abc" a "abca")</li>
+<li>eliminar un carácter (por ejemplo, de "abc" a "ac")</li>
+<li>sustituir un carácter (por ejemplo, de "abc" a "adc")</li>
+</ul>
+<p>Por ejemplo, la distancia de Levenshtein entre "casa" y "calle" es de 3 porque se necesitan al menos tres ediciones elementales para cambiar uno en el otro:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="s">"casa"</span><span class="w">  </span><span class="o">--&gt;</span><span class="w"> </span><span class="s">"cala"</span><span class="w">  </span><span class="p">(</span><span class="n">sustitución</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="s">'s'</span><span class="w"> </span><span class="n">por</span><span class="w"> </span><span class="s">'l'</span><span class="p">)</span>
+<span class="w">   </span><span class="s">"cala"</span><span class="w">  </span><span class="o">--&gt;</span><span class="w"> </span><span class="s">"calla"</span><span class="w"> </span><span class="p">(</span><span class="n">inserción</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="s">'l'</span><span class="w"> </span><span class="n">entre</span><span class="w"> </span><span class="s">'l'</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="s">'a'</span><span class="p">)</span>
+<span class="w">   </span><span class="s">"calla"</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="s">"calle"</span><span class="w"> </span><span class="p">(</span><span class="n">sustitución</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="s">'a'</span><span class="w"> </span><span class="n">por</span><span class="w"> </span><span class="s">'e'</span><span class="p">)</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">levenshtein</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Int</span>
+</pre></div>
+
+<p>tal que <code>levenshtein xs ys</code> es la distancia de Levenshtein entre <code>xs</code> e <code>ys</code>. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   levenshtein "casa"  "calle"    ==  3
+   levenshtein "calle" "casa"     ==  3
+   levenshtein "casa"  "casa"     ==  0
+   levenshtein "ana" "maria"      ==  3
+   levenshtein "agua" "manantial" ==  7
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h2>Soluciones en Haskell</h2>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Levenshtein</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Array</span><span class="p">(</span><span class="kt">Array</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="n">array</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="c1">-- 1ª definición (por recursión)</span>
+<span class="c1">-- =============================</span>
+
+<span class="nf">levenshtein1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">levenshtein1</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+<span class="nf">levenshtein1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="s">""</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">levenshtein1</span><span class="w"> </span><span class="n">c1</span><span class="o">@</span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">c2</span><span class="o">@</span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">levenshtein1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">minimum</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="n">levenshtein1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">c2</span>
+<span class="w">                            </span><span class="p">,</span><span class="w"> </span><span class="n">levenshtein1</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">                            </span><span class="p">,</span><span class="w"> </span><span class="n">levenshtein1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+
+<span class="c1">-- 2ª definición (con programación dinámica)</span>
+<span class="c1">-- =========================================</span>
+
+<span class="nf">levenshtein2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">levenshtein2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">matrizLevenshtein</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w">  </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">         </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- (matrizLevenshtein xs ys) es la matriz cuyo número de filas es la</span>
+<span class="c1">-- longitud de xs, cuyo número de columnas es la longitud de ys y en</span>
+<span class="c1">-- valor en la posición (i,j) es la distancia de Levenshtein entre los</span>
+<span class="c1">-- primeros i caracteres de xs y los j primeros caracteres de ys. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    λ&gt; elems (matrizLevenshtein "casa" "calle")</span>
+<span class="c1">--    [0,1,2,3,4,5,1,0,1,2,3,4,2,1,0,1,2,3,3,2,1,1,2,3,4,3,2,2,2,3]</span>
+<span class="c1">-- Gráficamente,</span>
+<span class="c1">--       c a l l e</span>
+<span class="c1">--     0,1,2,3,4,5,</span>
+<span class="c1">--  c  1,0,1,2,3,4,</span>
+<span class="c1">--  a  2,1,0,1,2,3,</span>
+<span class="c1">--  s  3,2,1,1,2,3,</span>
+<span class="c1">--  a  4,3,2,2,2,3</span>
+<span class="nf">matrizLevenshtein</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Array</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">matrizLevenshtein</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">array</span><span class="w"> </span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="p">[((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">m</span><span class="p">],</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">j</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">i</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">                  </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">minimum</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+<span class="w">                                                   </span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                                                   </span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; levenshtein1 (show (2^33)) (show (3^33))</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (16.19 secs, 11,766,254,536 bytes)</span>
+<span class="c1">--    λ&gt; levenshtein2 (show (2^33)) (show (3^33))</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (0.02 secs, 0 bytes)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein1</span><span class="w"> </span><span class="s">"casa"</span><span class="w">  </span><span class="s">"calle"</span><span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein1</span><span class="w"> </span><span class="s">"calle"</span><span class="w"> </span><span class="s">"casa"</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein1</span><span class="w"> </span><span class="s">"casa"</span><span class="w">  </span><span class="s">"casa"</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">0</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein1</span><span class="w"> </span><span class="s">"ana"</span><span class="w"> </span><span class="s">"maria"</span><span class="w">      </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej5"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein1</span><span class="w"> </span><span class="s">"agua"</span><span class="w"> </span><span class="s">"manantial"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">7</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej6"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein2</span><span class="w"> </span><span class="s">"casa"</span><span class="w">  </span><span class="s">"calle"</span><span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej7"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein2</span><span class="w"> </span><span class="s">"calle"</span><span class="w"> </span><span class="s">"casa"</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej8"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein2</span><span class="w"> </span><span class="s">"casa"</span><span class="w">  </span><span class="s">"casa"</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">0</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej9"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein2</span><span class="w"> </span><span class="s">"ana"</span><span class="w"> </span><span class="s">"maria"</span><span class="w">      </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"ej10"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">levenshtein2</span><span class="w"> </span><span class="s">"agua"</span><span class="w"> </span><span class="s">"manantial"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    ej1</span>
+<span class="c1">--    ej2</span>
+<span class="c1">--    ej3</span>
+<span class="c1">--    ej4</span>
+<span class="c1">--    ej5</span>
+<span class="c1">--    ej6</span>
+<span class="c1">--    ej7</span>
+<span class="c1">--    ej8</span>
+<span class="c1">--    ej9</span>
+<span class="c1">--    ej10</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0024 seconds</span>
+<span class="c1">--    10 examples, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h2>Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">setrecursionlimit</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">default_timer</span>
+
+<span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># 1ª definición (por recursión)</span>
+<span class="c1"># =============================</span>
+
+<span class="k">def</span> <span class="nf">levenshtein1</span><span class="p">(</span><span class="n">xs</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ys</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">xs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ys</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ys</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">min</span><span class="p">([</span><span class="n">levenshtein1</span><span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ys</span><span class="p">),</span>
+                    <span class="n">levenshtein1</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+                    <span class="n">levenshtein1</span><span class="p">(</span><span class="n">xs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">:])])</span>
+
+
+<span class="c1"># 2ª definición (con programación dinámica)</span>
+<span class="c1"># =========================================</span>
+
+<span class="c1"># matrizLevenshtein(xs, ys) es la matriz cuyo número de filas es la</span>
+<span class="c1"># longitud de xs, cuyo número de columnas es la longitud de ys y en</span>
+<span class="c1"># valor en la posición (i,j) es la distancia de Levenshtein entre los</span>
+<span class="c1"># primeros i caracteres de xs y los j primeros caracteres de ys. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; matrizLevenshtein("casa", "calle")</span>
+<span class="c1">#    [[0, 1, 2, 3, 4, 5],</span>
+<span class="c1">#     [1, 0, 1, 2, 3, 4],</span>
+<span class="c1">#     [2, 1, 0, 1, 2, 3],</span>
+<span class="c1">#     [3, 2, 1, 1, 2, 3],</span>
+<span class="c1">#     [4, 3, 2, 2, 2, 3]]</span>
+<span class="c1"># Gráficamente,</span>
+<span class="c1">#       c a l l e</span>
+<span class="c1">#     0,1,2,3,4,5,</span>
+<span class="c1">#  c  1,0,1,2,3,4,</span>
+<span class="c1">#  a  2,1,0,1,2,3,</span>
+<span class="c1">#  s  3,2,1,1,2,3,</span>
+<span class="c1">#  a  4,3,2,2,2,3</span>
+<span class="k">def</span> <span class="nf">matrizLevenshtein</span><span class="p">(</span><span class="n">xs</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ys</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ys</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+                <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">min</span><span class="p">([</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span>  <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+<span class="k">def</span> <span class="nf">levenshtein2</span><span class="p">(</span><span class="n">xs</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ys</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matrizLevenshtein</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)[</span><span class="n">m</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1"># Comparación de eficiencia</span>
+<span class="c1"># =========================</span>
+
+<span class="k">def</span> <span class="nf">tiempo</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tiempo (en segundos) de evaluar la expresión e."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">default_timer</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+<span class="c1"># La comparación es</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('levenshtein1(str(2**33), str(3**33))')</span>
+<span class="c1">#    13.78 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('levenshtein2(str(2**33), str(3**33))')</span>
+<span class="c1">#    0.00 segundos</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_levenshtein</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="s2">"casa"</span><span class="p">,</span>  <span class="s2">"calle"</span><span class="p">)</span>     <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="s2">"calle"</span><span class="p">,</span> <span class="s2">"casa"</span><span class="p">)</span>      <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="s2">"casa"</span><span class="p">,</span>  <span class="s2">"casa"</span><span class="p">)</span>      <span class="o">==</span>  <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="s2">"ana"</span><span class="p">,</span>   <span class="s2">"maria"</span><span class="p">)</span>     <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein1</span><span class="p">(</span><span class="s2">"agua"</span><span class="p">,</span>  <span class="s2">"manantial"</span><span class="p">)</span> <span class="o">==</span>  <span class="mi">7</span>
+    <span class="k">assert</span> <span class="n">levenshtein2</span><span class="p">(</span><span class="s2">"casa"</span><span class="p">,</span>  <span class="s2">"calle"</span><span class="p">)</span>     <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein2</span><span class="p">(</span><span class="s2">"calle"</span><span class="p">,</span> <span class="s2">"casa"</span><span class="p">)</span>      <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein2</span><span class="p">(</span><span class="s2">"casa"</span><span class="p">,</span>  <span class="s2">"casa"</span><span class="p">)</span>      <span class="o">==</span>  <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">levenshtein2</span><span class="p">(</span><span class="s2">"ana"</span><span class="p">,</span>   <span class="s2">"maria"</span><span class="p">)</span>     <span class="o">==</span>  <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">levenshtein2</span><span class="p">(</span><span class="s2">"agua"</span><span class="p">,</span>  <span class="s2">"manantial"</span><span class="p">)</span> <span class="o">==</span>  <span class="mi">7</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="next">
+                <a href="../09-programacion_dinamica_caminos_en_una_reticula/" rel="next" title="Caminos en una retícula (con programación dinámica)">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

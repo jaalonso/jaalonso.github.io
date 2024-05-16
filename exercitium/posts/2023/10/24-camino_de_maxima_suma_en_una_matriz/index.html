@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camino de máxima suma en una matriz | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/10/24-camino_de_maxima_suma_en_una_matriz/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Camino de máxima suma en una matriz | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../19-maxima_suma_de_los_caminos_en_una_matriz/" title="Máxima suma de los caminos en una matriz" type="text/html">
+<link rel="next" href="../29-metodo_de_heron_para_calcular_la_raiz_cuadrada/" title="Método de Herón para calcular la raíz_cuadrada" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Camino de máxima suma en una matriz">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/10/24-camino_de_maxima_suma_en_una_matriz/">
+<meta property="og:description" content="Los caminos desde el extremo superior izquierdo (posición (1,1)) hasta el extremo inferior derecho (posición (3,4)) en la matriz
+   (  1  6 11  2 )
+   (  7 12  3  8 )
+   (  3  8  4  9 )
+
+
+moviéndose e">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-10-24T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Camino de máxima suma en una matriz</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-10-24T06:00:00+02:00" itemprop="datePublished" title="24-10-2023">24-10-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Los caminos desde el extremo superior izquierdo (posición (1,1)) hasta el extremo inferior derecho (posición (3,4)) en la matriz</p>
+<div class="code"><pre class="code literal-block">   (  1  6 11  2 )
+   (  7 12  3  8 )
+   (  3  8  4  9 )
+</pre></div>
+
+<p>moviéndose en cada paso una casilla hacia la derecha o hacia abajo, son los siguientes:</p>
+<div class="code"><pre class="code literal-block">   [1,6,11,2,8,9]
+   [1,6,11,3,8,9]
+   [1,6,12,3,8,9]
+   [1,7,12,3,8,9]
+   [1,6,11,3,4,9]
+   [1,6,12,3,4,9]
+   [1,7,12,3,4,9]
+   [1,6,12,8,4,9]
+   [1,7,12,8,4,9]
+   [1,7, 3,8,4,9]
+</pre></div>
+
+<p>La suma de los caminos son 37, 38, 39, 40, 34, 35, 36, 40, 41 y 32, respectivamente. El camino de máxima suma es el penúltimo (1, 7, 12, 8, 4, 9) que tiene una suma de 41.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">caminoMaxSuma</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Matrix</span><span class="w"> </span><span class="nc">Int</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">Int</span><span class="o">]</span>
+</pre></div>
+
+<p>tal que <code>caminoMaxSuma m</code> es un camino de máxima suma en la matriz <code>m</code> desde el extremo superior izquierdo hasta el extremo inferior derecho, moviéndose en cada paso una casilla hacia abajo o hacia la derecha. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; caminoMaxSuma (fromLists [[1,6,11,2],[7,12,3,8],[3,8,4,9]])
+   [1,7,12,8,4,9]
+   λ&gt; sum (caminoMaxSuma (fromList 500 500 [1..]))
+   187001249
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h2>Soluciones en Haskell</h2>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Camino_de_maxima_suma_en_una_matriz</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Matrix</span><span class="w"> </span><span class="p">(</span><span class="kt">Matrix</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="nf">fromLists</span><span class="p">,</span><span class="w"> </span><span class="nf">matrix</span><span class="p">,</span><span class="w"> </span><span class="nf">nrows</span><span class="p">,</span><span class="w"> </span><span class="nf">ncols</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="c1">-- 1ª definición de caminoMaxSuma (con caminos1)</span>
+<span class="c1">-- =============================================</span>
+
+<span class="nf">caminoMaxSuma1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">caminoMaxSuma1</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">caminos1</span><span class="w"> </span><span class="n">m</span>
+<span class="w">        </span><span class="n">k</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+
+<span class="nf">caminos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminos1</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">nf</span><span class="p">,</span><span class="n">nc</span><span class="p">)))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">nf</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">m</span>
+<span class="w">        </span><span class="n">nc</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ncols</span><span class="w"> </span><span class="n">m</span>
+
+<span class="c1">-- (caminos1Aux m p) es la lista de los caminos invertidos en la matriz m</span>
+<span class="c1">-- desde la posición (1,1) hasta la posición p. Por ejemplo,</span>
+<span class="nf">caminos1Aux</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]]</span>
+<span class="nf">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">]]]</span>
+<span class="nf">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">]]]</span>
+<span class="nf">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">                      </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">++</span>
+<span class="w">                              </span><span class="n">caminos1Aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span>
+
+<span class="c1">-- 2ª definición de caminoMaxSuma (con caminos2)</span>
+<span class="c1">-- =============================================</span>
+
+<span class="nf">caminoMaxSuma2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">caminoMaxSuma2</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">caminos2</span><span class="w"> </span><span class="n">m</span>
+<span class="w">        </span><span class="n">k</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+
+<span class="nf">caminos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminos2</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">matrizCaminos</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">nrows</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">ncols</span><span class="w"> </span><span class="n">m</span><span class="p">))</span>
+
+<span class="nf">matrizCaminos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">matrizCaminos</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="p">(</span><span class="n">nrows</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">ncols</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">f</span>
+<span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">]]]</span>
+<span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">]]]</span>
+<span class="w">    </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+<span class="c1">-- 3ª definición de caminoMaxSuma (con programación dinámica)</span>
+<span class="c1">-- ==========================================================</span>
+
+<span class="nf">caminoMaxSuma3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">caminoMaxSuma3</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">snd</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">nf</span><span class="p">,</span><span class="n">nc</span><span class="p">)))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">nf</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">m</span>
+<span class="w">        </span><span class="n">nc</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ncols</span><span class="w"> </span><span class="n">m</span>
+<span class="w">        </span><span class="n">q</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">caminoMaxSumaAux</span><span class="w"> </span><span class="n">m</span>
+
+<span class="nf">caminoMaxSumaAux</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[</span><span class="kt">Int</span><span class="p">])</span>
+<span class="nf">caminoMaxSumaAux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">nf</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">m</span>
+<span class="w">    </span><span class="n">nc</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ncols</span><span class="w"> </span><span class="n">m</span>
+<span class="w">    </span><span class="n">q</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="n">nf</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="n">f</span>
+<span class="w">      </span><span class="kr">where</span>
+<span class="w">        </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),[</span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+<span class="w">        </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">        </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">k2</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">k1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+<span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">k2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="w"> </span><span class="n">m</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">k1</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="n">k2</span><span class="p">,</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">q</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (caminoMaxSuma1 (fromList 11 11 [1..]))</span>
+<span class="c1">--    21</span>
+<span class="c1">--    (3.92 secs, 1,778,557,904 bytes)</span>
+<span class="c1">--    λ&gt; length (caminoMaxSuma2 (fromList 11 11 [1..]))</span>
+<span class="c1">--    21</span>
+<span class="c1">--    (1.16 secs, 798,889,488 bytes)</span>
+<span class="c1">--    λ&gt; length (caminoMaxSuma3 (fromList 11 11 [1..]))</span>
+<span class="c1">--    21</span>
+<span class="c1">--    (0.00 secs, 680,256 bytes)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">caminoMaxSuma1</span><span class="w"> </span><span class="p">(</span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">caminoMaxSuma2</span><span class="w"> </span><span class="p">(</span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">caminoMaxSuma3</span><span class="w"> </span><span class="p">(</span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    e1</span>
+<span class="c1">--    e2</span>
+<span class="c1">--    e3</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0007 seconds</span>
+<span class="c1">--    3 examples, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h2>Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">setrecursionlimit</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">default_timer</span>
+
+<span class="kn">from</span> <span class="nn">src.Caminos_en_una_matriz</span> <span class="kn">import</span> <span class="n">caminos1</span><span class="p">,</span> <span class="n">caminos2</span>
+
+<span class="n">setrecursionlimit</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="c1"># 1ª definición de caminoMaxSuma (con caminos1)</span>
+<span class="c1"># =============================================</span>
+
+<span class="k">def</span> <span class="nf">caminoMaxSuma1</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">caminos1</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span> <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Se usa la función caminos1 del ejercicio</span>
+<span class="c1"># "Caminos en una matriz" que se encuentra en</span>
+<span class="c1"># https://bit.ly/45bYoYE</span>
+
+<span class="c1"># 2ª definición de caminoMaxSuma (con caminos2)</span>
+<span class="c1"># =============================================</span>
+
+<span class="k">def</span> <span class="nf">caminoMaxSuma2</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">caminos2</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span> <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="n">k</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Se usa la función caminos2 del ejercicio</span>
+<span class="c1"># "Caminos en una matriz" que se encuentra en</span>
+<span class="c1"># https://bit.ly/45bYoYE</span>
+
+<span class="c1"># 3ª definición de caminoMaxSuma (con programación dinámica)</span>
+<span class="c1"># ==========================================================</span>
+
+<span class="k">def</span> <span class="nf">caminoMaxSuma3</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">nf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">diccionarioCaminoMaxSuma</span><span class="p">(</span><span class="n">m</span><span class="p">)[(</span><span class="n">nf</span><span class="p">,</span> <span class="n">nc</span><span class="p">)][</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="c1"># diccionarioCaminoMaxSuma(p) es el diccionario cuyas claves son los</span>
+<span class="c1"># puntos de la matriz p y sus valores son los pares formados por la</span>
+<span class="c1"># máxima suma de los caminos hasta dicho punto y uno de los caminos con</span>
+<span class="c1"># esa suma. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; diccionarioCaminoMaxSuma([[1,6,11,2],[7,12,3,8],[3,8,4,9]])</span>
+<span class="c1">#    {(1, 1): (1, [1]),</span>
+<span class="c1">#     (1, 2): (7, [6, 1]),</span>
+<span class="c1">#     (1, 3): (18, [11, 6, 1]),</span>
+<span class="c1">#     (1, 4): (20, [2, 11, 6, 1]),</span>
+<span class="c1">#     (2, 1): (8, [7, 1]),</span>
+<span class="c1">#     (3, 1): (11, [3, 7, 1]),</span>
+<span class="c1">#     (2, 2): (20, [12, 7, 1]),</span>
+<span class="c1">#     (2, 3): (23, [3, 12, 7, 1]),</span>
+<span class="c1">#     (2, 4): (31, [8, 3, 12, 7, 1]),</span>
+<span class="c1">#     (3, 2): (28, [8, 12, 7, 1]),</span>
+<span class="c1">#     (3, 3): (32, [4, 8, 12, 7, 1]),</span>
+<span class="c1">#     (3, 4): (41, [9, 4, 8, 12, 7, 1])}</span>
+<span class="k">def</span> <span class="nf">diccionarioCaminoMaxSuma</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">q</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">q</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">q</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="n">q</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span>  <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">k1</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span> <span class="o">=</span> <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="p">(</span><span class="n">k2</span><span class="p">,</span><span class="n">ys</span><span class="p">)</span> <span class="o">=</span> <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">k1</span> <span class="o">&gt;</span> <span class="n">k2</span><span class="p">:</span>
+                <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">xs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">q</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">k2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">ys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+<span class="c1"># Comparación de eficiencia</span>
+<span class="c1"># =========================</span>
+
+<span class="k">def</span> <span class="nf">tiempo</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tiempo (en segundos) de evaluar la expresión e."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">default_timer</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+<span class="c1"># La comparación es</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('caminoMaxSuma1([list(range(11*n+1, 11*(n+1)+1)) for n in range(12)])')</span>
+<span class="c1">#    1.92 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('caminoMaxSuma2([list(range(11*n+1, 11*(n+1)+1)) for n in range(12)])')</span>
+<span class="c1">#    0.65 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('caminoMaxSuma3([list(range(11*n+1, 11*(n+1)+1)) for n in range(12)])')</span>
+<span class="c1">#    0.00 segundos</span>
+
+<span class="c1"># # Verificación</span>
+<span class="c1"># # ============</span>
+
+<span class="k">def</span> <span class="nf">test_caminoMaxSuma</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">caminoMaxSuma1</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span> <span class="o">==</span> \
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">caminoMaxSuma2</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span> <span class="o">==</span> \
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">caminoMaxSuma3</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">]])</span> <span class="o">==</span> \
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_caminoMaxSuma()</span>
+<span class="c1">#    Verificado</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../19-maxima_suma_de_los_caminos_en_una_matriz/" rel="prev" title="Máxima suma de los caminos en una matriz">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../29-metodo_de_heron_para_calcular_la_raiz_cuadrada/" rel="next" title="Método de Herón para calcular la raíz_cuadrada">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
