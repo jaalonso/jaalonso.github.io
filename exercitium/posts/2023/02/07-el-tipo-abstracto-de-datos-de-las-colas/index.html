@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El tipo abstracto de datos de las colas | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/02/07-el-tipo-abstracto-de-datos-de-las-colas/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="El tipo abstracto de datos de las colas | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../06-maxpila/" title="Máximo elemento de una pila" type="text/html">
+<link rel="next" href="../08-transformaciones_colas_listas/" title="TAD de las colas - Transformaciones entre colas y listas" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="El tipo abstracto de datos de las colas">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/02/07-el-tipo-abstracto-de-datos-de-las-colas/">
+<meta property="og:description" content="1. El tipo abstracto de datos de las colas
+Una cola es una estructura de datos, caracterizada por ser una secuencia de elementos en la que la operación de inserción se realiza por un extremo (el poste">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-02-07T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">El tipo abstracto de datos de las colas</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-02-07T06:00:00+02:00" itemprop="datePublished" title="07-02-2023">07-02-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <h2>1. El tipo abstracto de datos de las colas</h2>
+<p>Una cola es una estructura de datos, caracterizada por ser una secuencia de elementos en la que la operación de inserción se realiza por un extremo (el posterior o final) y la operación de extracción por el otro (el anterior o frente).</p>
+<p>Las operaciones que definen a tipo abstracto de datos (TAD) de las colas (cuyos elementos son del tipo a) son las siguientes:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">vacia</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">primero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">resto</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">esVacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>vacia es la cola vacía.</li>
+<li>(inserta x c) es la cola obtenida añadiendo x al final de c.</li>
+<li>(primero c) es el primero de la cola c.</li>
+<li>(resto c) es la cola obtenida eliminando el primero de c.</li>
+<li>(esVacia c) se verifica si c es la cola vacía.</li>
+</ul>
+<p>Las operaciones tienen que verificar las siguientes propiedades:</p>
+<ul>
+<li>primero (inserta x vacia) == x</li>
+<li>Si c es una cola no vacía, entonces primero (inserta x c) == primero c,</li>
+<li>resto (inserta x vacia) == vacia</li>
+<li>Si c es una cola no vacía, entonces resto (inserta x c) == inserta x (resto c)</li>
+<li>esVacia vacia</li>
+<li>not (esVacia (inserta x c))</li>
+</ul>
+<!-- TEASER_END --><h2>2. Las colas en Haskell</h2>
+<h3>2.1. El tipo abstracto de datos de las colas en Haskell</h3>
+<p>El TAD de las colas se encuentra en el módulo <a href="https://bit.ly/3kBlh60">Cola.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">TAD.Cola</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">Cola</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">      </span><span class="c1">-- Cola a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w">    </span><span class="c1">-- a -&gt; Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w">    </span><span class="c1">-- Cola a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">      </span><span class="c1">-- Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w">    </span><span class="c1">-- Cola a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.ColaConListas</span>
+<span class="c1">-- import TAD.ColaConDosListas</span>
+<span class="c1">-- import TAD.ColaConSucesiones</span>
+</pre></div>
+
+<p>Para usar el TAD hay que usar una implementación concreta. En principio, consideraremos tres: una usando listas, otra usando pares de listas y otra usando sucesiones. Hay que elegir la que se desee utilizar, descomentándola y comentando las otras.</p>
+<h3>2.2. Implementación de las colas mediante listas</h3>
+<p>La implementación se encuentra en el módulo <a href="https://bit.ly/3HdYQwM">ColaConListas.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="cm">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="cm">{-# OPTIONS_GHC -fno-warn-unused-top-binds #-}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nn">TAD.ColaConListas</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">Cola</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Cola a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w"> </span><span class="c1">-- a -&gt; Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Cola a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Cola a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- Colas como listas:</span>
+<span class="kr">newtype</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Eq</span>
+
+<span class="c1">-- (escribeCola c) es la cadena correspondiente a la cola c. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    escribeCola (inserta 5 (inserta 2 (inserta 3 vacia))) == "3 | 2 | 5"</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="s">"-"</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="s">" | "</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- Procedimiento de escritura de colas.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">show</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">escribeCola</span>
+
+<span class="c1">-- Ejemplo de cola:</span>
+<span class="c1">--    λ&gt; inserta 5 (inserta 2 (inserta 3 vacia))</span>
+<span class="c1">--    3 | 2 | 5</span>
+
+<span class="c1">-- vacia es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    λ&gt; vacia</span>
+<span class="c1">--    -</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="kt">[]</span>
+
+<span class="c1">-- (inserta x c) es la cola obtenida añadiendo x al final de la cola</span>
+<span class="c1">-- c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; ej = inserta 2 (inserta 3 vacia)</span>
+<span class="c1">--    λ&gt; ej</span>
+<span class="c1">--    3 | 2</span>
+<span class="c1">--    λ&gt; inserta 5 ej</span>
+<span class="c1">--    3 | 2 | 5</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+<span class="c1">-- (primero c) es el primer elemento de la cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; primero (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    3</span>
+<span class="nf">primero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">primero</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"primero: cola vacia"</span>
+<span class="nf">primero</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="kr">_</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span>
+
+<span class="c1">-- (resto c) es la cola obtenida eliminando el primer elemento de la</span>
+<span class="c1">-- cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; resto (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    2 | 5</span>
+<span class="nf">resto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"resto: cola vacia"</span>
+
+<span class="c1">-- (esVacia c) se verifica si c es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    esVacia (inserta 5 (inserta 2 (inserta 3 vacia))) == False</span>
+<span class="c1">--    esVacia vacia  == True</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- Generador de colas                                          --</span>
+<span class="c1">-- ==================</span>
+
+<span class="c1">-- genCola es un generador de colas de enteros. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genCola</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -3 | 2</span>
+<span class="c1">--    6 | 0 | 1</span>
+<span class="c1">--    -5 | 0 | -5 | 0 | -4</span>
+<span class="c1">--    2 | 9 | -6 | 9 | 0 | -1</span>
+<span class="c1">--    -</span>
+<span class="c1">--    11 | -5 | 5</span>
+<span class="c1">--    -</span>
+<span class="c1">--    16 | 6 | 15 | -3 | -9</span>
+<span class="c1">--    11 | 6 | 15 | 13 | 20 | -7 | 11 | -5 | 13</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- El tipo pila es una instancia del arbitrario.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genCola</span>
+
+<span class="c1">-- Propiedades de las colas</span>
+<span class="c1">-- ========================</span>
+
+<span class="c1">-- Las propiedades son</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">esVacia</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">))</span>
+
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">resto</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="c1">-- La comprobación es:</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas1</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas2</span>
+<span class="c1">--    +++ OK, passed 100 tests; 3 discarded.</span>
+</pre></div>
+
+<h3>2.3. Implementación de las colas mediante pares de listas</h3>
+<p>En esta implementación, una cola c se representa mediante un par de listas (xs,ys) de modo que los elementos de c son, en ese orden, los elementos de la lista xs++(reverse ys).</p>
+<p>Al dividir la lista en dos parte e invertir la segunda de ellas, esperamos hacer más eficiente las operaciones sobre las colas.</p>
+<p>Impondremos también una restricción adicional sobre la representación: las colas serán representadas mediante pares (xs,ys) tales que si xs es vacía, entonces ys será también vacía. Esta restricción ha de ser conservada por los programas que crean colas.</p>
+<p>La implementación se encuentra en el módulo <a href="https://bit.ly/3QTM6P6">ColaConDosListas.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">TAD.ColaConDosListas</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">Cola</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">      </span><span class="c1">-- Cola a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w">    </span><span class="c1">-- a -&gt; Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w">    </span><span class="c1">-- Cola a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">      </span><span class="c1">-- Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w">    </span><span class="c1">-- Cola a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- Las colas como pares listas.</span>
+<span class="kr">newtype</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">([</span><span class="n">a</span><span class="p">],[</span><span class="n">a</span><span class="p">])</span>
+
+<span class="c1">-- (escribeCola p) es la cadena correspondiente a la cola p. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    λ&gt; escribeCola (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    "3 | 2 | 5"</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="s">"-"</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">[</span><span class="n">z</span><span class="p">]</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">z</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="s">" | "</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">zs</span>
+
+<span class="c1">-- Procedimiento de escritura de colas.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">show</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">escribeCola</span>
+
+<span class="c1">-- Ejemplo de cola:</span>
+<span class="c1">--    λ&gt; inserta 5 (inserta 2 (inserta 3 vacia))</span>
+<span class="c1">--    3 | 2 | 5</span>
+
+<span class="c1">-- vacia es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    λ&gt;  vacia</span>
+<span class="c1">--    -</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">vacia</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kt">[]</span><span class="p">,</span><span class="kt">[]</span><span class="p">)</span>
+
+<span class="c1">-- (inserta x c) es la cola obtenida añadiendo x al final de la cola</span>
+<span class="c1">-- c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; inserta 5 (inserta 2 (inserta 3 vacia))</span>
+<span class="c1">--    3 | 2 | 5</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">normaliza</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">))</span>
+
+<span class="c1">-- (normaliza p) es la cola obtenida al normalizar el par de listas</span>
+<span class="c1">-- p. Por ejemplo,</span>
+<span class="c1">--    normaliza ([],[2,5,3])   ==  ([3,5,2],[])</span>
+<span class="c1">--    normaliza ([4],[2,5,3])  ==  ([4],[2,5,3])</span>
+<span class="nf">normaliza</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([</span><span class="n">a</span><span class="p">],[</span><span class="n">a</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">([</span><span class="n">a</span><span class="p">],[</span><span class="n">a</span><span class="p">])</span>
+<span class="nf">normaliza</span><span class="w"> </span><span class="p">(</span><span class="kt">[]</span><span class="p">,</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span>
+<span class="nf">normaliza</span><span class="w"> </span><span class="n">p</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span>
+
+<span class="c1">-- (primero c) es el primer elemento de la cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; primero (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    3</span>
+<span class="nf">primero</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">primero</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span>
+<span class="nf">primero</span><span class="w"> </span><span class="kr">_</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"primero: cola vacia"</span>
+
+<span class="c1">-- (resto c) es la cola obtenida eliminando el primer elemento de la</span>
+<span class="c1">-- cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; resto (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    2 | 5</span>
+<span class="nf">resto</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kt">[]</span><span class="p">,</span><span class="kt">[]</span><span class="p">))</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"resto: cola vacia"</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">normaliza</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kt">[]</span><span class="p">,</span><span class="kr">_</span><span class="kt">:</span><span class="kr">_</span><span class="p">))</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"Imposible"</span>
+
+<span class="c1">-- (esVacia c) se verifica si c es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    esVacia (inserta 5 (inserta 2 (inserta 3 vacia))) == False</span>
+<span class="c1">--    esVacia vacia == True</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="kr">_</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- (valida c) se verifica si la cola c es válida; es decir, si</span>
+<span class="c1">-- su primer elemento es vacío entonces también lo es el segundo. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    valida (C ([2],[5]))  ==  True</span>
+<span class="c1">--    valida (C ([2],[]))   ==  True</span>
+<span class="c1">--    valida (C ([],[5]))   ==  False</span>
+<span class="nf">valida</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">valida</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- ---------------------------------------------------------------------</span>
+<span class="c1">-- Igualdad de colas                                                  --</span>
+<span class="c1">-- ---------------------------------------------------------------------</span>
+
+<span class="c1">-- (elementos c) es la lista de los elementos de la cola c en el orden de</span>
+<span class="c1">-- la cola. Por ejemplo,</span>
+<span class="c1">--    λ&gt; elementos (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    [3,2,5]</span>
+<span class="nf">elementos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">elementos</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- (igualColas c1 c2) se verifica si las colas c1 y c2 son iguales. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    igualColas (C ([3,2],[5,4,7])) (C ([3],[5,4,7,2]))   ==  True</span>
+<span class="c1">--    igualColas (C ([3,2],[5,4,7])) (C ([],[5,4,7,2,3]))  ==  False</span>
+<span class="nf">igualColas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">igualColas</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="n">c2</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">valida</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">valida</span><span class="w"> </span><span class="n">c2</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">elementos</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">elementos</span><span class="w"> </span><span class="n">c2</span>
+
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="p">(</span><span class="o">==</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">igualColas</span>
+
+<span class="c1">-- Generador de colas                                          --</span>
+<span class="c1">-- ==================</span>
+
+<span class="c1">-- genCola es un generador de colas de enteros. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genCola</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -3 | 2</span>
+<span class="c1">--    6 | 0 | 1</span>
+<span class="c1">--    -5 | 0 | -5 | 0 | -4</span>
+<span class="c1">--    2 | 9 | -6 | 9 | 0 | -1</span>
+<span class="c1">--    -</span>
+<span class="c1">--    11 | -5 | 5</span>
+<span class="c1">--    -</span>
+<span class="c1">--    16 | 6 | 15 | -3 | -9</span>
+<span class="c1">--    11 | 6 | 15 | 13 | 20 | -7 | 11 | -5 | 13</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- El tipo pila es una instancia del arbitrario.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genCola</span>
+
+<span class="c1">-- Propiedades de las colas</span>
+<span class="c1">-- ========================</span>
+
+<span class="c1">-- Las propiedades son</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">esVacia</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">))</span>
+
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">resto</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="c1">-- La comprobación es:</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas1</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas2</span>
+<span class="c1">--    +++ OK, passed 100 tests; 3 discarded.</span>
+</pre></div>
+
+<h3>2.4. Implementación de las colas mediante sucesiones</h3>
+<p>La implementación (que usa la librería <a href="https://bit.ly/3ZKMm71">Data.Sequence</a>) se encuentra en el módulo <a href="https://bit.ly/3WshC86">ColaConSucesiones.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="cm">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="cm">{-# OPTIONS_GHC -fno-warn-unused-top-binds #-}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nn">TAD.ColaConSucesiones</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">Cola</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Cola a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w"> </span><span class="c1">-- a -&gt; Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Cola a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Cola a -&gt; Cola a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Cola a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Sequence</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">S</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- Colas como sucesiones:</span>
+<span class="kr">newtype</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="kt">Seq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Eq</span>
+
+<span class="c1">-- (escribeCola c) es la cadena correspondiente a la cola c. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    escribeCola (inserta 5 (inserta 2 (inserta 3 vacia))) == "3 | 2 | 5"</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">viewl</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">    </span><span class="kt">EmptyL</span><span class="w">   </span><span class="ow">-&gt;</span><span class="w"> </span><span class="s">"-"</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="kt">:&lt;</span><span class="w"> </span><span class="n">xs'</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">viewl</span><span class="w"> </span><span class="n">xs'</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">        </span><span class="kt">EmptyL</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span>
+<span class="w">        </span><span class="kr">_</span><span class="w">      </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="s">" | "</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">escribeCola</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs'</span><span class="p">)</span>
+
+<span class="c1">-- Procedimiento de escritura de colas.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">show</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">escribeCola</span>
+
+<span class="c1">-- Ejemplo de cola:</span>
+<span class="c1">--    λ&gt; inserta 5 (inserta 2 (inserta 3 vacia))</span>
+<span class="c1">--    3 | 2 | 5</span>
+
+<span class="c1">-- vacia es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    λ&gt; vacia</span>
+<span class="c1">--    C []</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="n">empty</span>
+
+<span class="c1">-- (inserta x c) es la cola obtenida añadiendo x al final de la cola</span>
+<span class="c1">-- c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; ej = inserta 2 (inserta 3 vacia)</span>
+<span class="c1">--    λ&gt; ej</span>
+<span class="c1">--    3 | 2</span>
+<span class="c1">--    λ&gt; inserta 5 ej</span>
+<span class="c1">--    3 | 2 | 5</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c1">-- (primero c) es el primer elemento de la cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; primero (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    3</span>
+<span class="nf">primero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">primero</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">viewl</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">  </span><span class="kt">EmptyL</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"primero de la pila vacia"</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="kt">:&lt;</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">x</span>
+
+<span class="c1">-- (resto c) es la cola obtenida eliminando el primer elemento de la</span>
+<span class="c1">-- cola c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; resto (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    2 | 5</span>
+<span class="nf">resto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">viewl</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">  </span><span class="kt">EmptyL</span><span class="w">   </span><span class="ow">-&gt;</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"resto la pila vacia"</span>
+<span class="w">  </span><span class="kr">_</span><span class="w"> </span><span class="kt">:&lt;</span><span class="w"> </span><span class="n">xs'</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="n">xs'</span>
+
+<span class="c1">-- (esVacia c) se verifica si c es la cola vacía. Por ejemplo,</span>
+<span class="c1">--    esVacia (inserta 5 (inserta 2 (inserta 3 vacia))) == False</span>
+<span class="c1">--    esVacia vacia  == True</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="p">(</span><span class="kt">C</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">S</span><span class="o">.</span><span class="n">null</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- Generador de colas                                          --</span>
+<span class="c1">-- ==================</span>
+
+<span class="c1">-- genCola es un generador de colas de enteros. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genCola</span>
+<span class="c1">--    -</span>
+<span class="c1">--    2 | -2</span>
+<span class="c1">--    0 | 0 | 0 | 4</span>
+<span class="c1">--    -</span>
+<span class="c1">--    2</span>
+<span class="c1">--    -1 | -6 | 9</span>
+<span class="c1">--    12 | -12 | -12 | 7 | -2 | -3 | 5 | -8 | -3 | -9 | -6</span>
+<span class="c1">--    -11 | -5 | -7 | -8 | -10 | 8 | -9 | -7 | 6 | -12 | 8 | -9 | -1</span>
+<span class="c1">--    -16 | -12</span>
+<span class="c1">--    -17 | -17 | 1 | 2 | -15 | -15 | -13 | 8 | 13 | -12 | 15</span>
+<span class="c1">--    -16 | -18</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="nf">genCola</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- El tipo pila es una instancia del arbitrario.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genCola</span>
+
+<span class="c1">-- Propiedades de las colas</span>
+<span class="c1">-- ========================</span>
+
+<span class="c1">-- Las propiedades son</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_colas1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">esVacia</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">))</span>
+
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_colas2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">resto</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="c1">-- La comprobación es:</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas1</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+<span class="c1">--    λ&gt; quickCheck prop_colas2</span>
+<span class="c1">--    +++ OK, passed 100 tests; 9 discarded.</span>
+</pre></div>
+
+<h2>3. Las colas en Python</h2>
+<h3>3.1. El tipo abstracto de las colas en Python</h3>
+<p>La implementación se encuentra en el módulo <a href="https://bit.ly/3J5Hmnu">cola.py</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'Cola'</span><span class="p">,</span>
+    <span class="s1">'vacia'</span><span class="p">,</span>
+    <span class="s1">'inserta'</span><span class="p">,</span>
+    <span class="s1">'primero'</span><span class="p">,</span>
+    <span class="s1">'resto'</span><span class="p">,</span>
+    <span class="s1">'esVacia'</span><span class="p">,</span>
+    <span class="s1">'colaAleatoria'</span>
+<span class="p">]</span>
+<span class="kn">from</span> <span class="nn">src.TAD.colaConListas</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Cola</span><span class="p">,</span> <span class="n">colaAleatoria</span><span class="p">,</span> <span class="n">esVacia</span><span class="p">,</span> <span class="n">inserta</span><span class="p">,</span>
+                                   <span class="n">primero</span><span class="p">,</span> <span class="n">resto</span><span class="p">,</span> <span class="n">vacia</span><span class="p">)</span>
+<span class="c1"># from src.TAD.colaConDosListas import (Cola, colaAleatoria, esVacia, inserta,</span>
+<span class="c1">#                                       primero, resto, vacia)</span>
+<span class="c1"># from src.TAD.colaConDeque import (Cola, vacia, inserta, primero, resto,</span>
+<span class="c1">#                                   esVacia, colaAleatoria)</span>
+</pre></div>
+
+<p>Para usar el TAD hay que usar una implementación concreta. En principio, consideraremos tres: una usando listas, otra usando pares de listas y otra usando deques. Hay que elegir la que se desee utilizar, descomentándola y comentando las otras.</p>
+<h3>3.2. Implementación de las colas mediante listas</h3>
+<p>La implementación se encuentra en el módulo <a href="https://bit.ly/3kxW4JT">colaConListas.py</a> en el que se define la clase Cola con los siguientes métodos:</p>
+<ul>
+<li>inserta(x) añade x al final de la cola.</li>
+<li>primero() es el primero de la cola.</li>
+<li>resto() elimina el primero de la cola.</li>
+<li>esVacia() se verifica si la cola es vacía.</li>
+</ul>
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Cola</span><span class="nb">()</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span>
+<span class="w">   </span><span class="o">-</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span>
+<span class="w">   </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">primero</span><span class="nb">()</span>
+<span class="w">   </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">resto</span><span class="nb">()</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span>
+<span class="w">   </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">esVacia</span><span class="nb">()</span>
+<span class="w">   </span><span class="kt">False</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Cola</span><span class="nb">()</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">esVacia</span><span class="nb">()</span>
+<span class="w">   </span><span class="kt">True</span>
+</pre></div>
+
+<p>Además se definen las correspondientes funciones. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">vacia</span><span class="nb">()</span>
+<span class="w">   </span><span class="o">-</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">vacia</span><span class="nb">()</span><span class="p">))))</span>
+<span class="w">   </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">vacia</span><span class="nb">()</span><span class="p">)))))</span>
+<span class="w">   </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">vacia</span><span class="nb">()</span><span class="p">)))))</span>
+<span class="w">   </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">esVacia</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">inserta</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">vacia</span><span class="nb">()</span><span class="p">)))))</span>
+<span class="w">   </span><span class="kt">False</span>
+<span class="w">   </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">esVacia</span><span class="p">(</span><span class="n">vacia</span><span class="nb">()</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">True</span>
+</pre></div>
+
+<p>Finalmente, se define un generador aleatorio de colas y se comprueba que las colas cumplen las propiedades de su especificación.</p>
+<div class="code"><pre class="code literal-block"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'Cola'</span><span class="p">,</span>
+    <span class="s1">'vacia'</span><span class="p">,</span>
+    <span class="s1">'inserta'</span><span class="p">,</span>
+    <span class="s1">'primero'</span><span class="p">,</span>
+    <span class="s1">'resto'</span><span class="p">,</span>
+    <span class="s1">'esVacia'</span><span class="p">,</span>
+    <span class="s1">'colaAleatoria'</span>
+<span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">assume</span><span class="p">,</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span>
+
+<span class="c1"># Clase de las colas mediante listas</span>
+<span class="c1"># ==================================</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Cola</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+    <span class="n">_elementos</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve una cadena con los elementos de la cola separados por " | ".</span>
+<span class="sd">        Si la cola está vacía, devuelve "-".</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'-'</span>
+        <span class="k">return</span> <span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Inserta el elemento x al final de la cola.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Comprueba si la cola está vacía.</span>
+
+<span class="sd">        Devuelve True si la cola está vacía, False en caso contrario.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span>
+
+    <span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve el primer elemento de la cola.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Elimina el primer elemento de la cola</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Funciones del tipo de las listas</span>
+<span class="c1"># ================================</span>
+
+<span class="k">def</span> <span class="nf">vacia</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Crea y devuelve una cola vacía de tipo A.</span>
+<span class="sd">    """</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">Cola</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">c</span>
+
+<span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Inserta un elemento x en la cola c y devuelve una nueva cola con</span>
+<span class="sd">    el elemento insertado.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve True si la cola está vacía, False si no lo está.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">esVacia</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve el primer elemento de la cola c.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">primero</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Elimina el primer elemento de la cola c y devuelve una copia de la</span>
+<span class="sd">    cola resultante.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">resto</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="c1"># Generador de colas</span>
+<span class="c1"># ==================</span>
+
+<span class="k">def</span> <span class="nf">colaAleatoria</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">st</span><span class="o">.</span><span class="n">SearchStrategy</span><span class="p">[</span><span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Genera una estrategia de búsqueda para generar colas de enteros de</span>
+<span class="sd">    forma aleatoria.</span>
+
+<span class="sd">    Utiliza la librería Hypothesis para generar una lista de enteros y</span>
+<span class="sd">    luego se convierte en una instancia de la clase cola.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Cola</span><span class="p">)</span>
+
+<span class="c1"># Comprobación de las propiedades de las colas</span>
+<span class="c1"># ============================================</span>
+
+<span class="c1"># Las propiedades son</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola1</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">x</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">vacia</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">vacia</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola2</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">assume</span><span class="p">(</span><span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">primero</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">resto</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt; poetry run pytest -q colaConListas.py</span>
+<span class="c1">#    1 passed in 0.24s</span>
+</pre></div>
+
+<h3>3.3. Implementación de las colas mediante pares de listas</h3>
+<p>La implementación se encuentra en el módulo <a href="https://bit.ly/3GYLwer">colaConDosListas.py</a> cuyo contenido es</p>
+<div class="code"><pre class="code literal-block"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'Cola'</span><span class="p">,</span>
+    <span class="s1">'vacia'</span><span class="p">,</span>
+    <span class="s1">'inserta'</span><span class="p">,</span>
+    <span class="s1">'primero'</span><span class="p">,</span>
+    <span class="s1">'resto'</span><span class="p">,</span>
+    <span class="s1">'esVacia'</span><span class="p">,</span>
+    <span class="s1">'colaAleatoria'</span>
+<span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">assume</span><span class="p">,</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span>
+
+<span class="c1"># Clase de las colas mediante listas</span>
+<span class="c1"># ==================================</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Cola</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+    <span class="n">_primera</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">_segunda</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_elementos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve una lista con los elementos de la cola en orden.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segunda</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve una cadena con los elementos de la cola separados por " | ".</span>
+<span class="sd">        Si la cola está vacía, devuelve "-".</span>
+<span class="sd">        """</span>
+        <span class="n">elementos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">elementos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"-"</span>
+        <span class="k">return</span> <span class="s2">" | "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">elementos</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Comprueba si la cola actual es igual a otra cola.</span>
+<span class="sd">        Se considera que dos colas son iguales si tienen los mismos</span>
+<span class="sd">        elementos en el mismo orden.</span>
+
+<span class="sd">        Parámetro:</span>
+<span class="sd">        - c (Cola): La cola con la que se va a comparar.</span>
+
+<span class="sd">        Devuelve True si las dos colas son iguales, False en caso</span>
+<span class="sd">        contrario.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">()</span> <span class="o">==</span> <span class="n">c</span><span class="o">.</span><span class="n">_elementos</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Inserta el elemento y en la cola.</span>
+<span class="sd">        """</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segunda</span>
+        <span class="c1"># Si no hay elementos en la primera lista, se inserta en la segunda</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">xs</span><span class="p">:</span>
+            <span class="n">ys</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="c1"># Se invierte la segunda lista y se asigna a la primera</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_segunda</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Si hay elementos en la primera lista, se inserta en la segunda</span>
+            <span class="n">ys</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve si la cola está vacía.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span>
+
+    <span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve el primer elemento de la cola.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Elimina el primer elemento de la cola.</span>
+<span class="sd">        """</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segunda</span>
+        <span class="k">del</span> <span class="n">xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">xs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_primera</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_segunda</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Funciones del tipo de las listas</span>
+<span class="c1"># ================================</span>
+
+<span class="k">def</span> <span class="nf">vacia</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Crea y devuelve una cola vacía de tipo A.</span>
+<span class="sd">    """</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">Cola</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">c</span>
+
+<span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Inserta un elemento x en la cola c y devuelve una nueva cola con</span>
+<span class="sd">    el elemento insertado.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve True si la cola está vacía, False si no lo está.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">esVacia</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve el primer elemento de la cola c.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">primero</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cola</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Elimina el primer elemento de la cola c y devuelve una copia de la</span>
+<span class="sd">    cola resultante.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">resto</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="c1"># Generador de colas</span>
+<span class="c1"># ==================</span>
+
+<span class="k">def</span> <span class="nf">colaAleatoria</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">st</span><span class="o">.</span><span class="n">SearchStrategy</span><span class="p">[</span><span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Genera una estrategia de búsqueda para generar colas de enteros de</span>
+<span class="sd">    forma aleatoria.</span>
+
+<span class="sd">    Utiliza la librería Hypothesis para generar una lista de enteros y</span>
+<span class="sd">    luego se convierte en una instancia de la clase cola.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Cola</span><span class="p">)</span>
+
+<span class="c1"># Comprobación de las propiedades de las colas</span>
+<span class="c1"># ============================================</span>
+
+<span class="c1"># Las propiedades son</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola1</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">x</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">vacia</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">vacia</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola2</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">Cola</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">assume</span><span class="p">(</span><span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">primero</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">resto</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt; poetry run pytest -q colaConListas.py</span>
+<span class="c1">#    2 passed in 0.40s</span>
+</pre></div>
+
+<h3>3.4. Implementación de las colas mediante deque</h3>
+<p>La implementación (que usa la librería <a href="https://bit.ly/3CYKWw6">deque</a>) se encuentra en el módulo <a href="https://bit.ly/3iQIwsg">colaConDeque.py</a> y su contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'Pila'</span><span class="p">,</span>
+    <span class="s1">'vacia'</span><span class="p">,</span>
+    <span class="s1">'apila'</span><span class="p">,</span>
+    <span class="s1">'esVacia'</span><span class="p">,</span>
+    <span class="s1">'cima'</span><span class="p">,</span>
+    <span class="s1">'desapila'</span><span class="p">,</span>
+    <span class="s1">'pilaAleatoria'</span>
+<span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">)</span>
+
+<span class="c1"># Clase de las pilas mediante listas</span>
+<span class="c1"># ==================================</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Pila</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+    <span class="n">_elementos</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">deque</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve una cadena con los elementos de la pila separados por " | ".</span>
+<span class="sd">        Si la pila está vacía, devuelve "-".</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'-'</span>
+        <span class="k">return</span> <span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apila</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Agrega el elemento x al inicio de la pila.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Verifica si la pila está vacía.</span>
+
+<span class="sd">        Devuelve True si la pila está vacía, False en caso contrario.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">cima</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve el elemento en la cima de la pila.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">desapila</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Elimina el elemento en la cima de la pila.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+<span class="c1"># Funciones del tipo de las listas</span>
+<span class="c1"># ================================</span>
+
+<span class="k">def</span> <span class="nf">vacia</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Crea y devuelve una pila vacía de tipo A.</span>
+<span class="sd">    """</span>
+    <span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pila</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="k">def</span> <span class="nf">apila</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Añade un elemento x al tope de la pila p y devuelve una copia de la</span>
+<span class="sd">    pila modificada.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">apila</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve True si la pila está vacía, False si no lo está.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">esVacia</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">cima</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve el elemento en la cima de la pila p.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">cima</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">desapila</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Pila</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Elimina el elemento en la cima de la pilla p y devuelve una copia de la</span>
+<span class="sd">    pila resultante.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">desapila</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="c1"># Generador de pilas</span>
+<span class="c1"># ==================</span>
+
+<span class="k">def</span> <span class="nf">pilaAleatoria</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">st</span><span class="o">.</span><span class="n">SearchStrategy</span><span class="p">[</span><span class="n">Pila</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Genera una estrategia de búsqueda para generar pilas de enteros de</span>
+<span class="sd">    forma aleatoria.</span>
+
+<span class="sd">    Utiliza la librería Hypothesis para generar una lista de enteros y</span>
+<span class="sd">    luego se convierte en una instancia de la clase pila.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span> <span class="nf">_creaPila</span><span class="p">(</span><span class="n">elementos</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Pila</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">pila</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">vacia</span><span class="p">()</span>
+        <span class="n">pila</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">extendleft</span><span class="p">(</span><span class="n">elementos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pila</span>
+    <span class="k">return</span> <span class="n">st</span><span class="o">.</span><span class="n">builds</span><span class="p">(</span><span class="n">_creaPila</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">()))</span>
+
+<span class="c1"># Comprobación de las propiedades de las pilas</span>
+<span class="c1"># ============================================</span>
+
+<span class="c1"># Las propiedades son</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">pilaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_pila</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Pila</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">cima</span><span class="p">(</span><span class="n">apila</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="o">==</span> <span class="n">x</span>
+    <span class="k">assert</span> <span class="n">desapila</span><span class="p">(</span><span class="n">apila</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span> <span class="o">==</span> <span class="n">p</span>
+    <span class="k">assert</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">vacia</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">apila</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt; poetry run pytest -q pilaConQueue.py</span>
+<span class="c1">#    1 passed in 0.25s</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../06-maxpila/" rel="prev" title="Máximo elemento de una pila">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../08-transformaciones_colas_listas/" rel="next" title="TAD de las colas - Transformaciones entre colas y listas">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
