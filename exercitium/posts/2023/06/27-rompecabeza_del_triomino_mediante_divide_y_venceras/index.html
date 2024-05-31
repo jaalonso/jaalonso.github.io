@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rompecabeza del triominó mediante divide y vencerás | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/06/27-rompecabeza_del_triomino_mediante_divide_y_venceras/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Rompecabeza del triominó mediante divide y vencerás | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../26-algoritmo_divide_y_venceras/" title="Algoritmo divide y vencerás" type="text/html">
+<link rel="next" href="../28-busquedaenprofundidad/" title="Búsqueda en espacios de -estados por profundidad" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Rompecabeza del triominó mediante divide y vencerás">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/06/27-rompecabeza_del_triomino_mediante_divide_y_venceras/">
+<meta property="og:description" content="Un poliominó es una figura geométrica plana formada conectando dos o más cuadrados por alguno de sus lados. Los cuadrados se conectan lado con lado, pero no se pueden conectar ni por sus vértices, ni ">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-06-27T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Rompecabeza del triominó mediante divide y vencerás</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-06-27T06:00:00+02:00" itemprop="datePublished" title="27-06-2023">27-06-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Un poliominó es una figura geométrica plana formada conectando dos o más cuadrados por alguno de sus lados. Los cuadrados se conectan lado con lado, pero no se pueden conectar ni por sus vértices, ni juntando solo parte de un lado de un cuadrado con parte de un lado de otro. Si unimos dos cuadrados se obtiene un dominó, si se juntan tres cuadrados se construye un triominó.</p>
+<p>Sólo existen dos triominós, el I-triomino (por tener forma de I) y el L-triominó (por su forma de L) como se observa en las siguientes figuras</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kt">X</span>
+<span class="w">   </span><span class="kt">X</span><span class="w">     </span><span class="kt">X</span>
+<span class="w">   </span><span class="kt">X</span><span class="w">     </span><span class="kt">XX</span>
+</pre></div>
+
+<p>El rompecabeza del triominó consiste en cubrir un tablero cuadrado con 2^n filas y 2^n columnas, en el que se ha eliminado una casilla, con L-triominós de formas que cubran todas las casillas excepto la eliminada y los triominós no se solapen.</p>
+<p>La casilla eliminada se representará con -1 y los L-triominós  sucesiones de tres números consecutivos en forma de L. Con esta representación una solución del rompecabeza del triominó con 4 filas y la fila eliminada en la posición (4,4) es</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">triomino</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+</pre></div>
+
+<p>tal que (triomino n p) es la solución, mediante divide y vencerás,  del rompecabeza del triominó en un cuadrado nxn en el que se ha eliminado la casilla de la posición p. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triomino</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triomino</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triomino</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">3</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">2</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">1</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">6</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">4</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="mi">7</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">11</span><span class="w">  </span><span class="mi">8</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w">  </span><span class="mi">9</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="p">)</span>
+</pre></div>
+
+<!-- TEASER_END -->
+<h2>Soluciones</h2>
+<p>Se usará la función <code>divideVenceras</code> definida en el ejercicio <a href="../26-algoritmo_divide_y_venceras">Algoritmo divide y vencerás</a>.</p>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h4>Soluciones en Haskell</h4>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Rompecabeza_del_triomino_mediante_divide_y_venceras</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">DivideVenceras</span><span class="w"> </span><span class="p">(</span><span class="nf">divideVenceras</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Matrix</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">delete</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="c1">-- Los tableros son matrices de números enteros donde -1 representa el</span>
+<span class="c1">-- hueco, 0 las posiciones sin rellenar y los números mayores que 0</span>
+<span class="c1">-- representan los triominós.</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Tablero</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span>
+
+<span class="c1">-- Los problemas se representarán mediante pares formados por un número</span>
+<span class="c1">-- natural mayor que 0 (que indica el número con el que se formará el</span>
+<span class="c1">-- siguiente triominó que se coloque) y un tablero.</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Tablero</span><span class="p">)</span>
+
+<span class="c1">-- Las posiciones son pares de números enteros</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span>
+
+<span class="nf">triomino</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+<span class="nf">triomino</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">divideVenceras</span><span class="w"> </span><span class="n">ind</span><span class="w"> </span><span class="n">resuelve</span><span class="w"> </span><span class="n">divide</span><span class="w"> </span><span class="n">combina</span><span class="w"> </span><span class="p">(</span><span class="n">pbInicial</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+
+<span class="c1">-- (tablero n p) es el tablero inicial del problema del triominó</span>
+<span class="c1">-- en un cuadrado nxn en el que se ha eliminado la casilla de la</span>
+<span class="c1">-- posición (i,j). Por ejemplo,</span>
+<span class="c1">--    λ&gt; tablero 4 (3,4)</span>
+<span class="c1">--    (  0  0  0  0 )</span>
+<span class="c1">--    (  0  0  0  0 )</span>
+<span class="c1">--    (  0  0  0 -1 )</span>
+<span class="c1">--    (  0  0  0  0 )</span>
+<span class="nf">tablero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+<span class="nf">tablero</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">setElem</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">zero</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- (pbInicial n p) es el problema inicial del rompecabeza del triominó</span>
+<span class="c1">-- en un cuadrado nxn en el que se ha eliminado la casilla de la</span>
+<span class="c1">-- posición p. Por ejemplo,</span>
+<span class="c1">--    λ&gt; pbInicial 4 (4,4)</span>
+<span class="c1">--    (1,(  0  0  0  0 )</span>
+<span class="c1">--       (  0  0  0  0 )</span>
+<span class="c1">--       (  0  0  0  0 )</span>
+<span class="c1">--       (  0  0  0 -1 ))</span>
+<span class="nf">pbInicial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Problema</span>
+<span class="nf">pbInicial</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">tablero</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+
+<span class="c1">-- (ind pb) se verifica si el problema pb es indivisible. Por ejemplo,</span>
+<span class="c1">--    ind (pbInicial 2 (1,2))  ==  True</span>
+<span class="c1">--    ind (pbInicial 4 (1,2))  ==  False</span>
+<span class="nf">ind</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">ind</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ncols</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- (posicionHueco t) es la posición del hueco en el tablero t. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    posicionHueco (tablero 8 (5,2))  ==  (5,2)</span>
+<span class="nf">posicionHueco</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Tablero</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span>
+<span class="nf">posicionHueco</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">nrows</span><span class="w"> </span><span class="n">p</span><span class="p">],</span>
+<span class="w">                </span><span class="n">j</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">ncols</span><span class="w"> </span><span class="n">p</span><span class="p">],</span>
+<span class="w">                </span><span class="n">p</span><span class="o">!</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1">-- (cuadranteHueco p) es el cuadrante donde se encuentra el hueco del</span>
+<span class="c1">-- tablero t (donde la numeración de los cuadrantes es 1 el superior</span>
+<span class="c1">-- izquierdo, 2 el inferior izquierdo, 3 el superior derecho y 4 el</span>
+<span class="c1">-- inferior derecho). Por ejemplo,</span>
+<span class="c1">--    cuadranteHueco (tablero 8 (4,4))  ==  1</span>
+<span class="c1">--    cuadranteHueco (tablero 8 (5,2))  ==  2</span>
+<span class="c1">--    cuadranteHueco (tablero 8 (3,6))  ==  3</span>
+<span class="c1">--    cuadranteHueco (tablero 8 (6,6))  ==  4</span>
+<span class="nf">cuadranteHueco</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Tablero</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">cuadranteHueco</span><span class="w"> </span><span class="n">t</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&gt;</span><span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">posicionHueco</span><span class="w"> </span><span class="n">t</span>
+<span class="w">        </span><span class="n">x</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- (centralHueco t) es la casilla central del cuadrante del tablero t</span>
+<span class="c1">-- donde se encuentra el hueco. Por ejemplo,</span>
+<span class="c1">--    centralHueco (tablero 8 (5,2))  ==  (5,4)</span>
+<span class="c1">--    centralHueco (tablero 8 (4,4))  ==  (4,4)</span>
+<span class="c1">--    centralHueco (tablero 8 (3,6))  ==  (4,5)</span>
+<span class="c1">--    centralHueco (tablero 8 (6,6))  ==  (5,5)</span>
+<span class="nf">centralHueco</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Tablero</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span>
+<span class="nf">centralHueco</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="kr">case</span><span class="w"> </span><span class="n">cuadranteHueco</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="mi">2</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- (centralesSinHueco t) son las posiciones centrales del tablero t de</span>
+<span class="c1">-- los cuadrantes sin hueco. Por ejemplo,</span>
+<span class="c1">--    centralesSinHueco (tablero 8 (5,2))  ==  [(4,4),(4,5),(5,5)]</span>
+<span class="nf">centralesSinHueco</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Tablero</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Posicion</span><span class="p">]</span>
+<span class="nf">centralesSinHueco</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">delete</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">),(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">),(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">),(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">x</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">        </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">centralHueco</span><span class="w"> </span><span class="n">t</span>
+
+<span class="c1">-- (actualiza t ps) es la matriz obtenida cambiando en t los valores del</span>
+<span class="c1">-- las posiciones indicadas en ps por sus correspondientes valores. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    λ&gt; actualiza (identity 3) [((1,2),4),((3,1),5)]</span>
+<span class="c1">--    ( 1 4 0 )</span>
+<span class="c1">--    ( 0 1 0 )</span>
+<span class="c1">--    ( 5 0 1 )</span>
+<span class="nf">actualiza</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[((</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">),</span><span class="n">a</span><span class="p">)]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">actualiza</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="kt">[]</span><span class="w">             </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span>
+<span class="nf">actualiza</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="p">(((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">x</span><span class="p">)</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">setElem</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actualiza</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+
+<span class="c1">-- (triominoCentral (n,t) es el tablero obtenido colocando el triominó</span>
+<span class="c1">-- formado por el número n en las posiciones centrales de los 3</span>
+<span class="c1">-- cuadrantes que no contienen el hueco. Por ejemplo,</span>
+<span class="c1">--    λ&gt; triominoCentral (7,tablero 4 (4,4))</span>
+<span class="c1">--    (  0  0  0  0 )</span>
+<span class="c1">--    (  0  7  7  0 )</span>
+<span class="c1">--    (  0  7  0  0 )</span>
+<span class="c1">--    (  0  0  0 -1 )</span>
+<span class="nf">triominoCentral</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+<span class="nf">triominoCentral</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">actualiza</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">[((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">centralesSinHueco</span><span class="w"> </span><span class="n">t</span><span class="p">]</span>
+
+<span class="c1">-- (resuelve p) es la solución del problema indivisible p. Por ejemplo,</span>
+<span class="c1">--    λ&gt; tablero 2 (2,2)</span>
+<span class="c1">--    (  0  0 )</span>
+<span class="c1">--    (  0 -1 )</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; resuelve (5,tablero 2 (2,2))</span>
+<span class="c1">--    (  5  5 )</span>
+<span class="c1">--    (  5 -1 )</span>
+<span class="nf">resuelve</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+<span class="nf">resuelve</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">triominoCentral</span>
+
+<span class="c1">-- (divide (n,t)) es la lista de de los problemas obtenidos colocando el</span>
+<span class="c1">-- triominó n en las casillas centrales de t que no contienen el hueco y</span>
+<span class="c1">-- dividir el tablero en sus cuatros cuadrantes y aumentar en uno el</span>
+<span class="c1">-- número del correspondiente triominó. Por ejemplo,</span>
+<span class="c1">--    λ&gt; divide (3,tablero 4 (4,4))</span>
+<span class="c1">--    [(4,(  0  0 )</span>
+<span class="c1">--        (  3  0 )),</span>
+<span class="c1">--     (5,(  0  0 )</span>
+<span class="c1">--        (  0  3 )),</span>
+<span class="c1">--     (6,(  0  3 )</span>
+<span class="c1">--        (  0  0 )),</span>
+<span class="c1">--     (7,(  0  0 )</span>
+<span class="c1">--        (  0 -1 ))]</span>
+<span class="nf">divide</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Problema</span><span class="p">]</span>
+<span class="nf">divide</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">submatrix</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="w">   </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">submatrix</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="w">   </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">submatrix</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="n">x</span><span class="w"> </span><span class="n">q</span><span class="p">),</span>
+<span class="w">   </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">submatrix</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">q</span><span class="p">)]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">triominoCentral</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+<span class="w">        </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nrows</span><span class="w"> </span><span class="n">t</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- (combina p ts) es la combinación de las soluciones ts de los</span>
+<span class="c1">-- subproblemas del problema p. Por ejemplo,</span>
+<span class="c1">--    λ&gt; let inicial = (1,tablero 4 (4,4)) :: (Int,Matrix Int)</span>
+<span class="c1">--    λ&gt; let [p1,p2,p3,p4] = divide inicial</span>
+<span class="c1">--    λ&gt; let [s1,s2,s3,s4] = map resuelve [p1,p2,p3,p4]</span>
+<span class="c1">--    λ&gt; combina inicial [s1,s2,s3,s4]</span>
+<span class="c1">--    (  3  3  2  2 )</span>
+<span class="c1">--    (  3  1  1  2 )</span>
+<span class="c1">--    (  4  1  5  5 )</span>
+<span class="c1">--    (  4  4  5 -1 )</span>
+<span class="nf">combina</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Problema</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Tablero</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tablero</span>
+<span class="nf">combina</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="p">[</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">,</span><span class="n">s3</span><span class="p">,</span><span class="n">s4</span><span class="p">]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">joinBlocks</span><span class="w"> </span><span class="p">(</span><span class="n">s2</span><span class="p">,</span><span class="n">s1</span><span class="p">,</span><span class="n">s3</span><span class="p">,</span><span class="n">s4</span><span class="p">)</span>
+<span class="nf">combina</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kr">_</span><span class="w">             </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"Imposible"</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">toLists</span><span class="w"> </span><span class="p">(</span><span class="n">triomino</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">    </span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">toLists</span><span class="w"> </span><span class="p">(</span><span class="n">triomino</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">    </span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">toLists</span><span class="w"> </span><span class="p">(</span><span class="n">triomino</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">    </span><span class="p">[[</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span>
+<span class="w">     </span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">]]</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    e1</span>
+<span class="c1">--    e2</span>
+<span class="c1">--    e3</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0018 seconds</span>
+<span class="c1">--    3 examples, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h4>Soluciones en Python</h4>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+
+<span class="kn">from</span> <span class="nn">src.DivideVenceras</span> <span class="kn">import</span> <span class="n">divideVenceras</span>
+
+<span class="c1"># Los tableros son matrices de números enteros donde -1 representa el</span>
+<span class="c1"># hueco, 0 las posiciones sin rellenar y los números mayores que 0</span>
+<span class="c1"># representan los triominós.</span>
+<span class="n">Tablero</span> <span class="o">=</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">]</span>
+
+<span class="c1"># Los problemas se representarán mediante pares formados por un número</span>
+<span class="c1"># natural mayor que 0 (que indica el número con el que se formará el</span>
+<span class="c1"># siguiente triominó que se coloque) y un tablero.</span>
+<span class="n">Problema</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tablero</span><span class="p">]</span>
+
+<span class="c1"># Las posiciones son pares de números enteros</span>
+<span class="n">Posicion</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+
+<span class="c1"># tablero(n p) es el tablero inicial del problema del triominó</span>
+<span class="c1"># en un cuadrado nxn en el que se ha eliminado la casilla de la</span>
+<span class="c1"># posición p. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; tablero(4, (3,4))</span>
+<span class="c1">#    array([[ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0, -1],</span>
+<span class="c1">#           [ 0,  0,  0,  0]])</span>
+<span class="k">def</span> <span class="nf">tablero</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Posicion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">q</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+<span class="c1"># pbInicial(n, p) es el problema inicial del rompecabeza del triominó</span>
+<span class="c1"># en un cuadrado nxn en el que se ha eliminado la casilla de la</span>
+<span class="c1"># posición p. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; pbInicial(4, (4,4))</span>
+<span class="c1">#    (1, array([[ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0, -1]]))</span>
+<span class="k">def</span> <span class="nf">pbInicial</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Posicion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Problema</span><span class="p">:</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tablero</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># ind(pb) se verifica si el problema pb es indivisible. Por ejemplo,</span>
+<span class="c1">#    ind(pbInicial(2, (1,2)))  ==  True</span>
+<span class="c1">#    ind(pbInicial(4, (1,2)))  ==  False</span>
+<span class="k">def</span> <span class="nf">ind</span><span class="p">(</span><span class="n">pb</span><span class="p">:</span> <span class="n">Problema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pb</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+
+<span class="c1"># posicionHueco(t) es la posición del hueco en el tablero t. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    posicionHueco(tablero(8, (5,2)))  ==  (5,2)</span>
+<span class="k">def</span> <span class="nf">posicionHueco</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Posicion</span><span class="p">:</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span>  <span class="nb">tuple</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># cuadranteHueco(p) es el cuadrante donde se encuentra el hueco del</span>
+<span class="c1"># tablero t (donde la numeración de los cuadrantes es 1 el superior</span>
+<span class="c1"># izquierdo, 2 el inferior izquierdo, 3 el superior derecho y 4 el</span>
+<span class="c1"># inferior derecho). Por ejemplo,</span>
+<span class="c1">#    cuadranteHueco(tablero(8, (4,4)))  ==  1</span>
+<span class="c1">#    cuadranteHueco(tablero(8, (5,2)))  ==  2</span>
+<span class="c1">#    cuadranteHueco(tablero(8, (3,6)))  ==  3</span>
+<span class="c1">#    cuadranteHueco(tablero(8, (6,6)))  ==  4</span>
+<span class="k">def</span> <span class="nf">cuadranteHueco</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">posicionHueco</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="mi">4</span>
+
+<span class="c1"># centralHueco(t) es la casilla central del cuadrante del tablero t</span>
+<span class="c1"># donde se encuentra el hueco. Por ejemplo,</span>
+<span class="c1">#    centralHueco(tablero(8, (5,2)))  ==  (5,4)</span>
+<span class="c1">#    centralHueco(tablero(8, (4,4)))  ==  (4,4)</span>
+<span class="c1">#    centralHueco(tablero(8, (3,6)))  ==  (4,5)</span>
+<span class="c1">#    centralHueco(tablero(8, (6,6)))  ==  (5,5)</span>
+<span class="k">def</span> <span class="nf">centralHueco</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Posicion</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">cuadrante</span> <span class="o">=</span> <span class="n">cuadranteHueco</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cuadrante</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cuadrante</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cuadrante</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># centralesSinHueco(t) son las posiciones centrales del tablero t de</span>
+<span class="c1"># los cuadrantes sin hueco. Por ejemplo,</span>
+<span class="c1">#    centralesSinHueco(tablero(8, (5,2)))  ==  [(4,4),(4,5),(5,5)]</span>
+<span class="k">def</span> <span class="nf">centralesSinHueco</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Posicion</span><span class="p">]:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">centralHueco</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span>
+
+<span class="c1"># actualiza(t, ps) es la matriz obtenida cambiando en t los valores del</span>
+<span class="c1"># las posiciones indicadas en ps por sus correspondientes valores. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; actualiza(np.identity(3, dtype=int), [((1,2),4),((3,1),5)])</span>
+<span class="c1">#    array([[1, 4, 0],</span>
+<span class="c1">#           [0, 1, 0],</span>
+<span class="c1">#           [5, 0, 1]])</span>
+<span class="k">def</span> <span class="nf">actualiza</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">,</span> <span class="n">ps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Posicion</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="c1"># triominoCentral(n,t) es el tablero obtenido colocando el triominó</span>
+<span class="c1"># formado por el número n en las posiciones centrales de los 3</span>
+<span class="c1"># cuadrantes que no contienen el hueco. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; triominoCentral((7, tablero(4, (4,4))))</span>
+<span class="c1">#    array([[ 0,  0,  0,  0],</span>
+<span class="c1">#           [ 0,  7,  7,  0],</span>
+<span class="c1">#           [ 0,  7,  0,  0],</span>
+<span class="c1">#           [ 0,  0,  0, -1]])</span>
+<span class="k">def</span> <span class="nf">triominoCentral</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Problema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="k">return</span> <span class="n">actualiza</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">),</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">centralesSinHueco</span><span class="p">(</span><span class="n">t</span><span class="p">)])</span>
+
+<span class="c1"># resuelve(p) es la solución del problema indivisible p. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; tablero(2, (2,2))</span>
+<span class="c1">#    array([[ 0,  0],</span>
+<span class="c1">#           [ 0, -1]])</span>
+<span class="c1">#    &gt;&gt;&gt; resuelve((5,tablero(2, (2,2))))</span>
+<span class="c1">#    array([[ 5,  5],</span>
+<span class="c1">#           [ 5, -1]])</span>
+<span class="k">def</span> <span class="nf">resuelve</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Problema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">triominoCentral</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="c1"># divide(n,t) es la lista de de los problemas obtenidos colocando el</span>
+<span class="c1"># triominó n en las casillas centrales de t que no contienen el hueco y</span>
+<span class="c1"># dividir el tablero en sus cuatros cuadrantes y aumentar en uno el</span>
+<span class="c1"># número del correspondiente triominó. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; divide((3,tablero(4, (4,4))))</span>
+<span class="c1">#    [(4, array([[0, 0],</span>
+<span class="c1">#                [3, 0]])),</span>
+<span class="c1">#     (5, array([[0, 0],</span>
+<span class="c1">#                [0, 3]])),</span>
+<span class="c1">#     (6, array([[0, 3],</span>
+<span class="c1">#                [0, 0]])),</span>
+<span class="c1">#     (7, array([[ 0,  0],</span>
+<span class="c1">#                [ 0, -1]]))]</span>
+<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Problema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Problema</span><span class="p">]:</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">triominoCentral</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">m</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">subproblemas</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">m</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">x</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">x</span><span class="p">]),</span>
+        <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">m</span><span class="p">])</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">subproblemas</span>
+
+<span class="c1"># combina(p, ts) es la combinación de las soluciones ts de los</span>
+<span class="c1"># subproblemas del problema p. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; inicial = (1, tablero(4, (4, 4)))</span>
+<span class="c1">#    &gt;&gt;&gt; p1, p2, p3, p4 = divide(inicial)</span>
+<span class="c1">#    &gt;&gt;&gt; s1, s2, s3, s4 = map(resuelve, [p1, p2, p3, p4])</span>
+<span class="c1">#    &gt;&gt;&gt; combina(inicial, [s1, s2, s3, s4])</span>
+<span class="c1">#    array([[ 3,  3,  2,  2],</span>
+<span class="c1">#           [ 3,  1,  1,  2],</span>
+<span class="c1">#           [ 4,  1,  5,  5],</span>
+<span class="c1">#           [ 4,  4,  5, -1]])</span>
+<span class="k">def</span> <span class="nf">combina</span><span class="p">(</span><span class="n">_</span><span class="p">:</span> <span class="n">Problema</span><span class="p">,</span> <span class="n">ts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Tablero</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">s3</span><span class="p">,</span> <span class="n">s4</span> <span class="o">=</span> <span class="n">ts</span>
+    <span class="n">combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">block</span><span class="p">([[</span><span class="n">s2</span><span class="p">,</span> <span class="n">s1</span><span class="p">],</span> <span class="p">[</span><span class="n">s3</span><span class="p">,</span> <span class="n">s4</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">combined</span>
+
+<span class="k">def</span> <span class="nf">triomino</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Posicion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tablero</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">divideVenceras</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">resuelve</span><span class="p">,</span> <span class="n">divide</span><span class="p">,</span> <span class="n">combina</span><span class="p">,</span> <span class="n">pbInicial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_triomino</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">filas</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Tablero</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="k">assert</span> <span class="n">filas</span><span class="p">(</span><span class="n">triomino</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)))</span> <span class="o">==</span> \
+        <span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">assert</span> <span class="n">filas</span><span class="p">(</span><span class="n">triomino</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span> <span class="o">==</span> \
+        <span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+    <span class="k">assert</span> <span class="n">filas</span><span class="p">(</span><span class="n">triomino</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)))</span> <span class="o">==</span> \
+        <span class="p">[[</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">13</span><span class="p">],</span>
+         <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">13</span><span class="p">]]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_triomino()</span>
+<span class="c1">#    Verificado</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../26-algoritmo_divide_y_venceras/" rel="prev" title="Algoritmo divide y vencerás">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../28-busquedaenprofundidad/" rel="next" title="Búsqueda en espacios de -estados por profundidad">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

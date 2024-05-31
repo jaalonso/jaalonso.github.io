@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TAD de los grafos - Generadores de grafos | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/06/05-grafo_generadores_de_grafos_arbitrarios/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="TAD de los grafos - Generadores de grafos | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../02-grafo_grados_positivos_y_negativos/" title="TAD de los grafos - Grados_positivos_y_negativos" type="text/html">
+<link rel="next" href="../06-grafo_grado_de_un_vertice/" title="TAD de los grafos - Grado de un vértice" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="TAD de los grafos - Generadores de grafos">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/06/05-grafo_generadores_de_grafos_arbitrarios/">
+<meta property="og:description" content="Definir un generador de grafos para comprobar propiedades de grafos con QuickCheck y hacer el tipo de los Grafos un subtipo de Arbutrary.
+Usando el generador, con QuickCheck que para cualquier grafo g">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-06-05T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">TAD de los grafos - Generadores de grafos</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2023">05-06-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Definir un generador de grafos para comprobar propiedades de grafos con QuickCheck y hacer el tipo de los Grafos un subtipo de Arbutrary.</p>
+<p>Usando el generador, con QuickCheck que para cualquier grafo g, las sumas de los grados positivos y la de los grados negativos de los vértices de g son iguales.</p>
+<!-- TEASER_END -->
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h4>Soluciones en Haskell</h4>
+<p>La definición del generador es</p>
+<div class="code"><pre class="code literal-block"><span class="cm">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="cm">{-# OPTIONS_GHC -fno-warn-orphans #-}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nn">TAD.GrafoGenerador</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.Grafo</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="p">,</span><span class="w"> </span><span class="kt">Orientacion</span><span class="w"> </span><span class="p">(</span><span class="kt">D</span><span class="p">,</span><span class="w"> </span><span class="kt">ND</span><span class="p">),</span><span class="w"> </span><span class="nf">creaGrafo</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="p">,</span><span class="w"> </span><span class="kt">Gen</span><span class="p">,</span><span class="w"> </span><span class="nf">arbitrary</span><span class="p">,</span><span class="w"> </span><span class="nf">choose</span><span class="p">,</span><span class="w"> </span><span class="nf">vectorOf</span><span class="p">)</span>
+
+<span class="c1">-- (generaGND n ps) es el grafo completo de orden n tal que los pesos</span>
+<span class="c1">-- están determinados por ps. Por ejemplo,</span>
+<span class="c1">--    λ&gt; generaGND 3 [4,2,5]</span>
+<span class="c1">--    G ND ([1,2,3],[((1,2),4),((1,3),2),((2,3),5)])</span>
+<span class="c1">--    λ&gt; generaGND 3 [4,-2,5]</span>
+<span class="c1">--    G ND ([1,2,3],[((1,2),4),((2,3),5)])</span>
+<span class="nf">generaGND</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">generaGND</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ps</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">l3</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">l1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">]</span>
+<span class="w">        </span><span class="n">l2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">l1</span><span class="w"> </span><span class="n">ps</span>
+<span class="w">        </span><span class="n">l3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">l2</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1">-- (generaGD n ps) es el grafo completo de orden n tal que los pesos</span>
+<span class="c1">-- están determinados por ps. Por ejemplo,</span>
+<span class="c1">--    λ&gt; generaGD 3 [4,2,5]</span>
+<span class="c1">--    G D ([1,2,3],[((1,1),4),((1,2),2),((1,3),5)])</span>
+<span class="c1">--    λ&gt; generaGD 3 [4,2,5,3,7,9,8,6]</span>
+<span class="c1">--    G D ([1,2,3],[((1,1),4),((1,2),2),((1,3),5),</span>
+<span class="c1">--                  ((2,1),3),((2,2),7),((2,3),9),</span>
+<span class="c1">--                  ((3,1),8),((3,2),6)])</span>
+<span class="nf">generaGD</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">generaGD</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">D</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">l3</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">l1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">        </span><span class="n">l2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">l1</span><span class="w"> </span><span class="n">ps</span>
+<span class="w">        </span><span class="n">l3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">l2</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1">-- genGD es un generador de grafos dirigidos. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genGD</span>
+<span class="c1">--    G D ([1],[])</span>
+<span class="c1">--    G D ([1,2],[((1,1),5),((2,1),4)])</span>
+<span class="c1">--    G D ([1,2],[((1,1),3),((1,2),3)])</span>
+<span class="c1">--    G D ([1,2,3,4,5,6],[])</span>
+<span class="c1">--    G D ([1,2],[((2,2),16)])</span>
+<span class="c1">--    ...</span>
+<span class="nf">genGD</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span>
+<span class="nf">genGD</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vectorOf</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">generaGD</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- genGND es un generador de grafos dirigidos. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genGND</span>
+<span class="c1">--    G ND ([1,2,3,4,5,6,7,8],[])</span>
+<span class="c1">--    G ND ([1],[])</span>
+<span class="c1">--    G ND ([1,2,3,4,5],[((1,2),2),((2,3),5),((3,4),5),((3,5),5)])</span>
+<span class="c1">--    G ND ([1,2,3,4,5],[((1,2),6),((1,3),5),((1,5),1),((3,5),9),((4,5),6)])</span>
+<span class="c1">--    G ND ([1,2,3,4],[((1,2),5),((3,4),2)])</span>
+<span class="c1">--    G ND ([1,2,3],[])</span>
+<span class="c1">--    G ND ([1,2,3,4],[((1,2),5),((1,4),14),((2,4),10)])</span>
+<span class="c1">--    G ND ([1,2,3,4,5],[((1,5),8),((4,5),5)])</span>
+<span class="c1">--    G ND ([1,2,3,4],[((1,2),1),((1,4),4),((2,3),4),((3,4),5)])</span>
+<span class="c1">--    G ND ([1,2,3],[((1,2),8),((1,3),8),((2,3),3)])</span>
+<span class="c1">--    ...</span>
+<span class="nf">genGND</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span>
+<span class="nf">genGND</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vectorOf</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">generaGND</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- genG es un generador de grafos. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genG</span>
+<span class="c1">--    G ND ([1,2,3,4,5,6],[])</span>
+<span class="c1">--    G D ([1],[((1,1),2)])</span>
+<span class="c1">--    G D ([1,2],[((1,1),9)])</span>
+<span class="c1">--    ...</span>
+<span class="nf">genG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span>
+<span class="nf">genG</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">d</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="kt">True</span><span class="p">,</span><span class="kt">False</span><span class="p">)</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vectorOf</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">generaGD</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">       </span><span class="kr">else</span><span class="w"> </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">generaGND</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- Los grafos está contenido en la clase de los objetos generables</span>
+<span class="c1">-- aleatoriamente.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genG</span>
+</pre></div>
+
+<p>La comprobación de la propiedad es</p>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Grafo_Propiedades_de_grados_positivos_y_negativos</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.Grafo</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="p">,</span><span class="w"> </span><span class="nf">nodos</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.GrafoGenerador</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Grafo_Grados_positivos_y_negativos</span><span class="w"> </span><span class="p">(</span><span class="nf">gradoPos</span><span class="p">,</span><span class="w"> </span><span class="nf">gradoNeg</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_sumaGrados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_sumaGrados</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">gradoPos</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vs</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">gradoNeg</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vs</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">vs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nodos</span><span class="w"> </span><span class="n">g</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_sumaGrados</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h4>Soluciones en Python</h4>
+<p>La definición del generador es</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+<span class="kn">from</span> <span class="nn">hypothesis.strategies</span> <span class="kn">import</span> <span class="n">composite</span>
+
+<span class="kn">from</span> <span class="nn">src.TAD.Grafo</span> <span class="kn">import</span> <span class="n">Orientacion</span><span class="p">,</span> <span class="n">creaGrafo_</span>
+
+
+<span class="c1"># Generador de aristas. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; gen_aristas(5).example()</span>
+<span class="c1">#    [(2, 5), (4, 5), (1, 2), (2, 3), (4, 1)]</span>
+<span class="c1">#    &gt;&gt;&gt; gen_aristas(5).example()</span>
+<span class="c1">#    [(3, 4)]</span>
+<span class="c1">#    &gt;&gt;&gt; gen_aristas(5).example()</span>
+<span class="c1">#    [(5, 3), (3, 2), (1, 3), (5, 2)]</span>
+<span class="nd">@composite</span>
+<span class="k">def</span> <span class="nf">gen_aristas</span><span class="p">(</span><span class="n">draw</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">as_</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">tuples</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">),</span>
+                                  <span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">)),</span>
+                        <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">as_</span>
+
+<span class="c1"># Generador de grafos no dirigidos. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoND().example()</span>
+<span class="c1">#    G ND ([1, 2, 3, 4, 5], [(1, 4), (5, 5)])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoND().example()</span>
+<span class="c1">#    G ND ([1], [])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoND().example()</span>
+<span class="c1">#    G ND ([1, 2, 3, 4, 5, 6, 7, 8], [(7, 7)])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoND().example()</span>
+<span class="c1">#    G ND ([1, 2, 3, 4, 5, 6], [(1, 3), (2, 4), (3, 3), (3, 5)])</span>
+<span class="nd">@composite</span>
+<span class="k">def</span> <span class="nf">gen_grafoND</span><span class="p">(</span><span class="n">draw</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">as_</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">)</span> <span class="ow">in</span> <span class="n">draw</span><span class="p">(</span><span class="n">gen_aristas</span><span class="p">(</span><span class="n">n</span><span class="p">))</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">y</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">creaGrafo_</span><span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">),</span> <span class="n">as_</span><span class="p">)</span>
+
+<span class="c1"># Generador de grafos dirigidos. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoD().example()</span>
+<span class="c1">#    G D ([1, 2, 3, 4], [(3, 3), (4, 1)])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoD().example()</span>
+<span class="c1">#    G D ([1, 2], [(1, 1), (2, 1), (2, 2)])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafoD().example()</span>
+<span class="c1">#    G D ([1, 2], [])</span>
+<span class="nd">@composite</span>
+<span class="k">def</span> <span class="nf">gen_grafoD</span><span class="p">(</span><span class="n">draw</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+    <span class="n">as_</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">gen_aristas</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">creaGrafo_</span><span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">D</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">),</span> <span class="n">as_</span><span class="p">)</span>
+
+<span class="c1"># Generador de grafos. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafo().example()</span>
+<span class="c1">#    G ND ([1, 2, 3, 4, 5, 6, 7], [(1, 3)])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafo().example()</span>
+<span class="c1">#    G D ([1], [])</span>
+<span class="c1">#    &gt;&gt;&gt; gen_grafo().example()</span>
+<span class="c1">#    G D ([1, 2, 3, 4, 5, 6, 7], [(1, 3), (3, 4), (5, 5)])</span>
+<span class="nd">@composite</span>
+<span class="k">def</span> <span class="nf">gen_grafo</span><span class="p">(</span><span class="n">draw</span><span class="p">):</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">sampled_from</span><span class="p">([</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">D</span><span class="p">,</span> <span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">o</span> <span class="o">==</span> <span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">draw</span><span class="p">(</span><span class="n">gen_grafoND</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">draw</span><span class="p">(</span><span class="n">gen_grafoD</span><span class="p">())</span>
+</pre></div>
+
+<p>La comprobación de la propiedad es</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">given</span>
+
+<span class="kn">from</span> <span class="nn">src.Grafo_Grados_positivos_y_negativos</span> <span class="kn">import</span> <span class="n">gradoNeg</span><span class="p">,</span> <span class="n">gradoPos</span>
+<span class="kn">from</span> <span class="nn">src.TAD.Grafo</span> <span class="kn">import</span> <span class="n">nodos</span>
+<span class="kn">from</span> <span class="nn">src.TAD.GrafoGenerador</span> <span class="kn">import</span> <span class="n">gen_grafo</span>
+
+
+<span class="c1"># La propiedad es</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">gen_grafo</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_sumaGrados</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="n">vs</span> <span class="o">=</span> <span class="n">nodos</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">sum</span><span class="p">((</span><span class="n">gradoPos</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">))</span> <span class="o">==</span> <span class="nb">sum</span><span class="p">((</span><span class="n">gradoNeg</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">))</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    src&gt; poetry run pytest -q Grafo_Propiedades_de_grados_positivos_y_negativos.py</span>
+<span class="c1">#    1 passed in 0.31s</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../02-grafo_grados_positivos_y_negativos/" rel="prev" title="TAD de los grafos - Grados_positivos_y_negativos">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../06-grafo_grado_de_un_vertice/" rel="next" title="TAD de los grafos - Grado de un vértice">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

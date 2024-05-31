@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TAD de los grafos - Algoritmo de Kruskal | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/06/22-grafo_algoritmo_de_kruskal/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="TAD de los grafos - Algoritmo de Kruskal | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../21-grafo_nodos_conectados_en_un_grafo/" title="TAD de los grafos - Nodos conectados en un grafo" type="text/html">
+<link rel="next" href="../23-grafo_algoritmo_de_prim/" title="TAD de los grafos - Algoritmo de Prim" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="TAD de los grafos - Algoritmo de Kruskal">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/06/22-grafo_algoritmo_de_kruskal/">
+<meta property="og:description" content="El algoritmo de Kruskal calcula un árbol recubridor mínimo en un grafo conexo y ponderado. Es decir, busca un subconjunto de aristas que, formando un árbol, incluyen todos los vértices y donde el valo">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-06-22T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">TAD de los grafos - Algoritmo de Kruskal</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-06-22T06:00:00+02:00" itemprop="datePublished" title="22-06-2023">22-06-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El <a href="https://bit.ly/3N8bOOg">algoritmo de Kruskal</a> calcula un árbol recubridor mínimo en un grafo conexo y ponderado. Es decir, busca un subconjunto de aristas que, formando un árbol, incluyen todos los vértices y donde el valor de la suma de todas las aristas del árbol es el mínimo.</p>
+<p>El algoritmo de Kruskal funciona de la siguiente manera:</p>
+<ul>
+<li>se crea un bosque B (un conjunto de árboles), donde cada vértice del grafo es un árbol separado</li>
+<li>se crea un conjunto C que contenga a todas las aristas del grafo</li>
+<li>mientras C es no vacío,</li>
+<li>eliminar una arista de peso mínimo de C</li>
+<li>si esa arista conecta dos árboles diferentes se añade al bosque, combinando los dos árboles en un solo árbol</li>
+<li>en caso contrario, se desecha la arista</li>
+</ul>
+<p>Al acabar el algoritmo, el bosque tiene un solo componente, el cual forma un árbol de expansión mínimo del grafo.</p>
+<p>Usando el <a href="../../05/23-el_tipo_abstracto_de_datos_de_las_grafos">tipo abstrado de datos de los grafos</a>, definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">kruskal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Ix</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">v</span><span class="p">)]</span>
+</pre></div>
+
+<p>tal que <code>kruskal g</code> es el árbol de expansión mínimo del grafo <code>g</code> calculado mediante el algoritmo de Kruskal. Por ejemplo, si g1, g2, g3 y g4 son los grafos definidos por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">g1</span><span class="p">,</span><span class="w"> </span><span class="n">g2</span><span class="p">,</span><span class="w"> </span><span class="n">g3</span><span class="p">,</span><span class="w"> </span><span class="n">g4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
+<span class="w">   </span><span class="n">g1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">12</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">34</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">78</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">61</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">44</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">93</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">g2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">13</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">78</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">44</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">93</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">g3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">g4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span>
+<span class="w">                            </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">)]</span>
+</pre></div>
+
+<p>entonces</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g1</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">55</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">34</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">13</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>
+</pre></div>
+
+<!-- TEASER_END -->
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h4>Soluciones en Haskell</h4>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Grafo_Algoritmo_de_Kruskal</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.Grafo</span><span class="w"> </span><span class="p">(</span><span class="kt">Grafo</span><span class="p">,</span><span class="w"> </span><span class="kt">Orientacion</span><span class="w"> </span><span class="p">(</span><span class="kt">ND</span><span class="p">),</span><span class="w"> </span><span class="nf">aristas</span><span class="p">,</span><span class="w"> </span><span class="nf">creaGrafo</span><span class="p">,</span><span class="w"> </span><span class="nf">nodos</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Ix</span><span class="w"> </span><span class="p">(</span><span class="kt">Ix</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Map</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="n">fromList</span><span class="p">,</span><span class="w"> </span><span class="n">keys</span><span class="p">,</span><span class="w"> </span><span class="n">update</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="nf">g1</span><span class="p">,</span><span class="w"> </span><span class="n">g2</span><span class="p">,</span><span class="w"> </span><span class="n">g3</span><span class="p">,</span><span class="w"> </span><span class="n">g4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">g1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">12</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">34</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">78</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">61</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">44</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">93</span><span class="p">)]</span>
+<span class="nf">g2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">13</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">78</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">14</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">44</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">93</span><span class="p">)]</span>
+<span class="nf">g3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">)]</span>
+<span class="nf">g4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">),</span>
+<span class="w">                         </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">)]</span>
+
+<span class="nf">kruskal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Ix</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">v</span><span class="p">)]</span>
+<span class="nf">kruskal</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">p</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aristas</span><span class="w"> </span><span class="n">g</span><span class="p">])</span>
+<span class="w">                </span><span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">fromList</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">nodos</span><span class="w"> </span><span class="n">g</span><span class="p">])</span>
+<span class="w">                </span><span class="kt">[]</span>
+<span class="w">                </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">nodos</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="kr">_</span><span class="w">  </span><span class="kr">_</span><span class="w"> </span><span class="n">ae</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ae</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kr">_</span><span class="w">  </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"Imposible"</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">((</span><span class="n">p</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="kt">:</span><span class="n">as</span><span class="p">)</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">ae</span><span class="w"> </span><span class="n">n</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">actualizado</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">d'</span><span class="w"> </span><span class="p">((</span><span class="n">p</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="kt">:</span><span class="n">ae</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">ae</span><span class="w"> </span><span class="n">n</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">actualizado</span><span class="p">,</span><span class="n">d'</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">buscaActualiza</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="n">d</span>
+
+<span class="c1">-- (raiz d n) es la raíz de n en el diccionario. Por ejemplo,</span>
+<span class="c1">--    raiz (M.fromList [(1,1),(3,1),(4,3),(5,4),(2,6),(6,6)]) 5  == 1</span>
+<span class="c1">--    raiz (M.fromList [(1,1),(3,1),(4,3),(5,4),(2,6),(6,6)]) 2  == 6</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span>
+<span class="nf">raiz</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">v</span>
+<span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">raiz</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">v</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">x</span>
+
+<span class="c1">-- (buscaActualiza a d) es el par formado por False y el diccionario d,</span>
+<span class="c1">-- si los dos vértices de la arista a tienen la misma raíz en d y el par</span>
+<span class="c1">-- formado por True y la tabla obtenida añadiéndole a d la arista</span>
+<span class="c1">-- formada por el vértice de a de mayor raíz y la raíz del vértice de a</span>
+<span class="c1">-- de menor raíz. Y actualizando las raices de todos los elementos</span>
+<span class="c1">-- afectados por la raíz añadida. Por ejemplo,</span>
+<span class="c1">--   λ&gt; d = M.fromList [(1,1),(2,1),(3,3),(4,4),(5,5),(6,5),(7,7)]</span>
+<span class="c1">--   λ&gt; buscaActualiza (5,4) d</span>
+<span class="c1">--   (True,fromList [(1,1),(2,1),(3,3),(4,4),(5,4),(6,4),(7,7)])</span>
+<span class="c1">--   λ&gt; d' = snd it</span>
+<span class="c1">--   λ&gt; buscaActualiza (6,1) d'</span>
+<span class="c1">--   (True,fromList [(1,1),(2,1),(3,3),(4,1),(5,1),(6,1),(7,7)])</span>
+<span class="nf">buscaActualiza</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Bool</span><span class="p">,</span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="nf">buscaActualiza</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="n">d</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">x'</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y'</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">False</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">y'</span><span class="w"> </span><span class="o">&lt;</span><span class="w">  </span><span class="n">x'</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">True</span><span class="p">,</span><span class="w"> </span><span class="n">modificaR</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">y'</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">True</span><span class="p">,</span><span class="w"> </span><span class="n">modificaR</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="n">x'</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">x'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">raiz</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">x</span>
+<span class="w">        </span><span class="n">y'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">raiz</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">y</span>
+
+<span class="c1">-- (modificaR x y y' d) actualiza d como sigue:</span>
+<span class="c1">-- + el valor de todas las claves z con valor y es y'</span>
+<span class="c1">-- + el valor de todas las claves z con (z &gt; x) con valor x es y'</span>
+<span class="nf">modificaR</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Map</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span>
+<span class="nf">modificaR</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">y'</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux2</span><span class="w"> </span><span class="n">ds</span><span class="w"> </span><span class="p">(</span><span class="n">aux1</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="n">keys</span><span class="w"> </span><span class="n">d</span>
+<span class="w">        </span><span class="n">ds</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="o">&gt;</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">        </span><span class="n">aux1</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">tb</span>
+<span class="w">        </span><span class="n">aux1</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="kt">:</span><span class="n">as</span><span class="p">)</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux1</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">update</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="n">y'</span><span class="p">)</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">tb</span><span class="p">)</span>
+<span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">aux1</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">tb</span>
+<span class="w">        </span><span class="n">aux2</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">tb</span>
+<span class="w">        </span><span class="n">aux2</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="kt">:</span><span class="n">bs</span><span class="p">)</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">tb</span><span class="w"> </span><span class="kt">M</span><span class="o">.!</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux2</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="p">(</span><span class="kt">M</span><span class="o">.</span><span class="n">update</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="kr">_</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="n">y'</span><span class="p">)</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">tb</span><span class="p">)</span>
+<span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">aux2</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="n">tb</span>
+
+<span class="c1">-- Traza del diccionario correspondiente al grafo g3</span>
+<span class="c1">-- =================================================</span>
+
+<span class="c1">-- Lista de aristas, ordenadas según su peso:</span>
+<span class="c1">-- [(3,5,6),(5,1,2),(5,4,5),(6,1,6),(7,2,3),(7,3,5),(8,3,4),(9,1,3),(9,5,7),(11,6,7),(15,1,5)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Inicial</span>
+<span class="c1">--   fromList [(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (5,6) de peso 3</span>
+<span class="c1">--   fromList [(1,1),(2,2),(3,3),(4,4),(5,5),(6,5),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (1,2) de peso 5</span>
+<span class="c1">--   fromList [(1,1),(2,1),(3,3),(4,4),(5,5),(6,5),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (4,5) de peso 5</span>
+<span class="c1">--   fromList [(1,1),(2,1),(3,3),(4,4),(5,4),(6,4),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (1,6) de peso 6</span>
+<span class="c1">--   fromList [(1,1),(2,1),(3,3),(4,1),(5,1),(6,1),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (2,3) de peso 7</span>
+<span class="c1">--   fromList [(1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,7)]</span>
+<span class="c1">--</span>
+<span class="c1">-- Las posibles aristas a añadir son:</span>
+<span class="c1">-- + la (3,5) con peso 7, que no es posible pues la raíz de 3</span>
+<span class="c1">--   coincide con la raíz de 5, por lo que formaría un ciclo</span>
+<span class="c1">-- + la (3,4) con peso 8, que no es posible pues la raíz de 3</span>
+<span class="c1">--   coincide con la raíz de 4, por lo que formaría un ciclo</span>
+<span class="c1">-- + la (1,3) con peso 9, que no es posible pues la raíz de 3</span>
+<span class="c1">--   coincide con la raíz de 1, por lo que formaría un ciclo</span>
+<span class="c1">-- + la (5,7) con peso 9, que no forma ciclo</span>
+<span class="c1">--</span>
+<span class="c1">-- Después de añadir la arista (5,7) con peso 9</span>
+<span class="c1">--    fromList [(1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1)]</span>
+<span class="c1">--</span>
+<span class="c1">-- No es posible añadir más aristas, pues formarían ciclos.</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g1</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">55</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">34</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g2</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">13</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g3</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">kruskal</span><span class="w"> </span><span class="n">g4</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    e1</span>
+<span class="c1">--    e2</span>
+<span class="c1">--    e3</span>
+<span class="c1">--    e4</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0044 seconds</span>
+<span class="c1">--    4 examples, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h4>Soluciones en Python</h4>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">src.TAD.Grafo</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Grafo</span><span class="p">,</span> <span class="n">Orientacion</span><span class="p">,</span> <span class="n">Peso</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">,</span> <span class="n">aristas</span><span class="p">,</span>
+                           <span class="n">creaGrafo</span><span class="p">,</span> <span class="n">nodos</span><span class="p">)</span>
+
+<span class="n">g1</span> <span class="o">=</span> <span class="n">creaGrafo</span> <span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+                <span class="p">[((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="mi">12</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">34</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">78</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">55</span><span class="p">),((</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">32</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">61</span><span class="p">),((</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">44</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">93</span><span class="p">)])</span>
+<span class="n">g2</span> <span class="o">=</span> <span class="n">creaGrafo</span> <span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span>
+                <span class="p">[((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="mi">13</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">11</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">78</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">12</span><span class="p">),((</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">32</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">14</span><span class="p">),((</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">44</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">93</span><span class="p">)])</span>
+<span class="n">g3</span> <span class="o">=</span> <span class="n">creaGrafo</span> <span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+                <span class="p">[((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="mi">5</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">9</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">15</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="mi">6</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">7</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">8</span><span class="p">),((</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">7</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">5</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="mi">3</span><span class="p">),((</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span><span class="mi">9</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span><span class="mi">11</span><span class="p">)])</span>
+<span class="n">g4</span> <span class="o">=</span> <span class="n">creaGrafo</span> <span class="p">(</span><span class="n">Orientacion</span><span class="o">.</span><span class="n">ND</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span>
+                <span class="p">[((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="mi">5</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">9</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">15</span><span class="p">),((</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="mi">6</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="mi">7</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="mi">8</span><span class="p">),((</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span><span class="mi">5</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span><span class="mi">3</span><span class="p">),((</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span><span class="mi">9</span><span class="p">),</span>
+                 <span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span><span class="mi">11</span><span class="p">)])</span>
+
+<span class="c1"># raiz(d, n) es la raíz de n en el diccionario. Por ejemplo,</span>
+<span class="c1">#    raiz({1:1, 3:1, 4:3, 5:4, 2:6, 6:6}, 5)  == 1</span>
+<span class="c1">#    raiz({1:1, 3:1, 4:3, 5:4, 2:6, 6:6}, 2)  == 6</span>
+<span class="k">def</span> <span class="nf">raiz</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Vertice</span><span class="p">:</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">x</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">raiz</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+<span class="c1"># modificaR(x, y, y_, d) actualiza d como sigue:</span>
+<span class="c1"># + el valor de todas las claves z con valor y es y_</span>
+<span class="c1"># + el valor de todas las claves z con (z &gt; x) con valor x es y_</span>
+<span class="k">def</span> <span class="nf">modificaR</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">,</span>
+              <span class="n">y</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">,</span>
+              <span class="n">y_</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">,</span>
+              <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">aux1</span><span class="p">(</span><span class="n">vs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vertice</span><span class="p">],</span>
+             <span class="n">tb</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">],</span>
+             <span class="n">y</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tb</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span><span class="p">:</span>
+                <span class="n">tb</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_</span>
+        <span class="k">return</span> <span class="n">tb</span>
+
+    <span class="k">def</span> <span class="nf">aux2</span><span class="p">(</span><span class="n">vs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Vertice</span><span class="p">],</span>
+             <span class="n">tb</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">],</span>
+             <span class="n">y_</span><span class="p">:</span> <span class="n">Vertice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">vs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tb</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">:</span>
+                <span class="n">tb</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_</span>
+        <span class="k">return</span> <span class="n">tb</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cs</span> <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">x</span><span class="p">]</span>
+
+    <span class="n">tb</span> <span class="o">=</span> <span class="n">aux1</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">tb</span> <span class="o">=</span> <span class="n">aux2</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">tb</span><span class="p">,</span> <span class="n">y_</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tb</span>
+
+<span class="c1"># buscaActualiza(a, d) es el par formado por False y el diccionario d,</span>
+<span class="c1"># si los dos vértices de la arista a tienen la misma raíz en d y el par</span>
+<span class="c1"># formado por True y la tabla obtenida añadiéndole a d la arista</span>
+<span class="c1"># formada por el vértice de a de mayor raíz y la raíz del vértice de a</span>
+<span class="c1"># de menor raíz. Y actualizando las raices de todos los elementos</span>
+<span class="c1"># afectados por la raíz añadida. Por ejemplo,</span>
+<span class="c1">#    &gt;&gt;&gt; buscaActualiza((5,4), {1:1, 2:1, 3:3, 4:4, 5:5, 6:5, 7:7})</span>
+<span class="c1">#    (True, {1: 1, 2: 1, 3: 3, 4: 4, 5: 4, 6: 4, 7: 7})</span>
+<span class="c1">#    &gt;&gt;&gt; buscaActualiza((6,1), {1:1, 2:1, 3:3, 4:4, 5:4, 6:4, 7:7})</span>
+<span class="c1">#    (True, {1: 1, 2: 1, 3: 3, 4: 1, 5: 1, 6: 1, 7: 7})</span>
+<span class="c1">#    &gt;&gt;&gt; buscaActualiza((6,2), {1:1, 2:1, 3:3, 4:1, 5:4, 6:5, 7:7})</span>
+<span class="c1">#    (False, {1: 1, 2: 1, 3: 3, 4: 1, 5: 4, 6: 5, 7: 7})</span>
+<span class="k">def</span> <span class="nf">buscaActualiza</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">],</span>
+                   <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span>
+                                                       <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]]:</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="n">x_</span> <span class="o">=</span> <span class="n">raiz</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">y_</span> <span class="o">=</span> <span class="n">raiz</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_</span> <span class="o">==</span> <span class="n">y_</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">d</span>
+    <span class="k">if</span> <span class="n">y_</span> <span class="o">&lt;</span> <span class="n">x_</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">modificaR</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">y_</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">modificaR</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">d</span><span class="p">[</span><span class="n">y</span><span class="p">],</span> <span class="n">x_</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">kruskal</span><span class="p">(</span><span class="n">g</span><span class="p">:</span> <span class="n">Grafo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Peso</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">aux</span><span class="p">(</span><span class="n">as_</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Peso</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]],</span>
+            <span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">],</span>
+            <span class="n">ae</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Peso</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]],</span>
+            <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Peso</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">,</span> <span class="n">Vertice</span><span class="p">]]:</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ae</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">as_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">actualizado</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">buscaActualiza</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">actualizado</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">as_</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">d</span><span class="p">,</span> <span class="p">[(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)]</span> <span class="o">+</span> <span class="n">ae</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="n">as_</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">d</span><span class="p">,</span> <span class="n">ae</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aux</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="n">aristas</span><span class="p">(</span><span class="n">g</span><span class="p">)])),</span>
+               <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nodos</span><span class="p">(</span><span class="n">g</span><span class="p">)},</span>
+               <span class="p">[],</span>
+               <span class="nb">len</span><span class="p">(</span><span class="n">nodos</span><span class="p">(</span><span class="n">g</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Traza del diccionario correspondiente al grafo g3</span>
+<span class="c1"># =================================================</span>
+
+<span class="c1"># Lista de aristas, ordenadas según su peso:</span>
+<span class="c1"># [(3,5,6),(5,1,2),(5,4,5),(6,1,6),(7,2,3),(7,3,5),(8,3,4),(9,1,3),(9,5,7),(11,6,7),(15,1,5)]</span>
+<span class="c1">#</span>
+<span class="c1"># Inicial</span>
+<span class="c1">#   {1:1, 2:2, 3:3, 4:4, 5:5, 6:6, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (5,6) de peso 3</span>
+<span class="c1">#   {1:1, 2:2, 3:3, 4:4, 5:5, 6:5, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (1,2) de peso 5</span>
+<span class="c1">#   {1:1, 2:1, 3:3, 4:4, 5:5, 6:5, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (4,5) de peso 5</span>
+<span class="c1">#   {1:1, 2:1, 3:3, 4:4, 5:4, 6:4, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (1,6) de peso 6</span>
+<span class="c1">#   {1:1, 2:1, 3:3, 4:1, 5:1, 6:1, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (2,3) de peso 7</span>
+<span class="c1">#   {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:7}</span>
+<span class="c1">#</span>
+<span class="c1"># Las posibles aristas a añadir son:</span>
+<span class="c1"># + la (3,5) con peso 7, que no es posible pues la raíz de 3</span>
+<span class="c1">#   coincide con la raíz de 5, por lo que formaría un ciclo</span>
+<span class="c1"># + la (3,4) con peso 8, que no es posible pues la raíz de 3</span>
+<span class="c1">#   coincide con la raíz de 4, por lo que formaría un ciclo</span>
+<span class="c1"># + la (1,3) con peso 9, que no es posible pues la raíz de 3</span>
+<span class="c1">#   coincide con la raíz de 1, por lo que formaría un ciclo</span>
+<span class="c1"># + la (5,7) con peso 9, que no forma ciclo</span>
+<span class="c1">#</span>
+<span class="c1"># Después de añadir la arista (5,7) con peso 9</span>
+<span class="c1">#    {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1}</span>
+<span class="c1">#</span>
+<span class="c1"># No es posible añadir más aristas, pues formarían ciclos.</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_kruskal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">g1</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">55</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">34</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">g2</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">32</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">13</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">11</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">g3</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
+    <span class="k">assert</span> <span class="n">kruskal</span><span class="p">(</span><span class="n">g4</span><span class="p">)</span> <span class="o">==</span> <span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Vefificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_kruskal()</span>
+<span class="c1">#    Vefificado</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../21-grafo_nodos_conectados_en_un_grafo/" rel="prev" title="TAD de los grafos - Nodos conectados en un grafo">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../23-grafo_algoritmo_de_prim/" rel="next" title="TAD de los grafos - Algoritmo de Prim">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
