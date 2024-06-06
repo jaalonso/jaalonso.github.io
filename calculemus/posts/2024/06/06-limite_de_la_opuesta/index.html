@@ -172,6 +172,83 @@ Veamos que con \(k\) se cumple (1). En efecto, sea \(n ≥ k\). Entonces,
 </pre></div>
 
 <p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Limite_de_la_opuesta.lean">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Limite_de_la_opuesta</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span><span class="w"> </span><span class="n">HOL.Real</span>
+<span class="k">begin</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(nat ⇒ real) ⇒ real ⇒ bool"</span>
+<span class="w">  </span><span class="kp">where</span><span class="w"> </span><span class="s">"limite u c ⟷ (∀ε&gt;0. ∃k::nat. ∀n≥k. ¦u n - c¦ &lt; ε)"</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ n. -u n) (-a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">limite_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"∀ε&gt;0. ∃k. ∀n≥k. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hN</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥N. ¦u n - a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥N. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">        </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">        </span><span class="k">assume</span><span class="w"> </span><span class="s">"n ≥ N"</span>
+<span class="w">        </span><span class="k">have</span><span class="w"> </span><span class="s">"¦-u n - -a¦ = ¦u n - a¦"</span>
+<span class="w">          </span><span class="k">by</span><span class="w"> </span><span class="n">argo</span>
+<span class="w">        </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… &lt; ε"</span>
+<span class="w">          </span><span class="k">using</span><span class="w"> </span><span class="n">hN</span><span class="w"> </span><span class="s">‹n ≥ N›</span>
+<span class="w">          </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">        </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"¦-u n - -a¦ &lt; ε"</span>
+<span class="w">          </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ n. -u n) (-a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">limite_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"∀ε&gt;0. ∃k. ∀n≥k. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hN</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥N. ¦u n - a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥N. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">hN</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">fastforce</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">exI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ n. -u n) (-a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">limite_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"∀ε&gt;0. ∃k. ∀n≥k. ¦-u n - -a¦ &lt; ε"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">force</span>
+<span class="k">qed</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"limite (λ n. -u n) (-a)"</span>
+<span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">limite_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">force</span>
+
+<span class="k">end</span>
+</pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
 <li class="previous">
