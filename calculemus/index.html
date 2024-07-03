@@ -22,7 +22,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
 <meta name="twitter:title" content="Calculemus">
-<link rel="prefetch" href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" type="text/html">
+<link rel="prefetch" href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
@@ -45,7 +45,49 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" class="u-url">Las clases de equivalencia de elementos no relacionados son disjuntas</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" class="u-url">El conjunto de las clases de equivalencia es una partición</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-03T06:00:00+02:00" itemprop="datePublished" title="03-07-2024">03-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar con Lean4 que si \(R\) es una relación de equivalencia en \(X\), entonces las clases de equivalencia de \(R\) es una partición de \(X\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">particion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span> <span class="o">:</span> <span class="kt">Prop</span> <span class="o">:=</span>
+  <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="bp">∃</span> <span class="n">B</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">B</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">C</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">C</span> <span class="bp">→</span> <span class="n">B</span> <span class="bp">=</span> <span class="n">C</span><span class="o">))</span> <span class="bp">∧</span> <span class="bp">∅</span> <span class="bp">∉</span> <span class="n">P</span>
+
+<span class="kd">lemma</span> <span class="n">aux</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">⊆</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span>
+<span class="k">fun</span> <span class="n">_</span> <span class="n">hz</span> <span class="bp">↦</span> <span class="n">h.3</span> <span class="n">hxy</span> <span class="n">hz</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">particion</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" class="u-url">Las clases de equivalencia de elementos no relacionados son disjuntas</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -428,45 +470,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </pre></div>
 
 <p class="more"><a href="posts/2024/06/20-la_equipotencia_es_una_relacion_simetrica/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/06/19-la_inversa_de_una_funcion_biyectiva_es_biyectiva/" class="u-url">La inversa de una función es biyectiva</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/06/19-la_inversa_de_una_funcion_biyectiva_es_biyectiva/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-06-19T06:00:00+02:00" itemprop="datePublished" title="19-06-2024">19-06-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Funciones</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>En Lean4 se puede definir que \(g\) es una inversa de \(f\) por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">inversa</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">)</span> <span class="o">(</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="n">g</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">x</span><span class="o">)</span> <span class="bp">∧</span> <span class="o">(</span><span class="bp">∀</span> <span class="n">y</span><span class="o">,</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">g</span><span class="o">)</span> <span class="n">y</span> <span class="bp">=</span> <span class="n">y</span><span class="o">)</span>
-</pre></div>
-
-<p>Demostrar con Lean4 que si \(g\) es una inversa de \(f\), entonces \(g\) es biyectiva.</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
-<span class="kn">open</span> <span class="n">Function</span>
-
-<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="n">Y</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">)</span>
-<span class="kd">variable</span> <span class="o">(</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span>
-
-<span class="kd">def</span> <span class="n">inversa</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">)</span> <span class="o">(</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="n">g</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">x</span> <span class="bp">=</span> <span class="n">x</span><span class="o">)</span> <span class="bp">∧</span> <span class="o">(</span><span class="bp">∀</span> <span class="n">y</span><span class="o">,</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">g</span><span class="o">)</span> <span class="n">y</span> <span class="bp">=</span> <span class="n">y</span><span class="o">)</span>
-
-<span class="kd">example</span>
-  <span class="o">(</span><span class="n">hg</span> <span class="o">:</span> <span class="n">inversa</span> <span class="n">g</span> <span class="n">f</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">Bijective</span> <span class="n">g</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/06/19-la_inversa_de_una_funcion_biyectiva_es_biyectiva/">Leer más…</a></p>
 </div>
                 </div>
             </article>
