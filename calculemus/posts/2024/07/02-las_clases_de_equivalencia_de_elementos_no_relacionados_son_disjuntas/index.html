@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Las clases de equivalencia de elementos no relacionados son disjuntas | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Las clases de equivalencia de elementos no relacionados son disjuntas | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../01-las_clases_de_equivalencia_de_elementos_relacionados_son_iguales/" title="Las clases de equivalencia de elementos relacionados son iguales" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Las clases de equivalencia de elementos no relacionados son disjuntas">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/">
+<meta property="og:description" content="Demostrar con Lean4 que las clases de equivalencia de elementos no relacionados son disjuntas.
+Para ello, completar la siguiente teoría de Lean4:
+import Mathlib.Tactic
+
+variable {X : Type}
+variable {x">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-07-02T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Las clases de equivalencia de elementos no relacionados son disjuntas</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-02T06:00:00+02:00" itemprop="datePublished" title="02-07-2024">02-07-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que las clases de equivalencia de elementos no relacionados son disjuntas.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="bp">¬</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">=</span> <span class="bp">∅</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Sean \(x, y ∈ X\) tales que no están relacionados mediante la relación \(R\). Tenemos que demostrar que \([x]\) e \([y]\) son disjuntas; es decir,
+\[ (∀x)[z ∉ [x] ∩ [y]] \]
+Para ello, supongamos que un \(z ∈ [x] ∩ [y]\). Luego, \(z ∈ [x]\) y \(z ∈ [y]\); es decir, se tiene que
+\begin{align}
+   &amp;xRz \tag{1} \newline
+   &amp;yRz \tag{2}
+\end{align}
+De (2) y la simetría de \(R\), se tiene
+\[ zRy \tag{3} \]
+De (1), (3) y la transitividad de \(R\), se tiene
+\[ xRy \]
+que es una contradicción,</p>
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="bp">¬</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">=</span> <span class="bp">∅</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="bp">∀</span> <span class="n">z</span><span class="o">,</span> <span class="bp">¬</span><span class="n">z</span> <span class="bp">∈</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="o">:=</span> <span class="kd">by</span>
+    <span class="n">intro</span> <span class="n">z</span> <span class="n">hz</span>
+    <span class="c1">-- z : X</span>
+    <span class="c1">-- hz : z ∈ clase R x ∩ clase R y</span>
+    <span class="k">have</span> <span class="n">hxz</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">z</span> <span class="o">:=</span> <span class="n">hz.1</span>
+    <span class="k">have</span> <span class="n">hyz</span> <span class="o">:</span> <span class="n">R</span> <span class="n">y</span> <span class="n">z</span> <span class="o">:=</span> <span class="n">hz.2</span>
+    <span class="k">have</span> <span class="n">hzy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">z</span> <span class="n">y</span> <span class="o">:=</span> <span class="n">h.2</span> <span class="n">hyz</span>
+    <span class="k">have</span> <span class="n">hxy2</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span> <span class="o">:=</span> <span class="n">h.3</span> <span class="n">hxz</span> <span class="n">hzy</span>
+    <span class="n">exact</span> <span class="n">hxy</span> <span class="n">hxy2</span>
+  <span class="n">exact</span> <span class="n">Set.eq_empty_iff_forall_not_mem.mpr</span> <span class="n">h1</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="bp">¬</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">=</span> <span class="bp">∅</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">rcases</span> <span class="n">h</span> <span class="k">with</span> <span class="o">⟨</span><span class="bp">-</span><span class="o">,</span> <span class="n">hs</span><span class="o">,</span> <span class="n">ht</span><span class="o">⟩</span>
+  <span class="c1">-- hs : ∀ {x y : X}, R x y → R y x</span>
+  <span class="c1">-- ht : ∀ {x y z : X}, R x y → R y z → R x z</span>
+  <span class="n">by_contra</span> <span class="n">h1</span>
+  <span class="c1">-- h1 : ¬clase R x ∩ clase R y = ∅</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="n">apply</span> <span class="n">hxy</span>
+  <span class="c1">-- ⊢ R x y</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="bp">∃</span> <span class="n">z</span><span class="o">,</span> <span class="n">z</span> <span class="bp">∈</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span>
+  <span class="bp">.</span> <span class="n">contrapose</span> <span class="n">h1</span>
+    <span class="c1">-- h1 : ¬∃ z, z ∈ clase R x ∩ clase R y</span>
+    <span class="c1">-- ⊢ ¬¬clase R x ∩ clase R y = ∅</span>
+    <span class="n">push_neg</span>
+    <span class="n">push_neg</span> <span class="n">at</span> <span class="n">h1</span>
+    <span class="c1">-- h1 : ∀ (z : X), ¬z ∈ clase R x ∩ clase R y</span>
+    <span class="n">exact</span> <span class="n">Set.eq_empty_iff_forall_not_mem.mpr</span> <span class="n">h1</span>
+  <span class="n">rcases</span> <span class="n">h2</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">z</span><span class="o">,</span> <span class="n">hxz</span><span class="o">,</span> <span class="n">hyz</span><span class="o">⟩</span>
+  <span class="c1">-- z : X</span>
+  <span class="c1">-- hxz : z ∈ clase R x</span>
+  <span class="c1">-- hyz : z ∈ clase R y</span>
+  <span class="n">replace</span> <span class="n">hxz</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">z</span> <span class="o">:=</span> <span class="n">hxz</span>
+  <span class="n">replace</span> <span class="n">hyz</span> <span class="o">:</span> <span class="n">R</span> <span class="n">y</span> <span class="n">z</span> <span class="o">:=</span> <span class="n">hyz</span>
+  <span class="k">have</span> <span class="n">hzy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">z</span> <span class="n">y</span> <span class="o">:=</span> <span class="n">hs</span> <span class="n">hyz</span>
+  <span class="n">exact</span> <span class="n">ht</span> <span class="n">hxz</span> <span class="n">hzy</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="bp">¬</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">=</span> <span class="bp">∅</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">rcases</span> <span class="n">h</span> <span class="k">with</span> <span class="o">⟨</span><span class="bp">-</span><span class="o">,</span> <span class="n">hs</span><span class="o">,</span> <span class="n">ht</span><span class="o">⟩</span>
+  <span class="c1">-- hs : ∀ {x y : X}, R x y → R y x</span>
+  <span class="c1">-- ht : ∀ {x y z : X}, R x y → R y z → R x z</span>
+  <span class="n">by_contra</span> <span class="n">h1</span>
+  <span class="c1">-- h1 : ¬clase R x ∩ clase R y = ∅</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="bp">∃</span> <span class="n">z</span><span class="o">,</span> <span class="n">z</span> <span class="bp">∈</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="bp">∩</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span>
+  <span class="bp">.</span> <span class="n">aesop</span> <span class="o">(</span><span class="n">add</span> <span class="n">norm</span> <span class="n">Set.eq_empty_iff_forall_not_mem</span><span class="o">)</span>
+  <span class="n">apply</span> <span class="n">hxy</span>
+  <span class="c1">-- ⊢ R x y</span>
+  <span class="n">rcases</span> <span class="n">h2</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">z</span><span class="o">,</span> <span class="n">hxz</span><span class="o">,</span> <span class="n">hyz</span><span class="o">⟩</span>
+  <span class="c1">-- z : X</span>
+  <span class="c1">-- hxz : z ∈ clase R x</span>
+  <span class="c1">-- hyz : z ∈ clase R y</span>
+  <span class="n">exact</span> <span class="n">ht</span> <span class="n">hxz</span> <span class="o">(</span><span class="n">hs</span> <span class="n">hyz</span><span class="o">)</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (s : Set X)</span>
+<span class="c1">-- #check (Set.eq_empty_iff_forall_not_mem : s = ∅ ↔ ∀ x, x ∉ s)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas.lean">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"('a ⇒ 'a ⇒ bool) ⇒ 'a ⇒ 'a set"</span>
+<span class="w">  </span><span class="kp">where</span><span class="w"> </span><span class="s">"clase R x = {y. R x y}"</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"equivp R"</span>
+<span class="w">          </span><span class="s">"¬(R x y)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∀z. z ∈ clase R x ⟶ z ∉ clase R y"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">z</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ clase R x"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R x z"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"z ∉ clase R y"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ clase R y"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R y z"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R z y"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">equivp_symp</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹R x z›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R x y"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">equivp_transp</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹¬R x y›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notE</span><span class="o">)</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">disjoint_iff</span><span class="o">)</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"equivp R"</span>
+<span class="w">          </span><span class="s">"¬(R x y)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∀z. z ∈ clase R x ⟶ z ∉ clase R y"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">z</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ clase R x"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R x z"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">fastforce</span>
+<span class="w">    </span><span class="k">show</span><span class="w"> </span><span class="s">"z ∉ clase R y"</span>
+<span class="w">    </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">notI</span><span class="o">)</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"z ∈ clase R y"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R y z"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">fastforce</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R z y"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">equivp_symp</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹R x z›</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R x y"</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">equivp_transp</span><span class="o">)</span>
+<span class="w">      </span><span class="k">with</span><span class="w"> </span><span class="s">‹¬R x y›</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">disjoint_iff</span><span class="o">)</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"equivp R"</span>
+<span class="w">          </span><span class="s">"¬(R x y)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">clase_def</span>
+<span class="w">            </span><span class="n">CollectD</span>
+<span class="w">            </span><span class="n">equivp_symp</span>
+<span class="w">            </span><span class="n">equivp_transp</span>
+<span class="w">            </span><span class="n">disjoint_iff</span><span class="o">)</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"equivp R"</span>
+<span class="w">          </span><span class="s">"¬(R x y)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"clase R x ∩ clase R y = {}"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">equivp_def</span>
+<span class="w">            </span><span class="n">clase_def</span>
+<span class="w">            </span><span class="n">CollectD</span>
+<span class="w">            </span><span class="n">disjoint_iff_not_equal</span><span class="o">)</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../01-las_clases_de_equivalencia_de_elementos_relacionados_son_iguales/" rel="prev" title="Las clases de equivalencia de elementos relacionados son iguales">Publicación anterior</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
