@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La raíz cuadrada de 2 es irracional | Calculemus</title>
+<link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../../es/rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/en/posts/2024/01/29-irracionalidad_de_la_raiz_cuadrada_de_2/">
+<link rel="icon" href="../../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="La raíz cuadrada de 2 es irracional | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../26-par_si_cuadrado_par/" title="Si n² es par, entonces n es par" type="text/html">
+<link rel="next" href="../30-demostracion_por_extensionalidad/" title="Las funciones f(x,y) = (x + y)² y g(x,y) = x² + 2xy + y² son iguales" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="La raíz cuadrada de 2 es irracional">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/en/posts/2024/01/29-irracionalidad_de_la_raiz_cuadrada_de_2/">
+<meta property="og:description" content="Demostrar con Lean4 que la raíz cuadrada de 2 es irracional; es decir, que no existen \(m, n ∈ ℕ\) tales que \(m\) y \(n\) son coprimos (es decir, que no tienen factores comunes distintos de uno) y \(">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-01-29T06:00:00+02:00">
+<link rel="alternate" hreflang="es" href="../../../../../es/posts/2024/01/29-irracionalidad_de_la_raiz_cuadrada_de_2/">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+                <div id="toptranslations">
+            <h2>Languages:</h2>
+                        <li class="nav-item"><a href="../../../../../es/" rel="alternate" hreflang="es" class="nav-link">Español</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">La raíz cuadrada de 2 es irracional</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-01-29T06:00:00+02:00" itemprop="datePublished" title="29-01-2024">29-01-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que la raíz cuadrada de 2 es irracional; es decir, que no existen \(m, n ∈ ℕ\) tales que \(m\) y \(n\) son coprimos (es decir, que no tienen factores comunes distintos de uno) y \(m² = 2n²\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Prime</span>
+<span class="kn">import</span> <span class="n">Std.Data.Nat.Gcd</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">m</span> <span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">}</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">¬∃</span> <span class="n">m</span> <span class="n">n</span><span class="o">,</span> <span class="n">coprime</span> <span class="n">m</span> <span class="n">n</span> <span class="bp">∧</span> <span class="n">m</span> <span class="bp">^</span> <span class="mi">2</span> <span class="bp">=</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Usaremos el lema del ejercicio anterior:
+\[ (∀ n ∈ ℕ)[2 ∣ n² → 2 | n] \]</p>
+<p>Supongamos que existen existen \(m, n ∈ ℕ\) tales que \(m\) y \(n\) son coprimos y \(m² = 2n²\) y tenemos que demostrar una contradicción. Puesto que 2  divide a 1, para tener la contradicción basta demostrar que 2 divide a 1 y (ya que \(m\) y \(n\) son coprimos); para ello es suficiente demostrar que 2 divide al máximo común divisor de \(m\) y \(n\). En definitiva, basta demostrar que 2 divide a \(m\) y a \(n\).</p>
+<p>La demostración de que 2 divide a \(m\) es
+\begin{align}
+   m² = 2n² &amp;⟹ 2 | m²   \newline
+            &amp;⟹ 2 | m    &amp;&amp;\text{[por el lema]}
+\end{align}</p>
+<p>Para demostrar que 2 divide a \(n\), observamos que, puesto que 2 divide a \(m\), existe un \(k ∈ ℕ\) tal que \(m = 2k\). Sustituyendo en
+\[ m² = 2n² \]
+se tiene
+\[ (2k)² = 2n² \]
+Simplificando, queda
+\[ 2k = n² \]
+Por tanto, 2 divide a \(n²\) y, por el lema, 2 divide a \(n\).</p>
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Prime</span>
+<span class="kn">import</span> <span class="n">Std.Data.Nat.Gcd</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">m</span> <span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">}</span>
+
+<span class="kd">lemma</span> <span class="n">par_si_cuadrado_par</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span><span class="o">)</span>
+  <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">rw</span> <span class="o">[</span><span class="n">pow_two</span><span class="o">]</span> <span class="n">at</span> <span class="n">h</span>
+  <span class="c1">-- h : 2 ∣ n * n</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="bp">∨</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="o">:=</span> <span class="o">(</span><span class="n">Prime.dvd_mul</span> <span class="n">prime_two</span><span class="o">)</span><span class="bp">.</span><span class="n">mp</span> <span class="n">h</span>
+  <span class="n">tauto</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="bp">¬∃</span> <span class="n">m</span> <span class="n">n</span><span class="o">,</span> <span class="n">coprime</span> <span class="n">m</span> <span class="n">n</span> <span class="bp">∧</span> <span class="n">m</span> <span class="bp">^</span> <span class="mi">2</span> <span class="bp">=</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">rintro</span> <span class="o">⟨</span><span class="n">m</span><span class="o">,</span> <span class="n">n</span><span class="o">,</span> <span class="o">⟨</span><span class="n">h1</span><span class="o">,</span> <span class="n">h2</span><span class="o">⟩⟩</span>
+  <span class="c1">-- m n : ℕ</span>
+  <span class="c1">-- h1 : coprime m n</span>
+  <span class="c1">-- h2 : m ^ 2 = 2 * n ^ 2</span>
+  <span class="c1">-- ⊢ False</span>
+  <span class="k">have</span> <span class="n">h3</span> <span class="o">:</span> <span class="bp">¬</span><span class="o">(</span><span class="mi">2</span> <span class="bp">∣</span> <span class="mi">1</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">norm_num</span>
+  <span class="k">have</span> <span class="n">h4</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="mi">1</span> <span class="o">:=</span> <span class="kd">by</span>
+    <span class="k">have</span> <span class="n">h5</span> <span class="o">:</span> <span class="n">Nat.gcd</span> <span class="n">m</span> <span class="n">n</span> <span class="bp">=</span> <span class="mi">1</span> <span class="o">:=</span> <span class="n">h1</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span> <span class="n">h5</span><span class="o">]</span>
+    <span class="c1">-- ⊢ 2 ∣ Nat.gcd m n</span>
+    <span class="k">have</span> <span class="n">h6</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">m</span> <span class="o">:=</span> <span class="kd">by</span>
+      <span class="n">apply</span> <span class="n">par_si_cuadrado_par</span>
+      <span class="c1">-- ⊢ 2 ∣ m ^ 2</span>
+      <span class="n">rw</span> <span class="o">[</span><span class="n">h2</span><span class="o">]</span>
+      <span class="c1">-- ⊢ 2 ∣ 2 * n ^ 2</span>
+      <span class="n">exact</span> <span class="n">Nat.dvd_mul_right</span> <span class="mi">2</span> <span class="o">(</span><span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span><span class="o">)</span>
+    <span class="k">have</span> <span class="n">h7</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="o">:=</span> <span class="kd">by</span>
+      <span class="k">have</span> <span class="n">h8</span> <span class="o">:</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="n">m</span> <span class="bp">=</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span> <span class="o">:=</span> <span class="n">h6</span>
+      <span class="n">rcases</span> <span class="n">h8</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="n">h9</span><span class="o">⟩</span>
+      <span class="c1">-- k : ℕ</span>
+      <span class="c1">-- h9 : m = 2 * k</span>
+      <span class="k">have</span> <span class="n">h10</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span> <span class="bp">^</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span> <span class="kd">by</span>
+        <span class="k">have</span> <span class="n">h10a</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span> <span class="bp">^</span> <span class="mi">2</span><span class="o">)</span> <span class="bp">=</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span> <span class="k">calc</span>
+          <span class="mi">2</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span> <span class="bp">^</span> <span class="mi">2</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span><span class="o">)</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">nlinarith</span>
+                        <span class="n">_</span> <span class="bp">=</span> <span class="n">m</span> <span class="bp">^</span> <span class="mi">2</span>       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span> <span class="n">h9</span><span class="o">]</span>
+                        <span class="n">_</span> <span class="bp">=</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span>   <span class="o">:=</span> <span class="n">h2</span>
+        <span class="k">show</span> <span class="mi">2</span> <span class="bp">*</span> <span class="n">k</span> <span class="bp">^</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span>
+        <span class="n">exact</span> <span class="o">(</span><span class="n">mul_right_inj'</span> <span class="o">(</span><span class="kd">by</span> <span class="n">norm_num</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">≠</span> <span class="mi">0</span><span class="o">))</span><span class="bp">.</span><span class="n">mp</span> <span class="n">h10a</span>
+      <span class="k">have</span> <span class="n">h11</span> <span class="o">:</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span> <span class="bp">^</span> <span class="mi">2</span> <span class="o">:=</span> <span class="kd">by</span>
+        <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span> <span class="n">h10</span><span class="o">]</span>
+        <span class="c1">-- ⊢ 2 ∣ 2 * k ^ 2</span>
+        <span class="n">exact</span> <span class="n">Nat.dvd_mul_right</span> <span class="mi">2</span> <span class="o">(</span><span class="n">k</span> <span class="bp">^</span> <span class="mi">2</span><span class="o">)</span>
+      <span class="k">show</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">n</span>
+      <span class="n">exact</span> <span class="n">par_si_cuadrado_par</span> <span class="n">h11</span>
+    <span class="k">show</span> <span class="mi">2</span> <span class="bp">∣</span> <span class="n">Nat.gcd</span> <span class="n">m</span> <span class="n">n</span>
+    <span class="n">exact</span> <span class="n">Nat.dvd_gcd</span> <span class="n">h6</span> <span class="n">h7</span>
+  <span class="k">show</span> <span class="n">False</span>
+  <span class="n">exact</span> <span class="n">h3</span> <span class="n">h4</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (p k : ℕ)</span>
+<span class="c1">-- #check (pow_two n : n ^ 2 = n * n)</span>
+<span class="c1">-- #check (Prime.dvd_mul : Nat.Prime p → (p ∣ m * n ↔ p ∣ m ∨ p ∣ n))</span>
+<span class="c1">-- #check (prime_two : Nat.Prime 2)</span>
+<span class="c1">-- #check (Nat.dvd_gcd : k ∣ m → k ∣ n → k ∣ Nat.gcd m n)</span>
+<span class="c1">-- #check (Nat.dvd_mul_right m n :  m ∣ m * n)</span>
+<span class="c1">-- #check (mul_right_inj' : k ≠ 0 → (k * m = k * n ↔ m = n))</span>
+</pre></div>
+
+<h4>Demostraciones interactivas</h4>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Irracionalidad_de_la_raiz_cuadrada_de_2.lean" rel="noopener noreferrer" target="_blank">Lean 4 Web</a>.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../26-par_si_cuadrado_par/" rel="prev" title="Si n² es par, entonces n es par">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../30-demostracion_por_extensionalidad/" rel="next" title="Las funciones f(x,y) = (x + y)² y g(x,y) = x² + 2xy + y² son iguales">Next post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

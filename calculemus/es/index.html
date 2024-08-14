@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Ejercicios de demostración asistida por ordenador.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculemus</title>
+<link href="../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../en/rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/es/">
+<link rel="icon" href="../favicon.png" sizes="48x48">
+<link rel="next" href="index-1.html" type="text/html">
+<!--[if lt IE 9]><script src="../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Calculemus">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="." title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+                <div id="toptranslations">
+            <h2>Idiomas:</h2>
+                        <li class="nav-item"><a href="../en/" rel="alternate" hreflang="en" class="nav-link">English</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../archive.html">Archivo</a></li>
+                <li><a href="../categories/">Etiquetas</a></li>
+                <li><a href="../about/">Acerca de</a></li>
+                <li><a href="../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><div class="postindex">
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" class="u-url">Pruebas de length(xs ++ ys) = length(xs) + length(ys)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/08/07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-07T06:00:00+02:00" itemprop="datePublished" title="07-08-2024">07-08-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Listas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4 están definidas las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="n">length</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">Nat</span>
+<span class="o">(++)</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>
+<p>(length xs) es la longitud de xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">length [2,3,5,3] = 4
+</pre></div>
+
+</li>
+<li>
+<p>(xs ++ ys) es la lista obtenida concatenando xs e ys. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">[1,2] ++ [2,3,5,3] = [1,2,2,3,5,3]
+</pre></div>
+
+</li>
+</ul>
+<p>Dichas funciones están caracterizadas por los siguientes lemas:</p>
+<div class="code"><pre class="code literal-block"><span class="n">length_nil</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">length_cons</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">nil_append</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ys</span>
+<span class="n">cons_append</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="o">)</span>
+</pre></div>
+
+<p>Demostrar que</p>
+<div class="code"><pre class="code literal-block">length (xs ++ ys) = length xs + length ys
+</pre></div>
+
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/08/07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/07-pruebas_de_lengthes/" class="u-url">Pruebas de length(xs ++ ys) = length(xs) + length(ys)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/08/07-pruebas_de_lengthes/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-07T06:00:00+02:00" itemprop="datePublished" title="07-08-2024">07-08-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Listas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4 están definidas las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="n">length</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">Nat</span>
+<span class="o">(++)</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>
+<p>(length xs) es la longitud de xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">length [2,3,5,3] = 4
+</pre></div>
+
+</li>
+<li>
+<p>(xs ++ ys) es la lista obtenida concatenando xs e ys. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">[1,2] ++ [2,3,5,3] = [1,2,2,3,5,3]
+</pre></div>
+
+</li>
+</ul>
+<p>Dichas funciones están caracterizadas por los siguientes lemas:</p>
+<div class="code"><pre class="code literal-block"><span class="n">length_nil</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">length_cons</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">nil_append</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ys</span>
+<span class="n">cons_append</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="o">)</span>
+</pre></div>
+
+<p>Demostrar que</p>
+<div class="code"><pre class="code literal-block">length (xs ++ ys) = length xs + length ys
+</pre></div>
+
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/08/07-pruebas_de_lengthes/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/31-asociatividad_de_la_concatenacion_de_listas/" class="u-url">Asociatividad de la concatenación de listas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/31-asociatividad_de_la_concatenacion_de_listas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-31T06:00:00+02:00" itemprop="datePublished" title="31-07-2024">31-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Listas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4 la operación de concatenación de listas se representa por (++) y está caracterizada por los siguientes lemas</p>
+<div class="code"><pre class="code literal-block">nil_append  : [] ++ ys = ys
+cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
+</pre></div>
+
+<p>Demostrar que la concatenación es asociativa; es decir,</p>
+<div class="code"><pre class="code literal-block">xs ++ (ys ++ zs) = (xs ++ ys) ++ zs
+</pre></div>
+
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.List.Basic</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="n">zs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/31-asociatividad_de_la_concatenacion_de_listas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/29-pruebas_de_length_repeat_x_n_ig_n/" class="u-url">Pruebas de length (replicate n x) = n</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/29-pruebas_de_length_repeat_x_n_ig_n/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-29T06:00:00+02:00" itemprop="datePublished" title="29-07-2024">29-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Listas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4 están definidas las funciones length y replicate tales que</p>
+<ul>
+<li>
+<p>(length xs) es la longitud de la lista xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">length [1,2,5,2] = 4
+</pre></div>
+
+</li>
+<li>
+<p>(replicate n x) es la lista que tiene el elemento x n veces. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">replicate 3 7 = [7, 7, 7]
+</pre></div>
+
+</li>
+</ul>
+<p>Demostrar que</p>
+<div class="code"><pre class="code literal-block">length (replicate n x) = n
+</pre></div>
+
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.List.Basic</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">α</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">replicate</span> <span class="n">n</span> <span class="n">x</span><span class="o">)</span> <span class="bp">=</span> <span class="n">n</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/29-pruebas_de_length_repeat_x_n_ig_n/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/27-limite_de_sucesiones_no_decrecientes/" class="u-url">Si u es una sucesión no decreciente y su límite es a, entonces u(n) ≤ a para todo n</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/27-limite_de_sucesiones_no_decrecientes/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-27T06:00:00+02:00" itemprop="datePublished" title="27-07-2024">27-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4, una sucesión \(u_0, u_1, u_2, ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es \(u_n\).</p>
+<p>En Lean4, se define que \(a\) es el límite de la sucesión \(u\), por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span><span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span><span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>y que la sucesión \(u\) es no decreciente por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">no_decreciente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">u</span> <span class="n">m</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(u\) es una sucesión no decreciente y su límite es \(a\), entonces \(u(n) ≤ a\) para todo \(n\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">m</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">m</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">no_decreciente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">u</span> <span class="n">m</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">h'</span> <span class="o">:</span> <span class="n">no_decreciente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">a</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/27-limite_de_sucesiones_no_decrecientes/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/26-las_sucesiones_divergentes_positivas_no_tienen_limites_finitos/" class="u-url">Las sucesiones divergentes positivas no tienen límites finitos</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/26-las_sucesiones_divergentes_positivas_no_tienen_limites_finitos/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-26T06:00:00+02:00" itemprop="datePublished" title="26-07-2024">26-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4, una sucesión \(u_0, u_1, u_2, ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es \(uₙ\).</p>
+<p>Se define que \(a\) es el límite de la sucesión \(u\), por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="p">(</span><span class="n">u</span><span class="kt">:</span><span class="w"> </span><span class="kt">ℕ</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="kt">:</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="kt">:=</span>
+<span class="w">     </span><span class="err">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="err">∃</span><span class="w"> </span><span class="kt">N</span><span class="p">,</span><span class="w"> </span><span class="err">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="err">≥</span><span class="w"> </span><span class="kt">N</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>La sucesión \(u\) diverge positivamente cuando, para cada número real \(A\), se puede encontrar un número natural \(m\) tal que si \(n ≥ m\), entonces \(uₙ &gt; A\). En Lean se puede definir por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">diverge_positivamente</span><span class="w"> </span><span class="p">(</span><span class="n">u</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">ℕ</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="kt">:=</span>
+<span class="w">     </span><span class="err">∀</span><span class="w"> </span><span class="kt">A</span><span class="p">,</span><span class="w"> </span><span class="err">∃</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="err">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="err">≥</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="kt">A</span>
+</pre></div>
+
+<p>Demostrar que si \(u\) diverge positivamente, entonces ningún número real es límite de \(u\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">m</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">m</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">diverge_positivamente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">A</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">m</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">m</span><span class="o">,</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">&gt;</span> <span class="n">A</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">diverge_positivamente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">¬</span><span class="o">(</span><span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/26-las_sucesiones_divergentes_positivas_no_tienen_limites_finitos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/" class="u-url">Si a es un punto de acumulación de la sucesión de Cauchy u, entonces a es el límite de u</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-25T06:00:00+02:00" itemprop="datePublished" title="25-07-2024">25-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4, una sucesión \(u_0, u_1, u_2, u_3 ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es el término \(u_n\).</p>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión \(u_0, u_2, u_4, u_6, ...\) se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+</pre></div>
+
+<p>que a es un límite de u por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>que a es un punto de acumulación de u por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+</pre></div>
+
+<p>que la sucesión u es de Cauchy por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">suc_cauchy</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">p</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">q</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">p</span> <span class="bp">-</span> <span class="n">u</span> <span class="n">q</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(u\) es una sucesión de Cauchy y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es el límite de \(u\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">suc_cauchy</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">ha</span> <span class="o">:</span> <span class="n">punto_acumulacion</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" class="u-url">El punto de acumulación de las sucesiones convergente es su límite</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-16T06:00:00+02:00" itemprop="datePublished" title="16-07-2024">16-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
+\[ u_0, u_2, u_4, u_6, ... \]
+se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+</pre></div>
+
+<p>que \(a\) es un límite de \(u\) por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>que \(u\) es convergente por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
+</pre></div>
+
+<p>que \(a\) es un punto de acumulación de \(u\) por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(u\) es una sucesión convergente y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es un límite de \(u\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
+
+<span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">ha</span> <span class="o">:</span> <span class="n">punto_acumulacion</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/15-las_subsucesiones_tienen_el_mismo_limite_que_la_sucesion/" class="u-url">Las subsucesiones tienen el mismo límite que la sucesión</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/15-las_subsucesiones_tienen_el_mismo_limite_que_la_sucesion/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-15T06:00:00+02:00" itemprop="datePublished" title="15-07-2024">15-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
+\[ u_0, u_3, u_4, u_6, ... \]
+se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+</pre></div>
+
+<p>que \(v\) es una subsucesión de \(u\) por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">subsucesion</span> <span class="o">(</span><span class="n">v</span> <span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">v</span> <span class="bp">=</span> <span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span>
+</pre></div>
+
+<p>y que \(a\) es un límite de \(u\) por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que las subsucesiones de una sucesión convergente tienen el mismo límite que la sucesión.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="n">v</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">):=</span>
+  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+
+<span class="kd">def</span> <span class="n">subsucesion</span> <span class="o">(</span><span class="n">v</span> <span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">v</span> <span class="bp">=</span> <span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hv</span> <span class="o">:</span> <span class="n">subsucesion</span> <span class="n">v</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">ha</span> <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="n">v</span> <span class="n">a</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/15-las_subsucesiones_tienen_el_mismo_limite_que_la_sucesion/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/12-si_a_es_un_punto_de_acumulacion_de_u_entonces_a_tiene_puntos_cercanos/" class="u-url">Si a es un punto de acumulación de u, entonces (∀ε&gt;0)(∀n∈ℕ)(∃k≥n)[u(k)−a| &lt; ε]</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/12-si_a_es_un_punto_de_acumulacion_de_u_entonces_a_tiene_puntos_cercanos/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-14T06:00:00+02:00" itemprop="datePublished" title="14-07-2024">14-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
+\[ u_0, u_2, u_4, u_6, ... \]
+se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+</pre></div>
+
+<p>También se puede definir que \(a\) es un límite de \(u\) por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">n</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">n</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>Los puntos de acumulación de una sucesión son los límites de sus subsucesiones. En Lean4 se puede definir por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+</pre></div>
+
+<p>Demostrar que si \(a\) es un punto de acumulación de \(u\), entonces
+\[ (∀ ε &gt; 0)(∀ n ∈ ℕ)(∃ k ≥ n)[|u(k) - a| &lt; ε \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">):=</span>
+  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">n</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">n</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">punto_acumulacion</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">n</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/12-si_a_es_un_punto_de_acumulacion_de_u_entonces_a_tiene_puntos_cercanos/">Leer más…</a></p>
+</div>
+                </div>
+            </article>
+</div>
+            <nav class="postindexpager"><ul class="pager">
+<li class="next">
+                <a href="index-1.html" rel="next">Publicaciones anteriores</a>
+            </li>
+        </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

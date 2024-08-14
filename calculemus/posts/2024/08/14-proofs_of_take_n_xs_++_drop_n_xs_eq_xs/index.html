@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proofs of take n xs ++ drop n xs = xs | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/08/14-proofs_of_take_n_xs_%2B%2B_drop_n_xs_eq_xs/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Proofs of take n xs ++ drop n xs = xs | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" title="Pruebas de length(xs ++ ys) = length(xs) + length(ys)" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Proofs of take n xs ++ drop n xs = xs">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/08/14-proofs_of_take_n_xs_%2B%2B_drop_n_xs_eq_xs/">
+<meta property="og:description" content="In Lean4, the functions
+    take : Nat → List α → Nat
+    drop : Nat → List α → Nat
+    (++) : List α → List α → List α
+
+
+are defined such that
+
+
+(take n xs) is the list formed by the first n elements">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-08-14T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="../14-proofs_of_take_n_xs_%2B%2B_drop_n_xs_eq_xs/" class="u-url">Proofs of take n xs ++ drop n xs = xs</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="../14-proofs_of_take_n_xs_%2B%2B_drop_n_xs_eq_xs/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-14T06:00:00+02:00" itemprop="datePublished" title="14-08-2024">14-08-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>In Lean4, the functions</p>
+<div class="code"><pre class="code literal-block">    <span class="n">take</span> <span class="o">:</span> <span class="n">Nat</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Nat</span>
+    <span class="n">drop</span> <span class="o">:</span> <span class="n">Nat</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Nat</span>
+    <span class="o">(</span><span class="bp">++</span><span class="o">)</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span>
+</pre></div>
+
+<p>are defined such that</p>
+<ul>
+<li>
+<p>(take n xs) is the list formed by the first n elements of xs. For example,</p>
+<div class="code"><pre class="code literal-block">take 2 [3,5,1,9,7] = [3,5]
+</pre></div>
+
+</li>
+<li>
+<p>(drop n xs) is the list formed by removing the first n elements of xs. For example,</p>
+<div class="code"><pre class="code literal-block">drop 2 [3,5,1,9,7] = [1,9,7]
+</pre></div>
+
+</li>
+<li>
+<p>(xs ++ ys) is the list obtained by concatenating xs and ys. For example,</p>
+<div class="code"><pre class="code literal-block">[3,5] ++ [1,9,7] = [3,5,1,9,7]
+</pre></div>
+
+</li>
+</ul>
+<p>These functions are characterized by the following lemmas:</p>
+<div class="code"><pre class="code literal-block"><span class="n">take_zero</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[]</span>
+<span class="n">take_nil</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[]</span>
+<span class="n">take_cons</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="o">(</span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span>
+<span class="n">drop_zero</span><span class="w">      </span><span class="o">:</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xs</span>
+<span class="n">drop_nil</span><span class="w">       </span><span class="o">:</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[]</span>
+<span class="n">drop_succ_cons</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span>
+<span class="n">nil_append</span><span class="w">     </span><span class="o">:</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ys</span>
+<span class="n">cons_append</span><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="o">)</span>
+</pre></div>
+
+<p>Prove that</p>
+<div class="code"><pre class="code literal-block">take n xs ++ drop n xs = xs
+</pre></div>
+
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.List.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">α</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Natural language proof</h2>
+<p>We have to prove that</p>
+<div class="code"><pre class="code literal-block">(∀ n)(∀ xs)[take n xs ++ drop n xs = xs]
+</pre></div>
+
+<p>We will do it by induction on n.</p>
+<p>Base case: Let n = 0. We have to prove that</p>
+<div class="code"><pre class="code literal-block">(∀ xs)[take n xs ++ drop n xs = xs]
+</pre></div>
+
+<p>Let xs be any list. Then</p>
+<div class="code"><pre class="code literal-block">take n xs ++ drop n xs = take 0 xs ++ drop 0 xs
+                       = [] ++ xs
+                       = xs
+</pre></div>
+
+<p>Inductive step: Assume the inductive hypothesis (IH):</p>
+<div class="code"><pre class="code literal-block">(∀ xs)[take n xs ++ drop n xs = xs]
+</pre></div>
+
+<p>and we have to prove that</p>
+<div class="code"><pre class="code literal-block">(∀ xs)[take (n+1) xs ++ drop (n+1) xs = xs]
+</pre></div>
+
+<p>We will prove it by cases on xs.</p>
+<p>First case: Assume that xs = []. Then,</p>
+<div class="code"><pre class="code literal-block">take (n+1) xs ++ drop (n+1) xs = take (n+1) [] ++ drop (n+1) []
+                               = [] ++ []
+                               = []
+</pre></div>
+
+<p>Second case: Assume that xs = y :: ys. Then,</p>
+<div class="code"><pre class="code literal-block"><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+<span class="o">=</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ys</span>
+<span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">drop</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="o">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">ys</span><span class="w">                                          </span><span class="p">[</span><span class="n">by</span><span class="w"> </span><span class="n">IH</span><span class="p">]</span>
+<span class="o">=</span><span class="w"> </span><span class="n">xs</span>
+</pre></div>
+
+<p>Another alternative way to prove it is by distinguishing the three cases of the definition of take; which is</p>
+<div class="code"><pre class="code literal-block"><span class="nv">take</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="nv">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>[],<span class="w">             </span><span class="k">if</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">          </span><span class="o">=</span><span class="w"> </span>[],<span class="w">             </span><span class="k">if</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>[]
+<span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span>::<span class="w"> </span><span class="nv">take</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="nv">ys</span>,<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="nv">and</span><span class="w"> </span><span class="nv">xs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span>::<span class="w"> </span><span class="nv">ys</span>
+</pre></div>
+
+<p>Case 1: Assume that n = 0. Then,</p>
+<div class="code"><pre class="code literal-block">take n xs ++ drop n xs = take 0 xs ++ drop 0 xs
+                       = [] ++ xs
+                       = xs
+</pre></div>
+
+<p>Case 2: Assume that n = m+1 and xs = []. Then,</p>
+<div class="code"><pre class="code literal-block">take (m+1) xs ++ drop (m+1) xs = take (m+1) [] ++ drop (m+1) []
+                               = [] ++ []
+                               = []
+</pre></div>
+
+<p>Case 3: Assume that n = m+1 and xs = y :: ys. Then,</p>
+<div class="code"><pre class="code literal-block">take (m+1) xs ++ drop (m+1) xs
+= take (m+1) (y :: ys) ++ drop (m+1) (y :: ys)
+= (y :: take m ys) ++ drop m ys
+= y :: (take m ys ++ drop m ys)
+= y :: ys                       [by the lemma applied to m and ys]
+= xs
+</pre></div>
+
+<h2>2. Proofs with Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.List.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">α</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">n</span> <span class="k">with</span> <span class="n">n</span> <span class="n">IH</span> <span class="n">generalizing</span> <span class="n">xs</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ take zero xs ++ drop zero xs = xs</span>
+    <span class="k">calc</span> <span class="n">take</span> <span class="n">zero</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">zero</span> <span class="n">xs</span>
+           <span class="bp">=</span> <span class="o">[]</span> <span class="bp">++</span> <span class="n">xs</span>                 <span class="o">:=</span> <span class="n">rfl</span>
+         <span class="n">_</span> <span class="bp">=</span> <span class="n">xs</span>                       <span class="o">:=</span> <span class="n">rfl</span>
+  <span class="bp">.</span> <span class="c1">-- n : ℕ</span>
+    <span class="c1">-- IH : ∀ (xs : List α), take n xs ++ drop n xs = xs</span>
+    <span class="c1">-- xs : List α</span>
+    <span class="c1">-- ⊢ take (succ n) xs ++ drop (succ n) xs = xs</span>
+    <span class="n">cases'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">y</span> <span class="n">ys</span>
+    <span class="bp">.</span> <span class="c1">-- ⊢ take (succ n) [] ++ drop (succ n) [] = []</span>
+      <span class="k">calc</span> <span class="n">take</span> <span class="o">(</span><span class="n">succ</span> <span class="n">n</span><span class="o">)</span> <span class="o">[]</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">succ</span> <span class="n">n</span><span class="o">)</span> <span class="o">[]</span>
+             <span class="bp">=</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">[]</span> <span class="o">:=</span> <span class="n">rfl</span>
+           <span class="n">_</span> <span class="bp">=</span> <span class="o">[]</span>       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rfl</span>
+    <span class="bp">.</span> <span class="c1">-- y : α</span>
+      <span class="c1">-- ys : List α</span>
+      <span class="c1">-- ⊢ take (n+1) (y :: ys) ++ drop (n+1) (y :: ys) = y :: ys</span>
+      <span class="k">calc</span>
+        <span class="n">take</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span>
+          <span class="bp">=</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">take</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span> <span class="o">:=</span> <span class="n">rfl</span>
+        <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="o">(</span><span class="n">take</span> <span class="n">n</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="o">:=</span> <span class="n">rfl</span>
+        <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span>                       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">IH</span><span class="o">]</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">n</span> <span class="k">with</span> <span class="n">n</span> <span class="n">IH</span> <span class="n">generalizing</span> <span class="n">xs</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ take zero xs ++ drop zero xs = xs</span>
+    <span class="n">rfl</span>
+  <span class="bp">.</span> <span class="c1">-- n : ℕ</span>
+    <span class="c1">-- IH : ∀ (xs : List α), take n xs ++ drop n xs = xs</span>
+    <span class="c1">-- xs : List α</span>
+    <span class="c1">-- ⊢ take (succ n) xs ++ drop (succ n) xs = xs</span>
+    <span class="n">cases'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">y</span> <span class="n">ys</span>
+    <span class="bp">.</span> <span class="c1">-- ⊢ take (succ n) [] ++ drop (succ n) [] = []</span>
+      <span class="n">rfl</span>
+    <span class="bp">.</span> <span class="c1">-- y : α</span>
+      <span class="c1">-- ys : List α</span>
+      <span class="c1">-- ⊢ take (n+1) (y :: ys) ++ drop (n+1) (y :: ys) = y :: ys</span>
+      <span class="k">calc</span>
+        <span class="n">take</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span>
+          <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="o">(</span><span class="n">take</span> <span class="n">n</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="o">:=</span> <span class="n">rfl</span>
+        <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span>                       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">IH</span><span class="o">]</span>
+
+<span class="c1">-- Proof 3</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">lemma</span> <span class="n">take_drop_1</span> <span class="o">:</span> <span class="bp">∀</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">Nat</span><span class="o">)</span> <span class="o">(</span><span class="n">xs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">),</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span>
+  <span class="bp">|</span> <span class="mi">0</span><span class="o">,</span> <span class="n">xs</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take 0 xs ++ drop 0 xs = xs</span>
+    <span class="k">calc</span>
+      <span class="n">take</span> <span class="mi">0</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="mi">0</span> <span class="n">xs</span>
+        <span class="bp">=</span> <span class="o">[]</span> <span class="bp">++</span> <span class="n">xs</span> <span class="o">:=</span> <span class="n">rfl</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">xs</span>       <span class="o">:=</span> <span class="n">rfl</span>
+  <span class="bp">|</span> <span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">,</span> <span class="o">[]</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take (n + 1) [] ++ drop (n + 1) [] = []</span>
+    <span class="k">calc</span>
+      <span class="n">take</span> <span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span> <span class="o">[]</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span> <span class="o">[]</span>
+        <span class="bp">=</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">[]</span> <span class="o">:=</span> <span class="n">rfl</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">[]</span>       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rfl</span>
+  <span class="bp">|</span> <span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take (n + 1) (y :: ys) ++ drop (n + 1) (y :: ys) = y :: ys</span>
+    <span class="k">calc</span>
+      <span class="n">take</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span>
+        <span class="bp">=</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">take</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span> <span class="o">:=</span> <span class="n">rfl</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="o">(</span><span class="n">take</span> <span class="n">n</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="o">:=</span> <span class="n">rfl</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span>                       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">take_drop_1</span> <span class="n">n</span> <span class="n">ys</span><span class="o">]</span>
+
+<span class="c1">-- Proof 4</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">lemma</span> <span class="n">take_drop_2</span> <span class="o">:</span> <span class="bp">∀</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">Nat</span><span class="o">)</span> <span class="o">(</span><span class="n">xs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">),</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span>
+  <span class="bp">|</span> <span class="mi">0</span><span class="o">,</span> <span class="n">_</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take 0 xs ++ drop 0 xs = xs</span>
+    <span class="n">rfl</span>
+  <span class="bp">|</span> <span class="n">_</span><span class="bp">+</span><span class="mi">1</span><span class="o">,</span> <span class="o">[]</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take (n + 1) [] ++ drop (n + 1) [] = []</span>
+    <span class="n">rfl</span>
+  <span class="bp">|</span> <span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ take (n + 1) (y :: ys) ++ drop (n + 1) (y :: ys) = y :: ys</span>
+    <span class="k">calc</span>
+      <span class="n">take</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">drop</span> <span class="o">(</span><span class="n">n</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">(</span><span class="n">y</span> <span class="o">::</span> <span class="n">ys</span><span class="o">)</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="o">(</span><span class="n">take</span> <span class="n">n</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">ys</span><span class="o">)</span> <span class="o">:=</span> <span class="n">rfl</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">y</span> <span class="o">::</span> <span class="n">ys</span>                       <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">take_drop_2</span> <span class="n">n</span> <span class="n">ys</span><span class="o">]</span>
+
+<span class="c1">-- Proof 5</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">lemma</span> <span class="n">take_drop_3</span> <span class="o">:</span> <span class="n">take</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">++</span> <span class="n">drop</span> <span class="n">n</span> <span class="n">xs</span> <span class="bp">=</span> <span class="n">xs</span> <span class="o">:=</span>
+<span class="n">take_append_drop</span> <span class="n">n</span> <span class="n">xs</span>
+</pre></div>
+
+<p>You can interact with the previous proofs at <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Proofs_of_take_n_xs_++_drop_n_xs_Eq_xs.lean">Lean 4 Web</a>.</p>
+<h2>3. Proofs with Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="s">"Proofs_of_take_n_xs_++_drop_n_xs_Eq_xs"</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="k">fun</span><span class="w"> </span><span class="n">take'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"nat ⇒ 'a list ⇒ 'a list"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"take' n []           = []"</span>
+<span class="o">|</span><span class="w"> </span><span class="s">"take' 0 xs           = []"</span>
+<span class="o">|</span><span class="w"> </span><span class="s">"take' (Suc n) (x#xs) = x # (take' n xs)"</span>
+
+<span class="k">fun</span><span class="w"> </span><span class="n">drop'</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"nat ⇒ 'a list ⇒ 'a list"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"drop' n []           = []"</span>
+<span class="o">|</span><span class="w"> </span><span class="s">"drop' 0 xs           = xs"</span>
+<span class="o">|</span><span class="w"> </span><span class="s">"drop' (Suc n) (x#xs) = drop' n xs"</span>
+
+<span class="c">(* Proof 1 *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"take' n xs @ drop' n xs = xs"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">rule</span><span class="o">:</span><span class="w"> </span><span class="n">take'.induct</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"take' n [] @ drop' n [] = [] @ drop' n []"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">take'.simps</span><span class="o">(</span><span class="n">1</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = drop' n []"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">append.simps</span><span class="o">(</span><span class="n">1</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = []"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">drop'.simps</span><span class="o">(</span><span class="n">1</span><span class="o">))</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"take' n [] @ drop' n [] = []"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n n-Type">'a</span><span class="w"> </span><span class="kp">and</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'a list"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"take' 0 (x#xs) @ drop' 0 (x#xs) =</span>
+<span class="s">        [] @ drop' 0 (x#xs)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">take'.simps</span><span class="o">(</span><span class="n">2</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = drop' 0 (x#xs)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w">  </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">append.simps</span><span class="o">(</span><span class="n">1</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = x # xs"</span>
+<span class="w">    </span><span class="k">by</span><span class="w">  </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">drop'.simps</span><span class="o">(</span><span class="n">2</span><span class="o">))</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"take' 0 (x#xs) @ drop' 0 (x#xs) = x#xs"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">nat</span><span class="w"> </span><span class="kp">and</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n n-Type">'a</span><span class="w"> </span><span class="kp">and</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'a list"</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="n">HI</span><span class="o">:</span><span class="w"> </span><span class="s">"take' n xs @ drop' n xs = xs"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"take' (Suc n) (x # xs) @ drop' (Suc n) (x # xs) =</span>
+<span class="s">        (x # (take' n xs)) @ drop' n xs"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">take'.simps</span><span class="o">(</span><span class="n">3</span><span class="o">)</span>
+<span class="w">                   </span><span class="n">drop'.simps</span><span class="o">(</span><span class="n">3</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = x # (take' n xs @ drop' n xs)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">append.simps</span><span class="o">(</span><span class="n">2</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = x#xs"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">HI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"take' (Suc n) (x#xs) @ drop' (Suc n) (x#xs) =</span>
+<span class="s">                x#xs"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 2 *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"take' n xs @ drop' n xs = xs"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">rule</span><span class="o">:</span><span class="w"> </span><span class="n">take'.induct</span><span class="o">)</span>
+<span class="k">case</span><span class="w"> </span><span class="o">(</span><span class="n">1</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="o">?</span><span class="k">case</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="o">(</span><span class="n">2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="o">?</span><span class="k">case</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="o">(</span><span class="n">3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="o">?</span><span class="k">case</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 3 *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"take' n xs @ drop' n xs = xs"</span>
+<span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">rule</span><span class="o">:</span><span class="w"> </span><span class="n">take'.induct</span><span class="o">)</span><span class="w"> </span><span class="n">simp_all</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" rel="prev" title="Pruebas de length(xs ++ ys) = length(xs) + length(ys)">Publicación anterior</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

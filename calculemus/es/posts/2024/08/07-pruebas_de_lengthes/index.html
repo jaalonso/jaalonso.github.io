@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pruebas de length(xs ++ ys) = length(xs) + length(ys) | Calculemus</title>
+<link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../../en/rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/es/posts/2024/08/07-pruebas_de_lengthes/">
+<link rel="icon" href="../../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Pruebas de length(xs ++ ys) = length(xs) + length(ys) | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../../07/31-asociatividad_de_la_concatenacion_de_listas/" title="Asociatividad de la concatenación de listas" type="text/html">
+<link rel="next" href="../07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" title="Pruebas de length(xs ++ ys) = length(xs) + length(ys)" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Pruebas de length(xs ++ ys) = length(xs) + length(ys)">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/es/posts/2024/08/07-pruebas_de_lengthes/">
+<meta property="og:description" content="En Lean4 están definidas las funciones
+length : List α → Nat
+(++)   : List α → List α → List α
+
+
+tales que
+
+
+(length xs) es la longitud de xs. Por ejemplo,
+length [2,3,5,3] = 4
+
+
+
+
+(xs ++ ys) es la li">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-08-07T06:00:00+02:00">
+<link rel="alternate" hreflang="en" href="../../../../../en/posts/2024/08/07-pruebas_de_lengthes/">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+                <div id="toptranslations">
+            <h2>Idiomas:</h2>
+                        <li class="nav-item"><a href="../../../../../en/" rel="alternate" hreflang="en" class="nav-link">English</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Pruebas de length(xs ++ ys) = length(xs) + length(ys)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-07T06:00:00+02:00" itemprop="datePublished" title="07-08-2024">07-08-2024</time></a>
+            </p>
+        </div>
+                <div class="metadata posttranslations translations">
+            <h3 class="posttranslations-intro">También disponible en:</h3>
+                <p><a href="../../../../../en/posts/2024/08/07-pruebas_de_lengthes/" rel="alternate" hreflang="en">English</a></p>
+        </div>
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>En Lean4 están definidas las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="n">length</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">Nat</span>
+<span class="o">(++)</span><span class="w">   </span><span class="o">:</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">List</span><span class="w"> </span><span class="err">α</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>
+<p>(length xs) es la longitud de xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">length [2,3,5,3] = 4
+</pre></div>
+
+</li>
+<li>
+<p>(xs ++ ys) es la lista obtenida concatenando xs e ys. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">[1,2] ++ [2,3,5,3] = [1,2,2,3,5,3]
+</pre></div>
+
+</li>
+</ul>
+<p>Dichas funciones están caracterizadas por los siguientes lemas:</p>
+<div class="code"><pre class="code literal-block"><span class="n">length_nil</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="n">length_cons</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">nil_append</span><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="o">[]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ys</span>
+<span class="n">cons_append</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="o">)</span>
+</pre></div>
+
+<p>Demostrar que</p>
+<div class="code"><pre class="code literal-block">length (xs ++ ys) = length xs + length ys
+</pre></div>
+
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Por inducción en xs.</p>
+<p>Caso base: Supongamos que xs = []. Entonces,</p>
+<div class="code"><pre class="code literal-block">length (xs ++ ys) = length ([] ++ ys)
+                  = length ys
+                  = 0 + length ys
+                  = length [] + length ys
+                  = length xs + length ys
+</pre></div>
+
+<p>Paso de inducción: Supongamos que xs = a :: as y que se verifica la
+hipótesis de inducción</p>
+<div class="code"><pre class="code literal-block">length (as ++ ys) = length as + length ys                     (HI)
+</pre></div>
+
+<p>Entonces,</p>
+<div class="code"><pre class="code literal-block"><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">as</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="p">(</span><span class="n">as</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="p">))</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">as</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">      </span><span class="p">[</span><span class="n">por</span><span class="w"> </span><span class="n">HI</span><span class="p">]</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">as</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span>
+</pre></div>
+
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="n">length</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="n">congr_arg</span> <span class="n">length</span> <span class="o">(</span><span class="n">nil_append</span> <span class="n">ys</span><span class="o">)</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">0</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="o">(</span><span class="n">zero_add</span> <span class="o">(</span><span class="n">length</span> <span class="n">ys</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">[]</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="n">length_nil.symm</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="n">length</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span>
+           <span class="o">:=</span> <span class="n">congr_arg</span> <span class="n">length</span> <span class="o">(</span><span class="n">cons_append</span> <span class="n">a</span> <span class="n">as</span> <span class="n">ys</span><span class="o">)</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+           <span class="o">:=</span> <span class="n">length_cons</span> <span class="n">a</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="n">HI</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="o">(</span><span class="n">Nat.succ_add</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span><span class="o">)</span> <span class="o">(</span><span class="n">length</span> <span class="n">ys</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="o">(</span><span class="n">length_cons</span> <span class="n">a</span> <span class="n">as</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="n">length</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">0</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="o">(</span><span class="n">zero_add</span> <span class="o">(</span><span class="n">length</span> <span class="n">ys</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">[]</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">length_nil</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="n">length</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span>
+           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="o">(</span><span class="n">Nat.succ_add</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span><span class="o">)</span> <span class="o">(</span><span class="n">length</span> <span class="n">ys</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="o">(</span><span class="n">length_cons</span> <span class="n">a</span> <span class="n">as</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">_</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="n">simp</span> <span class="n">only</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">,</span> <span class="n">zero_add</span><span class="o">,</span> <span class="n">length_nil</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="n">simp</span> <span class="n">only</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">,</span> <span class="n">length_cons</span><span class="o">,</span> <span class="n">HI</span><span class="o">,</span> <span class="n">Nat.succ_add</span><span class="o">]</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">_</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="n">simp</span>
+  <span class="bp">.</span> <span class="n">simp</span> <span class="o">[</span><span class="n">HI</span><span class="o">,</span> <span class="n">Nat.succ_add</span><span class="o">]</span>
+
+<span class="c1">-- 5ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="n">simp</span>
+  <span class="bp">.</span> <span class="n">simp</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span> <span class="bp">;</span> <span class="n">linarith</span>
+
+<span class="c1">-- 6ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">lemma</span> <span class="n">longitud_conc_1</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">):</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction</span> <span class="n">xs</span> <span class="k">with</span>
+  <span class="bp">|</span> <span class="n">nil</span> <span class="bp">=&gt;</span> <span class="k">calc</span>
+    <span class="n">length</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+        <span class="bp">=</span> <span class="n">length</span> <span class="n">ys</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="mi">0</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">zero_add</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">[]</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">length_nil</span><span class="o">]</span>
+  <span class="bp">|</span> <span class="n">cons</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span> <span class="bp">=&gt;</span> <span class="k">calc</span>
+    <span class="n">length</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span>
+        <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">+</span> <span class="mi">1</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+          <span class="o">:=</span> <span class="o">(</span><span class="n">Nat.succ_add</span> <span class="o">(</span><span class="n">length</span> <span class="n">as</span><span class="o">)</span> <span class="o">(</span><span class="n">length</span> <span class="n">ys</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">length</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span>
+          <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+
+<span class="c1">-- 7ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">lemma</span> <span class="n">longitud_conc_2</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">):</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction</span> <span class="n">xs</span> <span class="k">with</span>
+  <span class="bp">|</span> <span class="n">nil</span>          <span class="bp">=&gt;</span> <span class="n">simp</span>
+  <span class="bp">|</span> <span class="n">cons</span> <span class="n">_</span> <span class="n">as</span> <span class="n">HI</span> <span class="bp">=&gt;</span> <span class="n">simp</span> <span class="o">[</span><span class="n">HI</span><span class="o">,</span> <span class="n">Nat.succ_add</span><span class="o">]</span>
+
+<span class="c1">-- 9ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ length ([] ++ ys) = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_nil</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = 0 + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">zero_add</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- a : α</span>
+    <span class="c1">-- as : List α</span>
+    <span class="c1">-- HI : length (as ++ ys) = length as + length ys</span>
+    <span class="c1">-- ⊢ length (a :: as ++ ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length (a :: (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = Nat.succ (length as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">Nat.succ_add</span><span class="o">]</span>
+
+<span class="c1">-- 10ª demostración</span>
+<span class="c1">-- ================</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ length ([] ++ ys) = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_nil</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = 0 + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">zero_add</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- a : α</span>
+    <span class="c1">-- as : List α</span>
+    <span class="c1">-- HI : length (as ++ ys) = length as + length ys</span>
+    <span class="c1">-- ⊢ length (a :: as ++ ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length (a :: (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">Nat.succ_add</span><span class="o">]</span>
+
+<span class="c1">-- 11ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ length ([] ++ ys) = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = length [] + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_nil</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length ys = 0 + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">zero_add</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- a : α</span>
+    <span class="c1">-- as : List α</span>
+    <span class="c1">-- HI : length (as ++ ys) = length as + length ys</span>
+    <span class="c1">-- ⊢ length (a :: as ++ ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ length (a :: (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length (as ++ ys)) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = length (a :: as) + length ys</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">length_cons</span><span class="o">]</span>
+    <span class="c1">-- ⊢ Nat.succ (length as + length ys) = Nat.succ (length as) + length ys</span>
+    <span class="n">linarith</span>
+
+<span class="c1">-- 12ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="n">length_append</span> <span class="n">xs</span> <span class="n">ys</span>
+
+<span class="c1">-- 13ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">length</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">=</span> <span class="n">length</span> <span class="n">xs</span> <span class="bp">+</span> <span class="n">length</span> <span class="n">ys</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="n">simp</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (m n p : ℕ)</span>
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- #check (Nat.succ_add n m : Nat.succ n + m = Nat.succ (n + m))</span>
+<span class="c1">-- #check (cons_append x xs ys : (x :: xs) ++ ys = x :: (xs ++ ys))</span>
+<span class="c1">-- #check (length_append xs ys : length (xs ++ ys) = length xs + length ys)</span>
+<span class="c1">-- #check (length_cons x xs : length (x :: xs) = length xs + 1)</span>
+<span class="c1">-- #check (length_nil : length [] = 0)</span>
+<span class="c1">-- #check (nil_append xs : [] ++ xs = xs)</span>
+<span class="c1">-- #check (zero_add n : 0 + n = n)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Pruebas_de_length(xs_++_ys)_Ig_length_xs+length_ys.lean">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="s">"Pruebas_de_length(xs_++_ys)_Ig_length_xs+length_ys"</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"length ([] @ ys) = length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">append_Nil</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = 0 + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">add_0</span><span class="w"> </span><span class="o">[</span><span class="n">symmetric</span><span class="o">])</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = length [] + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">list.size</span><span class="o">(</span><span class="n">3</span><span class="o">))</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"length ([] @ ys) = length [] + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="n">HI</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"length ((x # xs) @ ys) = length (x # (xs @ ys))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">append_Cons</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = length (xs @ ys) + 1"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">list.size</span><span class="o">(</span><span class="n">4</span><span class="o">))</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (length xs + length ys) + 1"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">HI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (length xs + 1) + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">add.assoc</span><span class="w"> </span><span class="n">add.commute</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = length (x # xs) + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">list.size</span><span class="o">(</span><span class="n">4</span><span class="o">))</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"length ((x # xs) @ ys) = length (x # xs) + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* 2ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"length ([] @ ys) = length [] + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"length ((x # xs) @ ys) = length (x # xs) + length ys"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* 3ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="n">Nil</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="o">?</span><span class="k">case</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="o">(</span><span class="n">Cons</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="o">?</span><span class="k">case</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">qed</span>
+
+<span class="c">(* 4ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">xs</span><span class="o">)</span><span class="w"> </span><span class="n">simp_all</span>
+
+<span class="c">(* 5ª demostración *)</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"length (xs @ ys) = length xs + length ys"</span>
+<span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">fact</span><span class="w"> </span><span class="n">length_append</span><span class="o">)</span>
+
+<span class="c">(* Nota: Auto_solve sugiere la demostración anterior. *)</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../07/31-asociatividad_de_la_concatenacion_de_listas/" rel="prev" title="Asociatividad de la concatenación de listas">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../07-pruebas_de_lengthxs_%2B%2B_ys_ig_length_xs%2Blength_ys/" rel="next" title="Pruebas de length(xs ++ ys) = length(xs) + length(ys)">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

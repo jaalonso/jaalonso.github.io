@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El conjunto de las clases de equivalencia es una partición | Calculemus</title>
+<link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../../en/rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/es/posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">
+<link rel="icon" href="../../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="El conjunto de las clases de equivalencia es una partición | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" title="Las clases de equivalencia de elementos no relacionados son disjuntas" type="text/html">
+<link rel="next" href="../04-las_particiones_definen_relaciones_reflexivas/" title="Las particiones definen relaciones reflexivas" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="El conjunto de las clases de equivalencia es una partición">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/es/posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">
+<meta property="og:description" content="Demostrar con Lean4 que si \(R\) es una relación de equivalencia en \(X\), entonces las clases de equivalencia de \(R\) es una partición de \(X\).
+Para ello, completar la siguiente teoría de Lean4:
+im">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-07-03T06:00:00+02:00">
+<link rel="alternate" hreflang="en" href="../../../../../en/posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+                <div id="toptranslations">
+            <h2>Idiomas:</h2>
+                        <li class="nav-item"><a href="../../../../../en/" rel="alternate" hreflang="en" class="nav-link">English</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">El conjunto de las clases de equivalencia es una partición</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-03T06:00:00+02:00" itemprop="datePublished" title="03-07-2024">03-07-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que si \(R\) es una relación de equivalencia en \(X\), entonces las clases de equivalencia de \(R\) es una partición de \(X\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">particion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span> <span class="o">:</span> <span class="kt">Prop</span> <span class="o">:=</span>
+  <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="bp">∃</span> <span class="n">B</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">B</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">C</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">C</span> <span class="bp">→</span> <span class="n">B</span> <span class="bp">=</span> <span class="n">C</span><span class="o">))</span> <span class="bp">∧</span> <span class="bp">∅</span> <span class="bp">∉</span> <span class="n">P</span>
+
+<span class="kd">lemma</span> <span class="n">aux</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">⊆</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span>
+<span class="k">fun</span> <span class="n">_</span> <span class="n">hz</span> <span class="bp">↦</span> <span class="n">h.3</span> <span class="n">hxy</span> <span class="n">hz</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">particion</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Sea \(P = {[x] : x ∈ X}\). Tenemos que demostrar que \(P\) es una partición de \(X\); es decir, que
+\begin{align}
+   &amp;(∀x ∈ X)(∃B ∈ P)[x ∈ B ∧ (∀C ∈ P)[x ∈ C → B = C] \tag{1} \newline
+   &amp;∅ ∉ P                                            \tag{2}
+\end{align}</p>
+<p>Para demostrar (1) basta probar que
+\[ (∀x ∈ X)(∃y ∈ X)[x ∈ [y] ∧ (∀a ∈ X)[x ∈ [a] → [y] = [a]] \tag{3} \]
+Para ello sea \(x ∈ X\). Veamos que \([x]\) cumple las condiciones de (3); es decir,
+\[ x ∈ [x] ∧ (∀a ∈ X)[x ∈ [a] → [x] = [a]] \tag{4} \]</p>
+<p>La primera condición de (4) se verifica puesto que \(R\) es reflexiva.</p>
+<p>Para probar la segunda parte de (4), sea \(a ∈ X\) tal que \(x ∈ [a]\); es decir,
+\[ aRx \tag{5} \]
+y, puesto que \(R\) es simétrica,
+\[ xRa \tag{6} \]
+Entonces,
+\begin{align}
+   z ∈ [x] &amp;⟹ xRz        \newline
+           &amp;⟹ aRz        &amp;&amp;\text{[por (5) y la transitividad de \(R\)]} \newline
+           &amp;⟹ z ∈ [a]    \newline
+   z ∈ [a] &amp;⟹ aRz        \newline
+           &amp;⟹ xRz        &amp;&amp;\text{[por (6) y la transitividad de \(R\)]} \newline
+           &amp;⟹ z ∈ [x]
+\end{align}
+Por tanto, \([x] = [a]\).</p>
+<p>Para demostrar (2), supongamos que \(∅ ∈ P\). Entonces, existe un \(x ∈ X\) tal
+que \([x] = ∅\), lo cual es imposible porque \(x ∈ [x]\).</p>
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">particion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span> <span class="o">:</span> <span class="kt">Prop</span> <span class="o">:=</span>
+  <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="bp">∃</span> <span class="n">B</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">B</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">C</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">C</span> <span class="bp">→</span> <span class="n">B</span> <span class="bp">=</span> <span class="n">C</span><span class="o">))</span> <span class="bp">∧</span> <span class="bp">∅</span> <span class="bp">∉</span> <span class="n">P</span>
+
+<span class="kd">lemma</span> <span class="n">aux</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">⊆</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span>
+<span class="k">fun</span> <span class="n">_</span> <span class="n">hz</span> <span class="bp">↦</span> <span class="n">h.3</span> <span class="n">hxy</span> <span class="n">hz</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">particion</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">set</span> <span class="n">P</span> <span class="o">:=</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ (∀ x, ∃ B, B ∈ P) ∧ x ∈ B ∧ (∀ C, C ∈ P → x ∈ C → B = C)</span>
+    <span class="n">simp</span>
+    <span class="c1">-- ⊢ (∀ x, ∃ B, (∃ s, B = clase R s)) ∧ x ∈ B ∧ (∀ a, x ∈ clase R a → B = clase R a)</span>
+    <span class="n">intro</span> <span class="n">x</span>
+    <span class="c1">-- x : X</span>
+    <span class="c1">-- ⊢ ∃ B, (∃ s, B = clase R s) ∧ x ∈ B ∧ (∀ a, x ∈ clase R a → B = clase R a)</span>
+    <span class="n">use</span> <span class="o">(</span><span class="n">clase</span> <span class="n">R</span> <span class="n">x</span><span class="o">)</span>
+    <span class="c1">-- ⊢ (∃ s, clase R x = clase R s) ∧ x ∈ clase R x ∧ (∀ a, y ∈ clase R a → clase R x = clase R a)</span>
+    <span class="n">constructor</span>
+    <span class="bp">.</span> <span class="c1">-- ⊢ ∃ s, clase R x = clase R s</span>
+      <span class="n">use</span> <span class="n">x</span>
+    <span class="bp">.</span> <span class="c1">--   x ∈ clase R x ∧</span>
+      <span class="c1">--   ∀ a, x ∈ clase R a → clase R x = clase R a</span>
+      <span class="n">constructor</span>
+      <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ clase R x</span>
+        <span class="n">exact</span> <span class="n">h.1</span> <span class="n">x</span>
+      <span class="bp">.</span> <span class="c1">-- ∀ a, x ∈ clase R a → clase R x = clase R a</span>
+        <span class="n">intros</span> <span class="n">a</span> <span class="n">ha</span>
+        <span class="c1">-- a : X</span>
+        <span class="c1">-- ha : x ∈ clase R a</span>
+        <span class="c1">-- ⊢ clase R x = clase R a</span>
+        <span class="n">apply</span> <span class="n">le_antisymm</span>
+        <span class="bp">.</span> <span class="c1">-- ⊢ clase R x ≤ clase R a</span>
+          <span class="n">exact</span> <span class="n">aux</span> <span class="n">h</span> <span class="n">ha</span>
+        <span class="bp">.</span> <span class="c1">-- ⊢ clase R a ≤ clase R x</span>
+          <span class="n">exact</span> <span class="n">aux</span> <span class="n">h</span> <span class="o">(</span><span class="n">h.2</span> <span class="n">ha</span><span class="o">)</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ ¬∅ ∈ P</span>
+    <span class="n">simp</span>
+    <span class="c1">-- ⊢ ∀ (x : X), ¬∅ = clase R x</span>
+    <span class="n">intros</span> <span class="n">x</span> <span class="n">hx</span>
+    <span class="c1">-- x : X</span>
+    <span class="c1">-- hx : ∅ = clase R x</span>
+    <span class="c1">-- ⊢ False</span>
+    <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span> <span class="n">h.1</span> <span class="n">x</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">hx</span><span class="o">]</span> <span class="n">at</span> <span class="n">h1</span>
+    <span class="c1">-- h1 : x ∈ ∅</span>
+    <span class="n">exact</span> <span class="n">Set.not_mem_empty</span> <span class="n">x</span> <span class="n">h1</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">particion</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">set</span> <span class="n">P</span> <span class="o">:=</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ (∀ x, ∃ B, B ∈ P) ∧ x ∈ B ∧ (∀ C, C ∈ P → x ∈ C → B = C)</span>
+    <span class="n">simp</span>
+    <span class="c1">-- ⊢ (∀ x, ∃ B, (∃ s, B = clase R s)) ∧ x ∈ B ∧ (∀ a, x ∈ clase R a → B = clase R a)</span>
+    <span class="n">intro</span> <span class="n">x</span>
+    <span class="c1">-- x : X</span>
+    <span class="c1">-- ⊢ ∃ B, (∃ s, B = clase R s) ∧ x ∈ B ∧ (∀ a, x ∈ clase R a → B = clase R a)</span>
+    <span class="n">use</span> <span class="o">(</span><span class="n">clase</span> <span class="n">R</span> <span class="n">x</span><span class="o">)</span>
+    <span class="c1">-- ⊢ (∃ s, clase R x = clase R s) ∧ x ∈ clase R y ∧ (∀ a, x ∈ clase R a → clase R x = clase R a)</span>
+    <span class="n">repeat'</span> <span class="n">constructor</span>
+    <span class="bp">.</span> <span class="c1">-- ⊢ x ∈ clase R x</span>
+      <span class="n">exact</span> <span class="n">h.1</span> <span class="n">x</span>
+    <span class="bp">.</span> <span class="c1">-- ⊢ ∀ a, x ∈ clase R a → clase R x = clase R a</span>
+      <span class="n">intros</span> <span class="n">a</span> <span class="n">ha</span>
+      <span class="c1">-- a : X</span>
+      <span class="c1">-- ha : y ∈ clase R a</span>
+      <span class="c1">-- ⊢ clase R a = clase R a</span>
+      <span class="n">exact</span> <span class="n">le_antisymm</span> <span class="o">(</span><span class="n">aux</span> <span class="n">h</span> <span class="n">ha</span><span class="o">)</span> <span class="o">(</span><span class="n">aux</span> <span class="n">h</span> <span class="o">(</span><span class="n">h.2</span> <span class="n">ha</span><span class="o">))</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ ¬∅ ∈ P</span>
+    <span class="n">simp</span>
+    <span class="c1">-- ⊢ ∀ (x : X), ¬∅ = clase R x</span>
+    <span class="n">intros</span> <span class="n">x</span> <span class="n">hx</span>
+    <span class="c1">-- x : X</span>
+    <span class="c1">-- hx : ∅ = clase R x</span>
+    <span class="c1">-- ⊢ False</span>
+    <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span> <span class="n">h.1</span> <span class="n">x</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span><span class="n">hx</span><span class="o">]</span> <span class="n">at</span> <span class="n">h1</span>
+    <span class="c1">-- h1 : x ∈ ∅</span>
+    <span class="n">exact</span> <span class="n">Set.not_mem_empty</span> <span class="n">x</span> <span class="n">h1</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (A B : Set X)</span>
+<span class="c1">-- #check (Set.not_mem_empty x : x ∉ ∅)</span>
+<span class="c1">-- #check (le_antisymm : A ≤ B → B ≤ A → A = B)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/El_conjunto_de_las_clases_de_equivalencia_es_una_particion.lean">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">El_conjunto_de_las_clases_de_equivalencia_es_una_particion</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"('a ⇒ 'a ⇒ bool) ⇒ 'a ⇒ 'a set"</span>
+<span class="w">  </span><span class="kp">where</span><span class="w"> </span><span class="s">"clase R x = {y. R x y}"</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"('a set) set ⇒ bool"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"particion P ⟷ (∀x. (∃B∈P. x ∈ B ∧ (∀C∈P. x ∈ C ⟶ B = C))) ∧ {} ∉ P"</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w">   </span><span class="n">R</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"'a ⇒ 'a ⇒ bool"</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"equivp R"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"particion (⋃x. {clase R x})"</span><span class="w"> </span><span class="o">(</span><span class="kp">is</span><span class="w"> </span><span class="s">"particion ?P"</span><span class="o">)</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">particion_def;</span><span class="w"> </span><span class="n">intro</span><span class="w"> </span><span class="n">conjI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(∀x. ∃B∈?P. x ∈ B ∧ (∀C∈?P. x ∈ C ⟶ B = C))"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">x</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"clase R x ∈ ?P"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">    </span><span class="k">moreover</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ clase R x"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="n">equivp_def</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">CollectI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">moreover</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"∀C∈?P. x ∈ C ⟶ clase R x = C"</span>
+<span class="w">    </span><span class="k">proof</span>
+<span class="w">      </span><span class="k">fix</span><span class="w"> </span><span class="n">C</span>
+<span class="w">      </span><span class="k">assume</span><span class="w"> </span><span class="s">"C ∈ ?P"</span>
+<span class="w">      </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"C = clase R y"</span>
+<span class="w">        </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">      </span><span class="k">show</span><span class="w"> </span><span class="s">"x ∈ C ⟶ clase R x = C"</span>
+<span class="w">      </span><span class="k">proof</span>
+<span class="w">        </span><span class="k">assume</span><span class="w"> </span><span class="s">"x ∈ C"</span>
+<span class="w">        </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"R y x"</span>
+<span class="w">          </span><span class="k">using</span><span class="w"> </span><span class="s">‹C = clase R y›</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">clase_def</span>
+<span class="w">          </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">CollectD</span><span class="o">)</span>
+<span class="w">        </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"clase R x = C"</span>
+<span class="w">          </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="s">‹C = clase R y›</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="n">equivp_def</span>
+<span class="w">          </span><span class="k">by</span><span class="w"> </span><span class="n">metis</span>
+<span class="w">      </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">qed</span>
+<span class="w">    </span><span class="k">ultimately</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃B∈?P. x ∈ B ∧ (∀C∈?P. x ∈ C ⟶ B = C)"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">blast</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"{} ∉ ?P"</span>
+<span class="w">  </span><span class="k">proof</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"{} ∈ ?P"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"{} = clase R x"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">    </span><span class="k">moreover</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"x ∈ clase R x"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">clase_def</span><span class="w"> </span><span class="n">equivp_def</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">CollectI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">ultimately</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">False</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" rel="prev" title="Las clases de equivalencia de elementos no relacionados son disjuntas">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../04-las_particiones_definen_relaciones_reflexivas/" rel="next" title="Las particiones definen relaciones reflexivas">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

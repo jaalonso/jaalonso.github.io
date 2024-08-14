@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Las sucesiones convergentes están acotadas | Calculemus</title>
+<link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../../en/rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/es/posts/2024/05/28-acotacion_de_convergentes/">
+<link rel="icon" href="../../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="Las sucesiones convergentes están acotadas | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../27-un_numero_es_par_syss_lo_es_su_cuadrado/" title="Un número es par si y solo si lo es su cuadrado" type="text/html">
+<link rel="next" href="../29-la_paradoja_del_barbero/" title="La paradoja del barbero" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Las sucesiones convergentes están acotadas">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/es/posts/2024/05/28-acotacion_de_convergentes/">
+<meta property="og:description" content="Demostrar con Lean4 que si \(u_n\) es una sucesión convergente, entonces está acotada; es decir,
+\[ (∃ k ∈ ℕ)(∃ b ∈ ℝ)(∀ n ∈ ℕ)[n ≥ k → |u_n| ≤ b] \]
+Para ello, completar la siguiente teoría de Lean4:">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-05-28T06:00:00+02:00">
+<link rel="alternate" hreflang="en" href="../../../../../en/posts/2024/05/28-acotacion_de_convergentes/">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+
+                <div id="toptranslations">
+            <h2>Idiomas:</h2>
+                        <li class="nav-item"><a href="../../../../../en/" rel="alternate" hreflang="en" class="nav-link">English</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Las sucesiones convergentes están acotadas</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-05-28T06:00:00+02:00" itemprop="datePublished" title="28-05-2024">28-05-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar con Lean4 que si \(u_n\) es una sucesión convergente, entonces está acotada; es decir,
+\[ (∃ k ∈ ℕ)(∃ b ∈ ℝ)(∀ n ∈ ℕ)[n ≥ k → |u_n| ≤ b] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="c1">-- (limite u c) expresa que el límite de u es c.</span>
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="c1">-- (convergente u) expresa que u es convergente.</span>
+<span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">∃</span> <span class="n">k</span> <span class="n">b</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span> <span class="bp">→</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">b</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Demostración en lenguaje natural</h2>
+<p>Puesto que la sucesión \(u_n\) es convergente, existe un \(a ∈ ℝ\) tal que
+\[ \lim(u_n) = a \]
+Luego, existe un \(k ∈ ℕ\) tal que
+\[ (∀ n ∈ ℕ)[n ≥ k → |u_n - a | &lt; 1] \tag{1} \]
+Veamos que
+\[ (∀ n ∈ ℕ)[n ≥ k → |u_n| ≤ 1 + |a]] \]
+Para ello, sea \(n ∈ ℕ\) tal que
+\[ n ≥ k \tag{2} \]
+Entonces,
+\begin{align}
+   |u_n| &amp;= |u_n - a + a|    \newline
+         &amp;≤ |u_n - a| + |a|  \newline
+         &amp;≤ 1 + |a|          &amp;&amp;\text{[por (1) y (2)]}
+\end{align}</p>
+<h2>2. Demostraciones con Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="c1">-- (limite u c) expresa que el límite de u es c.</span>
+<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="c1">-- (convergente u) expresa que u es convergente.</span>
+<span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">∃</span> <span class="n">k</span> <span class="n">b</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span> <span class="bp">→</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">b</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">cases'</span> <span class="n">h</span> <span class="k">with</span> <span class="n">a</span> <span class="n">ua</span>
+  <span class="c1">-- a : ℝ</span>
+  <span class="c1">-- ua : limite u a</span>
+  <span class="n">cases'</span> <span class="n">ua</span> <span class="mi">1</span> <span class="n">zero_lt_one</span> <span class="k">with</span> <span class="n">k</span> <span class="n">h</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- h : ∀ (n : ℕ), n ≥ k → |u n - a| ≤ 1</span>
+  <span class="n">use</span> <span class="n">k</span><span class="o">,</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span>
+  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n| ≤ 1 + |a|</span>
+  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="c1">-- ⊢ |u n| ≤ 1 + |a|</span>
+  <span class="n">specialize</span> <span class="n">h</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- ⊢ |u n| ≤ 1 + |a|</span>
+  <span class="k">calc</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span><span class="bp">|</span>
+       <span class="bp">=</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span> <span class="bp">+</span> <span class="n">a</span><span class="bp">|</span>   <span class="o">:=</span> <span class="n">congr_arg</span> <span class="n">abs</span> <span class="o">(</span><span class="n">eq_add_of_sub_eq</span> <span class="n">rfl</span><span class="o">)</span>
+     <span class="n">_</span> <span class="bp">≤</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span> <span class="o">:=</span> <span class="n">abs_add</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="o">)</span> <span class="n">a</span>
+     <span class="n">_</span> <span class="bp">≤</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span>         <span class="o">:=</span> <span class="n">add_le_add_right</span> <span class="n">h</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">:</span> <span class="bp">∃</span> <span class="n">k</span> <span class="n">b</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span> <span class="bp">→</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">b</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">cases'</span> <span class="n">h</span> <span class="k">with</span> <span class="n">a</span> <span class="n">ua</span>
+  <span class="c1">-- a : ℝ</span>
+  <span class="c1">-- ua : limite u a</span>
+  <span class="n">cases'</span> <span class="n">ua</span> <span class="mi">1</span> <span class="n">zero_lt_one</span> <span class="k">with</span> <span class="n">k</span> <span class="n">h</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- h : ∀ (n : ℕ), n ≥ k → |u n - a| ≤ 1</span>
+  <span class="n">use</span> <span class="n">k</span><span class="o">,</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span>
+  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n| ≤ 1 + |a|</span>
+  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="c1">-- ⊢ |u n| ≤ 1 + |a|</span>
+  <span class="n">specialize</span> <span class="n">h</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- h : |u n - a| ≤ 1</span>
+  <span class="k">calc</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span><span class="bp">|</span>
+       <span class="bp">=</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span> <span class="bp">+</span> <span class="n">a</span><span class="bp">|</span>   <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring_nf</span>
+     <span class="n">_</span> <span class="bp">≤</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span> <span class="o">:=</span> <span class="n">abs_add</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="o">)</span> <span class="n">a</span>
+     <span class="n">_</span> <span class="bp">≤</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">|</span><span class="n">a</span><span class="bp">|</span>         <span class="o">:=</span> <span class="kd">by</span> <span class="n">linarith</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (a b c : ℝ)</span>
+<span class="c1">-- #check (abs_add a b : |a + b| ≤ |a| + |b|)</span>
+<span class="c1">-- #check (add_le_add_right : b ≤ c → ∀ a,  b + a ≤ c + a)</span>
+<span class="c1">-- #check (eq_add_of_sub_eq :  a - c = b → a = b + c)</span>
+<span class="c1">-- #check (zero_lt_one : 0 &lt; 1)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Acotacion_de_convergentes.lean">Lean 4 Web</a>.</p>
+<h2>3. Demostraciones con Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Acotacion_de_convergentes</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span><span class="w"> </span><span class="n">HOL.Real</span>
+<span class="k">begin</span>
+
+<span class="c">(* (limite u c) expresa que el límite de u es c. *)</span>
+<span class="k">definition</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(nat ⇒ real) ⇒ real ⇒ bool"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"limite u c ⟷ (∀ε&gt;0. ∃k. ∀n≥k. ¦u n - c¦ ≤ ε)"</span>
+
+<span class="c">(* (convergente u) expresa que u es convergente. *)</span>
+<span class="k">definition</span><span class="w"> </span><span class="n">convergente</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(nat ⇒ real) ⇒ bool"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"convergente u ⟷ (∃ a. limite u a)"</span>
+
+<span class="c">(* 1ª demostración *)</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"convergente u"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"∃ k b. ∀n≥k. ¦u n¦ ≤ b"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">  </span><span class="k">obtain</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"limite u a"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">convergente_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">blast</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ ≤ 1"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">limite_def</span><span class="w"> </span><span class="n">zero_less_one</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">blast</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n¦ ≤ 1 + ¦a¦"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"n ≥ k"</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="s">"¦u n¦ = ¦u n - a + a¦"</span><span class="w">     </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… ≤ ¦u n - a¦ + ¦a¦"</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">    </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… ≤ 1 + ¦a¦"</span><span class="w">         </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">hn</span><span class="o">)</span>
+<span class="w">    </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"¦u n¦ ≤ 1 + ¦a¦"</span><span class="w">  </span><span class="ow">.</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃ k b. ∀n≥k. ¦u n¦ ≤ b"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">exI</span><span class="o">)</span>
+<span class="k">qed</span>
+
+<span class="k">end</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../27-un_numero_es_par_syss_lo_es_su_cuadrado/" rel="prev" title="Un número es par si y solo si lo es su cuadrado">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../29-la_paradoja_del_barbero/" rel="next" title="La paradoja del barbero">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
