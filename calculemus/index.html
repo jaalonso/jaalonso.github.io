@@ -264,9 +264,142 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 <span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
 <span class="kd">variable</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="n">zs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span>
 
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
 <span class="kd">example</span> <span class="o">:</span>
   <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span>                <span class="o">:=</span> <span class="n">nil_append</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span>        <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">(</span><span class="n">nil_append</span> <span class="n">ys</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">))</span> <span class="o">:=</span> <span class="n">cons_append</span> <span class="n">a</span> <span class="n">as</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">((</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="bp">.</span><span class="o">)</span> <span class="n">HI</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="o">(</span><span class="n">cons_append</span> <span class="n">a</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="n">zs</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span>                <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span>        <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">))</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">((</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span> <span class="n">cons_append</span><span class="o">]</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span>                <span class="o">:=</span> <span class="kd">by</span> <span class="n">exact</span> <span class="n">rfl</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span>        <span class="o">:=</span> <span class="kd">by</span> <span class="n">exact</span> <span class="n">rfl</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">))</span> <span class="o">:=</span> <span class="n">rfl</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">((</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="n">rfl</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="n">rfl</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">[]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span>                <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span>        <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span>
+  <span class="bp">.</span> <span class="k">calc</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">))</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">((</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="bp">.</span><span class="o">)</span> <span class="n">HI</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span>
+
+<span class="c1">-- 5ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span>
+  <span class="bp">.</span> <span class="n">simp</span>
+  <span class="bp">.</span> <span class="n">exact</span> <span class="o">(</span><span class="n">append_assoc</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="n">ys</span> <span class="n">zs</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+
+<span class="c1">-- 6ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction'</span> <span class="n">xs</span> <span class="k">with</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ [] ++ (ys ++ zs) = ([] ++ ys) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ ys ++ zs = ([] ++ ys) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+  <span class="bp">.</span> <span class="c1">-- a : α</span>
+    <span class="c1">-- as : List α</span>
+    <span class="c1">-- HI : as ++ (ys ++ zs) = as ++ ys ++ zs</span>
+    <span class="c1">-- ⊢ (a :: as) ++ (ys ++ zs) = ((a :: as) ++ ys) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ a :: (as ++ (ys ++ zs)) = ((a :: as) ++ ys) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+    <span class="c1">-- ⊢ a :: ((as ++ ys) ++ zs) = ((a :: as) ++ ys) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+    <span class="c1">-- ⊢ a :: ((as ++ ys) ++ zs) = (a :: (as ++ ys)) ++ zs</span>
+    <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+
+<span class="c1">-- 7ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">lemma</span> <span class="n">conc_asoc_1</span> <span class="o">(</span><span class="n">xs</span> <span class="n">ys</span> <span class="n">zs</span> <span class="o">:</span> <span class="n">List</span> <span class="n">α</span><span class="o">)</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction</span> <span class="n">xs</span> <span class="k">with</span>
+  <span class="bp">|</span> <span class="n">nil</span> <span class="bp">=&gt;</span> <span class="k">calc</span>
+    <span class="o">[]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+        <span class="bp">=</span> <span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span>         <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">([]</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">nil_append</span><span class="o">]</span>
+  <span class="bp">|</span> <span class="n">cons</span> <span class="n">a</span> <span class="n">as</span> <span class="n">HI</span> <span class="bp">=&gt;</span> <span class="k">calc</span>
+    <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span>
+        <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">))</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="n">a</span> <span class="o">::</span> <span class="o">((</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">HI</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="n">a</span> <span class="o">::</span> <span class="o">(</span><span class="n">as</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">))</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">cons_append</span><span class="o">]</span>
+      <span class="n">_</span> <span class="bp">=</span> <span class="o">((</span><span class="n">a</span> <span class="o">::</span> <span class="n">as</span><span class="o">)</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="o">(</span><span class="n">cons_append</span> <span class="n">a</span> <span class="n">as</span> <span class="n">ys</span><span class="o">)</span>
+
+<span class="c1">-- 8ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span>  <span class="o">:=</span>
+<span class="o">(</span><span class="n">append_assoc</span> <span class="n">xs</span> <span class="n">ys</span> <span class="n">zs</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+
+<span class="c1">-- 9ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">xs</span> <span class="bp">++</span> <span class="o">(</span><span class="n">ys</span> <span class="bp">++</span> <span class="n">zs</span><span class="o">)</span> <span class="bp">=</span> <span class="o">(</span><span class="n">xs</span> <span class="bp">++</span> <span class="n">ys</span><span class="o">)</span> <span class="bp">++</span> <span class="n">zs</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="n">simp</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (x : α)</span>
+<span class="c1">-- #check (append_assoc xs ys zs : (xs ++ ys) ++ zs = xs ++ (ys ++ zs))</span>
+<span class="c1">-- #check (cons_append x xs ys : (x :: xs) ++ ys = x :: (xs ++ ys))</span>
+<span class="c1">-- #check (cons_inj x : x :: xs = x :: ys ↔ xs = ys)</span>
+<span class="c1">-- #check (nil_append xs : [] ++ xs = xs)</span>
 </pre></div>
 
 <p class="more"><a href="posts/2024/07/31-asociatividad_de_la_concatenacion_de_listas/">Read more…</a></p>
@@ -348,6 +481,7 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 <p>Demostrar con Lean4 que si \(u\) es una sucesión no decreciente y su límite es \(a\), entonces \(u(n) ≤ a\) para todo \(n\).</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
 <span class="kd">variable</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
@@ -395,6 +529,7 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 <p>Demostrar que si \(u\) diverge positivamente, entonces ningún número real es límite de \(u\).</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
 
@@ -427,10 +562,10 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
             </header><div class="p-summary entry-summary">
                     <div>
 <p>En Lean4, una sucesión \(u_0, u_1, u_2, u_3 ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es el término \(u_n\).</p>
-<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión \(u_0, u_2, u_4, u_6, ...\) se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
-<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión \(u_0, u_2, u_4, u_6, ...\) se ha obtenido con la función de extracción \(f\) tal que \(f(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(f\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
 </pre></div>
 
 <p>que a es un límite de u por</p>
@@ -440,7 +575,7 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 
 <p>que a es un punto de acumulación de u por</p>
 <div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+     <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
 </pre></div>
 
 <p>que la sucesión u es de Cauchy por</p>
@@ -451,6 +586,8 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 <p>Demostrar con Lean4 que si \(u\) es una sucesión de Cauchy y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es el límite de \(u\).</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
 <span class="kn">open</span> <span class="n">Nat</span>
 
 <span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
@@ -481,10 +618,10 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
                     <div>
 <p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
 \[ u_0, u_2, u_4, u_6, ... \]
-se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
-<p>En Lean4, se puede definir que \(φ\) es una función de extracción por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+se ha obtenido con la función de extracción \(f\) tal que \(f(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(f\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
 </pre></div>
 
 <p>que \(a\) es un límite de \(u\) por</p>
@@ -499,19 +636,21 @@ se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
 
 <p>que \(a\) es un punto de acumulación de \(u\) por</p>
 <div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+     <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
 </pre></div>
 
 <p>Demostrar con Lean4 que si \(u\) es una sucesión convergente y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es un límite de \(u\).</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
 <span class="kn">open</span> <span class="n">Nat</span>
 
 <span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
 <span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
 
-<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">φ</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">φ</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">φ</span> <span class="n">m</span>
+<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
 
 <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
   <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
@@ -520,7 +659,7 @@ se ha obtenido con la función de extracción \(φ\) tal que \(φ(n) = 2n\).</p>
   <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
 
 <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∃</span> <span class="n">φ</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">φ</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">φ</span><span class="o">)</span> <span class="n">a</span>
+  <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
 
 <span class="kd">example</span>
   <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>

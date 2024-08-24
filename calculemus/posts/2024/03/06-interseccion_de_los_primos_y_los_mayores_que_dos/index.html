@@ -78,8 +78,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </pre></div>
 
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Parity</span>
-<span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Prime</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.Ring.Parity</span>
 <span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kn">open</span> <span class="n">Nat</span>
@@ -95,8 +94,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <!-- TEASER_END -->
 
 <h2>1. Demostraciones con Lean4</h2>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Parity</span>
-<span class="kn">import</span> <span class="n">Mathlib.Data.Nat.Prime</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.Ring.Parity</span>
 <span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kn">open</span> <span class="n">Nat</span>
@@ -116,28 +114,24 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
   <span class="c1">-- n : ℕ</span>
   <span class="c1">-- ⊢ n ∈ {n | Nat.Prime n} ∩ {n | n &gt; 2} → n ∈ {n | ¬Even n}</span>
   <span class="n">simp</span>
-  <span class="c1">-- ⊢ Nat.Prime n → 2 &lt; n → ¬Even n</span>
+  <span class="c1">-- ⊢ Nat.Prime n → 2 &lt; n → Odd n</span>
   <span class="n">intro</span> <span class="n">hn</span>
   <span class="c1">-- hn : Nat.Prime n</span>
-  <span class="c1">-- ⊢ 2 &lt; n → ¬Even n</span>
+  <span class="c1">-- ⊢ 2 &lt; n → Odd n</span>
   <span class="n">rcases</span> <span class="n">Prime.eq_two_or_odd</span> <span class="n">hn</span> <span class="k">with</span> <span class="o">(</span><span class="n">h</span> <span class="bp">|</span> <span class="n">h</span><span class="o">)</span>
   <span class="bp">.</span> <span class="c1">-- h : n = 2</span>
     <span class="n">rw</span> <span class="o">[</span><span class="n">h</span><span class="o">]</span>
     <span class="c1">-- ⊢ 2 &lt; 2 → ¬Even 2</span>
     <span class="n">intro</span> <span class="n">h1</span>
     <span class="c1">-- h1 : 2 &lt; 2</span>
-    <span class="c1">-- ⊢ ¬Even 2</span>
+    <span class="c1">-- ⊢ Odd 2</span>
     <span class="n">exfalso</span>
     <span class="n">exact</span> <span class="n">absurd</span> <span class="n">h1</span> <span class="o">(</span><span class="n">lt_irrefl</span> <span class="mi">2</span><span class="o">)</span>
   <span class="bp">.</span> <span class="c1">-- h : n % 2 = 1</span>
-    <span class="n">rw</span> <span class="o">[</span><span class="n">even_iff</span><span class="o">]</span>
-    <span class="c1">-- ⊢ 2 &lt; n → ¬n % 2 = 0</span>
-    <span class="n">rw</span> <span class="o">[</span><span class="n">h</span><span class="o">]</span>
-    <span class="c1">-- ⊢ 2 &lt; n → ¬1 = 0</span>
     <span class="n">intro</span>
     <span class="c1">-- a : 2 &lt; n</span>
-    <span class="c1">-- ⊢ ¬1 = 0</span>
-    <span class="n">exact</span> <span class="n">one_ne_zero</span>
+    <span class="c1">-- ⊢ Odd n</span>
+    <span class="n">exact</span> <span class="n">odd_iff.mpr</span> <span class="n">h</span>
 
 <span class="c1">-- 2ª demostración</span>
 <span class="c1">-- ===============</span>
@@ -163,11 +157,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="c1">-- ⊢ False</span>
     <span class="n">exact</span> <span class="n">absurd</span> <span class="n">h2</span> <span class="o">(</span><span class="n">lt_irrefl</span> <span class="mi">2</span><span class="o">)</span>
   <span class="bp">.</span> <span class="c1">-- h4 : n % 2 = 1</span>
-    <span class="n">rw</span> <span class="o">[</span><span class="n">even_iff</span><span class="o">]</span>
-    <span class="c1">-- ⊢ ¬n % 2 = 0</span>
-    <span class="n">rw</span> <span class="o">[</span><span class="n">h4</span><span class="o">]</span>
-    <span class="c1">-- ⊢ ¬1 = 0</span>
-    <span class="n">exact</span> <span class="n">one_ne_zero</span>
+    <span class="n">exact</span> <span class="n">odd_iff.mpr</span> <span class="n">h4</span>
 
 <span class="c1">-- 3ª demostración</span>
 <span class="c1">-- ===============</span>
@@ -191,9 +181,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     <span class="c1">-- h2 : 2 &lt; 2</span>
     <span class="n">linarith</span>
   <span class="bp">.</span> <span class="c1">-- h4 : n % 2 = 1</span>
-    <span class="n">rw</span> <span class="o">[</span><span class="n">even_iff</span><span class="o">]</span>
-    <span class="c1">-- ⊢ ¬n % 2 = 0</span>
-    <span class="n">linarith</span>
+    <span class="n">exact</span> <span class="n">odd_iff.mpr</span> <span class="n">h4</span>
 
 <span class="c1">-- Lemas usados</span>
 <span class="c1">-- ============</span>

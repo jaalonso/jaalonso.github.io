@@ -30,10 +30,9 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 \[2ab ≤ a^2 + b^2\]
 Para ello, completar la siguiente teoría de Lean4:
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic
 
-variable (a b : ℝ)
-
-example : 2*a*b ≤ ">
+variable (a b : ">
 <meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2023-09-01T06:00:00+02:00">
@@ -75,6 +74,7 @@ example : 2*a*b ≤ ">
 \[2ab ≤ a^2 + b^2\]</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kd">variable</span> <span class="o">(</span><span class="n">a</span> <span class="n">b</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
 
@@ -93,6 +93,7 @@ Sumando 2ab a ambos lados, queda
 \[a^2 + b^2 ≥ 2ab\]</p>
 <h2>Demostraciones con Lean4</h2>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
 
 <span class="kd">variable</span> <span class="o">(</span><span class="n">a</span> <span class="n">b</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
 
@@ -100,7 +101,7 @@ Sumando 2ab a ambos lados, queda
 <span class="kd">example</span> <span class="o">:</span> <span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span> <span class="bp">≤</span> <span class="n">a</span><span class="bp">^</span><span class="mi">2</span> <span class="bp">+</span> <span class="n">b</span><span class="bp">^</span><span class="mi">2</span> <span class="o">:=</span>
 <span class="kd">by</span>
   <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="mi">0</span> <span class="bp">≤</span> <span class="o">(</span><span class="n">a</span> <span class="bp">-</span> <span class="n">b</span><span class="o">)</span><span class="bp">^</span><span class="mi">2</span>         <span class="o">:=</span> <span class="n">sq_nonneg</span> <span class="o">(</span><span class="n">a</span> <span class="bp">-</span> <span class="n">b</span><span class="o">)</span>
-  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="mi">0</span> <span class="bp">≤</span> <span class="n">a</span><span class="bp">^</span><span class="mi">2</span> <span class="bp">-</span> <span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span> <span class="bp">+</span> <span class="n">b</span><span class="bp">^</span><span class="mi">2</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">linarith</span> <span class="n">only</span> <span class="o">[</span><span class="n">h1</span><span class="o">]</span>
+  <span class="k">have</span> <span class="n">_h2</span> <span class="o">:</span> <span class="mi">0</span> <span class="bp">≤</span> <span class="n">a</span><span class="bp">^</span><span class="mi">2</span> <span class="bp">-</span> <span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span> <span class="bp">+</span> <span class="n">b</span><span class="bp">^</span><span class="mi">2</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">linarith</span> <span class="n">only</span> <span class="o">[</span><span class="n">h1</span><span class="o">]</span>
   <span class="k">show</span> <span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span> <span class="bp">≤</span> <span class="n">a</span><span class="bp">^</span><span class="mi">2</span> <span class="bp">+</span> <span class="n">b</span><span class="bp">^</span><span class="mi">2</span>
   <span class="n">linarith</span>
 
@@ -129,6 +130,16 @@ Sumando 2ab a ambos lados, queda
 <span class="kd">example</span> <span class="o">:</span> <span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span> <span class="bp">≤</span> <span class="n">a</span><span class="bp">^</span><span class="mi">2</span> <span class="bp">+</span> <span class="n">b</span><span class="bp">^</span><span class="mi">2</span> <span class="o">:=</span>
 <span class="c1">-- by apply?</span>
 <span class="n">two_mul_le_add_sq</span> <span class="n">a</span> <span class="n">b</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="c1">-- variable (c : ℝ)</span>
+<span class="c1">-- #check (add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d)</span>
+<span class="c1">-- #check (add_zero a : a + 0 = a)</span>
+<span class="c1">-- #check (sq_nonneg a : 0 ≤ a ^ 2)</span>
+<span class="c1">-- #check (sub_sq a b : (a - b) ^ 2 = a ^ 2 - 2 * a * b + b ^ 2)</span>
+<span class="c1">-- #check (two_mul_le_add_sq a b : 2 * a * b ≤ a ^ 2 + b ^ 2)</span>
 </pre></div>
 
 <h2>Demostraciones interactivas</h2>
