@@ -290,10 +290,32 @@ Another more efficient definition is">
 <span class="k">fun</span><span class="w"> </span><span class="n">fibAux</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"nat =&gt; nat × nat"</span>
 <span class="w">  </span><span class="kp">where</span>
 <span class="w">     </span><span class="s">"fibAux 0 = (0, 1)"</span>
-<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="s">"fibAux (Suc n) = (snd (fibAux n), fst (fibAux n) + snd (fibAux n))"</span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="s">"fibAux (Suc n) = (let (a, b) = fibAux n in (b, a + b))"</span>
 
 <span class="k">definition</span><span class="w"> </span><span class="n">fib</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"nat ⇒ nat"</span><span class="w"> </span><span class="kp">where</span>
-<span class="w">  </span><span class="s">"fib n = (fst (fibAux n))"</span>
+<span class="w">  </span><span class="s">"fib n = fst (fibAux n)"</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="n">fib_suma</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="s">"fib (Suc (Suc n)) = fib n + fib (Suc n)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"fib (Suc (Suc 0)) = fib 0 + fib (Suc 0)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">fib_def</span><span class="o">)</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="n">IH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"fib (Suc (Suc n)) = fib n + fib (Suc n)"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"fib (Suc (Suc (Suc n))) = fst (fibAux (Suc (Suc (Suc n))))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">fib_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = snd (fibAux (Suc (Suc n)))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">prod.case_eq_if</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = fst (fibAux (Suc n)) + snd (fibAux (Suc n))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">fibAux.simps</span><span class="o">(</span><span class="n">2</span><span class="o">)</span><span class="w"> </span><span class="n">snd_conv</span><span class="w"> </span><span class="n">split_def</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = fib (Suc n) + snd (fibAux (Suc n))"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">fib_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = fib (Suc n) + fib (Suc (Suc n))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">fib_def</span><span class="w"> </span><span class="n">prod.case_eq_if</span><span class="o">)</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"fib (Suc (Suc (Suc n))) = fib (Suc n) + fib (Suc (Suc n))"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
+<span class="k">qed</span>
 
 <span class="kn">lemma</span><span class="w"> </span><span class="s">"fibonacci n = fib n"</span>
 <span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">rule</span><span class="o">:</span><span class="w"> </span><span class="n">fibonacci.induct</span><span class="o">)</span>
@@ -311,7 +333,7 @@ Another more efficient definition is">
 <span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = fib n + fib (Suc n)"</span>
 <span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">IH1</span><span class="w"> </span><span class="n">IH2</span><span class="o">)</span>
 <span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = fib (Suc (Suc n))"</span>
-<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">fib_def</span><span class="o">)</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">fib_suma</span><span class="o">)</span>
 <span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"fibonacci (Suc (Suc n)) = fib (Suc (Suc n))"</span>
 <span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">this</span>
 <span class="k">qed</span>
