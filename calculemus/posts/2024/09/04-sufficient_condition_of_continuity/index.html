@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>If f is continuous at a and the limit of u(n) is a, then the limit of f(u(n)) is f(a) | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/09/04-sufficient_condition_of_continuity/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="If f is continuous at a and the limit of u(n) is a, then the limit of f(u(n)) is f(a) | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../03-limits_are_less_than_or_equal_to_upper_bounds/" title="If x is the limit of u and y is an upper bound of u, then x ≤ y" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="If f is continuous at a and the limit of u(n) is a, then the limit of ">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/09/04-sufficient_condition_of_continuity/">
+<meta property="og:description" content="In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:
+   def is_limit (u : ℕ → ℝ) (a : ℝ) :=
+     ∀ ε &gt; 0, ∃ k, ∀ n ≥ k, |u n - a| &lt; ε
+
+
+and that \(f\) is continuous at \(a\) by:
+ ">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-09-04T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Proof exercises in Lean4 and Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">If f is continuous at a and the limit of u(n) is a, then the limit of f(u(n)) is f(a)</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-04T06:00:00+02:00" itemprop="datePublished" title="04-09-2024">04-09-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="p">(</span><span class="n">u</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">ℕ</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="kt">:=</span>
+<span class="w">     </span><span class="err">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="err">∃</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="err">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="err">≥</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="o">|</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>and that \(f\) is continuous at \(a\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">ℝ</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">ℝ</span><span class="p">)</span><span class="w"> </span><span class="kt">:=</span>
+<span class="w">     </span><span class="err">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="err">∃</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="err">∀</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="o">|</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="o">|</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="o">|</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="o">|</span><span class="w"> </span><span class="err">≤</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>To prove that if the function \(f\) is continuous at the point \(a\), and the sequence \(u(n)\) converges to \(a\), then the sequence \(f(u(n))\) converges to \(f(a)\).</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">continuous_at</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">δ</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="bp">|</span><span class="n">x</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">δ</span> <span class="bp">→</span> <span class="bp">|</span><span class="n">f</span> <span class="n">x</span> <span class="bp">-</span> <span class="n">f</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hf</span> <span class="o">:</span> <span class="n">continuous_at</span> <span class="n">f</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">is_limit</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="o">(</span><span class="n">f</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Proof in natural language</h2>
+<p>Let \(ε &gt; 0\). We need to prove that there exists a \(k ∈ ℕ\) such that for all \(n ≥ k\),
+\[ |(f ∘ u)(n) - f(a)| ≤ ε \tag{1} \]</p>
+<p>Since \(f\) is continuous at \(a\), there exists a \(δ &gt; 0\) such that
+\[ |x - a| ≤ δ → |f(x) - f(a)| ≤ ε \tag{2} \]
+Furthermore, because the limit of \(u(n)\) is \(a\), there exists a \(k ∈ ℕ\) such that for all \(n ≥ k\),
+\[ |u(n) - a| ≤ δ \tag{3} \]</p>
+<p>To prove (1), let \(n ∈ ℕ\) such that \(n ≥ k\). Then,
+\begin{align}
+  |(f ∘ u)(n) - f(a)| &amp;= |f(u(n)) - f(a)|            \newline
+                      &amp;≤ ε                           &amp;&amp;\text{[by (2) and (3)]}
+\end{align}</p>
+<h2>2. Proofs with Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">k</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="kd">def</span> <span class="n">continuous_at</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℝ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">δ</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="bp">|</span><span class="n">x</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">δ</span> <span class="bp">→</span> <span class="bp">|</span><span class="n">f</span> <span class="n">x</span> <span class="bp">-</span> <span class="n">f</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hf</span> <span class="o">:</span> <span class="n">continuous_at</span> <span class="n">f</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">is_limit</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="o">(</span><span class="n">f</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">obtain</span> <span class="o">⟨</span><span class="n">δ</span><span class="o">,</span> <span class="n">hδ1</span><span class="o">,</span> <span class="n">hδ2</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">hf</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- δ : ℝ</span>
+  <span class="c1">-- hδ1 : δ &gt; 0</span>
+  <span class="c1">-- hδ2 : ∀ (x : ℝ), |x - a| ≤ δ → |f x - f a| ≤ ε</span>
+  <span class="n">obtain</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="n">hk</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">hu</span> <span class="n">δ</span> <span class="n">hδ1</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ n ≥ k, |u n - a| ≤ δ</span>
+  <span class="n">use</span> <span class="n">k</span>
+  <span class="c1">-- ⊢ ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">intro</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="c1">-- ⊢ |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="k">calc</span> <span class="bp">|</span><span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">f</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">=</span> <span class="bp">|</span><span class="n">f</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span><span class="o">)</span> <span class="bp">-</span> <span class="n">f</span> <span class="n">a</span><span class="bp">|</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">simp</span> <span class="n">only</span> <span class="o">[</span><span class="n">Function.comp_apply</span><span class="o">]</span>
+                       <span class="n">_</span> <span class="bp">≤</span> <span class="n">ε</span>               <span class="o">:=</span> <span class="n">hδ2</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span><span class="o">)</span> <span class="o">(</span><span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span><span class="o">)</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hf</span> <span class="o">:</span> <span class="n">continuous_at</span> <span class="n">f</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">is_limit</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="o">(</span><span class="n">f</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">obtain</span> <span class="o">⟨</span><span class="n">δ</span><span class="o">,</span> <span class="n">hδ1</span><span class="o">,</span> <span class="n">hδ2</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">hf</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- δ : ℝ</span>
+  <span class="c1">-- hδ1 : δ &gt; 0</span>
+  <span class="c1">-- hδ2 : ∀ (x : ℝ), |x - a| ≤ δ → |f x - f a| ≤ ε</span>
+  <span class="n">obtain</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="n">hk</span><span class="o">⟩</span> <span class="o">:=</span> <span class="n">hu</span> <span class="n">δ</span> <span class="n">hδ1</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ n ≥ k, |u n - a| ≤ δ</span>
+  <span class="n">exact</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="k">fun</span> <span class="n">n</span> <span class="n">hn</span> <span class="bp">↦</span> <span class="n">hδ2</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span><span class="o">)</span> <span class="o">(</span><span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span><span class="o">)⟩</span>
+
+<span class="c1">-- Proof 3</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hf</span> <span class="o">:</span> <span class="n">continuous_at</span> <span class="n">f</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">is_limit</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="o">(</span><span class="n">f</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">rcases</span> <span class="n">hf</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">δ</span><span class="o">,</span> <span class="n">hδ1</span><span class="o">,</span> <span class="n">hδ2</span><span class="o">⟩</span>
+  <span class="c1">-- δ : ℝ</span>
+  <span class="c1">-- hδ1 : δ &gt; 0</span>
+  <span class="c1">-- hδ2 : ∀ (x : ℝ), |x - a| ≤ δ → |f x - f a| ≤ ε</span>
+  <span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">rcases</span> <span class="n">hu</span> <span class="n">δ</span> <span class="n">hδ1</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="n">hk</span><span class="o">⟩</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ n ≥ k, |u n - a| ≤ δ</span>
+  <span class="n">use</span> <span class="n">k</span>
+  <span class="c1">-- ⊢ ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
+  <span class="c1">-- n : ℕ</span>
+  <span class="c1">-- hn : n ≥ k</span>
+  <span class="c1">-- ⊢ |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">apply</span> <span class="n">hδ2</span>
+  <span class="c1">-- ⊢ |u n - a| ≤ δ</span>
+  <span class="n">exact</span> <span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span>
+
+<span class="c1">-- Proof 4</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hf</span> <span class="o">:</span> <span class="n">continuous_at</span> <span class="n">f</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">is_limit</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">is_limit</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">u</span><span class="o">)</span> <span class="o">(</span><span class="n">f</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
+  <span class="c1">-- ε : ℝ</span>
+  <span class="c1">-- hε : ε &gt; 0</span>
+  <span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(f ∘ u) n - f a| ≤ ε</span>
+  <span class="n">rcases</span> <span class="n">hf</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">δ</span><span class="o">,</span> <span class="n">hδ1</span><span class="o">,</span> <span class="n">hδ2</span><span class="o">⟩</span>
+  <span class="c1">-- δ : ℝ</span>
+  <span class="c1">-- hδ1 : δ &gt; 0</span>
+  <span class="c1">-- hδ2 : ∀ (x : ℝ), |x - a| ≤ δ → |f x - f a| ≤ ε</span>
+  <span class="n">rcases</span> <span class="n">hu</span> <span class="n">δ</span> <span class="n">hδ1</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="n">hk</span><span class="o">⟩</span>
+  <span class="c1">-- k : ℕ</span>
+  <span class="c1">-- hk : ∀ n ≥ k, |u n - a| ≤ δ</span>
+  <span class="n">exact</span> <span class="o">⟨</span><span class="n">k</span><span class="o">,</span> <span class="k">fun</span> <span class="n">n</span> <span class="n">hn</span> <span class="bp">↦</span> <span class="n">hδ2</span> <span class="o">(</span><span class="n">u</span> <span class="n">n</span><span class="o">)</span> <span class="o">(</span><span class="n">hk</span> <span class="n">n</span> <span class="n">hn</span><span class="o">)⟩</span>
+
+<span class="c1">-- Used lemmas</span>
+<span class="c1">-- ===========</span>
+
+<span class="c1">-- variable (g : ℝ → ℝ)</span>
+<span class="c1">-- variable (x : ℝ)</span>
+<span class="c1">-- #check (Function.comp_apply : (g ∘ f) x = g (f x))</span>
+</pre></div>
+
+<p>You can interact with the previous proofs at <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Sufficient_condition_of_continuity.lean">Lean 4 Web</a>.</p>
+<h2>3. Proofs with Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Sufficient_condition_of_continuity</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span><span class="w"> </span><span class="n">HOL.Real</span>
+<span class="k">begin</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">is_limite</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(nat ⇒ real) ⇒ real ⇒ bool"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"is_limite u c ⟷ (∀ε&gt;0. ∃k. ∀n≥k. ¦u n - c¦ ≤ ε)"</span>
+
+<span class="k">definition</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="s">"(real ⇒ real) ⇒ real ⇒ bool"</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">  </span><span class="s">"continuous_at f a ⟷</span>
+<span class="s">   (∀ε&gt;0. ∃δ&gt;0. ∀x. ¦x - a¦ ≤ δ ⟶ ¦f x - f a¦ ≤ ε)"</span>
+
+<span class="c">(* Proof 1 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"continuous_at f a"</span>
+<span class="w">          </span><span class="s">"is_limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"is_limite (f ∘ u) (f a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">is_limite_def;</span><span class="w"> </span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"δ &gt; 0"</span><span class="w"> </span><span class="kp">and</span>
+<span class="w">                      </span><span class="n">hδ2</span><span class="w"> </span><span class="o">:</span><span class="s">" (∀x. ¦x - a¦ ≤ δ ⟶ ¦f x - f a¦ ≤ ε)"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="n">continuous_at_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ ≤ δ"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">2</span><span class="o">)</span><span class="w"> </span><span class="n">is_limite_def</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">    </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">    </span><span class="k">assume</span><span class="w"> </span><span class="s">"n ≥ k"</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"¦u n - a¦ ≤ δ"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">hδ2</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 2 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"continuous_at f a"</span>
+<span class="w">          </span><span class="s">"is_limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"is_limite (f ∘ u) (f a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">is_limite_def;</span><span class="w"> </span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"δ &gt; 0"</span><span class="w"> </span><span class="kp">and</span>
+<span class="w">                      </span><span class="n">hδ2</span><span class="w"> </span><span class="o">:</span><span class="s">" (∀x. ¦x - a¦ ≤ δ ⟶ ¦f x - f a¦ ≤ ε)"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="n">continuous_at_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ ≤ δ"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">2</span><span class="o">)</span><span class="w"> </span><span class="n">is_limite_def</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">hδ2</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 3 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"continuous_at f a"</span>
+<span class="w">          </span><span class="s">"is_limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"is_limite (f ∘ u) (f a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">is_limite_def;</span><span class="w"> </span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"δ &gt; 0"</span><span class="w"> </span><span class="kp">and</span>
+<span class="w">                      </span><span class="n">hδ2</span><span class="w"> </span><span class="o">:</span><span class="s">" (∀x. ¦x - a¦ ≤ δ ⟶ ¦f x - f a¦ ≤ ε)"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="n">continuous_at_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ ≤ δ"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">2</span><span class="o">)</span><span class="w"> </span><span class="n">is_limite_def</span><span class="w"> </span><span class="n">hδ1</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">hδ2</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 4 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"continuous_at f a"</span>
+<span class="w">          </span><span class="s">"is_limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"is_limite (f ∘ u) (f a)"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">unfold</span><span class="w"> </span><span class="n">is_limite_def;</span><span class="w"> </span><span class="n">intro</span><span class="w"> </span><span class="n">allI</span><span class="w"> </span><span class="n">impI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="s">"0 &lt; ε"</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="kp">where</span>
+<span class="w">              </span><span class="n">hδ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"δ &gt; 0 ∧ (∀x. ¦x - a¦ ≤ δ ⟶ ¦f x - f a¦ ≤ ε)"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">1</span><span class="o">)</span><span class="w"> </span><span class="n">continuous_at_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">obtain</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kp">where</span><span class="w"> </span><span class="s">"∀n≥k. ¦u n - a¦ ≤ δ"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="o">(</span><span class="n">2</span><span class="o">)</span><span class="w"> </span><span class="n">is_limite_def</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"∃k. ∀n≥k. ¦(f ∘ u) n - f a¦ ≤ ε"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">hδ</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 5 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"continuous_at f a"</span>
+<span class="w">          </span><span class="s">"is_limite u a"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"is_limite (f ∘ u) (f a)"</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">continuous_at_def</span><span class="w"> </span><span class="n">is_limite_def</span>
+<span class="w">  </span><span class="k">by</span><span class="w"> </span><span class="n">force</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<p><strong>Note:</strong> The demonstrations using Lean 4 can be found in the <a href="https://github.com/jaalonso/Calculemus2/tree/main/src">src</a> directory of <a href="https://github.com/jaalonso/Calculemus2/tree/main/thy">the Calculemus repository</a> on GitHub, and the demonstrations using Isabelle/HOL can be found in the <a href="https://github.com/jaalonso/Calculemus2">thy</a> directory.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../03-limits_are_less_than_or_equal_to_upper_bounds/" rel="prev" title="If x is the limit of u and y is an upper bound of u, then x ≤ y">Previous post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
