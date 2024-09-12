@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np" | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnp/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content='Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np" | Calculemus'>
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../10-sum_of_the_first_cubes/" title="Proofs of 0³+1³+2³+3³+···+n³ = (n(n+1)/2)²" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content='Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np"'>
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnp/">
+<meta property="og:description" content="Let \(p ∈ ℝ\) and \(n ∈ ℕ\). Prove that if \(p &gt; -1\), then
+\[ (1 + p)^n ≥ 1 + np \]
+To do this, complete the following Lean4 theory:
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic
+
+open Nat
+
+va">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-09-12T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Proof exercises in Lean4 and Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="../12-proofs_of_1%2Bpn_ge_1%2Bnp/" class="u-url">Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np"</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="../12-proofs_of_1%2Bpn_ge_1%2Bnp/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-12T06:00:00+02:00" itemprop="datePublished" title="12-09-2024">12-09-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Let \(p ∈ ℝ\) and \(n ∈ ℕ\). Prove that if \(p &gt; -1\), then
+\[ (1 + p)^n ≥ 1 + np \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">(</span><span class="n">p</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">p</span> <span class="bp">&gt;</span> <span class="bp">-</span><span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">n</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">n</span><span class="bp">*</span><span class="n">p</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Proof in natural language</h2>
+<p>By induction on \(n\).</p>
+<p><strong>Base case:</strong> Let \(n = 0\). Then,
+\begin{align}
+   (1+p)^n &amp;= (1+p)^0 \newline
+           &amp;= 1       \newline
+           &amp;≥ 1       \newline
+           &amp;= 1 + 0   \newline
+           &amp;= 1 + 0·p \newline
+           &amp;= 1 + n·p
+\end{align}</p>
+<p><strong>Induction step:</strong> Let \(n = m+1\) and assume the induction hypothesis (IH)
+\[ (1 + p)^m ≥ 1 + mp \]
+Then,
+\begin{align}
+   (1 + p)^n &amp;= (1 + p)^(m+1)         \newline
+             &amp;= (1 + p)^m(1 + p)      \newline
+             &amp;≥ (1 + m * p)(1 + p)    &amp;&amp;\text{[by IH]} \newline
+             &amp;= (1 + p + mp) + m(pp)  \newline
+             &amp;≥ 1 + p + mp            \newline
+             &amp;= 1 + (m + 1)p          \newline
+             &amp;= 1 + np
+\end{align}</p>
+<h2>2. Proofs with Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">(</span><span class="n">p</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">p</span> <span class="bp">&gt;</span> <span class="bp">-</span><span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">n</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">n</span><span class="bp">*</span><span class="n">p</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction</span> <span class="n">n</span> <span class="k">with</span>
+  <span class="bp">|</span> <span class="n">zero</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ (1 + p) ^ 0 ≥ 1 + ↑0 * p</span>
+    <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span> <span class="bp">^</span> <span class="mi">0</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="mi">0</span> <span class="bp">*</span> <span class="n">p</span> <span class="o">:=</span>
+      <span class="k">calc</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span> <span class="bp">^</span> <span class="mi">0</span>
+           <span class="bp">=</span> <span class="mi">1</span>           <span class="o">:=</span> <span class="n">pow_zero</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span>
+         <span class="n">_</span> <span class="bp">≥</span> <span class="mi">1</span>           <span class="o">:=</span> <span class="n">le_refl</span> <span class="mi">1</span>
+         <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="mi">0</span>       <span class="o">:=</span> <span class="o">(</span><span class="n">add_zero</span> <span class="mi">1</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+         <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="mi">0</span> <span class="bp">*</span> <span class="n">p</span>   <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="bp">.</span><span class="o">)</span> <span class="o">(</span><span class="n">zero_mul</span> <span class="n">p</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+    <span class="n">exact_mod_cast</span> <span class="n">h1</span>
+  <span class="bp">|</span> <span class="n">succ</span> <span class="n">m</span> <span class="n">IH</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- m : ℕ</span>
+    <span class="c1">-- IH : (1 + p) ^ m ≥ 1 + ↑m * p</span>
+    <span class="c1">-- ⊢ (1 + p) ^ (m + 1) ≥ 1 + ↑(m + 1) * p</span>
+    <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span> <span class="bp">&gt;</span> <span class="mi">0</span> <span class="o">:=</span> <span class="n">neg_lt_iff_pos_add'.mp</span> <span class="n">h</span>
+    <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">p</span><span class="bp">*</span><span class="n">p</span> <span class="bp">≥</span> <span class="mi">0</span> <span class="o">:=</span> <span class="n">mul_self_nonneg</span> <span class="n">p</span>
+    <span class="n">replace</span> <span class="n">h2</span> <span class="o">:</span> <span class="bp">↑</span><span class="n">m</span><span class="bp">*</span><span class="o">(</span><span class="n">p</span><span class="bp">*</span><span class="n">p</span><span class="o">)</span> <span class="bp">≥</span> <span class="mi">0</span> <span class="o">:=</span> <span class="n">mul_nonneg</span> <span class="o">(</span><span class="n">cast_nonneg</span> <span class="n">m</span><span class="o">)</span> <span class="n">h2</span>
+    <span class="k">calc</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="o">(</span><span class="n">m</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">m</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span>
+             <span class="o">:=</span> <span class="n">pow_succ</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span> <span class="n">m</span>
+       <span class="n">_</span> <span class="bp">≥</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">m</span> <span class="bp">*</span> <span class="n">p</span><span class="o">)</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span>
+             <span class="o">:=</span> <span class="o">(</span><span class="n">mul_le_mul_right</span> <span class="n">h1</span><span class="o">)</span><span class="bp">.</span><span class="n">mpr</span> <span class="n">IH</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="n">p</span><span class="o">)</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="o">(</span><span class="n">p</span><span class="bp">*</span><span class="n">p</span><span class="o">)</span>
+             <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring</span>
+       <span class="n">_</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="n">p</span>
+             <span class="o">:=</span> <span class="n">le_add_of_nonneg_right</span> <span class="n">h2</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="o">(</span><span class="n">m</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">*</span> <span class="n">p</span>
+             <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">↑</span><span class="o">(</span><span class="n">m</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span> <span class="bp">*</span> <span class="n">p</span>
+             <span class="o">:=</span> <span class="kd">by</span> <span class="n">norm_num</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">p</span> <span class="bp">&gt;</span> <span class="bp">-</span><span class="mi">1</span><span class="o">)</span>
+  <span class="o">:</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">n</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">n</span><span class="bp">*</span><span class="n">p</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">induction</span> <span class="n">n</span> <span class="k">with</span>
+  <span class="bp">|</span> <span class="n">zero</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- ⊢ (1 + p) ^ 0 ≥ 1 + ↑0 * p</span>
+    <span class="n">simp</span>
+  <span class="bp">|</span> <span class="n">succ</span> <span class="n">m</span> <span class="n">IH</span> <span class="bp">=&gt;</span>
+    <span class="c1">-- m : ℕ</span>
+    <span class="c1">-- IH : (1 + p) ^ m ≥ 1 + ↑m * p</span>
+    <span class="c1">-- ⊢ (1 + p) ^ (m + 1) ≥ 1 + ↑(m + 1) * p</span>
+    <span class="k">calc</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="o">(</span><span class="n">m</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span>
+         <span class="bp">=</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">m</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span>     <span class="o">:=</span> <span class="kd">by</span> <span class="n">rfl</span>
+       <span class="n">_</span> <span class="bp">≥</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">m</span> <span class="bp">*</span> <span class="n">p</span><span class="o">)</span> <span class="bp">*</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span><span class="o">)</span>   <span class="o">:=</span> <span class="kd">by</span> <span class="n">nlinarith</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="n">p</span><span class="o">)</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="o">(</span><span class="n">p</span><span class="bp">*</span><span class="n">p</span><span class="o">)</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring</span>
+       <span class="n">_</span> <span class="bp">≥</span> <span class="mi">1</span> <span class="bp">+</span> <span class="n">p</span> <span class="bp">+</span> <span class="n">m</span><span class="bp">*</span><span class="n">p</span>             <span class="o">:=</span> <span class="kd">by</span> <span class="n">nlinarith</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="o">(</span><span class="n">m</span> <span class="bp">+</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">*</span> <span class="n">p</span>         <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring</span>
+       <span class="n">_</span> <span class="bp">=</span> <span class="mi">1</span> <span class="bp">+</span> <span class="bp">↑</span><span class="o">(</span><span class="n">m</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span> <span class="bp">*</span> <span class="n">p</span>          <span class="o">:=</span> <span class="kd">by</span> <span class="n">norm_num</span>
+
+<span class="c1">-- Used lemmas</span>
+<span class="c1">-- ===========</span>
+
+<span class="c1">-- variable (a b c : ℝ)</span>
+<span class="c1">-- #check (add_zero a : a + 0 = a)</span>
+<span class="c1">-- #check (cast_nonneg n : 0 ≤ ↑n)</span>
+<span class="c1">-- #check (le_add_of_nonneg_right : 0 ≤ b → a ≤ a + b)</span>
+<span class="c1">-- #check (le_refl a : a ≤ a)</span>
+<span class="c1">-- #check (mul_le_mul_right : 0 &lt; a → (b * a ≤ c * a ↔ b ≤ c))</span>
+<span class="c1">-- #check (mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b)</span>
+<span class="c1">-- #check (mul_self_nonneg a : 0 ≤ a * a)</span>
+<span class="c1">-- #check (neg_lt_iff_pos_add' : -a &lt; b ↔ 0 &lt; a + b)</span>
+<span class="c1">-- #check (pow_succ a n : a ^ (n + 1) = a ^ n * a)</span>
+<span class="c1">-- #check (pow_zero a : a ^ 0 = 1)</span>
+<span class="c1">-- #check (zero_mul a : 0 * a = 0)</span>
+</pre></div>
+
+<p>You can interact with the previous proofs at <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Proofs_of_(1+p)%5En_ge_1+np.lean">Lean 4 Web</a>.</p>
+<h2>3. Proofs with Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="s">"Proofs_of_(1+p)^n_ge_1+np"</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span><span class="w"> </span><span class="n">HOL.Real</span>
+<span class="k">begin</span>
+
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">real</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"p &gt; -1"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"(1 + p)^n ≥ 1 + n*p"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">induct</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"(1 + p) ^ 0 ≥ 1 + real 0 * p"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">fix</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="k">assume</span><span class="w"> </span><span class="n">IH</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"(1 + p)^n ≥ 1 +  n * p"</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"1 + Suc n * p = 1 + (n + 1) * p"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = 1 + n*p + p"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">add</span><span class="o">:</span><span class="w"> </span><span class="n">distrib_right</span><span class="o">)</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… ≤ (1 + n*p + p) + n*(p*p)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (1 + n * p) * (1 + p)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">algebra</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… ≤ (1 + p)^n * (1 + p)"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">IH</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (1 + p)^(Suc n)"</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
+<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"1 + Suc n * p ≤ (1 + p)^(Suc n)"</span><span class="w"> </span><span class="ow">.</span>
+<span class="k">qed</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<hr>
+<p><strong>Note:</strong> The code for the previous proofs can be found in the <a href="https://github.com/jaalonso/Calculemus2">Calculemus repository</a> on GitHub.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../10-sum_of_the_first_cubes/" rel="prev" title="Proofs of 0³+1³+2³+3³+···+n³ = (n(n+1)/2)²">Previous post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
