@@ -45,7 +45,62 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" class="u-url">El punto de acumulación de las sucesiones convergente es su límite</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/" class="u-url">Si a es un punto de acumulación de la sucesión de Cauchy u, entonces a es el límite de u</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-25T06:00:00+02:00" itemprop="datePublished" title="25-07-2024">25-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4, una sucesión \(u_0, u_1, u_2, u_3 ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es el término \(u_n\).</p>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión \(u_0, u_2, u_4, u_6, ...\) se ha obtenido con la función de extracción \(f\) tal que \(f(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(f\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
+</pre></div>
+
+<p>que a es un límite de u por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>que a es un punto de acumulación de u por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
+</pre></div>
+
+<p>que la sucesión u es de Cauchy por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">suc_cauchy</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">p</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">q</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">p</span> <span class="bp">-</span> <span class="n">u</span> <span class="n">q</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(u\) es una sucesión de Cauchy y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es el límite de \(u\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Nat</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">suc_cauchy</span> <span class="n">u</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">ha</span> <span class="o">:</span> <span class="n">punto_acumulacion</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
+  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" class="u-url">El punto de acumulación de las sucesiones convergente es su límite</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -545,48 +600,6 @@ se ha obtenido con la función de extracción \(ϕ\) tal que \(ϕ(n) = 2n\).</p>
 </pre></div>
 
 <p class="more"><a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" class="u-url">El conjunto de las clases de equivalencia es una partición</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-07-03T06:00:00+02:00" itemprop="datePublished" title="03-07-2024">03-07-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Relaciones de equivalencia</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Demostrar con Lean4 que si \(R\) es una relación de equivalencia en \(X\), entonces las clases de equivalencia de \(R\) es una partición de \(X\).</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">{</span><span class="n">x</span> <span class="n">y</span><span class="o">:</span> <span class="n">X</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">{</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">}</span>
-
-<span class="kd">def</span> <span class="n">clase</span> <span class="o">(</span><span class="n">R</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span> <span class="bp">→</span> <span class="kt">Prop</span><span class="o">)</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="o">{</span><span class="n">y</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">|</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">}</span>
-
-<span class="kd">def</span> <span class="n">particion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span> <span class="o">:</span> <span class="kt">Prop</span> <span class="o">:=</span>
-  <span class="o">(</span><span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="o">(</span><span class="bp">∃</span> <span class="n">B</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">B</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">C</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">C</span> <span class="bp">→</span> <span class="n">B</span> <span class="bp">=</span> <span class="n">C</span><span class="o">))</span> <span class="bp">∧</span> <span class="bp">∅</span> <span class="bp">∉</span> <span class="n">P</span>
-
-<span class="kd">lemma</span> <span class="n">aux</span>
-  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">hxy</span> <span class="o">:</span> <span class="n">R</span> <span class="n">x</span> <span class="n">y</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">y</span> <span class="bp">⊆</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">x</span> <span class="o">:=</span>
-<span class="k">fun</span> <span class="n">_</span> <span class="n">hz</span> <span class="bp">↦</span> <span class="n">h.3</span> <span class="n">hxy</span> <span class="n">hz</span>
-
-<span class="kd">example</span>
-  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Equivalence</span> <span class="n">R</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">particion</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">X</span> <span class="bp">|</span> <span class="bp">∃</span> <span class="n">s</span> <span class="o">:</span> <span class="n">X</span><span class="o">,</span> <span class="n">a</span> <span class="bp">=</span> <span class="n">clase</span> <span class="n">R</span> <span class="n">s</span><span class="o">}</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">Read more…</a></p>
 </div>
                 </div>
             </article>
