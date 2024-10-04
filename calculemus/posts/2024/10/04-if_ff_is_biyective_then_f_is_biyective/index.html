@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>If f ∘ f is bijective, then f is bijective | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2024/10/04-if_ff_is_biyective_then_f_is_biyective/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:title" content="If f ∘ f is bijective, then f is bijective | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../../09/25-brahmagupta-fibonacci_identity/" title="Brahmagupta-Fibonacci identity" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="If f ∘ f is bijective, then f is bijective">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2024/10/04-if_ff_is_biyective_then_f_is_biyective/">
+<meta property="og:description" content="Prove that if \(f ∘ f\) is bijective, then \(f\) is bijective.
+To do this, complete the following Lean4 theory:
+import Mathlib.Tactic
+open Function
+
+variable {X Y Z : Type}
+variable  {f : X → Y}
+varia">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2024-10-04T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Proof exercises in Lean4 and Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">If f ∘ f is bijective, then f is bijective</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2024-10-04T06:00:00+02:00" itemprop="datePublished" title="04-10-2024">04-10-2024</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Prove that if \(f ∘ f\) is bijective, then \(f\) is bijective.</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="n">Y</span> <span class="n">Z</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span>  <span class="o">{</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">}</span>
+<span class="kd">variable</span>  <span class="o">{</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">Z</span><span class="o">}</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">))</span>
+  <span class="o">:</span> <span class="n">Bijective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<!-- TEASER_END -->
+
+<h2>1. Proof in natural language</h2>
+<p>It follows from the following lemmas (proven in previous exercises):</p>
+<ul>
+<li>Lemma 1: If \(g ∘ f\) is injective, then \(f\) is injective.</li>
+<li>Lemma 2: If \(g ∘ f\) is surjective, then \(g\) is surjective.</li>
+</ul>
+<p>Indeed, suppose that
+\[ f ∘ f \text {is bijective} \]
+then it follows that
+\begin{align}
+   f ∘ f \text{ is injective } \tag{1} \newline
+   f ∘ f \text{ is surjective} \tag{2}
+\end{align}
+From (1) and Lemma 1, it follows that
+\[ f \text { is injective} \tag{3} \]
+From (2) and Lemma 2, it follows that
+\[ f \text{ is surjective} \tag{4} \]
+From (3) and (4) it follows that
+\[ f \text{ is bijective} \]</p>
+<h2>2. Proofs with Lean4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span> <span class="n">Function</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="n">Y</span> <span class="n">Z</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span>  <span class="o">{</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">}</span>
+<span class="kd">variable</span>  <span class="o">{</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">Z</span><span class="o">}</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">))</span>
+  <span class="o">:</span> <span class="n">Bijective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">Injective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="o">:=</span> <span class="n">Bijective.injective</span> <span class="n">h</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">Surjective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="o">:=</span> <span class="n">Bijective.surjective</span> <span class="n">h</span>
+  <span class="k">have</span> <span class="n">h3</span> <span class="o">:</span> <span class="n">Injective</span> <span class="n">f</span> <span class="o">:=</span> <span class="n">Injective.of_comp</span> <span class="n">h1</span>
+  <span class="k">have</span> <span class="n">h4</span> <span class="o">:</span> <span class="n">Surjective</span> <span class="n">f</span> <span class="o">:=</span> <span class="n">Surjective.of_comp</span> <span class="n">h2</span>
+  <span class="k">show</span> <span class="n">Bijective</span> <span class="n">f</span>
+  <span class="n">exact</span> <span class="o">⟨</span><span class="n">h3</span><span class="o">,</span> <span class="n">h4</span><span class="o">⟩</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">))</span>
+  <span class="o">:</span> <span class="n">Bijective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="o">⟨</span><span class="n">Injective.of_comp</span> <span class="o">(</span><span class="n">Bijective.injective</span> <span class="n">h</span><span class="o">),</span>
+ <span class="n">Surjective.of_comp</span> <span class="o">(</span><span class="n">Bijective.surjective</span> <span class="n">h</span><span class="o">)⟩</span>
+
+<span class="c1">-- Proof 3</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+  <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">X</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">h</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">))</span>
+  <span class="o">:</span> <span class="n">Bijective</span> <span class="n">f</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">constructor</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ Injective f</span>
+    <span class="k">have</span> <span class="n">h1</span> <span class="o">:</span> <span class="n">Injective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="o">:=</span> <span class="n">Bijective.injective</span> <span class="n">h</span>
+    <span class="n">exact</span> <span class="n">Injective.of_comp</span> <span class="n">h1</span>
+  <span class="bp">.</span> <span class="c1">-- ⊢ Surjective f</span>
+    <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">Surjective</span> <span class="o">(</span><span class="n">f</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="o">:=</span> <span class="n">Bijective.surjective</span> <span class="n">h</span>
+    <span class="n">exact</span> <span class="n">Surjective.of_comp</span> <span class="n">h2</span>
+
+<span class="c1">-- Used lemmas</span>
+<span class="c1">-- ===========</span>
+
+<span class="c1">-- #check (Injective.of_comp : Injective (g ∘ f) → Injective f)</span>
+<span class="c1">-- #check (Surjective.of_comp : Surjective (g ∘ f) → Surjective g)</span>
+</pre></div>
+
+<p>You can interact with the previous proofs at <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/If_ff_is_biyective_then_f_is_biyective.lean">Lean 4 Web</a>.</p>
+<h2>3. Proofs with Isabelle/HOL</h2>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">If_ff_is_biyective_then_f_is_biyective</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="c">(* Proof 1 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"bij (f ∘ f)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"bij f"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">bijI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"inj f"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"inj (f ∘ f)"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">bij_is_inj</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"inj f"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">inj_on_imageI2</span><span class="o">)</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">  </span><span class="k">proof</span><span class="w"> </span><span class="o">-</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">h2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">"surj (f ∘ f)"</span>
+<span class="w">      </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="o">:</span><span class="w"> </span><span class="n">bij_is_surj</span><span class="o">)</span>
+<span class="w">    </span><span class="k">then</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">      </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
+<span class="w">  </span><span class="k">qed</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 2 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"bij (f ∘ f)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"bij f"</span>
+<span class="k">proof</span><span class="w"> </span><span class="o">(</span><span class="n">rule</span><span class="w"> </span><span class="n">bijI</span><span class="o">)</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"inj f"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">bij_is_inj</span><span class="w"> </span><span class="n">inj_on_imageI2</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">blast</span>
+<span class="k">next</span>
+<span class="w">  </span><span class="k">show</span><span class="w"> </span><span class="s">"surj f"</span>
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">assms</span><span class="w"> </span><span class="n">bij_is_surj</span>
+<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">fastforce</span>
+<span class="k">qed</span>
+
+<span class="c">(* Proof 3 *)</span>
+<span class="kn">lemma</span>
+<span class="w">  </span><span class="kp">assumes</span><span class="w"> </span><span class="s">"bij (f ∘ f)"</span>
+<span class="w">  </span><span class="kp">shows</span><span class="w">   </span><span class="s">"bij f"</span>
+<span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="n">metis</span><span class="w"> </span><span class="n">assms</span>
+<span class="w">          </span><span class="n">bij_betw_comp_iff</span>
+<span class="w">          </span><span class="n">bij_betw_def</span>
+<span class="w">          </span><span class="n">bij_betw_imp_surj</span>
+<span class="w">          </span><span class="n">inj_on_imageI2</span><span class="o">)</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<hr>
+<p><strong>Note:</strong> The code for the previous proofs can be found in the <a href="https://github.com/jaalonso/Calculemus2">Calculemus repository</a> on GitHub.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../../09/25-brahmagupta-fibonacci_identity/" rel="prev" title="Brahmagupta-Fibonacci identity">Previous post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
