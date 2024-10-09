@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problema de las monedas por búsqueda en escalada | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2023/08/05-escalada_monedas/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/meta-twitter.png">
+<meta name="twitter:title" content="Problema de las monedas por búsqueda en escalada | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../04-busquedaenescalada/" title="Búsqueda en escalada" type="text/html">
+<link rel="next" href="../09-escalada_prim/" title="El algoritmo de Prim del árbol de expansión mínimo por escalada" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Problema de las monedas por búsqueda en escalada">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2023/08/05-escalada_monedas/">
+<meta property="og:description" content="El problema del cambio de monedas consiste en determinar  conseguir una cantidad usando el menor número de monedas disponibles. Se supone que se posee un número ilimitado de monedas de 1, 2, 5, 10, 20">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/favicon.png">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2023-08-05T06:00:00+02:00">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Problema de las monedas por búsqueda en escalada</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-05T06:00:00+02:00" itemprop="datePublished" title="05-08-2023">05-08-2023</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El problema del cambio de monedas consiste en determinar  conseguir una cantidad usando el menor número de monedas disponibles. Se supone que se posee un número ilimitado de monedas de 1, 2, 5, 10, 20, 50 y 100 euros. Por ejemplo, para conseguir 199 se necesitan como mínimo 7 monedas (129 = 2 + 2 + 5 + 20 + 20 + 50 + 100).</p>
+<p>En la representación se usarán los siguientes tipos:</p>
+<ul>
+<li>
+<code>Moneda</code>, que es un número entero representado el valor de la moneda</li>
+<li>
+<code>Solucion</code>, que es una lista de monedas cuya suma es la cantidad
+  deseada y no nay ninguna lista más corta con la misma suma.</li>
+</ul>
+<p>Usando la <a href="../04-busquedaenescalada">búsqueda en escalada</a>, definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">cambio</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Solucion</span>
+</pre></div>
+
+<p>tal que <code>(cambio n)</code> es la solución del problema de las monedas, para obtener la cantidad <code>n</code>, por búsqueda en escalada. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   cambio 199  ==  [2,2,5,20,20,50,100]
+</pre></div>
+
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="#haskell">soluciones en Haskell</a> y las <a href="#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h3>Soluciones en Haskell</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Escalada_Monedas</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">BusquedaEnEscalada</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="c1">-- Las monedas son números enteros.</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Moneda</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Int</span>
+
+<span class="c1">-- monedas es la lista del tipo de monedas disponibles. Se supone que</span>
+<span class="c1">-- hay un número infinito de monedas de cada tipo.</span>
+<span class="nf">monedas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Moneda</span><span class="p">]</span>
+<span class="nf">monedas</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">]</span>
+
+<span class="c1">-- Las soluciones son listas de monedas.</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Solucion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Moneda</span><span class="p">]</span>
+
+<span class="c1">-- Los estados son pares formados por la cantidad que falta y la lista</span>
+<span class="c1">-- de monedas usadas.</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Estado</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="kt">Moneda</span><span class="p">])</span>
+
+<span class="c1">-- (inicial n) es el estado inicial del problema de las monedas, para</span>
+<span class="c1">-- obtener la cantidad n.</span>
+<span class="nf">inicial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Estado</span>
+<span class="nf">inicial</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span>
+
+<span class="c1">-- (esFinal e) se verifica si e es un estado final del problema</span>
+<span class="c1">-- de las monedas.</span>
+<span class="nf">esFinal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Estado</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esFinal</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="c1">-- (sucesores e) es la lista de los sucesores del estado e en el</span>
+<span class="c1">-- problema de las monedas. Por ejemplo,</span>
+<span class="c1">--   λ&gt; sucesores (199,[])</span>
+<span class="c1">--   [(198,[1]),(197,[2]),(194,[5]),(189,[10]),</span>
+<span class="c1">--    (179,[20]),(149,[50]),(99,[100])]</span>
+<span class="nf">sucesores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Estado</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Estado</span><span class="p">]</span>
+<span class="nf">sucesores</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">r</span><span class="o">-</span><span class="n">c</span><span class="p">,</span><span class="n">c</span><span class="kt">:</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">monedas</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="o">-</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nf">cambio</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Solucion</span>
+<span class="nf">cambio</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">snd</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">buscaEscalada</span><span class="w"> </span><span class="n">sucesores</span>
+<span class="w">                           </span><span class="n">esFinal</span>
+<span class="w">                           </span><span class="p">(</span><span class="n">inicial</span><span class="w"> </span><span class="n">n</span><span class="p">)))</span>
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">cambio</span><span class="w"> </span><span class="mi">199</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">]</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    e1</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0003 seconds</span>
+<span class="c1">--    1 example, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h3>Soluciones en Python</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">src.BusquedaEnEscalada</span> <span class="kn">import</span> <span class="n">buscaEscalada</span>
+
+<span class="c1"># Las monedas son números enteros.</span>
+<span class="n">Moneda</span> <span class="o">=</span> <span class="nb">int</span>
+
+<span class="c1"># monedas es la lista del tipo de monedas disponibles. Se supone que</span>
+<span class="c1"># hay un número infinito de monedas de cada tipo.</span>
+<span class="n">monedas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Moneda</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">]</span>
+
+<span class="c1"># Las soluciones son listas de monedas.</span>
+<span class="n">Solucion</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">Moneda</span><span class="p">]</span>
+
+<span class="c1"># Los estados son pares formados por la cantidad que falta y la lista</span>
+<span class="c1"># de monedas usadas.</span>
+<span class="n">Estado</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Moneda</span><span class="p">]]</span>
+
+<span class="c1"># inicial(n) es el estado inicial del problema de las monedas, para</span>
+<span class="c1"># obtener la cantidad n.</span>
+<span class="k">def</span> <span class="nf">inicial</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Estado</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">[])</span>
+
+<span class="c1"># esFinal(e) se verifica si e es un estado final del problema</span>
+<span class="c1"># de las monedas.</span>
+<span class="k">def</span> <span class="nf">esFinal</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Estado</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+
+<span class="c1"># sucesores(e) es la lista de los sucesores del estado e en el</span>
+<span class="c1"># problema de las monedas. Por ejemplo,</span>
+<span class="c1">#   λ&gt; sucesores((199,[]))</span>
+<span class="c1">#   [(198,[1]),(197,[2]),(194,[5]),(189,[10]),</span>
+<span class="c1">#    (179,[20]),(149,[50]),(99,[100])]</span>
+<span class="k">def</span> <span class="nf">sucesores</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Estado</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Estado</span><span class="p">]:</span>
+    <span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span> <span class="n">e</span>
+    <span class="k">return</span> <span class="p">[(</span><span class="n">r</span> <span class="o">-</span> <span class="n">c</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">monedas</span> <span class="k">if</span> <span class="n">r</span> <span class="o">-</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">cambio</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Solucion</span><span class="p">]:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">buscaEscalada</span><span class="p">(</span><span class="n">sucesores</span><span class="p">,</span> <span class="n">esFinal</span><span class="p">,</span> <span class="n">inicial</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_monedas</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">cambio</span><span class="p">(</span><span class="mi">199</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">]</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    src&gt; poetry run pytest -q Escalada_Monedas.py</span>
+<span class="c1">#    1 passed in 0.12s</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../04-busquedaenescalada/" rel="prev" title="Búsqueda en escalada">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../09-escalada_prim/" rel="next" title="El algoritmo de Prim del árbol de expansión mínimo por escalada">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
