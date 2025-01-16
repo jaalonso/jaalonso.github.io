@@ -45,7 +45,56 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/16-grafo_grafos_conexos/" class="u-url">TAD de los grafos - Grafos conexos</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/" class="u-url">TAD de los grafos - Coloreado correcto de un mapa</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-06-19T06:00:00+02:00" itemprop="datePublished" title="19-06-2023">19-06-2023</time></a>
+            </p>
+		    <p><span class="text-dark">El tipo abstracto de datos de los grafos</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Un mapa se puede representar mediante un grafo donde los vértices son las regiones del mapa y hay una arista entre dos vértices si las correspondientes regiones son vecinas. Por ejemplo, el mapa siguiente</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="o">+----------+----------+</span>
+<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w">    </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+----+-----+-----+----+</span>
+<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">    </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="mi">4</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">    </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+----+-----+-----+----+</span>
+<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="mi">6</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="mi">7</span><span class="w">    </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+----------+----------+</span>
+</pre></div>
+
+<p>se pueden representar por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mapa</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
+<span class="w">   </span><span class="n">mapa</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo'</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>
+<span class="w">                     </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
+<span class="w">                      </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">)]</span>
+</pre></div>
+
+<p>Para colorear el mapa se dispone de 4 colores definidos por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Color</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">A</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">B</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">D</span>
+<span class="w">     </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
+</pre></div>
+
+<p>Usando el <a href="posts/2023/05/23-el_tipo_abstracto_de_datos_de_las_grafos">tipo abstrado de datos de los grafos</a>, definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Color</span><span class="p">)]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tal que <code>correcta ncs m</code> se verifica si <code>ncs</code> es una coloración del mapa <code>m</code> tal que todos las regiones vecinas tienen colores distintos. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">C</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="kt">B</span><span class="p">)]</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">C</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="kt">B</span><span class="p">)]</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+</pre></div>
+
+<p class="more"><a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/16-grafo_grafos_conexos/" class="u-url">TAD de los grafos - Grafos conexos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -327,24 +376,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <p>Comprobar con QuickCheck que en todo grafo, el número de nodos de grado impar es par.</p>
 <p class="more"><a href="posts/2023/06/06-grafo_grado_de_un_vertice/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/05-grafo_generadores_de_grafos_arbitrarios/" class="u-url">TAD de los grafos - Generadores de grafos</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2023/06/05-grafo_generadores_de_grafos_arbitrarios/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2023">05-06-2023</time></a>
-            </p>
-		    <p><span class="text-dark">El tipo abstracto de datos de los grafos</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir un generador de grafos para comprobar propiedades de grafos con QuickCheck y hacer el tipo de los Grafos un subtipo de Arbutrary.</p>
-<p>Usando el generador, con QuickCheck que para cualquier grafo g, las sumas de los grados positivos y la de los grados negativos de los vértices de g son iguales.</p>
-<p class="more"><a href="posts/2023/06/05-grafo_generadores_de_grafos_arbitrarios/">Leer más…</a></p>
 </div>
                 </div>
             </article>
