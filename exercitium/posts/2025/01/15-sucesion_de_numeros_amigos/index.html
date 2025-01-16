@@ -322,6 +322,129 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="c1">--    (79750,88730)</span>
 <span class="c1">--    (2.11 secs, 3,971,113,184 bytes)</span>
 </pre></div>
+
+<h2>2. Soluciones en Python</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span><span class="p">,</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">mul</span>
+<span class="kn">from</span> <span class="nn">timeit</span> <span class="kn">import</span> <span class="n">Timer</span><span class="p">,</span> <span class="n">default_timer</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span>
+
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">divisor_sigma</span><span class="p">,</span> <span class="n">factorint</span><span class="p">,</span> <span class="n">proper_divisors</span>
+
+<span class="c1"># 1ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># divisoresPropios1(x) es la lista de los divisores propios de x. Por</span>
+<span class="c1"># ejemplo,</span>
+<span class="c1">#    divisoresPropios1(220)  ==  [1,2,4,5,10,11,20,22,44,55,110]</span>
+<span class="c1">#    divisoresPropios1(284)  ==  [1,2,4,71,142]</span>
+<span class="k">def</span> <span class="nf">divisoresPropios1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># sumaDivisoresPropios1(x) es la suma de los divisores propios de</span>
+<span class="c1"># x. Por ejemplo,</span>
+<span class="c1">#    sumaDivisoresPropios1(220)  ==  284</span>
+<span class="c1">#    sumaDivisoresPropios1(284)  ==  220</span>
+<span class="k">def</span> <span class="nf">sumaDivisoresPropios1</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">divisoresPropios1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">sucesionAmigos1</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">:=</span> <span class="n">sumaDivisoresPropios1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">sumaDivisoresPropios1</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># 2ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="k">def</span> <span class="nf">divisoresPropios2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">proper_divisors</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">sumaDivisoresPropios2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">divisoresPropios2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">sucesionAmigos2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">:=</span> <span class="n">sumaDivisoresPropios2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">sumaDivisoresPropios2</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># 3ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># Si la descomposición de x en factores primos es</span>
+<span class="c1">#    x = p(1)^e(1) . p(2)^e(2) . .... . p(n)^e(n)</span>
+<span class="c1"># entonces la suma de los divisores de x es</span>
+<span class="c1">#    p(1)^(e(1)+1) - 1     p(2)^(e(2)+1) - 1       p(n)^(e(2)+1) - 1</span>
+<span class="c1">#   ------------------- . ------------------- ... -------------------</span>
+<span class="c1">#        p(1)-1                p(2)-1                  p(n)-1</span>
+<span class="c1"># Ver la demostración en http://bit.ly/2zUXZPc</span>
+
+<span class="c1"># producto(xs) es el producto de los elementos de xs. Por ejemplo,</span>
+<span class="c1">#    producto([2, 3, 5]) == 30</span>
+<span class="k">def</span> <span class="nf">producto</span><span class="p">(</span><span class="n">xs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span>
+
+<span class="c1"># sumaDivisoresPropios3(x) es la suma de los divisores propios de</span>
+<span class="c1"># x. Por ejemplo,</span>
+<span class="c1">#    sumaDivisoresPropios3(220)  ==  284</span>
+<span class="c1">#    sumaDivisoresPropios3(284)  ==  220</span>
+<span class="k">def</span> <span class="nf">sumaDivisoresPropios3</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">producto</span><span class="p">([(</span><span class="n">p</span><span class="o">**</span><span class="p">(</span><span class="n">e</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="n">factorint</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">sucesionAmigos3</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">:=</span> <span class="n">sumaDivisoresPropios3</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">sumaDivisoresPropios3</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># 4ª solución</span>
+<span class="c1"># ===========</span>
+
+<span class="c1"># sumaDivisoresPropios4(x) es la suma de los divisores propios de</span>
+<span class="c1"># x. Por ejemplo,</span>
+<span class="c1">#    sumaDivisoresPropios4(220)  ==  284</span>
+<span class="c1">#    sumaDivisoresPropios4(284)  ==  220</span>
+<span class="k">def</span> <span class="nf">sumaDivisoresPropios4</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">divisor_sigma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">sucesionAmigos4</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">count</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">:=</span> <span class="n">sumaDivisoresPropios4</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">sumaDivisoresPropios4</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_sucesionAmigos</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">sucesionAmigos</span> <span class="ow">in</span> <span class="p">[</span><span class="n">sucesionAmigos1</span><span class="p">,</span> <span class="n">sucesionAmigos2</span><span class="p">,</span>
+                           <span class="n">sucesionAmigos3</span><span class="p">,</span> <span class="n">sucesionAmigos4</span><span class="p">]:</span>
+        <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">sucesionAmigos</span><span class="p">(),</span> <span class="mi">4</span><span class="p">))</span> <span class="o">==</span>\
+            <span class="p">[(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">284</span><span class="p">),</span> <span class="p">(</span><span class="mi">1184</span><span class="p">,</span> <span class="mi">1210</span><span class="p">),</span> <span class="p">(</span><span class="mi">2620</span><span class="p">,</span> <span class="mi">2924</span><span class="p">),</span> <span class="p">(</span><span class="mi">5020</span><span class="p">,</span> <span class="mi">5564</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_sucesionAmigos()</span>
+<span class="c1">#    Verificado</span>
+
+<span class="c1"># Comparación de eficiencia</span>
+<span class="c1"># =========================</span>
+
+<span class="k">def</span> <span class="nf">tiempo</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tiempo (en segundos) de evaluar la expresión e."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Timer</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">""</span><span class="p">,</span> <span class="n">default_timer</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span><span class="o">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">:</span><span class="s2">0.2f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+<span class="c1"># La comparación es</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos1(), 6))')</span>
+<span class="c1">#    3.73 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos2(), 6))')</span>
+<span class="c1">#    0.14 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos3(), 6))')</span>
+<span class="c1">#    0.08 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos4(), 6))')</span>
+<span class="c1">#    0.79 segundos</span>
+<span class="c1">#</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos2(), 14))')</span>
+<span class="c1">#    1.59 segundos</span>
+<span class="c1">#    &gt;&gt;&gt; tiempo('list(islice(sucesionAmigos3(), 14))')</span>
+<span class="c1">#    0.96 segundos</span>
+</pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
 <li class="previous">
