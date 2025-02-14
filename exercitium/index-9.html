@@ -45,7 +45,204 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/30-bee_reinas_anchura/" class="u-url">El problema de las n reinas (mediante búsqueda por anchura en espacios de estados)</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/04-bee_mochila/" class="u-url">El problema de la mochila (mediante espacio de estados)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2023/07/04-bee_mochila/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-07-04T06:00:00+02:00" itemprop="datePublished" title="04-07-2023">04-07-2023</time></a>
+            </p>
+		    <p><span class="text-dark">Búsqueda en espacios de estados</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <p>Se tiene una mochila de capacidad de peso p y una lista de n  para colocar en la mochila. Cada objeto i tiene un peso w(i) y un valor v(i). Considerando la posibilidad de colocar el mismo objeto varias veces en la mochila, el problema consiste en determinar la forma de colocar los objetos en la mochila sin sobrepasar la capacidad de la mochila colocando el máximo valor posible.</p>
+<p>Para solucionar el problema se definen los siguientes tipos:</p>
+<ul>
+<li>Una solución del problema de la mochila es una lista de objetos.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">type</span><span class="w"> </span><span class="n">SolMoch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">Objeto</span><span class="o">]</span>
+</pre></div>
+
+<ul>
+<li>Los objetos son pares formado por un peso y un valor</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="k">type</span><span class="w"> </span><span class="nx">Objeto</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="nx">Peso</span><span class="p">,</span><span class="nx">Valor</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>Los pesos son número enteros</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="k">type</span><span class="w"> </span><span class="nx">Peso</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">Int</span>
+</pre></div>
+
+<ul>
+<li>Los valores son números reales.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="k">type</span><span class="w"> </span><span class="nx">Valor</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">Float</span>
+</pre></div>
+
+<ul>
+<li>Los estados del problema de la mochila son 5-tupla de la  (v,p,l,o,s) donde v es el valor de los objetos colocados, p es el peso de los objetos colocados, l es el límite de la capacidad de la mochila, o es la lista de los objetos colocados (ordenados de forma creciente según sus pesos) y s es la solución parcial.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">type</span><span class="w"> </span><span class="n">NodoMoch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Valor</span><span class="p">,</span><span class="n">Peso</span><span class="p">,</span><span class="n">Peso</span><span class="p">,</span><span class="o">[</span><span class="n">Objeto</span><span class="o">]</span><span class="p">,</span><span class="n">SolMoch</span><span class="p">)</span>
+</pre></div>
+
+<p>Usando el procedimiento de <a href="posts/2023/06/28-busquedaenprofundidad">búsqueda en profundidad</a>, definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mochila</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">[</span><span class="n">Objeto</span><span class="o">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Peso</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">SolMoch</span><span class="p">,</span><span class="n">Valor</span><span class="p">)</span>
+</pre></div>
+
+<p>tal que <code>mochila os l</code> es la solución del problema de la mochila para la lista de objetos <code>os</code> y el límite de capacidad <code>l</code>. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   &gt; mochila [(2,3),(3,5),(4,6),(5,10)] 8
+   ([(5,10.0),(3,5.0)],15.0)
+   &gt; mochila [(2,3),(3,5),(5,6)] 10
+   ([(3,5.0),(3,5.0),(2,3.0),(2,3.0)],16.0)
+   &gt; mochila [(8,15),(15,10),(3,6),(6,13),(2,4),(4,8),(5,6),(7,7)] 35
+   ([(6,13.0),(6,13.0),(6,13.0),(6,13.0),(6,13.0),(3,6.0),(2,4.0)],75.0)
+   &gt; mochila [(2,2.8),(3,4.4),(5,6.1)] 10
+   ([(3,4.4),(3,4.4),(2,2.8),(2,2.8)],14.4)
+</pre></div>
+
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="posts/2023/07/04-bee_mochila/#haskell">soluciones en Haskell</a> y las <a href="posts/2023/07/04-bee_mochila/#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h3>Soluciones en Haskell</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">BEE_Mochila</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">BusquedaEnProfundidad</span><span class="w"> </span><span class="p">(</span><span class="nf">buscaProfundidad</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="kt">Peso</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">Int</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Valor</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="kt">Float</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Objeto</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Peso</span><span class="p">,</span><span class="kt">Valor</span><span class="p">)</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">SolMoch</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Objeto</span><span class="p">]</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">NodoMoch</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Valor</span><span class="p">,</span><span class="kt">Peso</span><span class="p">,</span><span class="kt">Peso</span><span class="p">,[</span><span class="kt">Objeto</span><span class="p">],</span><span class="kt">SolMoch</span><span class="p">)</span>
+
+<span class="nf">mochila</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Objeto</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Peso</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">SolMoch</span><span class="p">,</span><span class="kt">Valor</span><span class="p">)</span>
+<span class="nf">mochila</span><span class="w"> </span><span class="n">os</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">sol</span><span class="p">,</span><span class="n">v</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">sol</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">      </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">buscaProfundidad</span><span class="w"> </span><span class="n">sucesoresMoch</span>
+<span class="w">                                </span><span class="n">esObjetivoMoch</span>
+<span class="w">                                </span><span class="p">(</span><span class="n">inicial</span><span class="w"> </span><span class="n">os</span><span class="w"> </span><span class="n">l</span><span class="p">))</span>
+
+<span class="c1">-- (inicial os l) es el estado inicial del problema de la mochila</span>
+<span class="c1">-- para la lista de objetos os y el límite de capacidad l</span>
+<span class="nf">inicial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Objeto</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Peso</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">NodoMoch</span>
+<span class="nf">inicial</span><span class="w"> </span><span class="n">os</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">sort</span><span class="w"> </span><span class="n">os</span><span class="p">,</span><span class="kt">[]</span><span class="p">)</span>
+
+<span class="c1">-- (sucesoresMoch e) es la lista de los sucesores del estado e en el</span>
+<span class="c1">-- problema de la mochila para la lista de objetos os y el límite de</span>
+<span class="c1">-- capacidad l.</span>
+<span class="nf">sucesoresMoch</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NodoMoch</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">NodoMoch</span><span class="p">]</span>
+<span class="nf">sucesoresMoch</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">os</span><span class="p">,</span><span class="n">solp</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="w"> </span><span class="n">v</span><span class="o">+</span><span class="n">v'</span><span class="p">,</span>
+<span class="w">     </span><span class="n">p</span><span class="o">+</span><span class="n">p'</span><span class="p">,</span>
+<span class="w">     </span><span class="n">l</span><span class="p">,</span>
+<span class="w">     </span><span class="p">[</span><span class="n">o</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">o</span><span class="o">@</span><span class="p">(</span><span class="n">p''</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">os</span><span class="p">,</span><span class="w"> </span><span class="n">p''</span><span class="o">&gt;=</span><span class="n">p'</span><span class="p">],</span>
+<span class="w">     </span><span class="p">(</span><span class="n">p'</span><span class="p">,</span><span class="n">v'</span><span class="p">)</span><span class="kt">:</span><span class="n">solp</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">p'</span><span class="p">,</span><span class="n">v'</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">os</span><span class="p">,</span>
+<span class="w">    </span><span class="n">p</span><span class="o">+</span><span class="n">p'</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">l</span><span class="p">]</span>
+
+<span class="c1">-- (esObjetivoMoch e) se verifica si e es un estado final el problema de</span>
+<span class="c1">-- la mochila para la lista de objetos os y el límite de capacidad l .</span>
+<span class="nf">esObjetivoMoch</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NodoMoch</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esObjetivoMoch</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">l</span><span class="p">,(</span><span class="n">p'</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="kt">:</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span><span class="o">+</span><span class="n">p'</span><span class="o">&gt;</span><span class="n">l</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mochila</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)]</span><span class="w"> </span><span class="mi">8</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">([(</span><span class="mi">5</span><span class="p">,</span><span class="mf">10.0</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">)],</span><span class="mf">15.0</span><span class="p">)</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mochila</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">([(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">3.0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)],</span><span class="mf">16.0</span><span class="p">)</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mochila</span><span class="w"> </span><span class="p">[(</span><span class="mi">8</span><span class="p">,</span><span class="mi">15</span><span class="p">),(</span><span class="mi">15</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">13</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">)]</span><span class="w"> </span><span class="mi">35</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">([(</span><span class="mi">6</span><span class="p">,</span><span class="mf">13.0</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mf">13.0</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mf">13.0</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mf">13.0</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mf">13.0</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">6.0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">4.0</span><span class="p">)],</span><span class="mf">75.0</span><span class="p">)</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mochila</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mf">6.1</span><span class="p">)]</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">([(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">)],</span><span class="mf">14.4</span><span class="p">)</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--</span>
+<span class="c1">--    e1</span>
+<span class="c1">--    e2</span>
+<span class="c1">--    e3</span>
+<span class="c1">--    e4</span>
+<span class="c1">--</span>
+<span class="c1">--    Finished in 0.0424 seconds</span>
+<span class="c1">--    4 examples, 0 failures</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h3>Soluciones en Python</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">src.BusquedaEnProfundidad</span> <span class="kn">import</span> <span class="n">buscaProfundidad</span>
+
+<span class="n">Peso</span> <span class="o">=</span> <span class="nb">int</span>
+<span class="n">Valor</span> <span class="o">=</span> <span class="nb">float</span>
+<span class="n">Objeto</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Peso</span><span class="p">,</span> <span class="n">Valor</span><span class="p">]</span>
+<span class="n">SolMoch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">Objeto</span><span class="p">]</span>
+<span class="n">NodoMoch</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Valor</span><span class="p">,</span> <span class="n">Peso</span><span class="p">,</span> <span class="n">Peso</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Objeto</span><span class="p">],</span> <span class="n">SolMoch</span><span class="p">]</span>
+
+<span class="c1"># inicial(os, l) es el estado inicial del problema de la mochila</span>
+<span class="c1"># para la lista de objetos os y el límite de capacidad l</span>
+<span class="k">def</span> <span class="nf">inicial</span><span class="p">(</span><span class="n">os</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Objeto</span><span class="p">],</span> <span class="n">l</span><span class="p">:</span> <span class="n">Peso</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodoMoch</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="p">),[])</span>
+
+<span class="c1"># sucesoresMoch(e) es la lista de los sucesores del estado e en el</span>
+<span class="c1"># problema de la mochila para la lista de objetos os y el límite de</span>
+<span class="c1"># capacidad l.</span>
+<span class="k">def</span> <span class="nf">sucesoresMoch</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">NodoMoch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">NodoMoch</span><span class="p">]:</span>
+    <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">os</span><span class="p">,</span><span class="n">solp</span><span class="p">)</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="p">[(</span> <span class="n">v</span><span class="o">+</span><span class="n">v1</span><span class="p">,</span>
+              <span class="n">p</span><span class="o">+</span><span class="n">p1</span><span class="p">,</span>
+              <span class="n">l</span><span class="p">,</span>
+              <span class="p">[(</span><span class="n">p2</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">os</span> <span class="k">if</span> <span class="n">p2</span> <span class="o">&gt;=</span> <span class="n">p1</span><span class="p">],</span>
+              <span class="p">[(</span><span class="n">p1</span><span class="p">,</span><span class="n">v1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">solp</span> <span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">v1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">os</span> <span class="k">if</span> <span class="n">p</span> <span class="o">+</span> <span class="n">p1</span> <span class="o">&lt;=</span> <span class="n">l</span><span class="p">]</span>
+
+<span class="c1"># esObjetivoMoch(e) se verifica si e es un estado final el problema de</span>
+<span class="c1"># la mochila para la lista de objetos os y el límite de capacidad l .</span>
+<span class="k">def</span> <span class="nf">esObjetivoMoch</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">NodoMoch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">os</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">e</span>
+    <span class="p">(</span><span class="n">p_</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">p</span> <span class="o">+</span> <span class="n">p_</span> <span class="o">&gt;</span> <span class="n">l</span>
+
+<span class="k">def</span> <span class="nf">mochila</span><span class="p">(</span><span class="n">os</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Objeto</span><span class="p">],</span> <span class="n">l</span><span class="p">:</span> <span class="n">Peso</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SolMoch</span><span class="p">,</span> <span class="n">Valor</span><span class="p">]:</span>
+    <span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">sol</span><span class="p">)</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">buscaProfundidad</span><span class="p">(</span><span class="n">sucesoresMoch</span><span class="p">,</span>
+                                         <span class="n">esObjetivoMoch</span><span class="p">,</span>
+                                         <span class="n">inicial</span><span class="p">(</span><span class="n">os</span><span class="p">,</span> <span class="n">l</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+<span class="c1"># Verificación</span>
+<span class="c1"># ============</span>
+
+<span class="k">def</span> <span class="nf">test_Mochila</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">mochila</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)],</span> <span class="mi">8</span><span class="p">)</span> <span class="o">==</span> \
+        <span class="p">([(</span><span class="mi">5</span><span class="p">,</span><span class="mf">10.0</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">)],</span><span class="mf">15.0</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">mochila</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)],</span> <span class="mi">10</span><span class="p">)</span> <span class="o">==</span> \
+        <span class="p">([(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">5.0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">3.0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)],</span><span class="mf">16.0</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">mochila</span><span class="p">([(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mf">6.1</span><span class="p">)],</span> <span class="mi">10</span><span class="p">)</span> <span class="o">==</span> \
+        <span class="p">([(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mf">4.4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mf">2.8</span><span class="p">)],</span><span class="mf">14.4</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Verificado"</span><span class="p">)</span>
+
+<span class="c1"># La verificación es</span>
+<span class="c1">#    &gt;&gt;&gt; test_Mochila()</span>
+<span class="c1">#    Verificado</span>
+</pre></div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/30-bee_reinas_anchura/" class="u-url">El problema de las n reinas (mediante búsqueda por anchura en espacios de estados)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -479,55 +676,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </pre></div>
 
 <p class="more"><a href="posts/2023/06/20-grafo_nodos_aislados_de_un_grafo/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/" class="u-url">TAD de los grafos - Coloreado correcto de un mapa</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-06-19T06:00:00+02:00" itemprop="datePublished" title="19-06-2023">19-06-2023</time></a>
-            </p>
-		    <p><span class="text-dark">El tipo abstracto de datos de los grafos</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Un mapa se puede representar mediante un grafo donde los vértices son las regiones del mapa y hay una arista entre dos vértices si las correspondientes regiones son vecinas. Por ejemplo, el mapa siguiente</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="o">+----------+----------+</span>
-<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="mi">1</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="mi">2</span><span class="w">    </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+----+-----+-----+----+</span>
-<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">    </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="mi">4</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="o">|</span><span class="w">           </span><span class="o">|</span><span class="w">    </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+----+-----+-----+----+</span>
-<span class="w">   </span><span class="o">|</span><span class="w">    </span><span class="mi">6</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="mi">7</span><span class="w">    </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+----------+----------+</span>
-</pre></div>
-
-<p>se pueden representar por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mapa</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span>
-<span class="w">   </span><span class="n">mapa</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">creaGrafo'</span><span class="w"> </span><span class="kt">ND</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span>
-<span class="w">                     </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span>
-<span class="w">                      </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">)]</span>
-</pre></div>
-
-<p>Para colorear el mapa se dispone de 4 colores definidos por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Color</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">A</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">B</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">C</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">D</span>
-<span class="w">     </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
-</pre></div>
-
-<p>Usando el <a href="posts/2023/05/23-el_tipo_abstracto_de_datos_de_las_grafos">tipo abstrado de datos de los grafos</a>, definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Color</span><span class="p">)]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-</pre></div>
-
-<p>tal que <code>correcta ncs m</code> se verifica si <code>ncs</code> es una coloración del mapa <code>m</code> tal que todos las regiones vecinas tienen colores distintos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">C</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="kt">B</span><span class="p">)]</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
-<span class="w">   </span><span class="n">correcta</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">B</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">C</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="kt">A</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="kt">B</span><span class="p">)]</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
-</pre></div>
-
-<p class="more"><a href="posts/2023/06/19-grafo_coloreado_correcto_de_un_mapa/">Leer más…</a></p>
 </div>
                 </div>
             </article>
