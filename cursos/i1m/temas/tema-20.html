@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 28 de febrero del 2025 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 20: El tipo abstracto de los montículos</title>
+<meta name="author" content="José A. Alonso" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/curso-i1m/i1m/">Inicial</a> |
+   <a href="/curso-i1m/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/curso-i1m/i1m/manuales.html">Manuales  </a> |
+   <a href="/curso-i1m/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/curso-i1m/i1m/examenes.html">Exámenes  </a> |
+   <a href="/curso-i1m/i1m/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content" class="content">
+<h1 class="title">Tema 20: El tipo abstracto de los montículos</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org5d51ccb">1. Especificación del TAD de los montículos</a>
+<ul>
+<li><a href="#org3757787">1.1. Signatura del TAD de los montículos</a></li>
+<li><a href="#orgdc8ca1b">1.2. Propiedades del TAD de los montículos</a></li>
+</ul>
+</li>
+<li><a href="#orgeae5248">2. Implementación del TAD de los montículos</a>
+<ul>
+<li><a href="#orgc618cf9">2.1. Los montículos como tipo de dato algebraico</a></li>
+</ul>
+</li>
+<li><a href="#orgcb6da7f">3. Comprobación de la implementación con QuickCheck</a>
+<ul>
+<li><a href="#org1de4657">3.1. Pragma y librerías auxiliares</a></li>
+<li><a href="#orge9f024f">3.2. Generador de montículos</a></li>
+<li><a href="#orgf18aed7">3.3. Especificación de las propiedades de los montículos</a></li>
+<li><a href="#org62cc09b">3.4. Comprobación de las propiedades</a></li>
+</ul>
+</li>
+<li><a href="#orgc0cbd51">4. Implementación de las colas de prioridad mediante montículos</a>
+<ul>
+<li><a href="#org6c8711a">4.1. Las colas de prioridad como montículos</a></li>
+<li><a href="#org2189053">4.2. Comprobación de las propiedades</a></li>
+</ul>
+</li>
+<li><a href="#orgd30d2fe">5. Material complementario</a></li>
+<li><a href="#orgc6040d9">6. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org5d51ccb" class="outline-2">
+<h2 id="org5d51ccb"><span class="section-number-2">1.</span> Especificación del TAD de los montículos</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org3757787" class="outline-3">
+<h3 id="org3757787"><span class="section-number-3">1.1.</span> Signatura del TAD de los montículos</h3>
+<div class="outline-text-3" id="text-1-1">
+</div>
+<div id="outline-container-orgbee2f6b" class="outline-4">
+<h4 id="orgbee2f6b"><span class="section-number-4">1.1.1.</span> Descripción de los montículos</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<p>
+Un montículo es un árbol binario en el que los valores de cada nodo es
+menor o igual que los valores de sus hijos. Por ejemplo,
+</p>
+<pre class="example">
+     1              1
+    / \            / \
+   /   \          /   \
+  2     6        3     6
+ / \   / \      / \   / \
+3   8 9   7    4   2 9   7
+</pre>
+
+
+<p>
+el de la izquierda es un montículo, pero el de la derecha no lo es.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1b59b9a" class="outline-4">
+<h4 id="org1b59b9a"><span class="section-number-4">1.1.2.</span> Signatura del TAD de los montículos</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<ul class="org-ul">
+<li><p>
+Signatura
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">vacio</span>   <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">menor</span>   <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">resto</span>   <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">esVacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">valido</span>  <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+</pre>
+</div></li>
+
+<li>Descripción de las operaciones:</li>
+
+<li><code>vacio</code> es el montículo vacío.</li>
+
+<li><code>(inserta x m)</code> es el montículo obtenido añadiendo el elemento <code>x</code> al
+montículo <code>m</code>.</li>
+
+<li><code>(menor m)</code> es el menor elemento del montículo <code>m</code>.</li>
+
+<li><code>(resto m)</code> es el montículo obtenido eliminando el menor elemento del
+montículo <code>m</code>.</li>
+
+<li><code>(esVacio m)</code> se verifica si <code>m</code> es el montículo vacío.</li>
+
+<li><code>(valido m)</code> se verifica si <code>m</code> es un montículo; es decir, es un árbol binario
+en el que los valores de cada nodo es menor o igual que los valores de sus
+hijos.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdc8ca1b" class="outline-3">
+<h3 id="orgdc8ca1b"><span class="section-number-3">1.2.</span> Propiedades del TAD de los montículos</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li><code>esVacio vacio</code></li>
+
+<li><code>valido (inserta x m)</code></li>
+
+<li><code>not (esVacio (inserta x m))</code></li>
+
+<li><code>not (esVacio m) ==&gt; valido (resto m)</code></li>
+
+<li><code>resto (inserta x vacio) == vacio</code></li>
+
+<li><code>x &lt;= menor m ==&gt; resto (inserta x m) == m</code></li>
+
+<li>Si <code>m</code> es no vacío y <code>x &gt; menor m</code>, entonces
+<code>resto (inserta x m) == inserta x (resto m)</code></li>
+
+<li><code>esVacio m || esVacio (resto m) || menor m &lt;= menor (resto m)</code></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgeae5248" class="outline-2">
+<h2 id="orgeae5248"><span class="section-number-2">2.</span> Implementación del TAD de los montículos</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgc618cf9" class="outline-3">
+<h3 id="orgc618cf9"><span class="section-number-3">2.1.</span> Los montículos como tipo de dato algebraico</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li><p>
+Cabecera del módulo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">Tema_20.Monticulo</span>
+  <span style="color: #707183;">(</span> <span style="color: #228b22;">Monticulo</span>,
+    vacio,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; Monticulo a</span>
+    inserta, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; a -&gt; Monticulo a -&gt; Monticulo a</span>
+    menor,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; Monticulo a -&gt; a</span>
+    resto,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; Monticulo a -&gt; Monticulo a</span>
+    esVacio, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; Monticulo a -&gt; Bool</span>
+    valido   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; Monticulo a -&gt; Bool</span>
+  <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+</pre>
+</div></li>
+
+<li><p>
+Librería auxiliar:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Data.List</span> <span style="color: #707183;">(</span>sort<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Los montículos como tipo de dato algebraico
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">data</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+                 <span style="color: #a0522d;">|</span> <span style="color: #228b22;">M</span> a <span style="color: #228b22;">Int</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> a<span style="color: #707183;">)</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> a<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">deriving</span> <span style="color: #228b22;">Show</span>
+</pre>
+</div></li>
+
+<li>La forma de los montículos no vacío es <code>(M v r i d)</code> donde
+<ul class="org-ul">
+<li><code>v</code> es el valor de la raíz del montículo.</li>
+<li><code>r</code> es el rango del montículo; es decir, la menor distancia de la raíz a un
+montículo vacío.</li>
+<li><code>i</code> es el submontículo izquierdo y</li>
+<li><code>d</code> es el submontículo derecho.</li>
+</ul></li>
+
+<li><p>
+Ejemplos de montículos: Los siguientes montículos
+</p>
+<pre class="example">
+    ejM1         |    ejM2     |       ejM3
+-----------------+-------------+----------------------
+                 |             |          (1,2)
+       (1,2)     |      (5,1)  |         /     \
+      /     \    |     /       |        /       \
+   (4,1)   (6,1) |   7,1)      |     (5,2)       (4,1)
+   /             |             |    /     \      /
+(8,1)            |             | (7,1)   (6,1)  (8,1)
+</pre>
+
+<p>
+Se definen por
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">ejM1, ejM1', ejM2, ejM3</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">ejM1</span>  <span style="color: #a0522d;">=</span> foldr inserta vacio <span style="color: #707183;">[</span>6,1,4,8<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">ejM1'</span> <span style="color: #a0522d;">=</span> foldr inserta vacio <span style="color: #707183;">[</span>6,8,4,1<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">ejM2</span>  <span style="color: #a0522d;">=</span> foldr inserta vacio <span style="color: #707183;">[</span>7,5<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">ejM3</span>  <span style="color: #a0522d;">=</span> mezcla ejM1 ejM2
+</pre>
+</div></li>
+
+<li><p>
+<code>vacio</code> es el montículo vacío.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">vacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">Vacio</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(rango m)</code> es el rango del montículo <code>m</code>; es decir, la menor distancia a un
+montículo vacío. Por ejemplo,
+</p>
+<pre class="example">
+rango ejM1  ==  2
+rango ejM2  ==  1
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">rango</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">rango</span> <span style="color: #228b22;">Vacio</span>       <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">rango</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> <span style="color: #a020f0;">_</span> r <span style="color: #a020f0;">_</span> <span style="color: #a020f0;">_</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> r
+</pre>
+</div></li>
+
+<li><p>
+<code>(creaM x a b)</code> es el montículo creado a partir del elemento <code>x</code> y los
+montículos <code>a</code> y <code>b</code>. Se supone que <code>x</code> es menor o igual que el mínimo de <code>a</code>
+y de <code>b</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; ejM1
+M 1 2 (M 4 1 (M 8 1 Vacio Vacio) Vacio) (M 6 1 Vacio Vacio)
+λ&gt; ejM2
+M 5 1 (M 7 1 Vacio Vacio) Vacio
+λ&gt; creaM 0 ejM1 ejM2
+M 0 2 (M 1 2 (M 4 1 (M 8 1 Vacio Vacio) Vacio) (M 6 1 Vacio Vacio))
+      (M 5 1 (M 7 1 Vacio Vacio) Vacio)
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">creaM</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">creaM</span> x a b <span style="color: #a0522d;">|</span> rango a <span style="color: #a0522d;">&gt;=</span> rango b <span style="color: #a0522d;">=</span> <span style="color: #228b22;">M</span> x <span style="color: #707183;">(</span>rango b <span style="color: #a0522d;">+</span> 1<span style="color: #707183;">)</span> a b
+            <span style="color: #a0522d;">|</span> otherwise          <span style="color: #a0522d;">=</span> <span style="color: #228b22;">M</span> x <span style="color: #707183;">(</span>rango a <span style="color: #a0522d;">+</span> 1<span style="color: #707183;">)</span> b a
+</pre>
+</div></li>
+
+<li><p>
+<code>(mezcla m1 m2)</code> es el montículo obtenido mezclando los montículos <code>m1</code> y
+<code>m2</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; mezcla ejM1 ejM2
+M 1 2 (M 5 2 (M 7 1 Vacio Vacio) (M 6 1 Vacio Vacio))
+      (M 4 1 (M 8 1 Vacio Vacio) Vacio)
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">mezcla</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span>  <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">mezcla</span> m <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> m
+<span style="color: #0000ff;">mezcla</span> <span style="color: #228b22;">Vacio</span> m <span style="color: #a0522d;">=</span> m
+<span style="color: #0000ff;">mezcla</span> m1<span style="color: #a0522d;">@</span><span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> a1 b1<span style="color: #707183;">)</span> m2<span style="color: #a0522d;">@</span><span style="color: #707183;">(</span><span style="color: #228b22;">M</span> y <span style="color: #a020f0;">_</span> a2 b2<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">|</span> x <span style="color: #a0522d;">&lt;=</span> y    <span style="color: #a0522d;">=</span> creaM x a1 <span style="color: #707183;">(</span>mezcla b1 m2<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> creaM y a2 <span style="color: #707183;">(</span>mezcla m1 b2<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(inserta x m)</code> es el montículo obtenido añadiendo el elemento <code>x</code> al
+montículo <code>m</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; ejM1
+M 1 2 (M 4 1 (M 8 1 Vacio Vacio) Vacio)
+      (M 6 1 Vacio Vacio)
+λ&gt; inserta 3 ejM1
+M 1 2
+  (M 4 1 (M 8 1 Vacio Vacio) Vacio)
+  (M 3 1 (M 6 1 Vacio Vacio) Vacio)
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">inserta</span> x m <span style="color: #a0522d;">=</span> mezcla <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x 1 <span style="color: #228b22;">Vacio</span> <span style="color: #228b22;">Vacio</span><span style="color: #707183;">)</span> m
+</pre>
+</div></li>
+
+<li><p>
+<code>(menor m)</code> es el menor elemento del montículo <code>m</code>. Por ejemplo,
+</p>
+<pre class="example">
+menor ejM1  ==  1
+menor ejM2  ==  5
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">menor</span>  <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">menor</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> <span style="color: #a020f0;">_</span> <span style="color: #a020f0;">_</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x
+<span style="color: #0000ff;">menor</span> <span style="color: #228b22;">Vacio</span>       <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"menor: monticulo vacio"</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(resto m)</code> es el montículo obtenido eliminando el menor elemento
+del montículo <code>m</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; resto ejM1
+M 4 2 (M 8 1 Vacio Vacio) (M 6 1 Vacio Vacio)
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">resto</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a
+<span style="color: #0000ff;">resto</span> <span style="color: #228b22;">Vacio</span>       <span style="color: #a0522d;">=</span> error <span style="color: #8b2252;">"resto: monticulo vacio"</span>
+<span style="color: #0000ff;">resto</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> a b<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> mezcla a b
+</pre>
+</div></li>
+
+<li><p>
+<code>(esVacio m)</code> se verifica si m es el montículo vacío.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">esVacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">esVacio</span> <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">esVacio</span> <span style="color: #a020f0;">_</span>     <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(valido m)</code> se verifica si <code>m</code> es un montículo; es decir, es un árbol
+binario en el que los valores de cada nodo es menor o igual que los valores
+de sus hijos. Por ejemplo,
+</p>
+<pre class="example">
+valido ejM1  ==  True
+valido ejM2  ==  True
+valido ejM3  ==  True
+valido (M 3 5 (M 2 1 Vacio Vacio) Vacio)  ==  False
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">valido</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">valido</span> <span style="color: #228b22;">Vacio</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">valido</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> <span style="color: #228b22;">Vacio</span> <span style="color: #228b22;">Vacio</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">valido</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> m1<span style="color: #a0522d;">@</span><span style="color: #7388d6;">(</span><span style="color: #228b22;">M</span> x1 n1 a1 b1<span style="color: #7388d6;">)</span> <span style="color: #228b22;">Vacio</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+    x <span style="color: #a0522d;">&lt;=</span> x1 <span style="color: #a0522d;">&amp;&amp;</span> valido m1
+<span style="color: #0000ff;">valido</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> <span style="color: #228b22;">Vacio</span> m2<span style="color: #a0522d;">@</span><span style="color: #7388d6;">(</span><span style="color: #228b22;">M</span> x2 n2 a2 b2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+    x <span style="color: #a0522d;">&lt;=</span> x2 <span style="color: #a0522d;">&amp;&amp;</span> valido m2
+<span style="color: #0000ff;">valido</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> m1<span style="color: #a0522d;">@</span><span style="color: #7388d6;">(</span><span style="color: #228b22;">M</span> x1 n1 a1 b1<span style="color: #7388d6;">)</span> m2<span style="color: #a0522d;">@</span><span style="color: #7388d6;">(</span><span style="color: #228b22;">M</span> x2 n2 a2 b2<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+    x <span style="color: #a0522d;">&lt;=</span> x1 <span style="color: #a0522d;">&amp;&amp;</span> valido m1 <span style="color: #a0522d;">&amp;&amp;</span>
+    x <span style="color: #a0522d;">&lt;=</span> x2 <span style="color: #a0522d;">&amp;&amp;</span> valido m2
+</pre>
+</div></li>
+
+<li><p>
+<code>(elementos m)</code> es la lista de los elementos del montículo <code>m</code>. Por ejemplo,
+</p>
+<pre class="example">
+elementos ejM1  ==  [1,4,8,6]
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">elementos</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">elementos</span> <span style="color: #228b22;">Vacio</span>       <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">elementos</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M</span> x <span style="color: #a020f0;">_</span> a b<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> elementos a <span style="color: #a0522d;">++</span> elementos b
+</pre>
+</div></li>
+
+<li><p>
+<code>(equivMonticulos m1 m2)</code> se verifica si los montículos <code>m1</code> y <code>m2</code> tienen
+los mismos elementos. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; ejM1
+M 1 2 (M 4 1 (M 8 1 Vacio Vacio) Vacio)
+      (M 6 1 Vacio Vacio)
+λ&gt; ejM1'
+M 1 2 (M 4 1 Vacio Vacio)
+      (M 6 1 (M 8 1 Vacio Vacio) Vacio)
+λ&gt; equivMonticulos ejM1 ejM1'
+True
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">equivMonticulos</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">equivMonticulos</span> m1 m2 <span style="color: #a0522d;">=</span>
+  sort <span style="color: #707183;">(</span>elementos m1<span style="color: #707183;">)</span> <span style="color: #a0522d;">==</span> sort <span style="color: #707183;">(</span>elementos m2<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Los montículos son comparables por igualdad.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">Eq</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> a<span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  <span style="color: #707183;">(</span><span style="color: #a0522d;">==</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> equivMonticulos
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgcb6da7f" class="outline-2">
+<h2 id="orgcb6da7f"><span class="section-number-2">3.</span> Comprobación de la implementación con QuickCheck</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org1de4657" class="outline-3">
+<h3 id="org1de4657"><span class="section-number-3">3.1.</span> Pragma y librerías auxiliares</h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+Al principio del fichero se añade
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #483d8b;">{-# LANGUAGE TemplateHaskell #-}</span>
+<span style="color: #483d8b;">{-# LANGUAGE FlexibleInstances #-}</span>
+<span style="color: #483d8b;">{-# OPTIONS_GHC -fno-warn-orphans #-}</span>
+</pre>
+</div></li>
+
+<li><p>
+Importación de la implementación a verificar.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Tema_20.Monticulo</span>
+<span style="color: #b22222;">-- </span><span style="color: #b22222;">import I1M.Monticulo</span>
+</pre>
+</div></li>
+
+<li><p>
+Importación de librerías auxiliares.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">Test.QuickCheck</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge9f024f" class="outline-3">
+<h3 id="orge9f024f"><span class="section-number-3">3.2.</span> Generador de montículos</h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li><p>
+<code>(creaMonticulo xs)</code> es el montículo correspondiente a la lista <code>xs</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; creaMonticulo [6,1,4,8]
+M 1 2 (M 4 1 (M 8 1 Vacio Vacio) Vacio)
+      (M 6 1 Vacio Vacio)
+λ&gt; creaMonticulo [6,8,4,1]
+M 1 2 (M 4 1 Vacio Vacio)
+      (M 6 1 (M 8 1 Vacio Vacio) Vacio)
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">creaMonticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">creaMonticulo</span> <span style="color: #a0522d;">=</span> foldr inserta vacio
+</pre>
+</div></li>
+
+<li><p>
+<code>genMonticulo</code> es un generador de montículos. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; sample genMonticulo
+Vacio
+M (-1) 1 (M 1 1 Vacio Vacio) Vacio
+...
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">genMonticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Gen</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">genMonticulo</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span>
+  xs <span style="color: #a0522d;">&lt;-</span> listOf arbitrary
+  return <span style="color: #707183;">(</span>creaMonticulo xs<span style="color: #707183;">)</span>
+
+<span style="color: #a020f0;">instance</span> <span style="color: #228b22;">Arbitrary</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+  arbitrary <span style="color: #a0522d;">=</span> genMonticulo
+</pre>
+</div></li>
+</ul>
+</div>
+
+<div id="outline-container-org7503a7b" class="outline-4">
+<h4 id="org7503a7b"><span class="section-number-4">3.2.1.</span> Corrección del generador de montículos</h4>
+<div class="outline-text-4" id="text-3-2-1">
+<ul class="org-ul">
+<li><p>
+Propiedad: <code>genMonticulo</code> genera montículos válidos.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_genMonticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_genMonticulo</span> m <span style="color: #a0522d;">=</span> valido m
+</pre>
+</div></li>
+
+<li><p>
+Comprobación:
+</p>
+<pre class="example">
+λ&gt; quickCheck prop_genMonticulo
++++ OK, passed 100 tests.
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge7be4f5" class="outline-4">
+<h4 id="orge7be4f5"><span class="section-number-4">3.2.2.</span> Generador de montículos no vacíos</h4>
+<div class="outline-text-4" id="text-3-2-2">
+<ul class="org-ul">
+<li><p>
+<code>monticuloNV</code> es un generador de montículos no vacío. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; sample monticuloNV
+M 0 1 Vacio Vacio
+M 1 1 (M 1 1 (M 1 1 Vacio Vacio) Vacio) Vacio
+...
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">monticuloNV</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Gen</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span>
+<span style="color: #0000ff;">monticuloNV</span> <span style="color: #a0522d;">=</span> <span style="color: #a020f0;">do</span> xs <span style="color: #a0522d;">&lt;-</span> listOf arbitrary
+                 x <span style="color: #a0522d;">&lt;-</span> arbitrary
+                 return <span style="color: #707183;">(</span>creaMonticulo <span style="color: #7388d6;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb405687" class="outline-4">
+<h4 id="orgb405687"><span class="section-number-4">3.2.3.</span> Corrección del generador de montículos no vacíos</h4>
+<div class="outline-text-4" id="text-3-2-3">
+<ul class="org-ul">
+<li><p>
+Propiedad: <code>monticuloNV</code> genera montículos no vacío.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_monticuloNV</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Property</span>
+<span style="color: #0000ff;">prop_monticuloNV</span> m <span style="color: #a0522d;">=</span>
+  forAll monticuloNV
+         <span style="color: #707183;">(</span><span style="color: #a0522d;">\</span>m <span style="color: #a0522d;">-&gt;</span> <span style="color: #7388d6;">(</span>valido m<span style="color: #7388d6;">)</span> <span style="color: #a0522d;">&amp;&amp;</span> not <span style="color: #7388d6;">(</span>esVacio m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Comprobación:
+</p>
+<pre class="example">
+λ&gt; quickCheck prop_monticuloNV
++++ OK, passed 100 tests.
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgf18aed7" class="outline-3">
+<h3 id="orgf18aed7"><span class="section-number-3">3.3.</span> Especificación de las propiedades de los montículos</h3>
+<div class="outline-text-3" id="text-3-3">
+<ul class="org-ul">
+<li><p>
+<code>vacio</code> es un montículo.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_vacio_es_monticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_vacio_es_monticulo</span> <span style="color: #a0522d;">=</span>
+    esVacio <span style="color: #707183;">(</span>vacio <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>inserta</code> produce montículos válidos.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_inserta_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_inserta_es_valida</span> x m <span style="color: #a0522d;">=</span>
+  valido <span style="color: #707183;">(</span>inserta x m<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Los montículos creados con <code>inserta</code> son no vacío.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_inserta_no_vacio</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_inserta_no_vacio</span> x m <span style="color: #a0522d;">=</span>
+  not <span style="color: #707183;">(</span>esVacio <span style="color: #7388d6;">(</span>inserta x m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Al borrar el menor elemento de un montículo no vacío se obtiene un montículo
+válido.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_resto_es_valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Property</span>
+<span style="color: #0000ff;">prop_resto_es_valida</span> m <span style="color: #a0522d;">=</span>
+  forAll monticuloNV  <span style="color: #707183;">(</span><span style="color: #a0522d;">\</span>m <span style="color: #a0522d;">-&gt;</span> valido <span style="color: #7388d6;">(</span>resto m<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+El resto de <code>(inserta x m)</code> es <code>m</code> si <code>m</code> es el montículo vacío o <code>x</code> es
+menor o igual que el menor elemento de <code>m</code> y es <code>(inserta x (resto m))</code>, en
+caso contrario.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_resto_inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_resto_inserta</span> x m <span style="color: #a0522d;">=</span>
+  resto <span style="color: #707183;">(</span>inserta x m<span style="color: #707183;">)</span>
+  <span style="color: #a0522d;">==</span> <span style="color: #a020f0;">if</span> esVacio m <span style="color: #a0522d;">||</span> x <span style="color: #a0522d;">&lt;=</span> menor m
+<span style="color: #a020f0;">then</span> m
+     <span style="color: #a020f0;">else</span> inserta x <span style="color: #707183;">(</span>resto m<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(menor m)</code> es el menor elemento del montículo <code>m</code>.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">prop_menor_es_minimo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">prop_menor_es_minimo</span> m <span style="color: #a0522d;">=</span>
+  esVacio m <span style="color: #a0522d;">||</span> esVacio <span style="color: #707183;">(</span>resto m<span style="color: #707183;">)</span> <span style="color: #a0522d;">||</span>
+  menor m <span style="color: #a0522d;">&lt;=</span> menor <span style="color: #707183;">(</span>resto m<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org62cc09b" class="outline-3">
+<h3 id="org62cc09b"><span class="section-number-3">3.4.</span> Comprobación de las propiedades</h3>
+<div class="outline-text-3" id="text-3-4">
+<ul class="org-ul">
+<li><p>
+Para verificar todas las propiedades se escribe
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">return</span> <span style="color: #707183;">[]</span>
+
+<span style="color: #0000ff;">verificaMonticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">verificaMonticulo</span> <span style="color: #a0522d;">=</span> <span style="color: #a0522d;">$</span>quickCheckAll
+</pre>
+</div></li>
+
+<li><p>
+Comprobación de las propiedades de los montículos
+</p>
+<pre class="example">
+λ&gt; verificaMonticulo
+=== prop_genMonticulo from MonticuloPropiedades.hs:46 ===
++++ OK, passed 100 tests.
+
+=== prop_monticuloNV from MonticuloPropiedades.hs:68 ===
++++ OK, passed 100 tests.
+
+=== prop_vacio_es_monticulo from MonticuloPropiedades.hs:84 ===
++++ OK, passed 1 test.
+
+=== prop_inserta_es_valida from MonticuloPropiedades.hs:96 ===
++++ OK, passed 100 tests.
+
+=== prop_inserta_no_vacio from MonticuloPropiedades.hs:105 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_es_valida from MonticuloPropiedades.hs:118 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_inserta from MonticuloPropiedades.hs:129 ===
++++ OK, passed 100 tests.
+
+=== prop_menor_es_minimo from MonticuloPropiedades.hs:144 ===
++++ OK, passed 100 tests.
+
+True
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc0cbd51" class="outline-2">
+<h2 id="orgc0cbd51"><span class="section-number-2">4.</span> Implementación de las colas de prioridad mediante montículos</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org6c8711a" class="outline-3">
+<h3 id="org6c8711a"><span class="section-number-3">4.1.</span> Las colas de prioridad como montículos</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li><p>
+Cabecera del módulo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">module</span> <span style="color: #228b22;">ColaDePrioridadConMonticulos</span>
+  <span style="color: #707183;">(</span> <span style="color: #228b22;">CPrioridad</span>,
+    vacia,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; CPrioridad a</span>
+    inserta, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; a -&gt; CPrioridad a -&gt; CPrioridad a</span>
+    primero, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; CPrioridad a -&gt; a</span>
+    resto,   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; CPrioridad a -&gt; CPrioridad a</span>
+    esVacia, <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; CPrioridad a -&gt; Bool</span>
+    valida   <span style="color: #b22222;">-- </span><span style="color: #b22222;">Ord a =&gt; CPrioridad a -&gt; Bool</span>
+  <span style="color: #707183;">)</span> <span style="color: #a020f0;">where</span>
+</pre>
+</div></li>
+
+<li><p>
+Importación cualificada:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #a020f0;">qualified</span> <span style="color: #228b22;">Monticulo</span> <span style="color: #a020f0;">as</span> <span style="color: #228b22;">M</span>
+</pre>
+</div></li>
+
+<li>Descripción de las operaciones:
+<ul class="org-ul">
+<li><code>vacia</code> es la cola de prioridad vacía.</li>
+<li><code>(inserta x c)</code> añade el elemento <code>x</code> a la cola de prioridad <code>c</code>.</li>
+<li><code>(primero c)</code> es el primer elemento de la cola de prioridad <code>c</code>.</li>
+<li><code>(resto c)</code> es el resto de la cola de prioridad <code>c</code>.</li>
+<li><code>(esVacia c)</code> se verifica si la cola de prioridad <code>c</code> es vacía.</li>
+<li><code>(valida c)</code> se verifica si <code>c</code> es una cola de prioridad válida.</li>
+</ul></li>
+
+<li><p>
+Las colas de prioridad como montículos.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">newtype</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">=</span> <span style="color: #228b22;">CP</span> <span style="color: #707183;">(</span><span style="color: #228b22;">M.Monticulo</span> a<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">deriving</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Eq</span>, <span style="color: #228b22;">Show</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Ejemplo de cola de prioridad:
+</p>
+<pre class="example">
+λ&gt; foldr inserta vacia [3,1,7,2,9]
+CP (M 1 2
+      (M 2 2
+         (M 9 1 Vacio Vacio)
+         (M 7 1 Vacio Vacio))
+      (M 3 1 Vacio Vacio))
+</pre></li>
+
+<li><p>
+<code>vacia</code> es la cola de prioridad vacía. Por ejemplo,
+</p>
+<pre class="example">
+vacia  == CP Vacio
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">vacia</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">CPrioridad</span> a
+<span style="color: #0000ff;">vacia</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">CP</span> M.vacio
+</pre>
+</div></li>
+
+<li><p>
+<code>(inserta x c)</code> añade el elemento <code>x</code> a la cola de prioridad <code>c</code>. Por
+ejemplo,
+</p>
+<pre class="example">
+λ&gt; inserta 5 (foldr inserta vacia [3,1,7,2,9])
+CP (M 1 2
+      (M 2 2
+         (M 9 1 Vacio Vacio)
+         (M 7 1 Vacio Vacio))
+      (M 3 1
+         (M 5 1 Vacio Vacio) Vacio))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">CPrioridad</span> a
+<span style="color: #0000ff;">inserta</span> v <span style="color: #707183;">(</span><span style="color: #228b22;">CP</span> c<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">CP</span> <span style="color: #707183;">(</span>M.inserta v c<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(primero c)</code> es la cabeza de la cola de prioridad <code>c</code>. Por ejemplo,
+</p>
+<pre class="example">
+primero (foldr inserta vacia [3,1,7,2,9])  ==  1
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">primero</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">primero</span> <span style="color: #707183;">(</span><span style="color: #228b22;">CP</span> c<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> M.menor c
+</pre>
+</div></li>
+
+<li><p>
+<code>(resto c)</code> elimina la cabeza de la cola de prioridad <code>c</code>. Por ejemplo,
+</p>
+<pre class="example">
+λ&gt; resto (foldr inserta vacia [3,1,7,2,9])
+CP (M 2 2
+      (M 9 1 Vacio Vacio)
+      (M 3 1
+         (M 7 1 Vacio Vacio) Vacio))
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">resto</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">CPrioridad</span> a
+<span style="color: #0000ff;">resto</span> <span style="color: #707183;">(</span><span style="color: #228b22;">CP</span> c<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">CP</span> <span style="color: #707183;">(</span>M.resto c<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+<code>(esVacia c)</code> se verifica si la cola de prioridad <code>c</code> es vacía. Por ejemplo,
+</p>
+<pre class="example">
+esVacia (foldr inserta vacia [3,1,7,2,9]) ==  False
+esVacia vacia                             ==  True
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">esVacia</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">esVacia</span> <span style="color: #707183;">(</span><span style="color: #228b22;">CP</span> c<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> M.esVacio c
+</pre>
+</div></li>
+
+<li><p>
+<code>(valida c)</code> se verifica si <code>c</code> es una cola de prioridad válida. En la
+representación mediante montículo todas las colas de prioridad son válidas.
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">valida</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #228b22;">CPrioridad</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">valida</span> <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org2189053" class="outline-3">
+<h3 id="org2189053"><span class="section-number-3">4.2.</span> Comprobación de las propiedades</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><p>
+Para verificar todas las propiedades se escribe
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">return</span> <span style="color: #707183;">[]</span>
+
+<span style="color: #0000ff;">verificaMonticulo</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">verificaMonticulo</span> <span style="color: #a0522d;">=</span> <span style="color: #a0522d;">$</span>quickCheckAll
+</pre>
+</div></li>
+
+<li><p>
+Comprobación de las propiedades de los Monticulo
+</p>
+<pre class="example">
+λ&gt; verificaMonticulo
+=== prop_genMonticulo from MonticuloPropiedades.hs:46 ===
++++ OK, passed 100 tests.
+
+=== prop_monticuloNV from MonticuloPropiedades.hs:68 ===
++++ OK, passed 100 tests.
+
+=== prop_vacio_es_monticulo from MonticuloPropiedades.hs:84 ===
++++ OK, passed 1 test.
+
+=== prop_inserta_es_valida from MonticuloPropiedades.hs:96 ===
++++ OK, passed 100 tests.
+
+=== prop_inserta_no_vacio from MonticuloPropiedades.hs:105 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_es_valida from MonticuloPropiedades.hs:118 ===
++++ OK, passed 100 tests.
+
+=== prop_resto_inserta from MonticuloPropiedades.hs:129 ===
++++ OK, passed 100 tests.
+
+=== prop_menor_es_minimo from MonticuloPropiedades.hs:144 ===
++++ OK, passed 100 tests.
+
+True
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd30d2fe" class="outline-2">
+<h2 id="orgd30d2fe"><span class="section-number-2">5.</span> Material complementario</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+El código del tema se encuentra en los siguientes enlaces
+</p>
+<ul class="org-ul">
+<li><a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_20/Monticulo.hs">Implementación de los montículos como tipo de dato algebraico</a>.</li>
+<li><a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_20/MonticuloPropiedades.hs">Propiedades del TAD de los montículos</a>.</li>
+<li><a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_20/ColaDePrioridadConMonticulos.hs">Implementación de las colas de prioridad mediante montículos</a>.</li>
+</ul>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="./tema-20.pdf">transparencias en PDF</a>.</li>
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?filepath=temas/Tema-20.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como <a href="https://youtu.be/2CUzv52a66U">vídeo de clase</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc6040d9" class="outline-2">
+<h2 id="orgc6040d9"><span class="section-number-2">6.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-6">
+<ul class="org-ul">
+<li>F. Rabhi y G. Lapalme. <a href="https://www.iro.umontreal.ca/~lapalme/Algorithms-functional.html">Algorithms: A functional programming approach</a>.
+<ul class="org-ul">
+<li>Cap. 5.8: Heaps</li>
+</ul></li>
+<li><a href="http://typeocaml.com/2015/03/12/heap-leftist-tree/">Functional heap - Leftist tree</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/curso-i1m/i1m/">Inicial</a> |
+   <a href="/curso-i1m/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/curso-i1m/i1m/manuales.html">Manuales  </a> |
+   <a href="/curso-i1m/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/curso-i1m/i1m/examenes.html">Exámenes  </a> |
+   <a href="/curso-i1m/i1m/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 28 de febrero del 2025</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>

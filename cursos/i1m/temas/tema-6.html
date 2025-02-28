@@ -1,0 +1,1241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es">
+<head>
+<!-- 28 de febrero del 2025 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tema 6: Funciones recursivas</title>
+<meta name="author" content="José A. Alonso" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="../../../css/estilo-org.css" />
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+<div id="preamble" class="status">
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/curso-i1m/i1m/">Inicial</a> |
+   <a href="/curso-i1m/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/curso-i1m/i1m/manuales.html">Manuales  </a> |
+   <a href="/curso-i1m/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/curso-i1m/i1m/examenes.html">Exámenes  </a> |
+   <a href="/curso-i1m/i1m/doc.html">Documentación  </a>
+</p>
+</div>
+<div id="content" class="content">
+<h1 class="title">Tema 6: Funciones recursivas</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>&Iacute;ndice</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orga18ba36">1. Recursión numérica</a>
+<ul>
+<li><a href="#org06d5334">1.1. Recursión numérica: El factorial</a></li>
+<li><a href="#org6c40d8a">1.2. Recursión numérica: El producto</a></li>
+</ul>
+</li>
+<li><a href="#org79c5025">2. Recursión sobre lista</a>
+<ul>
+<li><a href="#org3a3dba7">2.1. Recursión sobre listas: La función <code>product</code></a></li>
+<li><a href="#org36f9c9d">2.2. Recursión sobre listas: La función <code>length</code></a></li>
+<li><a href="#orge192bec">2.3. Recursión sobre listas: La función <code>reverse</code></a></li>
+<li><a href="#orge4a07b6">2.4. Recursión sobre listas: <code>++</code></a></li>
+<li><a href="#orga600ae7">2.5. Recursión sobre listas: Inserción ordenada</a></li>
+<li><a href="#org64a9480">2.6. Recursión sobre listas: Ordenación por inserción</a></li>
+</ul>
+</li>
+<li><a href="#orgab73c24">3. Recursión sobre varios argumentos</a>
+<ul>
+<li><a href="#orgb418ab5">3.1. Recursión sobre varios argumentos: La función <code>zip</code></a></li>
+<li><a href="#orgebd36f9">3.2. Recursión sobre varios argumentos: La función <code>drop</code></a></li>
+</ul>
+</li>
+<li><a href="#org0374098">4. Recursión múltiple</a>
+<ul>
+<li><a href="#org99397d0">4.1. Recursión múltiple: La función de Fibonacci</a></li>
+<li><a href="#orga36633b">4.2. Recursión múltiple: Ordenación rápida</a></li>
+</ul>
+</li>
+<li><a href="#orgc6b4e75">5. Recursión mutua</a>
+<ul>
+<li><a href="#org3c25de1">5.1. Recursión mutua: Par e impar</a></li>
+<li><a href="#org630e700">5.2. Recursión mutua: Posiciones pares e impares</a></li>
+</ul>
+</li>
+<li><a href="#orge50349a">6. Heurísticas para las definiciones recursivas</a>
+<ul>
+<li><a href="#orgaf0f945">6.1. Aplicación del método: La función <code>product</code></a></li>
+<li><a href="#org6a58b68">6.2. Aplicación del método: La función <code>drop</code></a></li>
+<li><a href="#org91f08e5">6.3. Aplicación del método: La función <code>init</code></a></li>
+</ul>
+</li>
+<li><a href="#orgfd53b12">7. Recursión y dibujos</a>
+<ul>
+<li><a href="#org748daa7">7.1. Fractal del árbol</a></li>
+<li><a href="#org6359c60">7.2. Fractal de círculos</a></li>
+<li><a href="#org8c0acb9">7.3. Fractal de cuadrados</a></li>
+<li><a href="#org0b2210f">7.4. Fractal de cuadrados con 4 ramas</a></li>
+<li><a href="#org16f4244">7.5. Fractal del sobre</a></li>
+<li><a href="#org8e21b29">7.6. Fractal asimétrico</a></li>
+</ul>
+</li>
+<li><a href="#org17b8437">8. Material complementario</a></li>
+<li><a href="#orga6782b7">9. Bibliografía</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga18ba36" class="outline-2">
+<h2 id="orga18ba36"><span class="section-number-2">1.</span> Recursión numérica</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org06d5334" class="outline-3">
+<h3 id="org06d5334"><span class="section-number-3">1.1.</span> Recursión numérica: El factorial</h3>
+<div class="outline-text-3" id="text-1-1">
+<ul class="org-ul">
+<li><p>
+La función factorial:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">factorial</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Integer</span>
+<span style="color: #0000ff;">factorial</span> 0 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">factorial</span> n <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">*</span> factorial <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+factorial 3
+= 3 * (factorial 2)
+= 3 * (2 * (factorial 1))
+= 3 * (2 * (1 * (factorial 0)))
+= 3 * (2 * (1 * 1))
+= 3 * (2 * 1)
+= 3 * 2
+= 6
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6c40d8a" class="outline-3">
+<h3 id="org6c40d8a"><span class="section-number-3">1.2.</span> Recursión numérica: El producto</h3>
+<div class="outline-text-3" id="text-1-2">
+<ul class="org-ul">
+<li><p>
+Definición recursiva del producto:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">por</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+m <span style="color: #a0522d;">`</span><span style="color: #0000ff;">por</span><span style="color: #a0522d;">`</span> 0  <span style="color: #a0522d;">=</span> 0
+m <span style="color: #a0522d;">`</span><span style="color: #0000ff;">por</span><span style="color: #a0522d;">`</span> n  <span style="color: #a0522d;">=</span> m <span style="color: #a0522d;">+</span> <span style="color: #707183;">(</span>m <span style="color: #a0522d;">`por`</span> <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+3 `por` 2
+= 3 + (3 `por` 1)
+= 3 + (3 + (3 `por` 0))
+= 3 + (3 + 0)
+= 3 + 3
+= 6
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org79c5025" class="outline-2">
+<h2 id="org79c5025"><span class="section-number-2">2.</span> Recursión sobre lista</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org3a3dba7" class="outline-3">
+<h3 id="org3a3dba7"><span class="section-number-3">2.1.</span> Recursión sobre listas: La función <code>product</code></h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li><p>
+Producto de una lista de números:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Num</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">(</span>n<span style="color: #228b22;">:</span>ns<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">*</span> product ns
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+product [7,5,2]
+= 7 * (product [5,2])
+= 7 * (5 * (product [2]))
+= 7 * (5 * (2 * (product [])))
+= 7 * (5 * (2 * 1))
+= 7 * (5 * 2)
+= 7 * 10
+= 70
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org36f9c9d" class="outline-3">
+<h3 id="org36f9c9d"><span class="section-number-3">2.2.</span> Recursión sobre listas: La función <code>length</code></h3>
+<div class="outline-text-3" id="text-2-2">
+<ul class="org-ul">
+<li><p>
+Longitud de una lista:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">length</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">length</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">length</span> <span style="color: #707183;">(</span><span style="color: #a020f0;">_</span><span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> 1 <span style="color: #a0522d;">+</span> length xs
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+length [2,3,5]
+= 1 + (length [3,5])
+= 1 + (1 + (length [5]))
+= 1 + (1 + (1 + (length [])))
+= 1 + (1 + (1 + 0))
+= 1 + (1 + 1)
+= 1 + 2
+= 3
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge192bec" class="outline-3">
+<h3 id="orge192bec"><span class="section-number-3">2.3.</span> Recursión sobre listas: La función <code>reverse</code></h3>
+<div class="outline-text-3" id="text-2-3">
+<ul class="org-ul">
+<li><p>
+Inversa de una lista:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">reverse</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">reverse</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">reverse</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> reverse xs <span style="color: #a0522d;">++</span> <span style="color: #707183;">[</span>x<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+reverse [2,5,3]
+= (reverse [5,3]) ++ [2]
+= ((reverse [3]) ++ [5]) ++ [2]
+= (((reverse []) ++ [3]) ++ [5]) ++ [2]
+= (([] ++ [3]) ++ [5]) ++ [2]
+= ([3] ++ [5]) ++ [2]
+= [3,5] ++ [2]
+= [3,5,2]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge4a07b6" class="outline-3">
+<h3 id="orge4a07b6"><span class="section-number-3">2.4.</span> Recursión sobre listas: <code>++</code></h3>
+<div class="outline-text-3" id="text-2-4">
+<ul class="org-ul">
+<li><p>
+Concatenación de listas:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #707183;">(</span><span style="color: #0000ff;">++</span><span style="color: #707183;">)</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #707183;">[]</span>     <span style="color: #a0522d;">++</span> ys <span style="color: #a0522d;">=</span> ys
+<span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">++</span> ys <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> <span style="color: #707183;">(</span>xs <span style="color: #a0522d;">++</span> ys<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+[1,3,5] ++ [2,4]
+= 1:([3,5] ++ [2,4])
+= 1:(3:([5] ++ [2,4]))
+= 1:(3:(5:([] ++ [2,4])))
+= 1:(3:(5:[2,4]))
+= 1:(3:[5,2,4])
+= 1:[3,5,2,4]
+= [1,3,5,2,4]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga600ae7" class="outline-3">
+<h3 id="orga600ae7"><span class="section-number-3">2.5.</span> Recursión sobre listas: Inserción ordenada</h3>
+<div class="outline-text-3" id="text-2-5">
+<ul class="org-ul">
+<li><p>
+<code>(inserta e xs)</code> inserta el elemento <code>e</code> en la lista <code>xs</code> delante del primer
+elemento de <code>xs</code> mayor o igual que <code>e</code>. Por ejemplo,
+</p>
+<pre class="example">
+inserta 5 [2,4,7,3,6,8,10] == [2,4,5,7,3,6,8,10]
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">inserta</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> a <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">inserta</span> e <span style="color: #707183;">[]</span>                  <span style="color: #a0522d;">=</span> <span style="color: #707183;">[</span>e<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">inserta</span> e <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> e <span style="color: #a0522d;">&lt;=</span> x     <span style="color: #a0522d;">=</span> e <span style="color: #228b22;">:</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span>
+                 <span style="color: #a0522d;">|</span> otherwise  <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> inserta e xs
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+inserta 4 [1,3,5,7]
+= 1:(inserta 4 [3,5,7])
+= 1:(3:(inserta 4 [5,7]))
+= 1:(3:(4:(5:[7])))
+= 1:(3:(4:[5,7]))
+= [1,3,4,5,7]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org64a9480" class="outline-3">
+<h3 id="org64a9480"><span class="section-number-3">2.6.</span> Recursión sobre listas: Ordenación por inserción</h3>
+<div class="outline-text-3" id="text-2-6">
+<ul class="org-ul">
+<li><p>
+<code>(ordena_por_insercion xs)</code> es la lista <code>xs</code> ordenada mediante inserción, Por
+ejemplo,
+</p>
+<pre class="example">
+ordena_por_insercion [2,4,3,6,3] == [2,3,3,4,6]
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">ordena_por_insercion</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Ord</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">ordena_por_insercion</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">ordena_por_insercion</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+  inserta x <span style="color: #707183;">(</span>ordena_por_insercion xs<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+  ordena_por_insercion [7,9,6] =
+= inserta 7 (inserta 9 (inserta 6 []))
+= inserta 7 (inserta 9 [6])
+= inserta 7 [6,9]
+= [6,7,9]
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgab73c24" class="outline-2">
+<h2 id="orgab73c24"><span class="section-number-2">3.</span> Recursión sobre varios argumentos</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgb418ab5" class="outline-3">
+<h3 id="orgb418ab5"><span class="section-number-3">3.1.</span> Recursión sobre varios argumentos: La función <code>zip</code></h3>
+<div class="outline-text-3" id="text-3-1">
+<ul class="org-ul">
+<li><p>
+Emparejamiento de elementos (la función <code>zip</code>):
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">zip</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>b<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>a, b<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+<span style="color: #0000ff;">zip</span> <span style="color: #707183;">[]</span>     <span style="color: #a020f0;">_</span>      <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">zip</span> <span style="color: #a020f0;">_</span>      <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">zip</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>y<span style="color: #228b22;">:</span>ys<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>x,y<span style="color: #707183;">)</span> <span style="color: #228b22;">:</span> zip xs ys
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+zip [1,3,5] [2,4,6,8]
+= (1,2) : (zip [3,5] [4,6,8])
+= (1,2) : ((3,4) : (zip [5] [6,8]))
+= (1,2) : ((3,4) : ((5,6) : (zip [] [8])))
+= (1,2) : ((3,4) : ((5,6) : []))
+= [(1,2),(3,4),(5,6)]
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgebd36f9" class="outline-3">
+<h3 id="orgebd36f9"><span class="section-number-3">3.2.</span> Recursión sobre varios argumentos: La función <code>drop</code></h3>
+<div class="outline-text-3" id="text-3-2">
+<ul class="org-ul">
+<li><p>
+Eliminación de elementos iniciales:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">drop</span> 0 xs     <span style="color: #a0522d;">=</span> xs
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> drop <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> xs
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+drop 2 [5,7,9,4]
+= drop 1 [7,9,4]
+= drop 0 [9,4]
+= [9,4]
+
+drop 5 [1,4]
+= drop 4 [4]
+= drop 1 []
+= []
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0374098" class="outline-2">
+<h2 id="org0374098"><span class="section-number-2">4.</span> Recursión múltiple</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org99397d0" class="outline-3">
+<h3 id="org99397d0"><span class="section-number-3">4.1.</span> Recursión múltiple: La función de Fibonacci</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li>La sucesión de Fibonacci es: 0,1,1,2,3,5,8,13,21,&#x2026;. Sus dos primeros
+términos son 0 y 1 y los restantes se obtienen sumando los dos anteriores.</li>
+
+<li><p>
+<code>(fibonacci n)</code> es el <code>n</code>-ésimo término de la sucesión de Fibonacci. Por
+ejemplo,
+</p>
+<pre class="example">
+fibonacci 8  ==  21
+</pre>
+
+<p>
+Su definición es
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">fibonacci</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">fibonacci</span> 0 <span style="color: #a0522d;">=</span> 0
+<span style="color: #0000ff;">fibonacci</span> 1 <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">fibonacci</span> n <span style="color: #a0522d;">=</span> fibonacci <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>2<span style="color: #707183;">)</span> <span style="color: #a0522d;">+</span> fibonacci <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga36633b" class="outline-3">
+<h3 id="orga36633b"><span class="section-number-3">4.2.</span> Recursión múltiple: Ordenación rápida</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li><p>
+Algoritmo de ordenación rápida:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">ordena</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">(</span><span style="color: #228b22;">Ord</span> a<span style="color: #707183;">)</span> <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">ordena</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">ordena</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> <span style="color: #707183;">(</span>ordena menores<span style="color: #707183;">)</span> <span style="color: #a0522d;">++</span> <span style="color: #707183;">[</span>x<span style="color: #707183;">]</span> <span style="color: #a0522d;">++</span> <span style="color: #707183;">(</span>ordena mayores<span style="color: #707183;">)</span>
+  <span style="color: #a020f0;">where</span> menores <span style="color: #a0522d;">=</span> <span style="color: #707183;">[</span>a <span style="color: #a0522d;">|</span> a <span style="color: #a0522d;">&lt;-</span> xs, a <span style="color: #a0522d;">&lt;=</span> x<span style="color: #707183;">]</span>
+        mayores <span style="color: #a0522d;">=</span> <span style="color: #707183;">[</span>b <span style="color: #a0522d;">|</span> b <span style="color: #a0522d;">&lt;-</span> xs, b <span style="color: #a0522d;">&gt;</span> x<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc6b4e75" class="outline-2">
+<h2 id="orgc6b4e75"><span class="section-number-2">5.</span> Recursión mutua</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org3c25de1" class="outline-3">
+<h3 id="org3c25de1"><span class="section-number-3">5.1.</span> Recursión mutua: Par e impar</h3>
+<div class="outline-text-3" id="text-5-1">
+<ul class="org-ul">
+<li><p>
+Par e impar por recursión mutua:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">par</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">par</span> 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">True</span>
+<span style="color: #0000ff;">par</span> n <span style="color: #a0522d;">=</span> impar <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">impar</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Bool</span>
+<span style="color: #0000ff;">impar</span> 0 <span style="color: #a0522d;">=</span> <span style="color: #228b22;">False</span>
+<span style="color: #0000ff;">impar</span> n <span style="color: #a0522d;">=</span> par <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+impar 3
+= par 2
+= impar 1
+= par 0
+= True
+
+par 3
+= impar 2
+= par 1
+= impar 0
+= False
+</pre></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org630e700" class="outline-3">
+<h3 id="org630e700"><span class="section-number-3">5.2.</span> Recursión mutua: Posiciones pares e impares</h3>
+<div class="outline-text-3" id="text-5-2">
+<ul class="org-ul">
+<li><code>(pares xs)</code> son los elementos de <code>xs</code> que ocupan posiciones pares.</li>
+
+<li><p>
+<code>(impares xs)</code> son los elementos de <code>xs</code> que ocupan posiciones impares.
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">pares</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">pares</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">pares</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> impares xs
+
+<span style="color: #0000ff;">impares</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">impares</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">impares</span> <span style="color: #707183;">(</span><span style="color: #a020f0;">_</span><span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> pares xs
+</pre>
+</div></li>
+
+<li><p>
+Cálculo:
+</p>
+<pre class="example">
+pares [1,3,5,7]
+= 1:(impares [3,5,7])
+= 1:(pares [5,7])
+= 1:(5:(impares [7]))
+= 1:(5:[])
+= [1,5]
+</pre></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge50349a" class="outline-2">
+<h2 id="orge50349a"><span class="section-number-2">6.</span> Heurísticas para las definiciones recursivas</h2>
+<div class="outline-text-2" id="text-6">
+</div>
+<div id="outline-container-orgaf0f945" class="outline-3">
+<h3 id="orgaf0f945"><span class="section-number-3">6.1.</span> Aplicación del método: La función <code>product</code></h3>
+<div class="outline-text-3" id="text-6-1">
+<ul class="org-ul">
+<li><p>
+Paso 1: Definir el tipo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 2: Enumerar los casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span>
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">(</span>n<span style="color: #228b22;">:</span>ns<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 3: Definir los casos simples:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">(</span>n<span style="color: #228b22;">:</span>ns<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 4: Definir los otros casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span><span style="color: #228b22;">Int</span><span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Int</span>
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">(</span>n<span style="color: #228b22;">:</span>ns<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">*</span> product ns
+</pre>
+</div></li>
+
+<li><p>
+Paso 5: Generalizar y simplificar:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">product</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Num</span> a <span style="color: #a0522d;">=&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> a
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> 1
+<span style="color: #0000ff;">product</span> <span style="color: #707183;">(</span>n<span style="color: #228b22;">:</span>ns<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> n <span style="color: #a0522d;">*</span> product ns
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6a58b68" class="outline-3">
+<h3 id="org6a58b68"><span class="section-number-3">6.2.</span> Aplicación del método: La función <code>drop</code></h3>
+<div class="outline-text-3" id="text-6-2">
+<ul class="org-ul">
+<li><p>
+Paso 1: Definir el tipo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 2: Enumerar los casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 3: Definir los casos simples:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x<span style="color: #228b22;">:</span>xs
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 4: Definir los otros casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Int</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> 0 <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x<span style="color: #228b22;">:</span>xs
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> drop n xs
+</pre>
+</div></li>
+
+<li><p>
+Paso 5: Generalizar y simplificar:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">drop</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integral</span> b <span style="color: #a0522d;">=&gt;</span> b <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">drop</span> 0 xs     <span style="color: #a0522d;">=</span> xs
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">[]</span>     <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">drop</span> n <span style="color: #707183;">(</span><span style="color: #a020f0;">_</span><span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> drop n xs
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org91f08e5" class="outline-3">
+<h3 id="org91f08e5"><span class="section-number-3">6.3.</span> Aplicación del método: La función <code>init</code></h3>
+<div class="outline-text-3" id="text-6-3">
+<ul class="org-ul">
+<li><code>init</code> elimina el último elemento de una lista no vacía.</li>
+
+<li><p>
+Paso 1: Definir el tipo:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">init</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 2: Enumerar los casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">init</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">init</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 3: Definir los casos simples:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">init</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">init</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> null xs   <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+            <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span>
+</pre>
+</div></li>
+
+<li><p>
+Paso 4: Definir los otros casos:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">init</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">init</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">|</span> null xs   <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+            <span style="color: #a0522d;">|</span> otherwise <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> init xs
+</pre>
+</div></li>
+
+<li><p>
+Paso 5: Generalizar y simplificar:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #0000ff;">init</span> <span style="color: #a0522d;">::</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #707183;">[</span>a<span style="color: #707183;">]</span>
+<span style="color: #0000ff;">init</span> <span style="color: #707183;">[</span><span style="color: #a020f0;">_</span><span style="color: #707183;">]</span>    <span style="color: #a0522d;">=</span> <span style="color: #707183;">[]</span>
+<span style="color: #0000ff;">init</span> <span style="color: #707183;">(</span>x<span style="color: #228b22;">:</span>xs<span style="color: #707183;">)</span> <span style="color: #a0522d;">=</span> x <span style="color: #228b22;">:</span> init xs
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgfd53b12" class="outline-2">
+<h2 id="orgfd53b12"><span class="section-number-2">7.</span> Recursión y dibujos</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>En esta sección se amplían los programas de dibujo con
+<a href="https://code.world/haskell#">CodeWorld/Haskell</a>]estudiados en el <a href="./tema-0.html">tema 0</a> y en el <a href="./tema-5.html">tema 5</a>.</li>
+</ul>
+</div>
+
+<div id="outline-container-org748daa7" class="outline-3">
+<h3 id="org748daa7"><span class="section-number-3">7.1.</span> Fractal del árbol</h3>
+<div class="outline-text-3" id="text-7-1">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_del_arbol_dibujo.png" alt="Fractal_del_arbol_dibujo.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 8<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> polyline <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>0,1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> arbol <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated 0 1 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span> pi<span style="color: #a0522d;">/</span>10<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+        rama2 <span style="color: #a0522d;">=</span> translated 0 1 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>pi<span style="color: #a0522d;">/</span>10<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="https://code.world/haskell#PY7VeTsuxPxEx3qh-fXxsaA">Fractal del árbol</a></li>
+
+<li><b>Ejemplo</b>: Escribir un programa para pintar la siguiente animación <br />
+<img src="./tema-6/fig/Fractal_del_arbol_animacion.gif" alt="Fractal_del_arbol_animacion.gif" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> animationOf <span style="color: #707183;">(</span>arbol 8 <span style="color: #a0522d;">.</span> sin<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> polyline <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>0,1<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Double</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a020f0;">_</span> <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n f <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> arbol <span style="color: #707183;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #707183;">)</span> f
+        rama1 <span style="color: #a0522d;">=</span> translated 0 1 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span> f<span style="color: #a0522d;">*</span>pi<span style="color: #a0522d;">/</span>10<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+        rama2 <span style="color: #a0522d;">=</span> translated 0 1 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>f<span style="color: #a0522d;">*</span>pi<span style="color: #a0522d;">/</span>10<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="https://code.world/haskell#PmzuSRlMNL5CCJpiBvAYHHA">Fractal del árbol animado</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org6359c60" class="outline-3">
+<h3 id="org6359c60"><span class="section-number-3">7.2.</span> Fractal de círculos</h3>
+<div class="outline-text-3" id="text-7-2">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_de_circulos.png" alt="Fractal_de_circulos.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 4<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> translated 0 <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>4<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>circle 5<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2 <span style="color: #a0522d;">&amp;</span> rama3
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> scaled <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>6.2<span style="color: #707183;">)</span> 2.3 rama
+        rama2 <span style="color: #a0522d;">=</span> translated      0 5.5 rama
+        rama3 <span style="color: #a0522d;">=</span> translated    6.2 2.3 rama
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="http://bit.ly/2Ao6ra6">Fractal de círculos</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8c0acb9" class="outline-3">
+<h3 id="org8c0acb9"><span class="section-number-3">7.3.</span> Fractal de cuadrados</h3>
+<div class="outline-text-3" id="text-7-3">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_de_cuadrados.png" alt="Fractal_de_cuadrados.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 4<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> rectangle 6 6
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> scaled <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>3<span style="color: #707183;">)</span>   3  rama
+        rama2 <span style="color: #a0522d;">=</span> translated   3  <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>3<span style="color: #707183;">)</span> rama
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="http://bit.ly/2AtQEEJ">Fractal de cuadrados</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0b2210f" class="outline-3">
+<h3 id="org0b2210f"><span class="section-number-3">7.4.</span> Fractal de cuadrados con 4 ramas</h3>
+<div class="outline-text-3" id="text-7-4">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_de_cuadrados_con_4_ramas.png" alt="Fractal_de_cuadrados_con_4_ramas.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 5<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> rectangle 10 10
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2 <span style="color: #a0522d;">&amp;</span> rama3 <span style="color: #a0522d;">&amp;</span> rama4
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> scaled <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>1<span style="color: #a0522d;">/</span>2<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>5<span style="color: #707183;">)</span>   5  rama
+        rama2 <span style="color: #a0522d;">=</span> translated   5  <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>5<span style="color: #707183;">)</span> rama
+        rama3 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>5<span style="color: #707183;">)</span> <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>5<span style="color: #707183;">)</span> rama
+        rama4 <span style="color: #a0522d;">=</span> translated   5    5  rama
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="http://bit.ly/2ArnUOZ">Fractal de cuadrados con 4 ramas</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org16f4244" class="outline-3">
+<h3 id="org16f4244"><span class="section-number-3">7.5.</span> Fractal del sobre</h3>
+<div class="outline-text-3" id="text-7-5">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_del_sobre.png" alt="Fractal_del_sobre.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 8<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> translated 0 <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>5<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>rectangle 4 4 <span style="color: #a0522d;">&amp;</span>
+                            polyline <span style="color: #7388d6;">[</span><span style="color: #909183;">(</span><span style="color: #a0522d;">-</span>2, 2<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>0, 4<span style="color: #909183;">)</span>, <span style="color: #909183;">(</span>2, 2<span style="color: #909183;">)</span><span style="color: #7388d6;">]</span><span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> scaled r r <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated   4.3  1.4 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>pi<span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+        rama2 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>4.3<span style="color: #707183;">)</span> 1.4 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span> pi<span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+        r     <span style="color: #a0522d;">=</span> 0.685
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="https://code.world/haskell#PkYLT0Cg_CqYne1RF_NznTg">Fractal del sobre</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org8e21b29" class="outline-3">
+<h3 id="org8e21b29"><span class="section-number-3">7.6.</span> Fractal asimétrico</h3>
+<div class="outline-text-3" id="text-7-6">
+<ul class="org-ul">
+<li><b>Ejemplo</b>: Escribir un programa para pintar el siguiente dibujo <br />
+<img src="./tema-6/fig/Fractal_asimetrico.png" alt="Fractal_asimetrico.png" /></li>
+
+<li><p>
+<b>Programa</b>:
+</p>
+<div class="org-src-container">
+<pre class="src src-haskell"><span style="color: #a020f0;">import</span> <span style="color: #228b22;">CodeWorld</span>
+
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">IO</span> <span style="color: #707183;">()</span>
+<span style="color: #0000ff;">main</span> <span style="color: #a0522d;">=</span> drawingOf <span style="color: #707183;">(</span>arbol 6<span style="color: #707183;">)</span>
+
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">tronco</span> <span style="color: #a0522d;">=</span> polyline <span style="color: #707183;">[</span><span style="color: #7388d6;">(</span>0,<span style="color: #a0522d;">-</span>5<span style="color: #7388d6;">)</span>,<span style="color: #7388d6;">(</span>0,0<span style="color: #7388d6;">)</span><span style="color: #707183;">]</span>
+
+<span style="color: #0000ff;">arbol</span> <span style="color: #a0522d;">::</span> <span style="color: #228b22;">Integer</span> <span style="color: #a0522d;">-&gt;</span> <span style="color: #228b22;">Picture</span>
+<span style="color: #0000ff;">arbol</span> 0 <span style="color: #a0522d;">=</span> tronco
+<span style="color: #0000ff;">arbol</span> n <span style="color: #a0522d;">=</span> tronco <span style="color: #a0522d;">&amp;</span> rama1 <span style="color: #a0522d;">&amp;</span> rama2
+  <span style="color: #a020f0;">where</span> rama  <span style="color: #a0522d;">=</span> scaled <span style="color: #707183;">(</span>3<span style="color: #a0522d;">/</span>4<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>3<span style="color: #a0522d;">/</span>4<span style="color: #707183;">)</span> <span style="color: #707183;">(</span>arbol <span style="color: #7388d6;">(</span>n<span style="color: #a0522d;">-</span>1<span style="color: #7388d6;">)</span><span style="color: #707183;">)</span>
+        rama1 <span style="color: #a0522d;">=</span> translated <span style="color: #707183;">(</span><span style="color: #a0522d;">-</span>2.7<span style="color: #707183;">)</span> 0.5 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span> pi<span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+        rama2 <span style="color: #a0522d;">=</span> translated   2.6  2.6 <span style="color: #707183;">(</span>rotated <span style="color: #7388d6;">(</span><span style="color: #a0522d;">-</span>pi<span style="color: #a0522d;">/</span>4<span style="color: #7388d6;">)</span> rama<span style="color: #707183;">)</span>
+</pre>
+</div></li>
+
+<li><b>Evaluación en CodeWorld/Haskell</b>
+<a href="https://code.world/haskell#Pm5COxFNb7N8h1u4HtyKp8Q">Fractal asimétrico</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org17b8437" class="outline-2">
+<h2 id="org17b8437"><span class="section-number-2">8.</span> Material complementario</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+El código del tema se encuentra en este <a href="https://github.com/jaalonso/I1M-Cod-Temas/blob/master/src/Tema_1.hs">enlace</a>.
+</p>
+
+<p>
+Este tema también se encuentra en los siguientes formatos:
+</p>
+<ul class="org-ul">
+<li>Como <a href="./tema-6.pdf">transparencias en PDF</a>.</li>
+<li>Como <a href="https://mybinder.org/v2/gh/jaalonso/Temas_interactivos_de_PF_con_Haskell/master?filepath=temas/Tema-06.ipynb">libro interactivo en IHaskell sobre Jupyter</a>.</li>
+<li>Como vídeos de clase: <a href="https://youtu.be/buZ79fi9WHw">vídeo 1</a> y <a href="https://youtu.be/QwWBJqkIjXo">vídeo 2</a>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga6782b7" class="outline-2">
+<h2 id="orga6782b7"><span class="section-number-2">9.</span> Bibliografía</h2>
+<div class="outline-text-2" id="text-9">
+<ul class="org-ul">
+<li>R. Bird. <b>Introducción a la programación funcional con Haskell</b>. Prentice Hall, 2000.
+<ul class="org-ul">
+<li>Cap. 3: Números.</li>
+<li>Cap. 4: Listas.</li>
+</ul></li>
+
+<li>G. Hutton. <b>Programming in Haskell</b>. Cambridge University Press, 2007.
+<ul class="org-ul">
+<li>Cap. 6: Recursive functions.</li>
+</ul></li>
+
+<li>B. O'Sullivan, D. Stewart y J. Goerzen. <b>Real World Haskell</b>. O'Reilly, 2008.
+<ul class="org-ul">
+<li>Cap. 2: Types and Functions.</li>
+</ul></li>
+
+<li>B.C. Ruiz, F. Gutiérrez, P. Guerrero y J.E. Gallardo. <b>Razonando con
+Haskell</b>. Thompson, 2004.
+<ul class="org-ul">
+<li>Cap. 2: Introducción a Haskell.</li>
+<li>Cap. 6: Programación con listas.</li>
+</ul></li>
+
+<li>S. Thompson. <b>Haskell: The Craft of Functional Programming</b>, Second
+Edition. Addison-Wesley, 1999.
+<ul class="org-ul">
+<li>Cap. 4: Designing and writing programs.</li>
+</ul></li>
+
+<li><a href="https://sites.google.com/view/codeworld-parkside/home">CodeWorld @ Parkside</a>.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<hr>
+<center>
+<p><a href="/"><i class="fa fa-home"></i></a> |
+   <a href="/curso-i1m/i1m/">Inicial</a> |
+   <a href="/curso-i1m/i1m/temas_apuntes_codigos.html">Temas  </a> |
+   <a href="/curso-i1m/i1m/manuales.html">Manuales  </a> |
+   <a href="/curso-i1m/i1m/ejercicios.html">Ejercicios  </a> |
+   <a href="/curso-i1m/i1m/examenes.html">Exámenes  </a> |
+   <a href="/curso-i1m/i1m/doc.html">Documentación  </a>
+</p>
+</center>
+<div id="extras">
+  <p><a href="/">José A. Alonso Jiménez</a>
+  <p>Sevilla, 28 de febrero del 2025</p>
+  <p><i class="fa fa-cc"></i> Licencia: <a href="https://creativecommons.org/licenses/by-nc-sa/2.5/es/">Creative Commons</a>.</p>
+</div>
+</div>
+</body>
+</html>
