@@ -26,18 +26,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:site_name" content="Exercitium">
 <meta property="og:title" content="Regiones determinadas por n rectas del plano">
 <meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2014/05/19-regiones/">
-<meta property="og:description" content="Definir la función
-???
-
-
-tal que
-???
-
-
-
-
-Soluciones
-???">
+<meta property="og:description" content="En los siguientes dibujos se observa que el número máximo de regiones en el plano generadas con 1, 2 ó 3 líneas son 2, 4 ó 7, respectivamente.
+                   \  |
+                    \5|
+         ">
 <meta property="og:image" content="https://jaalonso.github.io/exercitium/images/2014-05-19.jpg">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2014-05-19T06:00:00+02:00">
@@ -79,17 +71,146 @@ Soluciones
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="o">???</span>
+<p>En los siguientes dibujos se observa que el número máximo de regiones en el plano generadas con 1, 2 ó 3 líneas son 2, 4 ó 7, respectivamente.</p>
+<div class="code"><pre class="code literal-block">                   \  |
+                    \5|
+                     \|
+                      \
+                      |\
+                      | \
+            |         |  \
+ 1        1 | 3     1 | 3 \  6
+------   ---|---   ---|----\---
+ 2        2 | 4     2 | 4   \ 7
+            |         |      \
 </pre></div>
 
-<p>tal que</p>
-<div class="code"><pre class="code literal-block"><span class="o">???</span>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">regiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que <code>(regiones n)</code> es el número máximo de regiones en el plano generadas con <code>n</code> líneas. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">regiones</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
+<span class="nf">regiones</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
+<span class="nf">regiones</span><span class="w"> </span><span class="mi">3</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
+<span class="nf">regiones</span><span class="w"> </span><span class="mi">100</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">5051</span>
+<span class="nf">regiones</span><span class="w"> </span><span class="mi">1000</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">500501</span>
+<span class="nf">regiones</span><span class="w"> </span><span class="mi">10000</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="mi">50005001</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">regiones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">))))</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="mi">200000</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">regiones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">))))</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="mi">2000000</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">regiones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">))))</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="mi">20000000</span>
 </pre></div>
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="o">???</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">foldl'</span><span class="p">,</span><span class="w"> </span><span class="nf">genericIndex</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">regiones1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">regiones1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="nf">regiones1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">regiones1</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">regiones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">regiones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">regiones3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">regiones3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl'</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">regiones4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">regiones4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sumas</span><span class="w"> </span><span class="p">`</span><span class="n">genericIndex</span><span class="p">`</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- (sumas n) es la suma 0 + 1 + 2 +...+ n. Por ejemplo,</span>
+<span class="c1">--    take 10 sumas  ==  [0,1,3,6,10,15,21,28,36,45]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">scanl1</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">regiones5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">regiones5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">regiones</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">2</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">4</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">3</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">7</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">100</span><span class="w">   </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">5051</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e5"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">1000</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">500501</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e6"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">regiones</span><span class="w"> </span><span class="mi">10000</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">50005001</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">regiones1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">regiones2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">regiones3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">regiones4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">regiones5</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    30 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_regiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_regiones</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">regiones1</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">regiones2</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">regiones3</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">regiones4</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">regiones5</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_regiones</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; regiones1 (4*10^6)</span>
+<span class="c1">--    8000002000001</span>
+<span class="c1">--    (2.58 secs, 938,555,088 bytes)</span>
+<span class="c1">--    λ&gt; regiones2 (4*10^6)</span>
+<span class="c1">--    8000002000001</span>
+<span class="c1">--    (0.27 secs, 352,606,080 bytes)</span>
+<span class="c1">--    λ&gt; regiones3 (4*10^6)</span>
+<span class="c1">--    8000002000001</span>
+<span class="c1">--    (0.15 secs, 352,605,944 bytes)</span>
+<span class="c1">--    λ&gt; regiones4 (4*10^6)</span>
+<span class="c1">--    8000002000001</span>
+<span class="c1">--    (1.30 secs, 1,413,495,088 bytes)</span>
+<span class="c1">--    λ&gt; regiones5 (4*10^6)</span>
+<span class="c1">--    8000002000001</span>
+<span class="c1">--    (0.01 secs, 606,072 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
