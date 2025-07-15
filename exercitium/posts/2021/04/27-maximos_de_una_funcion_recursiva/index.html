@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Máximos de una función recursiva | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2021/04/27-maximos_de_una_funcion_recursiva/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Máximos de una función recursiva | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../26-productos_de_cuatro_consecutivos/" title="Productos de cuatro consecutivos" type="text/html">
+<link rel="next" href="../28-numeros_iguales_a_potencias_de_las_sumas_de_sus_cifras_ome1999_p2/" title="Números iguales a potencias de las sumas de sus cifras" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Máximos de una función recursiva">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2021/04/27-maximos_de_una_funcion_recursiva/">
+<meta property="og:description" content="El enunciado del problema 5 de la OME (Olimpiada Matemática Española) del 2002 es
+
+La función g se define sobre los números naturales y satisface las condiciones:
+
+g(1) = 1
+g(2n) = g(n)
+g(2n + 1) = g(">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-04-27T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Máximos de una función recursiva</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-27T06:00:00+02:00" itemprop="datePublished" title="27-04-2021">27-04-2021</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El enunciado del <a href="https://bit.ly/3tueZVv">problema 5 de la OME (Olimpiada Matemática Española) del 2002</a> es</p>
+<blockquote>
+<p>La función g se define sobre los números naturales y satisface las condiciones:</p>
+<ul>
+<li>g(1) = 1</li>
+<li>g(2n) = g(n)</li>
+<li>g(2n + 1) = g(2n) + 1</li>
+</ul>
+<p>Sea n un número natural tal que 1 ≤ n ≤ 2002. Calcula el valor máximo M de g(n). Calcula también cuántos valores de n satisfacen g(n) = M.</p>
+</blockquote>
+<p>Los valores de la función g para n de 1 a 30 son</p>
+<div class="code"><pre class="code literal-block">   1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">maximoG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (maximoG m) es el máximo de los valores de g(n) para n en {1, 2,..., m}. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   maximoG 30           ==  4
+   maximoG (10^(10^5))  ==  332192
+</pre></div>
+
+<p>Usando la función maximoG, calcular los valores pedidos en el problema.</p>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericLength</span><span class="p">,</span><span class="w"> </span><span class="nf">genericTake</span><span class="p">,</span><span class="w"> </span><span class="nf">group</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="kt">Property</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">==&gt;</span><span class="p">),</span><span class="w"> </span><span class="nf">quickCheck</span><span class="p">)</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoG</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">genericTake</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">sucesionG</span><span class="p">)</span>
+
+<span class="c1">-- sucesionG es la lista de los valores de g. Por ejemplo,</span>
+<span class="c1">--    λ&gt; take 30 sucesionG</span>
+<span class="c1">--    [1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4]</span>
+<span class="nf">sucesionG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">sucesionG</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- (g n) es el valor de g(n).</span>
+<span class="nf">g</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">g</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="nf">g</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="c1">-- Observando los siguientes cálculos</span>
+<span class="c1">--   λ&gt; map maximoG [1..40]</span>
+<span class="c1">--   [1,1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5]</span>
+<span class="c1">--   λ&gt; take 10 (map length (group (map maximoG [1..])))</span>
+<span class="c1">--   [2,4,8,16,32,64,128,256,512,1024]</span>
+
+<span class="nf">maximoG2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoG2</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="o">^</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoG3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoG3</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="p">(</span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="n">m</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">potenciasDeDos</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- potenciasDeDos es la lista de las potencias de dos. Por ejemplo,</span>
+<span class="c1">--    take 10 potenciasDeDos  ==  [1,2,4,8,16,32,64,128,256,512]</span>
+<span class="nf">potenciasDeDos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">potenciasDeDos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">iterate</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoG4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoG4</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">floor</span><span class="w"> </span><span class="p">(</span><span class="n">logBase</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_maximoG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_maximoG</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">m</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="p">(</span><span class="n">maximoG</span><span class="w"> </span><span class="n">m</span><span class="p">))</span>
+<span class="w">      </span><span class="p">[</span><span class="w"> </span><span class="n">maximoG2</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
+<span class="w">        </span><span class="n">maximoG3</span><span class="w"> </span><span class="n">m</span><span class="p">,</span>
+<span class="w">        </span><span class="n">maximoG4</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_maximoG</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Nota: Aunque QuickCheck no ha encontrado ningún contraejemplo, la</span>
+<span class="c1">-- definición maximoG4 que usa números decimales falla para números muy</span>
+<span class="c1">-- grandes. Por ejemplo,</span>
+<span class="c1">--    λ&gt; maximoG4 (10^308)</span>
+<span class="c1">--    1023</span>
+<span class="c1">--    λ&gt; maximoG4 (10^309)</span>
+<span class="c1">--    1797693134862315907729305190789024733617976978942306572734300...</span>
+<span class="c1">--    λ&gt; maximoG3 (10^308)</span>
+<span class="c1">--    1023</span>
+<span class="c1">--    λ&gt; maximoG3 (10^309)</span>
+<span class="c1">--    1026</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; maximoG (10^6)</span>
+<span class="c1">--    19</span>
+<span class="c1">--    (8.80 secs, 6,015,772,760 bytes)</span>
+<span class="c1">--    λ&gt; maximoG2 (10^6)</span>
+<span class="c1">--    19</span>
+<span class="c1">--    (0.02 secs, 106,752 bytes)</span>
+<span class="c1">--    λ&gt; maximoG3 (10^6)</span>
+<span class="c1">--    19</span>
+<span class="c1">--    (0.02 secs, 102,592 bytes)</span>
+<span class="c1">--    λ&gt; maximoG4 (10^6)</span>
+<span class="c1">--    19</span>
+<span class="c1">--    (0.01 secs, 98,464 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; maximoG2 (10^308)</span>
+<span class="c1">--    1023</span>
+<span class="c1">--    (0.03 secs, 3,266,096 bytes)</span>
+<span class="c1">--    λ&gt; maximoG3 (10^308)</span>
+<span class="c1">--    1023</span>
+<span class="c1">--    (0.02 secs, 266,856 bytes)</span>
+<span class="c1">--    λ&gt; maximoG4 (10^308)</span>
+<span class="c1">--    1023</span>
+<span class="c1">--    (0.02 secs, 103,176 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; maximoG2 (10^16789)</span>
+<span class="c1">--    55771</span>
+<span class="c1">--    (1.70 secs, 1,201,022,600 bytes)</span>
+<span class="c1">--    λ&gt; maximoG3 (10^16789)</span>
+<span class="c1">--    55771</span>
+<span class="c1">--    (0.24 secs, 214,872,864 bytes)</span>
+
+<span class="c1">-- Cálculos del problema</span>
+<span class="c1">-- =====================</span>
+
+<span class="c1">-- El máximo se calcula como sigue:</span>
+<span class="c1">--    λ&gt; maximum (take 2002 sucesionG)</span>
+<span class="c1">--    10</span>
+<span class="c1">-- Por tanto, el máximo es 10.</span>
+
+<span class="c1">-- Los valores de n tales que g(n) es el máximo se calcula como sigue:</span>
+<span class="c1">--    λ&gt; [n | n &lt;- [1..2002], g n == 10]</span>
+<span class="c1">--    [1023,1535,1791,1919,1983]</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../26-productos_de_cuatro_consecutivos/" rel="prev" title="Productos de cuatro consecutivos">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../28-numeros_iguales_a_potencias_de_las_sumas_de_sus_cifras_ome1999_p2/" rel="next" title="Números iguales a potencias de las sumas de sus cifras">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
