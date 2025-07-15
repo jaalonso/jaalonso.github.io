@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descomposiciones como sumas de consecutivos | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Descomposiciones como sumas de consecutivos | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" title="El cociente por 11 es igual a la suma de los cuadrados de sus cifras" type="text/html">
+<link rel="next" href="../26-numeros_divisibles_respecto_de_una_sucesion/" title="Números divisibles respecto de una sucesión" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Descomposiciones como sumas de consecutivos">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/">
+<meta property="og:description" content="El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1966 es
+
+
+(a) Calcular el número de maneras de expresar 500 como suma de números naturales consecutivos.
+(b) Calcula">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-05-25T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Descomposiciones como sumas de consecutivos</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-25T06:00:00+02:00" itemprop="datePublished" title="25-05-2021">25-05-2021</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1966 es</p>
+<blockquote>
+<ul>
+<li>(a) Calcular el número de maneras de expresar 500 como suma de números naturales consecutivos.</li>
+<li>(b) Calcular el número de tales representaciones para n = 2^x·3^y·5^z, con x, y, z ∈ ℕ. ¿Cuántas de ellas están formadas por un único elemento?</li>
+<li>(c) Calcular el número de tales representaciones para un número natural n.</li>
+</ul>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">consecutivosConSuma</span><span class="w">    </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(consecutivosConSuma n) es la lista de los extremos de las sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">4</span><span class="p">,</span><span class="m">4</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">5</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">6</span><span class="p">,</span><span class="m">6</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">),(</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">),(</span><span class="m">15</span><span class="p">,</span><span class="m">15</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="nf">length </span><span class="p">(</span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..1000</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">16</span>
+</pre></div>
+
+<ul>
+<li>(nDeConsecutivosConSuma n) es la cantidad de sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="m">5</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..10</span><span class="o">^</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">49</span>
+<span class="w">     </span><span class="nf">nDeConsecutivosConSuma </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..17</span><span class="p">])</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="m">672</span>
+</pre></div>
+
+<p>Usando las funciones anteriores, calcular las respuestas del problema de la Olimpiada.</p>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericLength</span><span class="p">,</span><span class="w"> </span><span class="nf">genericTake</span><span class="p">,</span><span class="w"> </span><span class="nf">group</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Numbers.Primes</span><span class="w"> </span><span class="p">(</span><span class="nf">primeFactors</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="p">(</span><span class="o">..</span><span class="p">),</span><span class="w"> </span><span class="nf">quickCheck</span><span class="p">)</span>
+
+<span class="c1">-- 1ª  definición de consecutivosConSuma</span>
+<span class="c1">-- =====================================</span>
+
+<span class="nf">consecutivosConSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">consecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">           </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">y</span><span class="p">],</span>
+<span class="w">           </span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="o">..</span><span class="n">y</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- 2ª  definición de consecutivosConSuma</span>
+<span class="c1">-- =====================================</span>
+
+<span class="nf">consecutivosConSuma2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">consecutivosConSuma2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">           </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">y</span><span class="p">],</span>
+<span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- 3ª  definición de consecutivosConSuma</span>
+<span class="c1">-- =====================================</span>
+
+<span class="nf">consecutivosConSuma3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">consecutivosConSuma3</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">esTriangular</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[(</span><span class="n">p</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">p</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">triangulares</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zs</span><span class="p">,</span>
+<span class="w">                         </span><span class="kr">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">y</span><span class="o">-</span><span class="n">n</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">zs</span><span class="p">]</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericTake</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">triangulares</span>
+
+<span class="c1">-- (esTriangular n) se verifica si n es un número triangular (es decir,</span>
+<span class="c1">-- existe un m tal que n es 1+2+···+m). Por ejemplo,</span>
+<span class="c1">--    esTriangular 6  ==  True</span>
+<span class="c1">--    esTriangular 8  ==  False</span>
+<span class="nf">esTriangular</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esTriangular</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">pertenece</span><span class="p">`</span><span class="w"> </span><span class="n">triangulares</span>
+
+<span class="c1">-- triangulares es la sucesión de los números triangulares. Por ejemplo,</span>
+<span class="c1">--    take 10 triangulares  ==  [0,1,3,6,10,15,21,28,36,45]</span>
+<span class="nf">triangulares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">triangulares</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">scanl1</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- (pertenece x ys) se verifica si x pertenece a la lista infinita</span>
+<span class="c1">-- creciente ys. Por ejemplo,</span>
+<span class="c1">--    pertenece 11 [1,3..]  ==  True</span>
+<span class="c1">--    pertenece 12 [1,3..]  ==  False</span>
+<span class="nf">pertenece</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">pertenece</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+
+<span class="c1">-- (posicion x ys) es la posición de x en la lista ys. Por ejemplo,</span>
+<span class="c1">--    posicion 7 [1,3..]  ==  4</span>
+<span class="nf">posicion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; maximum [length (consecutivosConSuma2 n) | n &lt;- [1..200]]</span>
+<span class="c1">--    9</span>
+<span class="c1">--    (0.96 secs, 651,218,112 bytes)</span>
+<span class="c1">--    λ&gt; maximum [length (consecutivosConSuma3 n) | n &lt;- [1..200]]</span>
+<span class="c1">--    9</span>
+<span class="c1">--    (0.04 secs, 6,664,544 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; maximum [length (consecutivosConSuma2 n) | n &lt;- [1..300]]</span>
+<span class="c1">--    9</span>
+<span class="c1">--    (3.14 secs, 2,172,860,536 bytes)</span>
+<span class="c1">--    λ&gt; maximum [length (consecutivosConSuma3 n) | n &lt;- [1..300]]</span>
+<span class="c1">--    9</span>
+<span class="c1">--    (0.16 secs, 14,523,880 bytes)</span>
+
+<span class="c1">-- 1ª definición de nDeConsecutivosConSuma</span>
+<span class="c1">-- =======================================</span>
+
+<span class="nf">nDeConsecutivosConSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">nDeConsecutivosConSuma</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">consecutivosConSuma</span>
+
+<span class="c1">-- 2ª definición de nDeConsecutivosConSuma</span>
+<span class="c1">-- =======================================</span>
+
+<span class="nf">nDeConsecutivosConSuma2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">nDeConsecutivosConSuma2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">consecutivosConSuma2</span>
+
+<span class="c1">-- 3ª definición de nDeConsecutivosConSuma</span>
+<span class="c1">-- =======================================</span>
+
+<span class="nf">nDeConsecutivosConSuma3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">nDeConsecutivosConSuma3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">consecutivosConSuma3</span>
+
+<span class="c1">-- Cálculo de las respuestas</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- El número de maneras de expresar 500 como suma de números naturales</span>
+<span class="c1">-- consecutivos se calcula con</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma 500</span>
+<span class="c1">--    4</span>
+<span class="c1">-- Por tanto, se puede expresar de 4 formas distintas. Dichas</span>
+<span class="c1">-- expresiones se pueden calcular consecutivos</span>
+<span class="c1">--    λ&gt; consecutivosConSuma 500</span>
+<span class="c1">--    [(8,32),(59,66),(98,102),(500,500)]</span>
+<span class="c1">-- Es decir,</span>
+<span class="c1">--    500 = sum [8..32]</span>
+<span class="c1">--    500 = sum [59..66]</span>
+<span class="c1">--    500 = sum [98..102]</span>
+<span class="c1">--    500 = sum [500..500]</span>
+
+<span class="c1">-- Para la segunda pregunta realizamos los siguientes cálculos</span>
+<span class="c1">--    λ&gt; ts = [(x,y,z) | x &lt;- [0..3], y &lt;- [0..3], z &lt;- [0..3]]</span>
+<span class="c1">--    λ&gt; as = [nDeConsecutivosConSuma3 (2^x*3^y*5^z) | (x,y,z) &lt;- ts]</span>
+<span class="c1">--    λ&gt; as</span>
+<span class="c1">--    [2,2,3,4,3,5,6,8,3,7,9,12,4,8,12,16,</span>
+<span class="c1">--     1,3,3,4,3,4,6,8,3,6,9,12,4,8,12,16,</span>
+<span class="c1">--     1,2,3,4,2,4,7,8,4,6,9,12,4,8,12,16,</span>
+<span class="c1">--     1,2,3,4,2,5,6,8,3,6,9,12,4,8,12,16]</span>
+<span class="c1">--    λ&gt; bs = [(y+1)*(z+1) | (x,y,z) &lt;- ts]</span>
+<span class="c1">--    λ&gt; bs</span>
+<span class="c1">--    [1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16,</span>
+<span class="c1">--     1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16,</span>
+<span class="c1">--     1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16,</span>
+<span class="c1">--     1,2,3,4,2,4,6,8,3,6,9,12,4,8,12,16]</span>
+<span class="c1">-- Casi todos elementos de as son iguales que los de bs y los que no lo</span>
+<span class="c1">-- son se diferencian en 1 como se observa en el siguiente cálculo</span>
+<span class="c1">--    λ&gt; zipWith (-) as bs</span>
+<span class="c1">--    [1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,</span>
+<span class="c1">--     0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,</span>
+<span class="c1">--     0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,</span>
+<span class="c1">--     0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]</span>
+<span class="c1">-- Los que no son iguales se calcula con</span>
+<span class="c1">--    λ&gt; [n | (x,y,z) &lt;- ts, let n = 2^x*3^y*5^z, nDeConsecutivosConSuma3 n /= (y+1)*(z+1)]</span>
+<span class="c1">--    [1,3,15,45,10,6,300,36,120]</span>
+<span class="c1">-- Dichos elementos son los números triangulares (es decir, los son</span>
+<span class="c1">-- sumas de los primeros números naturales) como se comprueba con</span>
+<span class="c1">--    λ&gt; [n | (x,y,z) &lt;- ts, let n = 2^x*3^y*5^z, esTriangular n]</span>
+<span class="c1">--    [1,3,15,45,10,6,300,36,120]</span>
+<span class="c1">--</span>
+<span class="c1">-- En definitiva, el número de representaciones de n = 2^x·3^y·5^z es</span>
+<span class="c1">-- + (y+1)*(z+1), si n no es triangular,</span>
+<span class="c1">-- + 1 + (y+1)*(z+1), si n es triangular,</span>
+
+<span class="c1">-- En el número n = 2^x·3^y·5^z, la parte 3^y·5^z es la parte impar de</span>
+<span class="c1">-- n y (y+1)*(z+1) es el número de divisores de la parte impar de n. Por</span>
+<span class="c1">-- tanto, el número de representaciones de n = 2^x·3^y·5^z es</span>
+<span class="c1">-- + el número de divisores de la parte impar de n, si n no es triangular,</span>
+<span class="c1">-- + uno más el número de divisores de la parte impar de n, si n es triangular,</span>
+
+<span class="c1">-- El cálculo de la segunda parte del apartado (b) es</span>
+<span class="c1">--    λ&gt; [n | n &lt;- [0..100], nDeConsecutivosConSuma3 n == 1]</span>
+<span class="c1">--    [2,4,8,16,32,64]</span>
+<span class="c1">--  que son las potencias de 2 con exponentes positivos.</span>
+
+<span class="c1">-- Finalmente, para el apartado (c), se puede generalizar el resultado</span>
+<span class="c1">-- anterior y el número de representaciones de n = 2^x·3^y·5^z es</span>
+<span class="c1">-- + el número de divisores de la parte impar de n, si n no es triangular,</span>
+<span class="c1">-- + uno más el número de divisores de la parte impar de n, si n es triangular,</span>
+<span class="c1">-- donde la parte impar de n es el número impar y tal que existe un</span>
+<span class="c1">-- número natural k tal que n = 2^k·y.</span>
+
+<span class="c1">-- Vamas a comprobar la conjetura haciendo la siguente definición y</span>
+<span class="c1">-- comprobando que es equivalente a la anterior.</span>
+
+<span class="c1">-- 4ª definición de nDeConsecutivosConSuma</span>
+<span class="c1">-- =======================================</span>
+
+<span class="nf">nDeConsecutivosConSuma4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">nDeConsecutivosConSuma4</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">esTriangular</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">numeroDivisores</span><span class="w"> </span><span class="p">(</span><span class="n">parteImpar</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="n">numeroDivisores</span><span class="w"> </span><span class="p">(</span><span class="n">parteImpar</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- (parteImpar n) es la parte impar de n. Por ejemplo,</span>
+<span class="c1">--    parteImpar 60  ==  15</span>
+<span class="nf">parteImpar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">parteImpar</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">odd</span><span class="w"> </span><span class="n">n</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span>
+<span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">parteImpar</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">-- (numeroDivisores n) es el número de divisores de n. Por ejemplo,</span>
+<span class="c1">--    numeroDivisores 12  ==  6</span>
+<span class="c1">--    numeroDivisores 14  ==  4</span>
+<span class="nf">numeroDivisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">numeroDivisores</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">((</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">genericLength</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">primeFactors</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">nDeConsecutivosConSuma3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">nDeConsecutivosConSuma4</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma (product [1..6])</span>
+<span class="c1">--    6</span>
+<span class="c1">--    (2.34 secs, 8,110,570,304 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma2 (product [1..6])</span>
+<span class="c1">--    6</span>
+<span class="c1">--    (0.24 secs, 123,044,288 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma3 (product [1..6])</span>
+<span class="c1">--    6</span>
+<span class="c1">--    (0.04 secs, 443,408 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma4 (product [1..6])</span>
+<span class="c1">--    6</span>
+<span class="c1">--    (0.01 secs, 103,424 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma2 (product [1..7])</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (10.27 secs, 5,999,094,088 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma3 (product [1..7])</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (0.44 secs, 2,465,936 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma4 (product [1..7])</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (0.01 secs, 107,424 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma3 (product [1..8])</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (53.51 secs, 19,137,984 bytes)</span>
+<span class="c1">--    λ&gt; nDeConsecutivosConSuma4 (product [1..8])</span>
+<span class="c1">--    12</span>
+<span class="c1">--    (0.01 secs, 107,808 bytes)</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" rel="prev" title="El cociente por 11 es igual a la suma de los cuadrados de sus cifras">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../26-numeros_divisibles_respecto_de_una_sucesion/" rel="next" title="Números divisibles respecto de una sucesión">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>

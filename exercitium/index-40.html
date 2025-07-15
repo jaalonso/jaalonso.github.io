@@ -45,425 +45,443 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/10-emparejamiento_de_arboles/" class="u-url">Emparejamiento de árboles</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/" class="u-url">Descomposiciones como sumas de consecutivos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/10-emparejamiento_de_arboles/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-10T06:00:00+02:00" itemprop="datePublished" title="10-06-2014">10-06-2014</time></a>
+            <a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-25T06:00:00+02:00" itemprop="datePublished" title="25-05-2021">25-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1966 es</p>
+<blockquote>
+<ul>
+<li>(a) Calcular el número de maneras de expresar 500 como suma de números naturales consecutivos.</li>
+<li>(b) Calcular el número de tales representaciones para n = 2^x·3^y·5^z, con x, y, z ∈ ℕ. ¿Cuántas de ellas están formadas por un único elemento?</li>
+<li>(c) Calcular el número de tales representaciones para un número natural n.</li>
+</ul>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">consecutivosConSuma</span><span class="w">    </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(consecutivosConSuma n) es la lista de los extremos de las sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">4</span><span class="p">,</span><span class="m">4</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">5</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">6</span><span class="p">,</span><span class="m">6</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">),(</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">),(</span><span class="m">15</span><span class="p">,</span><span class="m">15</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="nf">length </span><span class="p">(</span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..1000</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">16</span>
+</pre></div>
+
+<ul>
+<li>(nDeConsecutivosConSuma n) es la cantidad de sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="m">5</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..10</span><span class="o">^</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">49</span>
+<span class="w">     </span><span class="nf">nDeConsecutivosConSuma </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..17</span><span class="p">])</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="m">672</span>
+</pre></div>
+
+<p>Usando las funciones anteriores, calcular las respuestas del problema de la Olimpiada.</p>
 <hr>
-<p>Los árboles se pueden representar mediante el siguiente tipo de datos</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">[</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-</pre></div>
-
-<p>Por ejemplo, los árboles</p>
-<div class="code"><pre class="code literal-block">  1               3
- / \             /|\
-6   3           / | \
-    |          5  4  7
-    5          |     /\
-               6    2  1
-</pre></div>
-
-<p>se representan por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">[]</span><span class="p">]]</span>
-<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">]]</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="n">emparejaArboles</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">c</span>
-</pre></div>
-
-<p>tal que <code>(emparejaArboles f a1 a2)</code> es el árbol obtenido aplicando la función <code>f</code> a los elementos de los árboles <code>a1</code> y <code>a2</code> que se encuentran en la misma posición. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; emparejaArboles (+) (N 1 [N 2 [], N 3[]]) (N 1 [N 6 []])
-N 2 [N 8 []]
-λ&gt; emparejaArboles (+) ej1 ej2
-N 4 [N 11 [],N 7 []]
-λ&gt; emparejaArboles (+) ej1 ej1
-N 2 [N 12 [],N 6 [N 10 []]]
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/10-emparejamiento_de_arboles/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/09-separacion_por_posicion/" class="u-url">Separación por posición</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" class="u-url">El cociente por 11 es igual a la suma de los cuadrados de sus cifras</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/09-separacion_por_posicion/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-09T06:00:00+02:00" itemprop="datePublished" title="09-06-2014">09-06-2014</time></a>
+            <a href="posts/2021/05/24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-24T06:00:00+02:00" itemprop="datePublished" title="24-05-2021">24-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
+<p>El enunciado del problema 1 de la <a href="https://bit.ly/2RHol2h">Olimpiada Internacional de Matemáticas de 1960</a> es el siguiente</p>
+<blockquote>
+<p>Encontrar todos los números de tres cifras para los que al dividir el número entre 11 se obtiene la suma de los cuadrados de las cifras del número inicial.</p>
+</blockquote>
+<p>Diremos que un número x es especial si al dividir x entre 11 se obtiene la suma de los cuadrados de las cifras de x.</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">particion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">([</span><span class="n">a</span><span class="p">],[</span><span class="n">a</span><span class="p">])</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">esEspecial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que <code>(particion xs)</code> es el par cuya primera componente son los elementos de <code>xs</code> en posiciones pares y su segunda componente son los restantes elementos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">particion [3,5,6,2]    ==  ([3,6],[5,2])
-particion [3,5,6,2,7]  ==  ([3,6,7],[5,2])
-particion "particion"  ==  ("priin","atco")
+<p>tal que (esEspecial x) se verifica si x es especial. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   esEspecial 550          ==  True
+   esEspecial 22           ==  False
+   esEspecial 241          ==  False
+   esEspecial (11^(10^8))  ==  False
 </pre></div>
 
+<p>Usando la función esEspecial, calcular la respuesta al problema de la Olimpiada.</p>
+<p>Calculando los números especiales menores que 10⁶, conjeturar que el conjunto de los números especiales es finito y comprobar la conjetura con QuickCheck.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/09-separacion_por_posicion/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/06-numero_de_inversiones/" class="u-url">Número de inversiones</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/21-ultimos_digitos_de_una_sucesion/" class="u-url">Últimos dígitos de una sucesión</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/06-numero_de_inversiones/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-06T06:00:00+02:00" itemprop="datePublished" title="06-06-2014">06-06-2014</time></a>
+            <a href="posts/2021/05/21-ultimos_digitos_de_una_sucesion/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-21T06:00:00+02:00" itemprop="datePublished" title="21-05-2021">21-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Se dice que en una sucesión de números x(1), x(2), ..., x(n) hay una inversión cuando existe un par de números x(i) &gt; x(j), siendo i &lt; j. Por ejemplo, en la permutación 2, 1, 4, 3 hay dos inversiones (2 antes que 1 y 4 antes que 3) y en la permutación 4, 3, 1, 2 hay cinco inversiones (4 antes 3, 4 antes 1, 4 antes 2, 3 antes 1, 3 antes 2).</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">numeroInversiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<p>El enunciado del problema 1 de la <a href="https://bit.ly/3nY6lN2">Fase Local de la Olimpiada Matemática Española del 2000</a> es</p>
+<blockquote>
+<p>Considérese la sucesión definida como a(1) = 3, y a(n+1) = a(n) + a(n)². Determínense las dos últimas cifras de a(2000).</p>
+</blockquote>
+<p>Definir las sucesiones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">sucesionA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="w">   </span><span class="n">sucesionB</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que <code>(numeroInversiones xs)</code> es el número de inversiones de <code>xs</code>. Por
-ejemplo,</p>
-<div class="code"><pre class="code literal-block">numeroInversiones [2,1,4,3]  ==  2
-numeroInversiones [4,3,1,2]  ==  5
+<p>tales que</p>
+<ul>
+<li>sucesionA es la lista de los términos de la sucesión a(n). Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     take 4 sucesionA  ==  [3,12,156,24492]
 </pre></div>
 
+<ul>
+<li>sucesionB es la lista de los dos últimos dígitos de los término de la sucesión a(n). Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     take 4 sucesionB     ==  [3,12,56,92]
+     sucesionB !! (10^6)  ==  56
+</pre></div>
+
+<p>Usando la sucesionB, calcular la respuesta a la pregunta del problema de la Olimpiada.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/06-numero_de_inversiones/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/21-ultimos_digitos_de_una_sucesion/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/05-descomposiciones_triangulares/" class="u-url">Descomposiciones triangulares</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/20-sumas_y_productos_de_digitos/" class="u-url">Sumas y productos de dígitos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/05-descomposiciones_triangulares/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2014">05-06-2014</time></a>
-            </p>
-		    <p><span class="text-dark">Teoría de números</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<hr>
-<p>Los números triangulares se forman como sigue</p>
-<div class="code"><pre class="code literal-block"><span class="o">*</span><span class="w">     </span><span class="o">*</span><span class="w">      </span><span class="o">*</span>
-<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w">    </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
-<span class="w">           </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
-<span class="mi">1</span><span class="w">     </span><span class="mi">3</span><span class="w">      </span><span class="mi">6</span>
-</pre></div>
-
-<p>La sucesión de los números triangulares se obtiene sumando los números naturales. Así, los 5 primeros números triangulares son</p>
-<div class="code"><pre class="code literal-block"><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span>
-<span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span>
-<span class="mi">10</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span>
-<span class="mi">15</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">descomposicionesTriangulares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">)]</span>
-</pre></div>
-
-<p>tal que <code>descomposicionesTriangulares n</code> es la lista de las ternas correspondientes a las descomposiciones de <code>n</code> en tres sumandos, como máximo, formados por números triangulares. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">4</span>
-<span class="kt">[]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">5</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">12</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">30</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">21</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">61</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">36</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">52</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">36</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">28</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">36</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">21</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">82</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">78</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">66</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">66</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">36</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">))</span>
-<span class="mi">124</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/05-descomposiciones_triangulares/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/04-indices_verdaderos/" class="u-url">Índices de valores verdaderos</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2014/06/04-indices_verdaderos/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-04T06:00:00+02:00" itemprop="datePublished" title="04-06-2014">04-06-2014</time></a>
+            <a href="posts/2021/05/20-sumas_y_productos_de_digitos/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-20T06:00:00+02:00" itemprop="datePublished" title="20-05-2021">20-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">indicesVerdaderos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Bool</span><span class="p">]</span>
+<p>El enunciado de un problema 3 de la <a href="https://bit.ly/3nY6lN2">Fase Local de la Olimpiada Matemática Española del
+2000</a> es</p>
+<blockquote>
+<p>¿Cuántos números, comprendidos entre 1.000 y 9.999, verifican que la suma de sus cuatro dígitos es mayor o igual que el producto de los mismos? ¿Para cuántos de ellos se verifica la igualdad?</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">conMayorSumaQueProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="w">   </span><span class="n">conIgualSumaQueProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que <code>(indicesVerdaderos xs)</code> es la lista infinita de booleanos tal que sólo son verdaderos los elementos cuyos índices pertenecen a la lista estrictamente creciente <code>xs</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; take 6 (indicesVerdaderos [1,4])
-[False,True,False,False,True,False]
-λ&gt; take 6 (indicesVerdaderos [0,2..])
-[True,False,True,False,True,False]
-λ&gt; take 3 (indicesVerdaderos [])
-[False,False,False]
-λ&gt; take 6 (indicesVerdaderos [1..])
-[False,True,True,True,True,True]
-λ&gt; last (take (8*10^7) (indicesVerdaderos [0,5..]))
-False
+<p>tales que</p>
+<ul>
+<li>(conMayorSumaQueProducto a b) es la lista de los números del intervalo [a,b] tales que la suma de sus dígitos es mayor o igual que el producto de los mismos. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; conMayorSumaQueProducto 20 99
+     [20,21,30,31,40,41,50,51,60,61,70,71,80,81,90,91]
+     λ&gt; conMayorSumaQueProducto 120 199
+     [120,121,122,130,131,140,141,150,151,160,161,170,171,180,181,190,191]
+     λ&gt; conMayorSumaQueProducto 220 299
+     [220,221,230,240,250,260,270,280,290]
 </pre></div>
 
+<ul>
+<li>(conIgualSumaQueProducto a b) es la lista de los números del intervalo [a,b] tales que la suma de sus dígitos es igual que el producto de los mismos. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; conIgualSumaQueProducto 10 99
+     [22]
+     λ&gt; conIgualSumaQueProducto 100 999
+     [123,132,213,231,312,321]
+</pre></div>
+
+<p>Usando las funciones anteriores, calcular las respuestas a las preguntas del problema de la Olimpiada.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/04-indices_verdaderos/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/20-sumas_y_productos_de_digitos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/03-alergias/" class="u-url">Código de las alergias</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/19-numeros_suma_de_dos_cuadrados/" class="u-url">Números suma de dos cuadrados</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/03-alergias/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-03T06:00:00+02:00" itemprop="datePublished" title="03-06-2014">03-06-2014</time></a>
+            <a href="posts/2021/05/19-numeros_suma_de_dos_cuadrados/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-19T06:00:00+02:00" itemprop="datePublished" title="19-05-2021">19-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>El enunciado de un problema 3.3 de la <a href="https://bit.ly/3nSV8NM">Fase Local de la Olimpiada Matemática Española del 2004</a> es</p>
+<blockquote>
+<p>Hallad todas las posibles formas de escribir 2003 como suma de dos cuadrados de números enteros positivos.</p>
+</blockquote>
+<p>Definir la sucesión</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">sonSumaDosCuadrados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>cuyos elementos son los números que se pueden expresar como suma de los cuadrados de dos números naturales. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   take 6 sonSumaDosCuadrados      ==  [0,1,2,4,5,8]
+   sonSumaDosCuadrados !! (10^4)   ==  39593
+</pre></div>
+
+<p>Comprobar con QuickCheck las siguientes propiedades:</p>
+<ul>
+<li>La sucesión sonSumaDosCuadrados es infinita.</li>
+<li>Los elementos de sonSumaDosCuadrados no son congruentes con 3 módulo 4 (es decir, sus restos al dividirlo por 4 son distintos de 3).</li>
+</ul>
+<p>Usando sonSumaDosCuadrados, resolver el problema propuesto; es decir, calcular todas las posibles formas de escribir 2003 como suma de dos cuadrados de números enteros positivos.</p>
 <hr>
-<p>Para la determinación de las alergia se utiliza los siguientes códigos para los alérgenos:</p>
-<div class="code"><pre class="code literal-block">Huevos ........   1
-Cacahuetes ....   2
-Mariscos ......   4
-Fresas ........   8
-Tomates .......  16
-Chocolate .....  32
-Polen .........  64
-Gatos ......... 128
-</pre></div>
-
-<p>Así, si Juan es alérgico a los cacahuetes y al chocolate, su puntuación es 34 (es decir, 2+32).</p>
-<p>Los alérgenos se representan mediante el siguiente tipo de dato</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Alergeno</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Huevos</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Cacahuetes</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Mariscos</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Fresas</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Tomates</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Chocolate</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Polen</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Gatos</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Enum</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Bounded</span><span class="p">)</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">alergias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Alergeno</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que <code>(alergias n)</code> es la lista de alergias correspondiente a una puntuación <code>n</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">1</span>
-<span class="o">[</span><span class="n">Huevos</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">2</span>
-<span class="o">[</span><span class="n">Cacahuetes</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">3</span>
-<span class="o">[</span><span class="n">Huevos,Cacahuetes</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">5</span>
-<span class="o">[</span><span class="n">Huevos,Mariscos</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">255</span>
-<span class="o">[</span><span class="n">Huevos,Cacahuetes,Mariscos,Fresas,Tomates,Chocolate,Polen,Gatos</span><span class="o">]</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/03-alergias/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/19-numeros_suma_de_dos_cuadrados/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/02-pimpampum/" class="u-url">Pim, Pam, Pum y divisibilidad</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/18-ternas_aditivas/" class="u-url">Ternas aditivas</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/02-pimpampum/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-02T06:00:00+02:00" itemprop="datePublished" title="02-06-2014">02-06-2014</time></a>
+            <a href="posts/2021/05/18-ternas_aditivas/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-18T06:00:00+02:00" itemprop="datePublished" title="18-05-2021">18-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sonido</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<p>El enunciado del problema C6 de la <a href="https://bit.ly/3xKhMw6">Fase Local de la Olimpiada Matemática Española del 2006</a> es</p>
+<blockquote>
+<p>Decimos que tres números naturales distintos forman una <em>terna aditiva</em> si la suma de los dos primeros de ellos es igual al tercero. Hallar, razonadamente, el máximo número de ternas aditivas que puede haber en un conjunto dado de 20 números naturales.</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">ternasAditivas</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">nTernasAditivas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tal que <code>(sonido n)</code> escribe "Pim" si <code>n</code> es divisible por 3, además escribe "Pam" si <code>n</code> es divisible por 5 y también escribe "Pum" si <code>n</code> es divisible por 7. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">sonido   3  ==  "Pim"
-sonido   5  ==  "Pam"
-sonido   7  ==  "Pum"
-sonido   8  ==  ""
-sonido   9  ==  "Pim"
-sonido  15  ==  "PimPam"
-sonido  21  ==  "PimPum"
-sonido  35  ==  "PamPum"
-sonido 105  ==  "PimPamPum"
+<p>tales que</p>
+<ul>
+<li>(ternasAditivas n) es la lista de las ternas aditivas crecientes que se pueden formar con los n primeros  números enteros positivos. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; ternasAditivas 7
+     [(1,2,3),(1,3,4),(1,4,5),(1,5,6),(1,6,7),(2,3,5),(2,4,6),(2,5,7),(3,4,7)]
+     λ&gt; length (ternasAditivas (10^4))
+     24995000
+</pre></div>
+
+<ul>
+<li>(nTernasAditivas n) es el número de ternas aditivas crecientes que se pueden formar con los n primeros números enteros positivos. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="nv">nTernasAditivas</span><span class="w"> </span><span class="mi">7</span><span class="w">                            </span><span class="o">==</span><span class="w">  </span><span class="mi">9</span>
+<span class="w">     </span><span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">nTernasAditivas</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="ss">))))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">200000</span>
+<span class="w">     </span><span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">nTernasAditivas</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="ss">))))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2000000</span>
+<span class="w">     </span><span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">nTernasAditivas</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="ss">))))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">20000000</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2014/06/02-pimpampum/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/18-ternas_aditivas/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/30-reiteracion_de_funciones/" class="u-url">Reiteración de una función</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/17-cuadrado_mas_primo/" class="u-url">Cuadrado más primo</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/30-reiteracion_de_funciones/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-30T06:00:00+02:00" itemprop="datePublished" title="30-05-2014">30-05-2014</time></a>
+            <a href="posts/2021/05/17-cuadrado_mas_primo/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-17T06:00:00+02:00" itemprop="datePublished" title="17-05-2021">17-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">reiteracion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<p>El enunciado del problema C2 de la <a href="https://bit.ly/3xKhMw6">Fase Local de la Olimpiada Matemática Española del 2006</a> es</p>
+<blockquote>
+<p>¿Existe un conjunto infinito de números naturales que NO se pueden representar en la forma n³+p, siendo n natural y p primo? Razónese la contestación.</p>
+</blockquote>
+<p>Definir la lista</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">noSonCuadradoMasPrimo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que <code>(reiteracion f n x)</code> es el resultado de aplicar <code>n</code> veces la función <code>f</code> a <code>x</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">15</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">50</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">16</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="kt">:</span><span class="p">)</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<p>cuyos elementos son los números que no se pueden escribir como un cuadrado más un primo. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; take 15 noSonCuadradoMasPrimo
+   [1,10,25,34,58,64,85,91,121,130,169,196,214,226,289]
+   λ&gt; noSonCuadradoMasPrimo2 !! 200
+   78961
 </pre></div>
 
+<p>En la lista no está el 2 (porque 2 = 0²+2), el 3 (porque 3 = 1²+2), el 4 (porque 4 = 0²+4) ni el 11 (porque 11 = 3²+2).</p>
+<p>Comprobar con QuickCheck que noSonCuadradoMasPrimo es infinita.</p>
 <hr>
-<p class="more"><a href="posts/2014/05/30-reiteracion_de_funciones/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/17-cuadrado_mas_primo/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/29-algun_vecino_menor/" class="u-url">Elementos de una matriz con algún vecino menor</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/14-numeros_consecutivos_con_factorizacion_con_exponentes_impares/" class="u-url">Números consecutivos con factorización con exponentes impares</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/29-algun_vecino_menor/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-29T06:00:00+02:00" itemprop="datePublished" title="29-05-2014">29-05-2014</time></a>
+            <a href="posts/2021/05/14-numeros_consecutivos_con_factorizacion_con_exponentes_impares/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-14T06:00:00+02:00" itemprop="datePublished" title="14-05-2021">14-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>El enunciado del problema B.5 de la <a href="https://bit.ly/3xKhMw6">Fase Local de la Olimpiada Matemática Española del 2006</a> es</p>
+<blockquote>
+<p>Los números naturales 22, 23, y 24 tienen la siguiente propiedad: los exponentes de los factores primos de su descomposición son todos impares (22 = 2¹·11¹, 23 = 23¹, 24 = 2³·3¹)</p>
+<p>¿Cuál es el mayor número de naturales consecutivos que pueden tener esa propiedad?. Razónese la contestación.</p>
+</blockquote>
+<p>Definir la lista</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">consecutivosExponentesImpares</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="o">[</span><span class="n">[Integer</span><span class="o">]</span><span class="err">]</span>
+</pre></div>
+
+<p>cuyos elementos sean las sucesiones maximales de números enteros positivos tales que los exponentes de los factores primos de su descomposición son todos impares. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; take 7 consecutivosExponentesImpares
+   [[1,2,3],[5,6,7,8],[10,11],[13,14,15],[17],[19],[21,22,23,24]]
+   λ&gt; consecutivosExponentesImpares !! (10^4)
+   [43030,43031,43032,43033,43034,43035]
+</pre></div>
+
+<p>Usando la función consecutivosExponentesImpares conjeturar la respuesta a la pregunta del problema y comprobarla con QuickCheck.</p>
 <hr>
-<p>Las matrices puede representarse mediante tablas cuyos índices son pares de números naturales. Su tipo se define por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Matriz</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Array</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>Por ejemplo, la matriz</p>
-<div class="code"><pre class="code literal-block">|9 4 6 5|
-|8 1 7 3|
-|4 2 5 4|
-</pre></div>
-
-<p>se define por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matriz</span>
-<span class="nf">ej</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listArray</span><span class="w"> </span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-</pre></div>
-
-<p>Los vecinos de un elemento son los que están a un paso en la misma fila, columna o diagonal. Por ejemplo, en la matriz anterior, el 1 tiene 8 vecinos (el 9, 4, 6, 8, 7, 4, 2 y 5) pero el 9 sólo tiene 3 vecinos (el 4, 8 y 1).</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">algunoMenor</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matriz</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que <code>(algunoMenor p)</code> es la lista de los elementos de <code>p</code> que tienen algún vecino menor que él. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">algunoMenor ej == [9,4,6,5,8,7,4,2,5,4]
-</pre></div>
-
-<h3>pues sólo el 1 y el 3 no tienen ningún vecino menor en la matriz.</h3>
-<p class="more"><a href="posts/2014/05/29-algun_vecino_menor/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/14-numeros_consecutivos_con_factorizacion_con_exponentes_impares/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/28-enumera_arbol/" class="u-url">Enumeración de árboles binarios</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/13-sucesion_de_mcd_de_consecutivos/" class="u-url">Sucesión de mcd de consecutivos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/28-enumera_arbol/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-28T06:00:00+02:00" itemprop="datePublished" title="28-05-2014">28-05-2014</time></a>
+            <a href="posts/2021/05/13-sucesion_de_mcd_de_consecutivos/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-13T06:00:00+02:00" itemprop="datePublished" title="13-05-2021">13-05-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>El enunciado de un problema B3 de la <a href="https://bit.ly/3nQFi6t">Fase Local de la Olimpiada Matemática Española del 2007</a> es</p>
+<blockquote>
+<p>Sea a(n) = 1 + n³ la sucesión {2,9,28,65,...} y b(n) = mcd(a(n),a(n+1)). Hallar el máximo valor que puede tomar b(n).</p>
+</blockquote>
+<p>Definir las listas</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">sucesionA</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="w">   </span><span class="n">sucesionB</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>los elementos de sucesionA son los términos de la sucesión a(n). Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     take 12 sucesionA  ==  [2,9,28,65,126,217,344,513,730,1001,1332,1729]
+</pre></div>
+
+<ul>
+<li>los elementos de sucesionAB son los términos de la sucesión b(n). Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">   sucesionB !! 0       ==  1
+   sucesionB !! 4       ==  7
+   sucesionB !! (10^9)  ==  1
+</pre></div>
+
+<p>Usando sucesionB, conjeturar la respuesta del problema y comprobarla con QuickCheck.</p>
 <hr>
-<p>Los árboles binarios se pueden representar mediante el tipo Arbol definido por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="n">a</span>
-<span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">      </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+<p class="more"><a href="posts/2021/05/13-sucesion_de_mcd_de_consecutivos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/12-biparticiones_con_la_misma_suma/" class="u-url">Biparticiones con la misma suma</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2021/05/12-biparticiones_con_la_misma_suma/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-12T06:00:00+02:00" itemprop="datePublished" title="12-05-2021">12-05-2021</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El enunciado de un problema 1 de la <a href="https://bit.ly/3xE52ax">Fase Local de la Olimpiada Matemática Española del 2010</a> es</p>
+<blockquote>
+<p>Sea I(n) el conjunto de los n primeros números naturales impares. Por ejemplo: I(3) = {1,3,5}, I(6) = {1,3,5,7,9,11}, etc.</p>
+<p>¿Para qué números n el conjunto I(n) se puede descomponer en dos partes (disjuntas) de forma que coincidan las sumas de los números en cada una de ellas?</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">biparticiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[([</span><span class="kt">Integer</span><span class="p">],[</span><span class="kt">Integer</span><span class="p">])]</span>
+<span class="w">   </span><span class="n">tieneBiparticiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="w">   </span><span class="n">biparticionD</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">([</span><span class="kt">Integer</span><span class="p">],[</span><span class="kt">Integer</span><span class="p">])</span>
 </pre></div>
 
-<p>Por ejemplo, el árbol</p>
-<div class="code"><pre class="code literal-block">        "B"
-        / \
-       /   \
-      /     \
-    "B"     "A"
-    / \     / \
-  "A" "B" "C" "C"
+<p>tales que</p>
+<ul>
+<li>(biparticiones n) es la lista de las biparticiones de I(n) con igual suma; es decir, la lista de los pares (xs,ys) tales que xs e ys son subconjuntos disjuntos de I(n) cuya unión es I(n) y la suma de los  elementos de xs es igual que la de los de ys. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; biparticiones 4
+     [([1,7],[3,5])]
+     λ&gt; biparticiones 5
+     []
+     λ&gt; biparticiones 8
+     [([1,3,13,15],[5,7,9,11]),([1,5,11,15],[3,7,9,13]),([1,7,9,15],[3,5,11,13]),([1,7,11,13],[3,5,9,15])]
 </pre></div>
 
-<p>se puede definir por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">ej1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">String</span>
-<span class="w">   </span><span class="n">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"A"</span><span class="p">)</span><span class="w"> </span><span class="s">"B"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"B"</span><span class="p">))</span><span class="w"> </span><span class="s">"B"</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"C"</span><span class="p">)</span><span class="w"> </span><span class="s">"A"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"C"</span><span class="p">))</span>
+<ul>
+<li>(tieneBiparticiones n) se verifica si I(n) tiene alguna bipartición con igual suma. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     tieneBiparticiones 4  ==  True
+     tieneBiparticiones 5  ==  False
+     tieneBiparticiones (10^(10^7))  ==  True
 </pre></div>
 
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">enumeraArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<ul>
+<li>(biparticionD n) es una de las biparticiones de I(n) con igual suma, si tiene alguna y Nothing, en caso contrario. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     λ&gt; biparticionD 6
+     Just ([7,11],[1,3,5,9])
+     λ&gt; biparticionD 7
+     Nothing
+     λ&gt; biparticionD 8
+     Just ([1,7,9,15],[3,5,11,13])
+     λ&gt; biparticionD 10
+     Just ([7,11,13,19],[1,3,5,9,15,17])
+     λ&gt; biparticionD 12
+     Just ([1,7,9,15,17,23],[3,5,11,13,19,21])
+     λ&gt; biparticionD 30
+     Just ([7,11,13,19,21,27,29,35,37,43,45,51,53,59],[1,3,5,9,15,17,23,25,31,33,39,41,47,49,55,57])
+     λ&gt; length (show (biparticionD (2*10^4)))
+     114455
 </pre></div>
 
-<p>tal que <code>(enumeraArbol a)</code> es el árbol obtenido numerando las hojas y los nodos de <code>a</code> desde la hoja izquierda hasta la raíz. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="err">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">enumeraArbol</span><span class="w"> </span><span class="n">ej1</span>
-<span class="w">   </span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">6</span><span class="p">))</span>
-</pre></div>
-
-<p>Gráficamente,</p>
-<div class="code"><pre class="code literal-block">         3
-        / \
-       /   \
-      /     \
-     1       5
-    / \     / \
-   0   2   4   6
-</pre></div>
-
+<p>Usando tieneBiparticiones calcular los 10 primeros valores buscados (es decir, los 10 valores de n para los que I(n) se puede descomponer en dos partes (disjuntas) de forma que coincidan las sumas de los números en cada una de ellas) y generalizar.</p>
 <hr>
-<p class="more"><a href="posts/2014/05/28-enumera_arbol/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/05/12-biparticiones_con_la_misma_suma/">Leer más…</a></p>
 </div>
                 </div>
             </article>
