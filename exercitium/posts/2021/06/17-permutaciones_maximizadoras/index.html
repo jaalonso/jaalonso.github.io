@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Máximo valor de permutaciones | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2021/06/17-permutaciones_maximizadoras/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Máximo valor de permutaciones | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../15-maxima_suma_de_dos_cuadrados_condicionados/" title="Máxima suma de dos cuadrados condicionados" type="text/html">
+<link rel="next" href="../22-numeros_superabundantes/" title="Números superabundantes" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Máximo valor de permutaciones">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2021/06/17-permutaciones_maximizadoras/">
+<meta property="og:description" content="El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1982 es
+
+Calcular una permutación (a(1),...,a(n)) de {1,2,...,n} que maximice el valor de
+
+a(1)a(2) + a(2)a(3) + ···">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-06-17T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Máximo valor de permutaciones</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-06-17T06:00:00+02:00" itemprop="datePublished" title="17-06-2021">17-06-2021</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1982 es</p>
+<blockquote>
+<p>Calcular una permutación (a(1),...,a(n)) de {1,2,...,n} que maximice el valor de</p>
+<blockquote>
+<p>a(1)a(2) + a(2)a(3) + ··· + a(n)a(1)</p>
+</blockquote>
+</blockquote>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (maximoValorPermutaciones n) es el máximo valor de</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="err">···</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+<p>para todas las permutaciones (a(1),...,a(n)) de {1,2,...,n}. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="mi">4</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">25</span>
+<span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">333333383333315000003</span>
+<span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">8</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">333333338333333150000003</span>
+<span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">9</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">333333333833333331500000003</span>
+<span class="w">   </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">1000</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">3000</span>
+<span class="w">   </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">2000</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">6000</span>
+<span class="w">   </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">3000</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">9000</span>
+</pre></div>
+
+<p>Comprobar con QuickCheck que, para todo entero positivo n y toda permutación (a(1),...,a(n)) de {1,2,...,n},</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="err">···</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">permutations</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="p">(</span><span class="n">permutations</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]))</span>
+
+<span class="nf">valor</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">valor</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">xs</span><span class="p">)]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">valor</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="p">(</span><span class="n">permutacionesMaximizadoras</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (permutacionesMaximizadoras n) es la lista de las permutaciones</span>
+<span class="c1">-- (a(1),...,a(n)) de {1,2,...,n} para las que el valor de</span>
+<span class="c1">--       a(1)a(2) + a(2)a(3) + ··· + a(n)a(1)</span>
+<span class="c1">-- es máximo. Por ejemplo,</span>
+<span class="c1">--    λ&gt; permutacionesMaximizadoras 5</span>
+<span class="c1">--    [[3,1,2,4,5],[4,2,1,3,5],[3,5,4,2,1],[2,4,5,3,1],[2,1,3,5,4],</span>
+<span class="c1">--     [5,3,1,2,4],[4,5,3,1,2],[1,3,5,4,2],[5,4,2,1,3],[1,2,4,5,3]]</span>
+<span class="nf">permutacionesMaximizadoras</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+<span class="nf">permutacionesMaximizadoras</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">permutations</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+<span class="w">        </span><span class="n">m</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="n">xss</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones3</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">valor</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">menorPermutacionMaximizadora</span>
+
+<span class="c1">-- (menorPermutacionMaximizadora n) es la menor de las permutaciones</span>
+<span class="c1">-- (a(1),...,a(n)) de {1,2,...,n} para las que el valor de</span>
+<span class="c1">--       a(1)a(2) + a(2)a(3) + ··· + a(n)a(1)</span>
+<span class="c1">-- es máximo. Por ejemplo,</span>
+<span class="c1">--    menorPermutacionMaximizadora 5  ==  [1,2,4,5,3]</span>
+<span class="nf">menorPermutacionMaximizadora</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">menorPermutacionMaximizadora</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">minimum</span><span class="w"> </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">permutations</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+<span class="w">        </span><span class="n">m</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="n">xss</span><span class="p">)</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones4</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">valor</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">menorPermutacionMaximizadora2</span>
+
+<span class="c1">-- Redefinición de menorPermutacionMaximizadora observando que</span>
+<span class="c1">--    menorPermutacionMaximizadora 2  ==  [1,2]</span>
+<span class="c1">--    menorPermutacionMaximizadora 3  ==  [1,2,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 4  ==  [1,2,4,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 5  ==  [1,2,4,5,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 6  ==  [1,2,4,6,5,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 7  ==  [1,2,4,6,7,5,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 8  ==  [1,2,4,6,8,7,5,3]</span>
+<span class="c1">--    menorPermutacionMaximizadora 9  ==  [1,2,4,6,8,9,7,5,3]</span>
+<span class="nf">menorPermutacionMaximizadora2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">menorPermutacionMaximizadora2</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">3</span><span class="o">..</span><span class="mi">3</span><span class="p">]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">..</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones5</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">3</span><span class="o">..</span><span class="mi">3</span><span class="p">])</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">..</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">maximoValorPermutaciones6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">maximoValorPermutaciones6</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="nf">maximoValorPermutaciones6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">^</span><span class="mi">3</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="o">-</span><span class="mi">11</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">6</span>
+
+<span class="c1">-- Comprobación de la equivalencia</span>
+<span class="c1">-- ===============================</span>
+
+<span class="c1">-- La propiedad, para pequeños valores, es</span>
+<span class="nf">prop_equivalencia1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">maximoValorPermutaciones</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">                                           </span><span class="n">f</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">maximoValorPermutaciones2</span><span class="p">,</span>
+<span class="w">                                                 </span><span class="n">maximoValorPermutaciones3</span><span class="p">,</span>
+<span class="w">                                                 </span><span class="n">maximoValorPermutaciones4</span><span class="p">,</span>
+<span class="w">                                                 </span><span class="n">maximoValorPermutaciones5</span><span class="p">,</span>
+<span class="w">                                                 </span><span class="n">maximoValorPermutaciones6</span><span class="p">]]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; prop_equivalencia1 9</span>
+<span class="c1">--    True</span>
+
+<span class="c1">-- La propiedad, para grandes valores, es</span>
+<span class="nf">prop_equivalencia2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_equivalencia2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">maximoValorPermutaciones5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">maximoValorPermutaciones6</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia2</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (15.33 secs, 15,147,056,648 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones2 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (15.00 secs, 15,193,414,656 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones3 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (31.86 secs, 28,297,837,624 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones4 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (0.01 secs, 104,120 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones5 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (0.01 secs, 104,264 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones6 10</span>
+<span class="c1">--    368</span>
+<span class="c1">--    (0.01 secs, 102,712 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones4 (4*10^6)</span>
+<span class="c1">--    21333341333326000003</span>
+<span class="c1">--    (2.77 secs, 1,972,797,144 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones5 (4*10^6)</span>
+<span class="c1">--    21333341333326000003</span>
+<span class="c1">--    (2.66 secs, 1,972,797,440 bytes)</span>
+<span class="c1">--    λ&gt; maximoValorPermutaciones6 (4*10^6)</span>
+<span class="c1">--    21333341333326000003</span>
+<span class="c1">--    (0.03 secs, 119,592 bytes)</span>
+
+<span class="c1">-- Propiedad</span>
+<span class="c1">-- =========</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_maximizadora</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_maximizadora</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="kr">do</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">shuffle</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+<span class="w">     </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">maximoValorPermutaciones6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">valor</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_maximizadora</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../15-maxima_suma_de_dos_cuadrados_condicionados/" rel="prev" title="Máxima suma de dos cuadrados condicionados">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../22-numeros_superabundantes/" rel="next" title="Números superabundantes">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
