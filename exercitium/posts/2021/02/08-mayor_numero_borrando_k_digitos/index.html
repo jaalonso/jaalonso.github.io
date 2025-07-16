@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mayor número borrando k dígitos | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2021/02/08-mayor_numero_borrando_k_digitos/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Mayor número borrando k dígitos | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../05-borra_k_elementos/" title="Listas obtenidas borrando k elementos" type="text/html">
+<link rel="next" href="../09-ordenacion_de_ternas_de_enteros/" title="Ordenación de ternas de enteros" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Mayor número borrando k dígitos">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2021/02/08-mayor_numero_borrando_k_digitos/">
+<meta property="og:description" content="Definir la función
+   mayorBorrando :: Int -&gt; Integer -&gt; Integer
+
+
+tal que (mayorBorrando k n) es el mayor número obtenido borrando k dígitos de n (se supone que n tiene más de k dígitos). Por ejemplo">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-02-08T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Mayor número borrando k dígitos</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2021-02-08T06:00:00+02:00" itemprop="datePublished" title="08-02-2021">08-02-2021</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">mayorBorrando</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (mayorBorrando k n) es el mayor número obtenido borrando k dígitos de n (se supone que n tiene más de k dígitos). Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   mayorBorrando 1 6782334  ==  782334
+   mayorBorrando 3 6782334  ==  8334
+   mayorBorrando 3 10020    ==  20
+   mayorBorrando 1000000 (4256 + 10^1000004) == 14256
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">subsequences</span><span class="p">)</span>
+
+<span class="c1">-- 1ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista1 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista1 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista1 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">borra1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- (borra1 k xs) es la lista de las listas obtenidas borrando k elementos</span>
+<span class="c1">-- de xs. Por ejemplo,</span>
+<span class="c1">--    borra1 1 "abcd"  ==  ["abc","abd","acd","bcd"]</span>
+<span class="c1">--    borra1 2 "abcd"  ==  ["ab","ac","bc","ad","bd","cd"]</span>
+<span class="c1">--    borra1 3 "abcd"  ==  ["a","b","c","d"]</span>
+<span class="nf">borra1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">subsequences</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- 2ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista2 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista2 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista2 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">borra2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- (borra2 k xs) es la lista de las listas obtenidas borrando k elementos</span>
+<span class="c1">-- de xs. Por ejemplo,</span>
+<span class="c1">--    borra2 1 "abcd"  ==  ["abc","abd","acd","bcd"]</span>
+<span class="c1">--    borra2 2 "abcd"  ==  ["ab","ac","ad","bc","bd","cd"]</span>
+<span class="c1">--    borra2 3 "abcd"  ==  ["a","b","c","d"]</span>
+<span class="nf">borra2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">borra2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">xs</span><span class="p">]</span>
+<span class="nf">borra2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">borra2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="kt">:</span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">borra2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">borra2</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- 3ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista3 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista3 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista3 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">itera</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">borraUnoListas</span><span class="w"> </span><span class="p">[</span><span class="n">xs</span><span class="p">])</span>
+
+<span class="c1">-- (borraUnoListas xss) es la lista obtenida borrando un elemento (de</span>
+<span class="c1">-- todas las formas posibles de la lista de listas no vacías xss. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    borraUnoListas ["abc","def"]  ==  ["bc","ac","ab","ef","df","de"]</span>
+<span class="nf">borraUnoListas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">borraUnoListas</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">borraUno</span>
+
+<span class="c1">-- (borraUno xs) es la lista de listas obtenidas borrando un elemento de la</span>
+<span class="c1">-- lista no vacía xs de todas las formas posibles. Por ejemplo,</span>
+<span class="c1">--    borraUno "abcde"  ==  ["bcde","acde","abde","abce","abcd"]</span>
+<span class="nf">borraUno</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">borraUno</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="nf">borraUno</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">borraUno</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- (itera k f x) es el resultado de aplicar k veces la función f al</span>
+<span class="c1">-- elemento x. Por ejmplo,</span>
+<span class="c1">--    itera 3 (*2) 1   ==  8</span>
+<span class="c1">--    itera 4 (+2) 10  ==  18</span>
+<span class="nf">itera</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">itera</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span>
+<span class="nf">itera</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">itera</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1">-- 4ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista4 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista4 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista4 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">itera</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">mayorBorraUno</span>
+
+<span class="c1">-- (mayorBorraUno xs) es la mayor lista obtenida eliminando un elemento de</span>
+<span class="c1">-- xs. Por ejemplo,</span>
+<span class="c1">--    mayorBorraUno "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorraUno "782334"   ==  "82334"</span>
+<span class="c1">--    mayorBorraUno "82334"    ==  "8334"</span>
+<span class="nf">mayorBorraUno</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorraUno</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">borraUno</span>
+
+<span class="c1">-- 5ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista5 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista5 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista5 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">itera</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">mayorBorraUno2</span>
+
+<span class="c1">-- (mayorBorraUno2 xs) es la mayor lista obtenida eliminando un elemento de</span>
+<span class="c1">-- xs. Por ejemplo,</span>
+<span class="c1">--    mayorBorraUno2 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorraUno2 "782334"   ==  "82334"</span>
+<span class="c1">--    mayorBorraUno2 "82334"    ==  "8334"</span>
+<span class="nf">mayorBorraUno2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorraUno2</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">mayorBorraUno2</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">y</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">y</span><span class="kt">:</span><span class="n">xs</span>
+<span class="w">                        </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">mayorBorraUno2</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- 6ª definición</span>
+<span class="c1">-- =============</span>
+
+<span class="nf">mayorBorrando6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorBorrando6</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">read</span><span class="w"> </span><span class="p">(</span><span class="n">mayorBorrandoLista6</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (mayorBorrandoLista6 k xs) es la mayor lista obtenida borrando k elementos de</span>
+<span class="c1">-- xs (se supone que xs tiene más de k elementos). Por ejemplo,</span>
+<span class="c1">--    mayorBorrandoLista6 1 "6782334"  ==  "782334"</span>
+<span class="c1">--    mayorBorrandoLista6 3 "6782334"  ==  "8334"</span>
+<span class="nf">mayorBorrandoLista6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">mayorBorrandoLista6</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="nf">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">ys</span><span class="w">     </span><span class="n">xs</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">ys</span><span class="w">     </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">drop</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="nf">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">x</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">k</span><span class="w">     </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">                    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span><span class="w">       </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; mayorBorrando 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--    (0.06 secs, 15,165,496 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando2 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--    (0.04 secs, 19,662,816 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando3 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--    (6.93 secs, 5,143,807,064 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando4 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--    (0.01 secs, 183,728 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando5 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--    (0.01 secs, 118,984 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando6 6 (product [1..18])</span>
+<span class="c1">--    7705728000</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; mayorBorrando 17 (product [1..25])</span>
+<span class="c1">--    998400000</span>
+<span class="c1">--    (19.09 secs, 14,516,359,464 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando2 17 (product [1..25])</span>
+<span class="c1">--    998400000</span>
+<span class="c1">--    (47.39 secs, 30,066,413,608 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando4 17 (product [1..25])</span>
+<span class="c1">--    998400000</span>
+<span class="c1">--    (0.01 secs, 458,320 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando5 17 (product [1..25])</span>
+<span class="c1">--    998400000</span>
+<span class="c1">--    (0.01 secs, 134,424 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando6 17 (product [1..25])</span>
+<span class="c1">--    984000000</span>
+<span class="c1">--    (0.01 secs, 124,600 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; mayorBorrando4 600 (product [1..300])</span>
+<span class="c1">--    999999999999999</span>
+<span class="c1">--    (3.29 secs, 4,421,841,944 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando5 600 (product [1..300])</span>
+<span class="c1">--    999999999999999</span>
+<span class="c1">--    (0.03 secs, 6,690,440 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando6 600 (product [1..300])</span>
+<span class="c1">--    960000000000000</span>
+<span class="c1">--    (0.01 secs, 593,864 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; mayorBorrando5 10000 (4256 + 10^10004)</span>
+<span class="c1">--    14256</span>
+<span class="c1">--    (16.04 secs, 18,221,784,872 bytes)</span>
+<span class="c1">--    λ&gt; mayorBorrando6 10000 (4256 + 10^10004)</span>
+<span class="c1">--    14256</span>
+<span class="c1">--    (0.02 secs, 6,669,592 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; mayorBorrando6 1000000 (4256 + 10^1000004)</span>
+<span class="c1">--    14256</span>
+<span class="c1">--    (1.04 secs, 655,561,656 bytes)</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../05-borra_k_elementos/" rel="prev" title="Listas obtenidas borrando k elementos">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../09-ordenacion_de_ternas_de_enteros/" rel="next" title="Ordenación de ternas de enteros">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
