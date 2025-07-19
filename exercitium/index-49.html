@@ -340,149 +340,150 @@ length (takeWhile (&lt;10^5) duffinianos)  ==  24434
 <p class="more"><a href="posts/2021/01/12-numeros_duffinianos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/16-divisores_con_final/" class="u-url">Divisores de un número con final dado</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/05-caminos_reducidos/" class="u-url">Caminos reducidos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/16-divisores_con_final/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-16T06:00:00+02:00" itemprop="datePublished" title="16-06-2014">16-06-2014</time></a>
+            <a href="posts/2020/06/05-caminos_reducidos/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2020">05-06-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
+<p>Un camino es una sucesión de pasos en una de las cuatros direcciones Norte, Sur, Este, Oeste. Ir en una dirección y a continuación en la opuesta es un esfuerzo que se puede reducir, Por ejemplo, el camino [Norte,Sur,Este,Sur] se puede reducir a [Este,Sur].</p>
+<p>Un camino se dice que es reducido si no tiene dos pasos consecutivos en direcciones opuesta. Por ejemplo, [Este,Sur] es reducido y [Norte,Sur,Este,Sur] no lo es.</p>
+<p>En Haskell, las direcciones y los caminos se pueden definir por</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Direccion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">E</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">O</span><span class="w"> </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Camino</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Direccion</span><span class="p">]</span>
+</pre></div>
+
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="n">divisoresConFinal</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="k">Integer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">Integer</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">Integer</span><span class="o">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">reducido</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Camino</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Camino</span>
 </pre></div>
 
-<p>tal que <code>(divisoresConFinal n m)</code> es la lista de los divisores de <code>n</code> cuyos dígitos finales coincide con <code>m</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">divisoresConFinal 84 4    ==  [4,14,84]
-divisoresConFinal 720 20  ==  [20,120,720]
+<p>tal que (reducido ds) es el camino reducido equivalente al camino ds. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="n">reducido</span><span class="w"> </span><span class="err">[]</span><span class="w">                              </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N</span><span class="o">]</span><span class="w">                             </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O</span><span class="o">]</span><span class="w">                           </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N,O</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,E</span><span class="o">]</span><span class="w">                         </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,E,S</span><span class="o">]</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,S,E</span><span class="o">]</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N,O,S,E</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">S,S,S,N,N,N</span><span class="o">]</span><span class="w">                   </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,S,S,E,O,N</span><span class="o">]</span><span class="w">                   </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,S,S,E,O,N,O</span><span class="o">]</span><span class="w">                 </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">O</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">cycle</span><span class="w"> </span><span class="o">[</span><span class="n">N,E,O,S</span><span class="o">]</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+</pre></div>
+
+<p>Nótese que en el penúltimo ejemplo las reducciones son</p>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="o">[</span><span class="n">N,S,S,E,O,N,O</span><span class="o">]</span>
+<span class="o">--&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">S,E,O,N,O</span><span class="o">]</span>
+<span class="o">--&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">S,N,O</span><span class="o">]</span>
+<span class="c1">--&gt; [O]</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2014/06/16-divisores_con_final/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/06/05-caminos_reducidos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/13-orbita_prima/" class="u-url">Órbita prima</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/04-subexpresiones_aritmeticas/" class="u-url">Subexpresiones aritméticas</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/13-orbita_prima/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-13T06:00:00+02:00" itemprop="datePublished" title="13-06-2014">13-06-2014</time></a>
+            <a href="posts/2020/06/04-subexpresiones_aritmeticas/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-04T06:00:00+02:00" itemprop="datePublished" title="04-06-2020">04-06-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>Las expresiones aritméticas pueden representarse usando el siguiente tipo de datos</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
+</pre></div>
+
+<p>Por ejemplo, la expresión <code>2*(3+7)</code> se representa por</p>
+<div class="code"><pre class="code literal-block">P (N 2) (S (N 3) (N 7))
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">subexpresiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kt">Expr</span>
+</pre></div>
+
+<p>tal que (subexpresiones e) es el conjunto de las subexpresiones de e. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">λ&gt; subexpresiones (S (N 2) (N 3))
+fromList [N 2,N 3,S (N 2) (N 3)]
+λ&gt; subexpresiones (P (S (N 2) (N 2)) (N 7))
+fromList [N 2,N 7,S (N 2) (N 2),P (S (N 2) (N 2)) (N 7)]
+</pre></div>
+
 <hr>
-<p>La órbita prima de un número <code>n</code> es la sucesión construida de la siguiente forma:</p>
+<p class="more"><a href="posts/2020/06/04-subexpresiones_aritmeticas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/03-numero_como_suma_de_sus_digitos/" class="u-url">Número como suma de sus dígitos</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2020/06/03-numero_como_suma_de_sus_digitos/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-03T06:00:00+02:00" itemprop="datePublished" title="03-06-2020">03-06-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El número 23 se puede escribir de 4 formas como suma de sus dígitos</p>
+<div class="code"><pre class="code literal-block"><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
+<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
+<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
+<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
+</pre></div>
+
+<p>La de menor número de sumando es la última, que tiene 8 sumandos.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">minimoSumandosDigitos</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">graficaMinimoSumandosDigitos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+</pre></div>
+
+<p>tales que</p>
 <ul>
-<li>si <code>n</code> es compuesto su órbita no tiene elementos</li>
-<li>si <code>n</code> es primo, entonces <code>n</code> está en su órbita; además, sumamos <code>n</code> y sus dígitos, si el resultado es un número primo repetimos el proceso hasta obtener un número compuesto.</li>
+<li>(minimoSumandosDigitos n) es el menor número de dígitos de n cuya suma es n. Por ejemplo,</li>
 </ul>
-<p>Por ejemplo, con el 11 podemos repetir el proceso dos veces</p>
-<div class="code"><pre class="code literal-block"><span class="mf">13</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">11</span><span class="o">+</span><span class="mf">1</span><span class="o">+</span><span class="mf">1</span>
-<span class="mf">17</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">13</span><span class="o">+</span><span class="mf">1</span><span class="o">+</span><span class="mf">3</span>
+<div class="code"><pre class="code literal-block">minimoSumandosDigitos 23    ==  8
+minimoSumandosDigitos 232   ==  78
+minimoSumandosDigitos 2323  ==  775
+map minimoSumandosDigitos [10..20] == [10,11,6,5,5,3,6,5,4,3,10]
 </pre></div>
 
-<p>Así, la órbita prima de 11 es 11, 13, 17.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">orbita</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que <code>(orbita n)</code> es la órbita prima de <code>n</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">orbita 11 == [11,13,17]
-orbita 59 == [59,73,83]
-</pre></div>
-
-<h3>Calcular el menor número cuya órbita prima tiene más de 3 elementos.</h3>
-<p class="more"><a href="posts/2014/06/13-orbita_prima/">Leer más…</a></p>
+<ul>
+<li>(graficaMinimoSumandosDigitos n) dibuja la gráfica de (minimoSumandosDigitos k) par los k primeros números naturales. Por ejemplo, (graficaMinimoSumandosDigitos 300) dibuja</li>
+</ul>
+<p><img alt="Número como suma de sus dígitos" src="images/Numero_como_suma_de_sus_digitos.png"></p>
+<hr>
+<p class="more"><a href="posts/2020/06/03-numero_como_suma_de_sus_digitos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/12-ordenada_ciclicamente/" class="u-url">Ordenada cíclicamente</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/02-cambio_con_el_menor_numero_de_monedas/" class="u-url">Cambio con el menor número de monedas</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/12-ordenada_ciclicamente/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-12T06:00:00+02:00" itemprop="datePublished" title="12-06-2014">12-06-2014</time></a>
+            <a href="posts/2020/06/02-cambio_con_el_menor_numero_de_monedas/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-02T06:00:00+02:00" itemprop="datePublished" title="02-06-2020">02-06-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <hr>
-<p>Se dice que una sucesión x(1), ..., x(n) está ordenada cíclicamente si existe un índice i tal que la sucesión</p>
-<div class="code"><pre class="code literal-block">x(i), x(i+1), ..., x(n), x(1), ..., x(i-1)
-</pre></div>
-
-<p>está ordenada creciente de forma estricta.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ordenadaCiclicamente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tal que <code>(ordenadaCiclicamente xs)</code> es el índice a partir del cual está ordenada, si la lista está ordenado cíclicamente y <code>Nothing</code> en caso contrario. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">ordenadaCiclicamente [1,2,3,4]      ==  Just 0
-ordenadaCiclicamente [5,8,1,3]      ==  Just 2
-ordenadaCiclicamente [4,6,7,5,1,3]  ==  Nothing
-ordenadaCiclicamente [1,0,3,2]      ==  Nothing
-ordenadaCiclicamente [1,2,0]        ==  Just 2
-ordenadaCiclicamente "cdeab"        ==  Just 3
-</pre></div>
-
-<h3>
-<em>Nota</em>: Se supone que el argumento es una lista no vacía sin elementos repetidos.</h3>
-<p class="more"><a href="posts/2014/06/12-ordenada_ciclicamente/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/11-elimina_aisladas/" class="u-url">Eliminación de las ocurrencias aisladas</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2014/06/11-elimina_aisladas/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-11T06:00:00+02:00" itemprop="datePublished" title="11-06-2014">11-06-2014</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">eliminaAisladas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que <code>(eliminaAisladas x ys)</code> es la lista obtenida eliminando de <code>ys</code> las ocurrencias aisladas de <code>x</code> (es decir, aquellas ocurrencias de <code>x</code> tales que su elemento anterior y posterior son distintos de <code>x</code>). Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">eliminaAisladas 'X' ""                  == ""
-eliminaAisladas 'X' "X"                 == ""
-eliminaAisladas 'X' "XX"                == "XX"
-eliminaAisladas 'X' "XXX"               == "XXX"
-eliminaAisladas 'X' "abcd"              == "abcd"
-eliminaAisladas 'X' "Xabcd"             == "abcd"
-eliminaAisladas 'X' "XXabcd"            == "XXabcd"
-eliminaAisladas 'X' "XXXabcd"           == "XXXabcd"
-eliminaAisladas 'X' "abcdX"             == "abcd"
-eliminaAisladas 'X' "abcdXX"            == "abcdXX"
-eliminaAisladas 'X' "abcdXXX"           == "abcdXXX"
-eliminaAisladas 'X' "abXcd"             == "abcd"
-eliminaAisladas 'X' "abXXcd"            == "abXXcd"
-eliminaAisladas 'X' "abXXXcd"           == "abXXXcd"
-eliminaAisladas 'X' "XabXcdX"           == "abcd"
-eliminaAisladas 'X' "XXabXXcdXX"        == "XXabXXcdXX"
-eliminaAisladas 'X' "XXXabXXXcdXXX"     == "XXXabXXXcdXXX"
-eliminaAisladas 'X' "XabXXcdXeXXXfXx"   == "abXXcdeXXXfx"
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/11-elimina_aisladas/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/06/02-cambio_con_el_menor_numero_de_monedas/">Leer más…</a></p>
 </div>
                 </div>
             </article>
