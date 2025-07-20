@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cálculo de pi mediante los métodos de Gregory-Leibniz y de Beeler | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2020/04/07-calculo_de_pi_mediante_los_metodos_de_gregory-leibniz_y_de_beeler/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Cálculo de pi mediante los métodos de Gregory-Leibniz y de Beeler | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../06-calculo_de_pi_con_el_producto_de_wallis/" title="Cálculo de pi con el producto de Wallis" type="text/html">
+<link rel="next" href="../08-distribucion_de_digitos_de_pi/" title="Cálculo de dígitos de pi y su distribución" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Cálculo de pi mediante los métodos de Gregory-Leibniz y de Beeler">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2020/04/07-calculo_de_pi_mediante_los_metodos_de_gregory-leibniz_y_de_beeler/">
+<meta property="og:description" content="La fórmula de Gregory-Leibniz para calcular pi es
+
+y la de Beeler es
+
+Definir las funciones
+aproximaPiGL     :: Int -&gt; Double
+aproximaPiBeeler :: Int -&gt; Double
+graficas         :: [Int] -&gt; IO ()
+
+
+tal">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-04-07T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Cálculo de pi mediante los métodos de Gregory-Leibniz y de Beeler</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2020-04-07T06:00:00+02:00" itemprop="datePublished" title="07-04-2020">07-04-2020</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>La fórmula de Gregory-Leibniz para calcular pi es
+<img alt="Fórmula de Gregory-Leibniz para calcular pi" src="../../../../images/Calculo_de_pi_mediante_los_metodos_de_Gregory-Leibniz_y_de_Beeler_1.png">
+y la de Beeler es
+<img alt="Fórmula de Beeler para calcular pi" src="../../../../images/Calculo_de_pi_mediante_los_metodos_de_Gregory-Leibniz_y_de_Beeler_2.png"></p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">aproximaPiGL</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiBeeler</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">graficas</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(aproximaPiGL n) es la aproximación de pi con los primeros n términos de la fórmula de Gregory-Leibniz. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">aproximaPiGL 1       ==  4.0
+aproximaPiGL 2       ==  2.666666666666667
+aproximaPiGL 3       ==  3.466666666666667
+aproximaPiGL 10      ==  3.0418396189294032
+aproximaPiGL 100     ==  3.1315929035585537
+aproximaPiGL 1000    ==  3.140592653839794
+aproximaPiGL 10000   ==  3.1414926535900345
+aproximaPiGL 100000  ==  3.1415826535897198
+</pre></div>
+
+<ul>
+<li>(aproximaPiBeeler n) es la aproximación de pi con los primeros n términos de la fórmula de Beeler. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">aproximaPiBeeler 1   ==  2.0
+aproximaPiBeeler 2   ==  2.6666666666666665
+aproximaPiBeeler 3   ==  2.933333333333333
+aproximaPiBeeler 10  ==  3.140578169680337
+aproximaPiBeeler 60  ==  3.141592653589793
+pi                   ==  3.141592653589793
+</pre></div>
+
+<ul>
+<li>(graficas xs) dibuja la gráfica de las k-ésimas aproximaciones de pi, donde k toma los valores de la lista xs, con las fórmulas de Gregory-Leibniz y de Beeler. Por ejemplo, (graficas [1..25]) dibuja
+<img alt="Fórmula de Gregory-Leibniz para calcular pi" src="../../../../images/Calculo_de_pi_mediante_los_metodos_de_Gregory-Leibniz_y_de_Beeler_3.png">
+donde la línea morada corresponde a la aproximación de Gregory-Leibniz y la verde a la de Beeler.</li>
+</ul>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Graphics.Gnuplot.Simple</span>
+
+<span class="c1">-- Definiciones de aproximaPiGL</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- 1ª definición de aproximaPiGL</span>
+<span class="nf">aproximaPiGL</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiGL</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">sumaA</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">/</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">..</span><span class="p">])</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">sumaA</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">y</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="kt">:</span><span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="kt">:</span><span class="n">sumaA</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- 2ª definición de aproximaPiGL</span>
+<span class="nf">aproximaPiGL2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiGL2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">/</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">cycle</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">])))</span>
+
+<span class="c1">-- 3ª definición de aproximaPiGL</span>
+<span class="nf">aproximaPiGL3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiGL3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">/</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">cycle</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- 4ª definición de aproximaPiGL</span>
+<span class="nf">aproximaPiGL4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiGL4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">serieGL</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nf">serieGL</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
+<span class="nf">serieGL</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">scanl1</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">/</span><span class="p">)</span><span class="w"> </span><span class="n">numeradores</span><span class="w"> </span><span class="n">denominadores</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">numeradores</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+<span class="w">        </span><span class="n">denominadores</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- Definición de aproximaPiBeeler</span>
+<span class="nf">aproximaPiBeeler</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">aproximaPiBeeler</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">k</span><span class="p">)</span>
+
+<span class="c1">-- Definición de graficas</span>
+<span class="nf">graficas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">graficas</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">plotLists</span><span class="w"> </span><span class="p">[</span><span class="kt">Key</span><span class="w"> </span><span class="kt">Nothing</span><span class="p">]</span>
+<span class="w">             </span><span class="p">[[(</span><span class="n">k</span><span class="p">,</span><span class="n">aproximaPiGL</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">],</span>
+<span class="w">              </span><span class="p">[(</span><span class="n">k</span><span class="p">,</span><span class="n">aproximaPiBeeler</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]]</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../06-calculo_de_pi_con_el_producto_de_wallis/" rel="prev" title="Cálculo de pi con el producto de Wallis">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../08-distribucion_de_digitos_de_pi/" rel="next" title="Cálculo de dígitos de pi y su distribución">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
