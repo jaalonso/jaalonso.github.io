@@ -45,425 +45,459 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/10-emparejamiento_de_arboles/" class="u-url">Emparejamiento de árboles</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/24-subconjuntos_de_orden_k/" class="u-url">Subconjuntos de orden k</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/10-emparejamiento_de_arboles/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-10T06:00:00+02:00" itemprop="datePublished" title="10-06-2014">10-06-2014</time></a>
+            <a href="posts/2020/02/24-subconjuntos_de_orden_k/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-24T06:00:00+02:00" itemprop="datePublished" title="24-02-2020">24-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <hr>
-<p>Los árboles se pueden representar mediante el siguiente tipo de datos</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">[</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-</pre></div>
-
-<p>Por ejemplo, los árboles</p>
-<div class="code"><pre class="code literal-block">  1               3
- / \             /|\
-6   3           / | \
-    |          5  4  7
-    5          |     /\
-               6    2  1
-</pre></div>
-
-<p>se representan por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">[]</span><span class="p">]]</span>
-<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">[]</span><span class="p">,</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">]]</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="n">emparejaArboles</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Arbol</span><span class="w"> </span><span class="n">c</span>
-</pre></div>
-
-<p>tal que <code>(emparejaArboles f a1 a2)</code> es el árbol obtenido aplicando la función <code>f</code> a los elementos de los árboles <code>a1</code> y <code>a2</code> que se encuentran en la misma posición. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; emparejaArboles (+) (N 1 [N 2 [], N 3[]]) (N 1 [N 6 []])
-N 2 [N 8 []]
-λ&gt; emparejaArboles (+) ej1 ej2
-N 4 [N 11 [],N 7 []]
-λ&gt; emparejaArboles (+) ej1 ej1
-N 2 [N 12 [],N 6 [N 10 []]]
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/10-emparejamiento_de_arboles/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/24-subconjuntos_de_orden_k/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/09-separacion_por_posicion/" class="u-url">Separación por posición</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/21-cliques/" class="u-url">Cliques de un grafo</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/09-separacion_por_posicion/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-09T06:00:00+02:00" itemprop="datePublished" title="09-06-2014">09-06-2014</time></a>
+            <a href="posts/2020/02/21-cliques/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-21T06:00:00+02:00" itemprop="datePublished" title="21-02-2020">21-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">particion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">([</span><span class="n">a</span><span class="p">],[</span><span class="n">a</span><span class="p">])</span>
+<p><strong>Nota</strong>: En este ejercicio usaremos las mismas notaciones que en el anterior importando el módulo <code>Grafo</code>.</p>
+<p>Un <a href="http://bit.ly/31YQAKS">clique</a> (en español, pandilla) de un grafo g es un conjunto de nodos de g tal que todos sus elementos están conectados en g.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esClique</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">cliques</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que <code>(particion xs)</code> es el par cuya primera componente son los elementos de <code>xs</code> en posiciones pares y su segunda componente son los restantes elementos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">particion [3,5,6,2]    ==  ([3,6],[5,2])
-particion [3,5,6,2,7]  ==  ([3,6,7],[5,2])
-particion "particion"  ==  ("priin","atco")
+<p>tales que</p>
+<ul>
+<li>(esClique g xs) se verifica si el conjunto de nodos xs del grafo g es un clique de g. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esClique [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)] [2,3,5]  ==  True
+esClique [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)] [2,3,4]  ==  False
 </pre></div>
 
+<ul>
+<li>(cliques g) es la lista de los cliques del grafo g. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; cliques [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)]
+[[],[1],[2],[1,2],[3],[2,3],[4],[2,4],
+ [5],[2,5],[3,5],[2,3,5],[4,5],[2,4,5]]
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo <code>Cliques</code> para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/09-separacion_por_posicion/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/21-cliques/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/06-numero_de_inversiones/" class="u-url">Número de inversiones</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/20-parejas_de_un_conjunto/" class="u-url">Parejas de un conjunto</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/06-numero_de_inversiones/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-06T06:00:00+02:00" itemprop="datePublished" title="06-06-2014">06-06-2014</time></a>
+            <a href="posts/2020/02/20-parejas_de_un_conjunto/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-20T06:00:00+02:00" itemprop="datePublished" title="20-02-2020">20-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Se dice que en una sucesión de números x(1), x(2), ..., x(n) hay una inversión cuando existe un par de números x(i) &gt; x(j), siendo i &lt; j. Por ejemplo, en la permutación 2, 1, 4, 3 hay dos inversiones (2 antes que 1 y 4 antes que 3) y en la permutación 4, 3, 1, 2 hay cinco inversiones (4 antes 3, 4 antes 1, 4 antes 2, 3 antes 1, 3 antes 2).</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">numeroInversiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="nf">parejas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)]</span>
 </pre></div>
 
-<p>tal que <code>(numeroInversiones xs)</code> es el número de inversiones de <code>xs</code>. Por
-ejemplo,</p>
-<div class="code"><pre class="code literal-block">numeroInversiones [2,1,4,3]  ==  2
-numeroInversiones [4,3,1,2]  ==  5
+<p>tal que (parejas xs) es la lista de las parejas formados por los elementos de xs y sus siguientes en xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">parejas [1..4] == [(1,2),(1,3),(1,4),(2,3),(2,4),(3,4)]
+length (parejas [sin,cos,tan,log])  ==  6
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2014/06/06-numero_de_inversiones/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/20-parejas_de_un_conjunto/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/05-descomposiciones_triangulares/" class="u-url">Descomposiciones triangulares</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/19-grafo/" class="u-url">Nodos y conexiones de un grafo</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/05-descomposiciones_triangulares/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2014">05-06-2014</time></a>
-            </p>
-		    <p><span class="text-dark">Teoría de números</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<hr>
-<p>Los números triangulares se forman como sigue</p>
-<div class="code"><pre class="code literal-block"><span class="o">*</span><span class="w">     </span><span class="o">*</span><span class="w">      </span><span class="o">*</span>
-<span class="w">     </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w">    </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
-<span class="w">           </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
-<span class="mi">1</span><span class="w">     </span><span class="mi">3</span><span class="w">      </span><span class="mi">6</span>
-</pre></div>
-
-<p>La sucesión de los números triangulares se obtiene sumando los números naturales. Así, los 5 primeros números triangulares son</p>
-<div class="code"><pre class="code literal-block"><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span>
-<span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span>
-<span class="mi">10</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span>
-<span class="mi">15</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">descomposicionesTriangulares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span><span class="w"> </span><span class="kt">Int</span><span class="p">)]</span>
-</pre></div>
-
-<p>tal que <code>descomposicionesTriangulares n</code> es la lista de las ternas correspondientes a las descomposiciones de <code>n</code> en tres sumandos, como máximo, formados por números triangulares. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">4</span>
-<span class="kt">[]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">5</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">12</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">30</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">28</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">21</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">61</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">36</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">52</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">36</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">28</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">36</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">21</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="mi">82</span>
-<span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">78</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">66</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">45</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">66</span><span class="p">),(</span><span class="mi">6</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">55</span><span class="p">),(</span><span class="mi">10</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">36</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">descomposicionesTriangulares3</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">))</span>
-<span class="mi">124</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2014/06/05-descomposiciones_triangulares/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/04-indices_verdaderos/" class="u-url">Índices de valores verdaderos</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2014/06/04-indices_verdaderos/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-04T06:00:00+02:00" itemprop="datePublished" title="04-06-2014">04-06-2014</time></a>
+            <a href="posts/2020/02/19-grafo/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-19T06:00:00+02:00" itemprop="datePublished" title="19-02-2020">19-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">indicesVerdaderos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Bool</span><span class="p">]</span>
+<p>Un grafo no dirigido se representa por la lista de sus arcos. Por
+ejemplo, el grafo</p>
+<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mf">4</span>
+<span class="err">|</span><span class="w"> </span><span class="err">\</span><span class="w">  </span><span class="err">|</span>
+<span class="err">|</span><span class="w">  </span><span class="err">\</span><span class="w"> </span><span class="err">|</span>
+<span class="mf">3</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mf">5</span>
 </pre></div>
 
-<p>tal que <code>(indicesVerdaderos xs)</code> es la lista infinita de booleanos tal que sólo son verdaderos los elementos cuyos índices pertenecen a la lista estrictamente creciente <code>xs</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; take 6 (indicesVerdaderos [1,4])
-[False,True,False,False,True,False]
-λ&gt; take 6 (indicesVerdaderos [0,2..])
-[True,False,True,False,True,False]
-λ&gt; take 3 (indicesVerdaderos [])
-[False,False,False]
-λ&gt; take 6 (indicesVerdaderos [1..])
-[False,True,True,True,True,True]
-λ&gt; last (take (8*10^7) (indicesVerdaderos [0,5..]))
-False
+<p>se representa por [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)].</p>
+<p>Se define el tipo de grafo por</p>
+<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)]</span>
 </pre></div>
 
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">nodos</span><span class="w">      </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">conectados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Grafo</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(nodos g) es la lista de los nodos del grafo g. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">nodos [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)]  ==  [1,2,3,4,5]
+</pre></div>
+
+<ul>
+<li>(conectados g x y) se verifica si el grafo no dirigido g
+posee un arco con extremos x e y. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">conectados [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)] 3 2  ==  True
+conectados [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)] 2 3  ==  True
+conectados [(1,2),(2,3),(2,4),(2,5),(3,5),(4,5)] 3 4  ==  False
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo <code>Grafo</code> para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/04-indices_verdaderos/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/19-grafo/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/03-alergias/" class="u-url">Código de las alergias</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/18-problema_sat_para_fnc/" class="u-url">Problema SAT para FNC (fórmulas en forma normal conjuntiva)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/03-alergias/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-03T06:00:00+02:00" itemprop="datePublished" title="03-06-2014">03-06-2014</time></a>
+            <a href="posts/2020/02/18-problema_sat_para_fnc/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-18T06:00:00+02:00" itemprop="datePublished" title="18-02-2020">18-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Para la determinación de las alergia se utiliza los siguientes códigos para los alérgenos:</p>
-<div class="code"><pre class="code literal-block">Huevos ........   1
-Cacahuetes ....   2
-Mariscos ......   4
-Fresas ........   8
-Tomates .......  16
-Chocolate .....  32
-Polen .........  64
-Gatos ......... 128
-</pre></div>
-
-<p>Así, si Juan es alérgico a los cacahuetes y al chocolate, su puntuación es 34 (es decir, 2+32).</p>
-<p>Los alérgenos se representan mediante el siguiente tipo de dato</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Alergeno</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Huevos</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Cacahuetes</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Mariscos</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Fresas</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Tomates</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Chocolate</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Polen</span>
-<span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="kt">Gatos</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Enum</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Bounded</span><span class="p">)</span>
-</pre></div>
-
+<p><strong>Nota</strong>: En este ejercicio usaremos las mismas notaciones que en los anteriores importando los módulos <code>Modelos_de_FNC</code> y  <code>Evaluacion_de_FNC</code>.</p>
+<p>Una FNC (fórmula en forma normal conjuntiva) es satisfacible, si tiene algún modelo. Por ejemplo,</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">alergias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Alergeno</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esSatisfacible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que <code>(alergias n)</code> es la lista de alergias correspondiente a una puntuación <code>n</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">1</span>
-<span class="o">[</span><span class="n">Huevos</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">2</span>
-<span class="o">[</span><span class="n">Cacahuetes</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">3</span>
-<span class="o">[</span><span class="n">Huevos,Cacahuetes</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">5</span>
-<span class="o">[</span><span class="n">Huevos,Mariscos</span><span class="o">]</span>
-<span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">alergias</span><span class="w"> </span><span class="mi">255</span>
-<span class="o">[</span><span class="n">Huevos,Cacahuetes,Mariscos,Fresas,Tomates,Chocolate,Polen,Gatos</span><span class="o">]</span>
+<p>tal que (esSatisfacible f) se verifica si la FNC f es satistacible. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">esSatisfacible [[-1,2],[-2,1]]    ==  True
+esSatisfacible [[-1,2],[-2],[1]]  ==  False
+esSatisfacible [[1,2],[]]         ==  False
+esSatisfacible []                 ==  True
 </pre></div>
 
+<p><strong>Nota</strong>: Escribir la solución en el módulo <code>Problema_de_SAT_para_FNC</code> para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/03-alergias/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/18-problema_sat_para_fnc/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/02-pimpampum/" class="u-url">Pim, Pam, Pum y divisibilidad</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/17-modelos_de_fnc/" class="u-url">Modelos de FNC (fórmulas en forma normal conjuntiva)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/06/02-pimpampum/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-02T06:00:00+02:00" itemprop="datePublished" title="02-06-2014">02-06-2014</time></a>
+            <a href="posts/2020/02/17-modelos_de_fnc/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-17T06:00:00+02:00" itemprop="datePublished" title="17-02-2020">17-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sonido</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<p><strong>Nota</strong>: En este ejercicio usaremos las mismas notaciones que en  anterior importando los módulos <code>Interpretaciones_de_FNC</code> y <code>Evaluacion_de_FNC</code>.</p>
+<p>Una interpretación I es un modelo de un literal L si el valor de L en I es verdadero. Por ejemplo, la interpretación [2,5]</p>
+<ul>
+<li>es modelo del literal x(2) (porque 2 ∈ [2,5])</li>
+<li>no es modelo del literal x(3) (porque 3 ∉ [2,5])</li>
+<li>es modelo del literal -x(4) (porque 4 ∉ [2,5])</li>
+</ul>
+<p>Una interpretación I es un modelo de una cláusula C si el valor de C en
+I es verdadero. Por ejemplo, la interpretación [2,5]</p>
+<ul>
+<li>es modelo de la cláusula (x(2) v x(3)) (porque x(2) es verdadero)</li>
+<li>no es modelo de la cláusula (x(3) v x(4)) (porque x(3) y x(4) son falsos)</li>
+</ul>
+<p>Una interpretación I es un modelo de una FNC F si el valor de F en I es verdadero. Por ejemplo, la interpretación [2,5]</p>
+<ul>
+<li>es modelo de la FNC ((x(2) v x(5)) &amp; (-x(4) v x(3)) porque lo es
+de sus dos cláusulas.</li>
+</ul>
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esModeloLiteral</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Literal</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esModeloClausula</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Clausula</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esModelo</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">modelosClausula</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Clausula</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Interpretacion</span><span class="p">]</span>
+<span class="nf">modelos</span><span class="w">          </span><span class="ow">::</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Interpretacion</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que <code>(sonido n)</code> escribe "Pim" si <code>n</code> es divisible por 3, además escribe "Pam" si <code>n</code> es divisible por 5 y también escribe "Pum" si <code>n</code> es divisible por 7. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">sonido   3  ==  "Pim"
-sonido   5  ==  "Pam"
-sonido   7  ==  "Pum"
-sonido   8  ==  ""
-sonido   9  ==  "Pim"
-sonido  15  ==  "PimPam"
-sonido  21  ==  "PimPum"
-sonido  35  ==  "PamPum"
-sonido 105  ==  "PimPamPum"
+<p>tales que</p>
+<ul>
+<li>(esModeloLiteral i l) se verifica si i es modelo del literal l. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esModeloLiteral [3,5] 3     ==  True
+esModeloLiteral [3,5] 4     ==  False
+esModeloLiteral [3,5] (-3)  ==  False
+esModeloLiteral [3,5] (-4)  ==  True
 </pre></div>
 
+<ul>
+<li>(esModeloClausula i c) se verifica si i es modelo de la cláusula c. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esModeloClausula [3,5] [2,3,-5]  ==  True
+esModeloClausula [3,5] [2,4,-1]  ==  True
+esModeloClausula [3,5] [2,4,1]   ==  False
+</pre></div>
+
+<ul>
+<li>(esModelo i f) se verifica si i es modelo de la fórmula f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esModelo [1,3] [[1,-2],[3]]  ==  True
+esModelo [1]   [[1,-2],[3]]  ==  False
+esModelo [1]   []            ==  True
+</pre></div>
+
+<ul>
+<li>(modelosClausula c) es la lista de los modelos de la cláusula c. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">modelosClausula [-1,2]  ==  [[],[2],[1,2]]
+modelosClausula [-1,1]  ==  [[],[1]]
+modelosClausula []      ==  []
+</pre></div>
+
+<ul>
+<li>(modelos f) es la lista de los modelos de la fórmula f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">modelos [[-1,2],[-2,1]]    ==  [[],[1,2]]
+modelos [[-1,2],[-2],[1]]  ==  []
+modelos [[1,-1,2]]         ==  [[],[1],[2],[1,2]]
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo Modelos_de_FNC para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p class="more"><a href="posts/2014/06/02-pimpampum/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/17-modelos_de_fnc/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/30-reiteracion_de_funciones/" class="u-url">Reiteración de una función</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/14-interpretaciones_de_fnc/" class="u-url">Interpretaciones de FNC (fórmulas en forma normal conjuntiva)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/30-reiteracion_de_funciones/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-30T06:00:00+02:00" itemprop="datePublished" title="30-05-2014">30-05-2014</time></a>
+            <a href="posts/2020/02/14-interpretaciones_de_fnc/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-14T06:00:00+02:00" itemprop="datePublished" title="14-02-2020">14-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">reiteracion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<p>Nota: En este ejercicio usaremos las mismas notaciones que en los
+<a href="http://bit.ly/2usGply">anteriores</a> importando los módulos Evaluacion_de_FNC y Atomos_de_FNC.</p>
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">interpretacionesClausula</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Clausula</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Interpretacion</span><span class="p">]</span>
+<span class="nf">interpretaciones</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Interpretacion</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que <code>(reiteracion f n x)</code> es el resultado de aplicar <code>n</code> veces la función <code>f</code> a <code>x</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">15</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">50</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">16</span>
-<span class="nf">reiteracion</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="kt">:</span><span class="p">)</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<p>tales que</p>
+<ul>
+<li>(interpretacionesClausula c) es el conjunto de interpretaciones de la cláusula c. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">interpretacionesClausula [1,2,-1]  ==  [[],[1],[2],[1,2]]
+interpretacionesClausula []        ==  [[]]
 </pre></div>
 
+<ul>
+<li>(interpretaciones f) es el conjunto de interpretaciones de la fórmula f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">interpretaciones [[1,-2],[-1,2]] == [[],[1],[2],[1,2]]
+interpretaciones []              == [[]]
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo Interpretaciones_de_FNC para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p class="more"><a href="posts/2014/05/30-reiteracion_de_funciones/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/14-interpretaciones_de_fnc/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/29-algun_vecino_menor/" class="u-url">Elementos de una matriz con algún vecino menor</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/13-atomos_de_fnc/" class="u-url">Átomos de FNC (fórmulas en forma normal conjuntiva)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/29-algun_vecino_menor/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-29T06:00:00+02:00" itemprop="datePublished" title="29-05-2014">29-05-2014</time></a>
+            <a href="posts/2020/02/13-atomos_de_fnc/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-13T06:00:00+02:00" itemprop="datePublished" title="13-02-2020">13-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p><strong>Nota</strong>: En este ejercicio usaremos las mismas notaciones que en el <a href="http://bit.ly/2vnKwiG">anterior</a> importando el módulo <code>Evaluacion_de_FNC</code>.</p>
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">atomosClausula</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Clausula</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Atomo</span><span class="p">]</span>
+<span class="nf">atomosFNC</span><span class="w">      </span><span class="ow">::</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Atomo</span><span class="p">]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(atomosClausula c) es el conjunto de los átomos de la cláusula c. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">atomosClausula [3,1,-3] == [1,3]
+</pre></div>
+
+<ul>
+<li>(atomosFNC f) es el conjunto de los átomos de la FNC f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">atomosFNC [[4,5],[1,-2],[-4,-1,-5]]  ==  [1,2,4,5]
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo <code>Atomos_de_FNC</code> para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p>Las matrices puede representarse mediante tablas cuyos índices son pares de números naturales. Su tipo se define por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Matriz</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Array</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>Por ejemplo, la matriz</p>
-<div class="code"><pre class="code literal-block">|9 4 6 5|
-|8 1 7 3|
-|4 2 5 4|
-</pre></div>
-
-<p>se define por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matriz</span>
-<span class="nf">ej</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listArray</span><span class="w"> </span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-</pre></div>
-
-<p>Los vecinos de un elemento son los que están a un paso en la misma fila, columna o diagonal. Por ejemplo, en la matriz anterior, el 1 tiene 8 vecinos (el 9, 4, 6, 8, 7, 4, 2 y 5) pero el 9 sólo tiene 3 vecinos (el 4, 8 y 1).</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">algunoMenor</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matriz</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que <code>(algunoMenor p)</code> es la lista de los elementos de <code>p</code> que tienen algún vecino menor que él. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">algunoMenor ej == [9,4,6,5,8,7,4,2,5,4]
-</pre></div>
-
-<h3>pues sólo el 1 y el 3 no tienen ningún vecino menor en la matriz.</h3>
-<p class="more"><a href="posts/2014/05/29-algun_vecino_menor/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/13-atomos_de_fnc/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/05/28-enumera_arbol/" class="u-url">Enumeración de árboles binarios</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/12-evaluacion_de_fnc/" class="u-url">Evaluación de FNC (fórmulas en forma normal conjuntiva)</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2014/05/28-enumera_arbol/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-05-28T06:00:00+02:00" itemprop="datePublished" title="28-05-2014">28-05-2014</time></a>
+            <a href="posts/2020/02/12-evaluacion_de_fnc/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-12T06:00:00+02:00" itemprop="datePublished" title="12-02-2020">12-02-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>Una FNC (<a href="http://bit.ly/2UHJqZB">fórmula en forma normal conjuntiva</a>) es una conjunción de cláusulas, donde una cláusula es una disyunción de literales y un literal es un átomo o su negación. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">(x(1) v -x(3)) &amp; x(2) &amp; (-x(2) v x(3) v x(1))
+</pre></div>
+
+<p>es una FNC con tres clásulas tales que la primera cláusula tiene 2 literales (x(1) y -x(3)), la segunda tiene 1 (x(2)) y la tercera tiene 3 (-x(2), x(3) y x(1)).</p>
+<p>Usaremos las siguientes representaciones:</p>
+<ul>
+<li>Los átomos se representan por enteros positivos. Por ejemplo, 3 representa x(3).</li>
+<li>Los literales se representan por enteros. Por ejemplo, 3 representa el literal positivo x(3) y -5 el literal negativo -x(5).</li>
+<li>Una cláusula es una lista de literales que representa la disyunción se sus literales. Por ejemplo, [3,2,-4] representa a (x(3) v x(2) v -x(4)).</li>
+<li>Una fórmula en forma normal conjuntiva (FNC) es una lista de cláusulas que representa la conjunción de sus cláusulas. Por ejemplo, [[3,2],[-1,2,5]] representa a ((x(3) v x(2)) &amp; (-x(1) v x(2) v x(5))).</li>
+</ul>
+<p>Una interpretación I es un conjunto de átomos. Se supone que los átomos de I son verdaderos y los restantes son falsos. Por ejemplo, en la interpretación [2,5]</p>
+<ul>
+<li>el literal x(2) es verdadero (porque 2 ∈ [2,5])</li>
+<li>el literal x(3) es falso (porque 3 ∉ [2,5])</li>
+<li>el literal -x(4) es verdadero (porque 4 ∉ [2,5])</li>
+<li>la cláusula (x(2) v x(3)) es verdadera (porque x(2) es verdadero)</li>
+<li>la cláusula (x(3) v x(4)) es falsa (porque x(3) y x(4) son falsos)</li>
+<li>la FNC ((x(2) v x(5)) &amp; (-x(4) v x(3)) es verdadera porque lo son sus dos cláusulas</li>
+</ul>
+<p>En el ejercicio se usarán los siguientes tipos de datos</p>
+<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Atomo</span><span class="w">          </span><span class="ow">=</span><span class="w"> </span><span class="kt">Int</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Literal</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Int</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Clausula</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Literal</span><span class="p">]</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">FNC</span><span class="w">            </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Clausula</span><span class="p">]</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Atomo</span><span class="p">]</span>
+</pre></div>
+
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">valorLiteral</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Literal</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">valorClausula</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Clausula</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">valor</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">Interpretacion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">FNC</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(valorLiteral i l) es el valor del literal l en la interpretación i. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">valorLiteral [3,5] 3     ==  True
+valorLiteral [3,5] 4     ==  False
+valorLiteral [3,5] (-3)  ==  False
+valorLiteral [3,5] (-4)  ==  True
+</pre></div>
+
+<ul>
+<li>(valorClausula i c) es el valor de la cláusula c en la interpretación i. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">valorClausula [3,5] [2,3,-5]  ==  True
+valorClausula [3,5] [2,4,-1]  ==  True
+valorClausula [3,5] [2,4,1]   ==  False
+</pre></div>
+
+<ul>
+<li>(valor i f) es el valor de la fórmula en FNC f en la interpretación i. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">valor [1,3] [[1,-2],[3]]  ==  True
+valor [1]   [[1,-2],[3]]  ==  False
+valor [1]   []            ==  True
+</pre></div>
+
+<p><strong>Nota</strong>: Escribir la solución en el módulo Evaluacion_de_FNC para poderlo usar en los siguientes ejercicios.</p>
 <hr>
-<p>Los árboles binarios se pueden representar mediante el tipo Arbol definido por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="n">a</span>
-<span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">      </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+<p class="more"><a href="posts/2020/02/12-evaluacion_de_fnc/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/02/11-conjetura_de_lemoine/" class="u-url">Conjetura de Lemoine</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2020/02/11-conjetura_de_lemoine/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-02-11T06:00:00+02:00" itemprop="datePublished" title="11-02-2020">11-02-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>La <a href="http://bit.ly/2ue1S1i">conjetura de Lemoine</a> afirma que</p>
+<blockquote>
+<p>Todos los números impares mayores que 5 se pueden escribir de la forma p + 2q donde p y q son números primos. Por ejemplo, 47 = 13 + 2 x 17</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">descomposicionesLemoine</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">graficaLemoine</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
-<p>Por ejemplo, el árbol</p>
-<div class="code"><pre class="code literal-block">        "B"
-        / \
-       /   \
-      /     \
-    "B"     "A"
-    / \     / \
-  "A" "B" "C" "C"
+<p>tales que</p>
+<ul>
+<li>(descomposicionesLemoine n) es la lista de pares de primos (p,q) tales que n = p + 2q. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">descomposicionesLemoine 5   ==  []
+descomposicionesLemoine 7   ==  [(3,2)]
+descomposicionesLemoine 9   ==  [(5,2),(3,3)]
+descomposicionesLemoine 21  ==  [(17,2),(11,5),(7,7)]
+descomposicionesLemoine 47  ==  [(43,2),(41,3),(37,5),(13,17)]
+descomposicionesLemoine 33  ==  [(29,2),(23,5),(19,7),(11,11),(7,13)]
+length (descomposicionesLemoine 2625)  ==  133
 </pre></div>
 
-<p>se puede definir por</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">ej1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">String</span>
-<span class="w">   </span><span class="n">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"A"</span><span class="p">)</span><span class="w"> </span><span class="s">"B"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"B"</span><span class="p">))</span><span class="w"> </span><span class="s">"B"</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"C"</span><span class="p">)</span><span class="w"> </span><span class="s">"A"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"C"</span><span class="p">))</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">enumeraArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tal que <code>(enumeraArbol a)</code> es el árbol obtenido numerando las hojas y los nodos de <code>a</code> desde la hoja izquierda hasta la raíz. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="err">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">enumeraArbol</span><span class="w"> </span><span class="n">ej1</span>
-<span class="w">   </span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">H</span><span class="w"> </span><span class="mi">6</span><span class="p">))</span>
-</pre></div>
-
-<p>Gráficamente,</p>
-<div class="code"><pre class="code literal-block">         3
-        / \
-       /   \
-      /     \
-     1       5
-    / \     / \
-   0   2   4   6
-</pre></div>
-
+<ul>
+<li>(graficaLemoine n) dibuja la gráfica de los números de descomposiciones de Lemoine para los números impares menores o iguales que n. Por ejemplo, (graficaLemoine n 400) dibuja
+<img alt="Conjetura de Lemoine" src="images/Conjetura_de_Lemoine.png">
+</li>
+</ul>
+<p>Comprobar con QuickCheck la conjetura de Lemoine.</p>
+<p><strong>Nota</strong>: Basado en <a href="http://bit.ly/2ue1S1i">Lemoine's conjecture</a></p>
 <hr>
-<p class="more"><a href="posts/2014/05/28-enumera_arbol/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/02/11-conjetura_de_lemoine/">Leer más…</a></p>
 </div>
                 </div>
             </article>
