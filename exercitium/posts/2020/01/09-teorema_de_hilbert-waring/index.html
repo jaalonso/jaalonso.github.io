@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teorema de Hilbert-Waring | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2020/01/09-teorema_de_hilbert-waring/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Teorema de Hilbert-Waring | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../08-enteros_como_sumas_de_tres_coprimos/" title="Enteros como sumas de tres coprimos" type="text/html">
+<link rel="next" href="../10-teorema_de_existencia_de_divisores/" title="Teorema de existencia de divisores" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Teorema de Hilbert-Waring">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2020/01/09-teorema_de_hilbert-waring/">
+<meta property="og:description" content="El problema de Waring, propuesto por Edward Waring consiste en déterminar si, para cada número entero k mayor que 1, existe un número n tal que todo entero positivo se puede escribir como una suma de ">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-01-09T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Teorema de Hilbert-Waring</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-09T06:00:00+02:00" itemprop="datePublished" title="09-01-2020">09-01-2020</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El <a href="http://bit.ly/369KkkD">problema de Waring</a>, propuesto por Edward Waring consiste en déterminar si, para cada número entero k mayor que 1, existe un número n tal que todo entero positivo se puede escribir como una suma de k-potencias de números positivos con n sumandos como máximo.</p>
+<p>La respuesta afirmativa al problema, aportada por David Hilbert, se
+conoce como el teorema de Hilbert-Waring. Su enunciado es</p>
+<blockquote>
+<p>Para cada número entero k, con k ≥ 2, existe un entero positivo g(k) tal que todo entero positivo se puede expresar como una suma de a lo más g(k) k-ésimas potencias.</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">descomposiciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+<span class="nf">orden</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(descomposiciones x k n) es la lista de descomposiciones de x como suma de n potencias con exponente k de números enteros positivos.</li>
+</ul>
+<div class="code"><pre class="code literal-block">descomposiciones 9   2 1  ==  [[9]]
+descomposiciones 9   3 1  ==  []
+descomposiciones 9   3 2  ==  [[1,8]]
+descomposiciones 9   4 9  ==  [[1,1,1,1,1,1,1,1,1]]
+descomposiciones 25  2 2  ==  [[9,16]]
+descomposiciones 133 2 3  ==  [[8,125]]
+descomposiciones 38  3 2  ==  [[1,1,36],[4,9,25]]
+</pre></div>
+
+<ul>
+<li>(orden x k) es el menor número de sumandos necesario para expresar x como suma de k-ésimas potencias. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">9</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">10</span>
+<span class="p">[</span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..1000</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..6</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">19</span><span class="p">,</span><span class="m">37</span><span class="p">,</span><span class="m">73</span><span class="p">]</span>
+</pre></div>
+
+<p>Comprobar el teorema de Hilbert-Waring para k hasta 7; es decir, para todo número x positivo se verifica que</p>
+<div class="code"><pre class="code literal-block">orden x 2 &lt;= 4
+orden x 3 &lt;= 9
+orden x 4 &lt;= 19
+orden x 5 &lt;= 37
+orden x 6 &lt;= 73
+orden x 7 &lt;= 143
+</pre></div>
+
+<p>y, en general,</p>
+<div class="code"><pre class="code literal-block">orden x k &lt;= 2^k + floor ((3/2)^k) - 2
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="nf">descomposiciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+<span class="nf">descomposiciones</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sumas</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">potencias</span><span class="w"> </span><span class="n">k</span><span class="p">))</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- (potencias n) es la lista de las potencias de n</span>
+<span class="c1">--    take 7 (potencias 2)  ==  [1,4,9,16,25,36,49]</span>
+<span class="c1">--    take 7 (potencias 3)  ==  [1,8,27,64,125,216,343]</span>
+<span class="nf">potencias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">potencias</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- (sumas n ys x) es la lista de las descomposiciones de x como</span>
+<span class="c1">-- sumas de n sumandos de la lista creciente ys. Por ejemplo,</span>
+<span class="c1">--    sumas 3 [1,2] 2  ==  [[1,2]]</span>
+<span class="c1">--    sumas 4 [1,2] 2  ==  [[2,2]]</span>
+<span class="c1">--    sumas 5 [1,2] 2  ==  []</span>
+<span class="c1">--    sumas 5 [1,2] 3  ==  [[1,2,2]]</span>
+<span class="c1">--    sumas 6 [1,2] 3  ==  [[2,2,2]]</span>
+<span class="c1">--    sumas 6 [1,2,5] 2  ==  [[1,5]]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">x</span><span class="p">]]</span>
+<span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">sumas</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">x</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">sumas</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">++</span>
+<span class="w">                                 </span><span class="n">sumas</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">n</span>
+
+<span class="nf">orden</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+<span class="w">                    </span><span class="p">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="c1">-- El teorema es</span>
+<span class="nf">teorema_Hilbert_Waring</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">teorema_Hilbert_Waring</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="o">==&gt;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">4</span><span class="w">   </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">9</span><span class="w">   </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">19</span><span class="w">  </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">37</span><span class="w">  </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">73</span><span class="w">  </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">143</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="o">^</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">floor</span><span class="w"> </span><span class="p">((</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">^</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck teorema_Hilbert_Waring</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+</pre></div>
+
+<h3>Referencia</h3>
+<ul>
+<li>Basado en <a href="http://bit.ly/2MFCbg5">Hilbert-Waring theorem</a> de ProofWiki.</li>
+</ul>
+</div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../08-enteros_como_sumas_de_tres_coprimos/" rel="prev" title="Enteros como sumas de tres coprimos">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../10-teorema_de_existencia_de_divisores/" rel="next" title="Teorema de existencia de divisores">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
