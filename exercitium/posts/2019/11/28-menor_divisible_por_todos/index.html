@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menor divisible por todos | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2019/11/28-menor_divisible_por_todos/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Menor divisible por todos | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../27-menor_numero_triangular_con_mas_de_n_divisores/" title="Menor número triangular con más de n divisores" type="text/html">
+<link rel="next" href="../29-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" title="Mayor producto de n dígitos consecutivos de un número" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Menor divisible por todos">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2019/11/28-menor_divisible_por_todos/">
+<meta property="og:description" content="Definir la función
+menorDivisible :: Integer -&gt; Integer -&gt; Integer
+
+
+tal que (menorDivisible a b) es el menor número divisible por todos los números desde a hasta b, ambos inclusive. Por ejemplo,
+meno">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2019-11-28T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Menor divisible por todos</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2019-11-28T06:00:00+02:00" itemprop="datePublished" title="28-11-2019">28-11-2019</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">menorDivisible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (menorDivisible a b) es el menor número divisible por todos los números desde a hasta b, ambos inclusive. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">menorDivisible 1 10                         ==  2520
+length (show (menorDivisible6 1 (3*10^5)))  ==  130141
+</pre></div>
+
+<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=5">problema 5</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">foldl'</span><span class="p">)</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="o">..</span><span class="p">]</span>
+<span class="w">          </span><span class="p">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">b</span><span class="p">]]]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible2</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="n">menorDivisible</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">menorDivisible3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible3</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">b</span><span class="p">]</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible4</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl1</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">b</span><span class="p">]</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible5</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldl'</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">b</span><span class="p">]</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible6</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr1</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">b</span><span class="p">]</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">menorDivisible7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">menorDivisible7</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr1</span><span class="w"> </span><span class="n">lcm</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">enumFromTo</span><span class="w"> </span><span class="n">a</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">--   λ&gt; menorDivisible 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (18.63 secs, 15,789,475,488 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible2 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (13.29 secs, 11,868,764,272 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible3 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (0.00 secs, 114,688 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible4 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (0.01 secs, 114,752 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible5 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (0.01 secs, 110,640 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible6 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (0.01 secs, 114,752 bytes)</span>
+<span class="c1">--   λ&gt; menorDivisible7 1 17</span>
+<span class="c1">--   12252240</span>
+<span class="c1">--   (0.00 secs, 110,912 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible3 1 (10^5)))</span>
+<span class="c1">--   43452</span>
+<span class="c1">--   (1.54 secs, 2,021,887,000 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible4 1 (10^5)))</span>
+<span class="c1">--   43452</span>
+<span class="c1">--   (1.47 secs, 2,021,886,616 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible5 1 (10^5)))</span>
+<span class="c1">--   43452</span>
+<span class="c1">--   (0.65 secs, 2,009,595,568 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible6 1 (10^5)))</span>
+<span class="c1">--   43452</span>
+<span class="c1">--   (0.30 secs, 172,986,840 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible7 1 (10^5)))</span>
+<span class="c1">--   43452</span>
+<span class="c1">--   (0.30 secs, 172,986,920 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible5 1 (2*10^5)))</span>
+<span class="c1">--   86871</span>
+<span class="c1">--   (2.47 secs, 7,989,147,304 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible6 1 (2*10^5)))</span>
+<span class="c1">--   86871</span>
+<span class="c1">--   (0.89 secs, 533,876,496 bytes)</span>
+<span class="c1">--   λ&gt; length (show (menorDivisible7 1 (2*10^5)))</span>
+<span class="c1">--   86871</span>
+<span class="c1">--   (0.88 secs, 533,875,608 bytes)</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../27-menor_numero_triangular_con_mas_de_n_divisores/" rel="prev" title="Menor número triangular con más de n divisores">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../29-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" rel="next" title="Mayor producto de n dígitos consecutivos de un número">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
