@@ -45,414 +45,334 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/05-posiciones_en_arboles_binarios_completos/" class="u-url">Posiciones en árboles binarios completos</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/27-reconocimiento_de_conmutatividad/" class="u-url">Reconocimiento de conmutatividad</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/12/05-posiciones_en_arboles_binarios_completos/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-12-05T06:00:00+02:00" itemprop="datePublished" title="05-12-2018">05-12-2018</time></a>
+            <a href="posts/2018/12/27-reconocimiento_de_conmutatividad/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-27T06:00:00+02:00" itemprop="datePublished" title="27-12-2018">27-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Un <a href="http://bit.ly/2DUr53g">árbol binario completo</a> es un árbol binario que tiene todos los nodos posibles hasta el penúltimo nivel, y donde los elementos del último nivel están colocados de izquierda a derecha sin dejar huecos entre ellos.</p>
-<p>La numeración de los árboles binarios completos se realiza a partir de la raíz, recorriendo los niveles de izquierda a derecha. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">        1
-       /  \
-      /    \
-     /      \
-    2        3
-   / \      / \
-  4   5    6   7
- / \
-8   9
-</pre></div>
-
-<p>Los árboles binarios se puede representar mediante el siguiente tipo</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
-<span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Arbol</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-</pre></div>
-
-<p>Cada posición de un elemento de un árbol es una lista de movimientos hacia la izquierda o hacia la derecha. Por ejemplo, la posición de 9 en al árbol anterior es [I,I,D].</p>
-<p>Los tipos de los movimientos y de las posiciones se definen por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Movimiento</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">I</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">D</span><span class="w"> </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-<span class="kr">type</span><span class="w"> </span><span class="kt">Posicion</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Movimiento</span><span class="p">]</span>
+<p>Para representar las operaciones binarias en un conjunto finito A con n elementos se pueden numerar sus elementos desde el 0 al n-1. Entonces cada operación binaria en A se puede ver como una lista  de listas xss tal que el valor de aplicar la operación a los elementos i y j es el j-ésimo elemento del i-ésimo elemento de xss. Por ejemplo, si A = {0,1,2} entonces las tabla de la suma y de la resta módulo 3 en A son</p>
+<div class="code"><pre class="code literal-block"><span class="mf">0</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">2</span><span class="w">    </span><span class="mf">0</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">0</span><span class="w">    </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">2</span>
+<span class="mf">2</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">1</span><span class="w">    </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span>
+<span class="n">Suma</span><span class="w">     </span><span class="n">Resta</span>
 </pre></div>
 
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posicionDeElemento</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Posicion</span>
+<div class="code"><pre class="code literal-block"><span class="nf">conmutativa</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que (posicionDeElemento n) es la posición del elemento n en el árbol binario completo. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posicionDeElemento</span><span class="w"> </span><span class="mi">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="kt">D</span><span class="p">,</span><span class="kt">I</span><span class="p">]</span>
-<span class="nf">posicionDeElemento</span><span class="w"> </span><span class="mi">7</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="kt">D</span><span class="p">,</span><span class="kt">D</span><span class="p">]</span>
-<span class="nf">posicionDeElemento</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="kt">I</span><span class="p">,</span><span class="kt">I</span><span class="p">,</span><span class="kt">D</span><span class="p">]</span>
-<span class="nf">posicionDeElemento</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
-
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">posicionDeElemento2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">50000</span><span class="p">))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">166096</span>
+<p>tal que (conmutativa xss) se verifica si la operación cuya tabla es xss es conmutativa. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">conmutativa</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
+<span class="nf">conmutativa</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
+<span class="nf">conmutativa</span><span class="w"> </span><span class="p">[[</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">1999</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">1999</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">conmutativa</span><span class="w"> </span><span class="p">[[</span><span class="n">i</span><span class="o">-</span><span class="n">j</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">1999</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">1999</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2018/12/05-posiciones_en_arboles_binarios_completos/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/12/27-reconocimiento_de_conmutatividad/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/04-posiciones_en_arboles_binarios/" class="u-url">Posiciones en árboles binarios</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/21-reconocimiento_de_particiones/" class="u-url">Reconocimiento de particiones</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/12/04-posiciones_en_arboles_binarios/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-12-04T06:00:00+02:00" itemprop="datePublished" title="04-12-2018">04-12-2018</time></a>
+            <a href="posts/2018/11/21-reconocimiento_de_particiones/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-27T06:00:00+02:00" itemprop="datePublished" title="27-12-2018">27-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Los árboles binarios con datos en los nodos se definen por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
-<span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
-</pre></div>
-
-<p>Por ejemplo, el árbol</p>
-<div class="code"><pre class="code literal-block">       3
-      / \
-     /   \
-    0     5
-   / \   / \
-  5   4 0   3
- / \
-2   0
-</pre></div>
-
-<p>se representa por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ejArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">ejArbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">            </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">0</span>
-<span class="w">               </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">                  </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span>
-<span class="w">                  </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="w">               </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="w">            </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">               </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span>
-<span class="w">               </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-</pre></div>
-
-<p>Cada posición de un elemento de un árbol es una lista de movimientos hacia la izquierda o hacia la derecha. Por ejemplo, la posición de 4 en al árbol anterior es [I,I,D].</p>
-<p>Los tipos de los movimientos y de las posiciones se definen por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Movimiento</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">I</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">D</span><span class="w"> </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-<span class="kr">type</span><span class="w"> </span><span class="kt">Posicion</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Movimiento</span><span class="p">]</span>
-</pre></div>
-
+<p>Una <a href="http://bit.ly/2Dw2GB4">partición</a> de un conjunto es una división del mismo en subconjuntos disjuntos no vacíos.</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posiciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Posicion</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esParticion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que (posiciones n a) es la lista de las posiciones del elemento n en el árbol a. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posiciones</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="kt">I</span><span class="p">],[</span><span class="kt">I</span><span class="p">,</span><span class="kt">D</span><span class="p">],[</span><span class="kt">D</span><span class="p">,</span><span class="kt">I</span><span class="p">]]</span>
-<span class="nf">posiciones</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="kt">I</span><span class="p">,</span><span class="kt">I</span><span class="p">,</span><span class="kt">I</span><span class="p">]]</span>
-<span class="nf">posiciones</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="kt">[]</span><span class="p">,[</span><span class="kt">D</span><span class="p">,</span><span class="kt">D</span><span class="p">]]</span>
-<span class="nf">posiciones</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="kt">I</span><span class="p">,</span><span class="kt">I</span><span class="p">,</span><span class="kt">D</span><span class="p">]]</span>
-<span class="nf">posiciones</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="kt">I</span><span class="p">,</span><span class="kt">I</span><span class="p">],[</span><span class="kt">D</span><span class="p">]]</span>
-<span class="nf">posiciones</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">ejArbol</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
+<p>tal que (esParticion xss) se verifica si xss es una partición; es decir sus elementos son listas no vacías disjuntas. Por ejemplo.</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esParticion</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
+<span class="nf">esParticion</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
+<span class="nf">esParticion</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="kt">[]</span><span class="p">,[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]]</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
+<span class="nf">esParticion</span><span class="w"> </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">4</span><span class="p">]]</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2018/12/04-posiciones_en_arboles_binarios/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/11/21-reconocimiento_de_particiones/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/03-numeracion_de_arboles_binarios_completos/" class="u-url">Numeración de los árboles binarios completos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/26-tablas_de_operaciones_binarias/" class="u-url">Tablas de operaciones binarias</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/12/03-numeracion_de_arboles_binarios_completos/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-12-03T06:00:00+02:00" itemprop="datePublished" title="03-12-2018">03-12-2018</time></a>
+            <a href="posts/2018/12/26-tablas_de_operaciones_binarias/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-26T06:00:00+02:00" itemprop="datePublished" title="26-12-2018">26-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Un <a href="http://bit.ly/2DUr53g">árbol binario completo</a> es un árbol binario que tiene todos los nodos posibles hasta el penúltimo nivel, y donde los elementos del último nivel están colocados de izquierda a derecha sin dejar huecos entre ellos.</p>
-<p>La numeración de los árboles binarios completos se realiza a partir de la raíz, recorriendo los niveles de izquierda a derecha. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">        1
-       /  \
-      /    \
-     /      \
-    2        3
-   / \      / \
-  4   5    6   7
- / \
-8   9
+<p>Para representar las operaciones binarias en un conjunto finito A con n elementos se pueden numerar sus elementos desde el 0 al n-1. Entonces cada operación binaria en A se puede ver como una lista  de listas xss tal que el valor de aplicar la operación a los elementos i y j es el j-ésimo elemento del i-ésimo elemento de xss. Por ejemplo, si A = {0,1,2} entonces las tabla de la suma y de la resta módulo 3 en A son</p>
+<div class="code"><pre class="code literal-block"><span class="mf">0</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">2</span><span class="w">    </span><span class="mf">0</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">0</span><span class="w">    </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">2</span>
+<span class="mf">2</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">1</span><span class="w">    </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span>
+<span class="n">Suma</span><span class="w">     </span><span class="n">Resta</span>
 </pre></div>
 
-<p>Los árboles binarios se puede representar mediante el siguiente tipo</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
-<span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Arbol</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">arbolBinarioCompleto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span>
-</pre></div>
-
-<p>tal que (arbolBinarioCompleto n) es el árbol binario completo con n nodos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">arbolBinarioCompleto</span><span class="w"> </span><span class="mi">4</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">arbolBinarioCompleto</span><span class="w"> </span><span class="mi">9</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">     </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span>
-<span class="w">        </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span>
-<span class="w">        </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="w">     </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">     </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span>
-<span class="w">     </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2018/12/03-numeracion_de_arboles_binarios_completos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/30-raiz_cubica_entera/" class="u-url">Raíz cúbica entera</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2018/11/30-raiz_cubica_entera/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-30T06:00:00+02:00" itemprop="datePublished" title="30-11-2018">30-11-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Un número x es un cubo si existe un y tal que x = y^3. Por ejemplo, 8 es un cubo porque 8 = 2^3.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="o">.</span>
-</pre></div>
-
-<p>tal que (raizCubicaEntera x n) es justo la raíz cúbica del número natural x, si x es un cubo y Nothing en caso contrario. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="mi">8</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="mi">9</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="mi">27</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">3</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="mi">64</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">4</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="mi">30</span><span class="p">)</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">1024</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">9000</span><span class="p">)</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">3000</span><span class="p">)</span>
-<span class="nf">raizCubicaEntera</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="o">^</span><span class="mi">9000</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2018/11/30-raiz_cubica_entera/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/29-numeros_colinas/" class="u-url">Números colinas</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2018/11/29-numeros_colinas/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-29T06:00:00+02:00" itemprop="datePublished" title="29-11-2018">29-11-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Se dice que un número natural n es una colina si su primer dígito es igual a su último dígito, los primeros dígitos son estrictamente creciente hasta llegar al máximo, el máximo se puede repetir y los dígitos desde el máximo al final son estrictamente decrecientes.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esColina</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-</pre></div>
-
-<p>tal que (esColina n) se verifica si n es un número colina. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esColina</span><span class="w"> </span><span class="mi">12377731</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">1237731</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">123731</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">12377730</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">12377730</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">10377731</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">12377701</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">esColina</span><span class="w"> </span><span class="mi">33333333</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2018/11/29-numeros_colinas/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/28-elemento_solitario/" class="u-url">Elemento solitario</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2018/11/28-elemento_solitario/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-28T06:00:00+02:00" itemprop="datePublished" title="28-11-2018">28-11-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">solitario</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>tal que (solitario xs) es el único elemento que ocurre una vez en la lista xs (se supone que la lista xs tiene al menos 3 elementos y todos son iguales menos uno que es el solitario). Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">solitario</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
-<span class="nf">solitario</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
-<span class="nf">solitario</span><span class="w"> </span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
-<span class="nf">solitario</span><span class="w"> </span><span class="p">(</span><span class="n">replicate</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2018/11/28-elemento_solitario/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/27-suma_de_inversos_de_potencias_de_cuatro/" class="u-url">Suma de inversos de potencias de cuatro</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2018/11/27-suma_de_inversos_de_potencias_de_cuatro/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-27T06:00:00+02:00" itemprop="datePublished" title="27-11-2018">27-11-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Esta semana se ha publicado en <a href="http://bit.ly/2Qg4qVQ">Twitter</a> una demostración visual de la suma de inversos de potencias de 4:</p>
-<div class="code"><pre class="code literal-block"><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="err">²</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="err">³</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span>
-</pre></div>
-
-<p><img alt="Suma de inversos de potencias de cuatro" src="images/Suma_de_inversos_de_potencias_de_cuatro.png"></p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sumaInversosPotenciasDeCuatro</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
-<span class="nf">aproximacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="nf">tablaOperacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">tablaSuma</span><span class="w">      </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">tablaResta</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">tablaProducto</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>sumaInversosPotenciasDeCuatro es la lista de las suma de la serie de los inversos de las potencias de cuatro. Por ejemplo,</li>
+<li>(tablaOperacion f n) es la tabla de la operación f módulo n en [0..n-1]. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="n">sumaInversosPotenciasDeCuatro</span>
-<span class="p">[</span><span class="mf">0.25</span><span class="p">,</span><span class="mf">0.3125</span><span class="p">,</span><span class="mf">0.328125</span><span class="p">,</span><span class="mf">0.33203125</span><span class="p">,</span><span class="mf">0.3330078125</span><span class="p">,</span><span class="mf">0.333251953125</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">tablaOperacion</span><span class="w"> </span><span class="p">(</span><span class="o">+</span><span class="p">)</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">tablaOperacion</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="p">)</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+<span class="nf">tablaOperacion</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="p">)</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+<span class="nf">tablaOperacion</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">y</span><span class="p">))</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
 </pre></div>
 
 <ul>
-<li>(aproximacion e) es el menor número de términos de la serie anterior que hay que sumar para que el valor absoluto de su diferencia con 1/3 sea menor que e. Por ejemplo,</li>
+<li>(tablaSuma n) es la tabla de la suma módulo n en [0..n-1]. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">aproximacion</span><span class="w"> </span><span class="mf">0.001</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
-<span class="nf">aproximacion</span><span class="w"> </span><span class="mf">1e-3</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
-<span class="nf">aproximacion</span><span class="w"> </span><span class="mf">1e-6</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">9</span>
-<span class="nf">aproximacion</span><span class="w"> </span><span class="mf">1e-20</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">26</span>
-<span class="nf">sumaInversosPotenciasDeCuatro</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">26</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">0.3333333333333333</span>
+<div class="code"><pre class="code literal-block"><span class="nf">tablaSuma</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">tablaSuma</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span>
 </pre></div>
 
+<ul>
+<li>(tablaResta n) es la tabla de la resta módulo n en [0..n-1]. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">tablaResta</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+<span class="nf">tablaResta</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+
+<ul>
+<li>(tablaProducto n) es la tabla del producto módulo n en [0..n-1]. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">tablaProducto</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">tablaProducto</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+
+<p>Comprobar con QuickCheck, si parato entero positivo n de verificar las siguientes propiedades:</p>
+<ul>
+<li>La suma, módulo n, de todos los números de (tablaSuma n) es 0.</li>
+<li>La suma, módulo n, de todos los números de (tablaResta n) es 0.</li>
+<li>La suma, módulo n, de todos los números de (tablaProducto n) es n/2 si n es el doble de un número impar y es 0, en caso contrario.</li>
+</ul>
 <hr>
-<p class="more"><a href="posts/2018/11/27-suma_de_inversos_de_potencias_de_cuatro/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/12/26-tablas_de_operaciones_binarias/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/26-numeros_primos_sumas_de_dos_primos/" class="u-url">Números primos sumas de dos primos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/25-numero_de_divisores_compuestos/" class="u-url">Número de divisores compuestos</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/11/26-numeros_primos_sumas_de_dos_primos/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-26T06:00:00+02:00" itemprop="datePublished" title="26-11-2018">26-11-2018</time></a>
+            <a href="posts/2018/12/25-numero_de_divisores_compuestos/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-25T06:00:00+02:00" itemprop="datePublished" title="25-12-2018">25-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">nDivisoresCompuestos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (nDivisoresCompuestos x) es el número de divisores de x que son compuestos (es decir, números mayores que 1 que no son primos). Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">nDivisoresCompuestos</span><span class="w"> </span><span class="mi">30</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
+<span class="nf">nDivisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">534</span>
+<span class="nf">nDivisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">25</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">340022</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">nDivisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">4</span><span class="p">])))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1948</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2018/12/25-numero_de_divisores_compuestos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/24-divisores_compuestos/" class="u-url">Divisores compuestos</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2018/12/24-divisores_compuestos/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-24T06:00:00+02:00" itemprop="datePublished" title="24-12-2018">24-12-2018</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresCompuestos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>tal que (divisoresCompuestos x) es la lista de los divisores de x que son números compuestos (es decir, números mayores que 1 que no son primos). Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresCompuestos</span><span class="w"> </span><span class="mi">30</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">divisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">11</span><span class="p">]))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">534</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">divisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">14</span><span class="p">]))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2585</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">divisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">16</span><span class="p">]))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">5369</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">divisoresCompuestos</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">25</span><span class="p">]))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">340022</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2018/12/24-divisores_compuestos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/21-arbol_binario_de_divisores/" class="u-url">Árbol binario de divisores</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2018/12/21-arbol_binario_de_divisores/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-21T06:00:00+02:00" itemprop="datePublished" title="21-12-2018">21-12-2018</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<hr>
+<p class="more"><a href="posts/2018/12/21-arbol_binario_de_divisores/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/20-divisores_propios_maximales/" class="u-url">Divisores propios maximales</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2018/12/20-divisores_propios_maximales/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-20T06:00:00+02:00" itemprop="datePublished" title="20-12-2018">20-12-2018</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Se dice que a es un divisor propio maximal de un número b si a es un divisor de b distinto de b y no existe ningún número c tal que a &lt; c &lt; b, a es un divisor de c y c es un divisor de b. Por ejemplo, 15 es un divisor propio maximal de 30, pero 5 no lo es.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esPrimoSumaDeDosPrimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresPropiosMaximales</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">nDivisoresPropiosMaximales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>primosSumaDeDosPrimos :: [Integer]
-tales que</p>
+<p>tales que</p>
 <ul>
-<li>(esPrimoSumaDeDosPrimos x) se verifica si x es un número primo que se puede escribir como la suma de dos números primos. Por ejemplo,</li>
+<li>(divisoresPropiosMaximales x) es la lista de los divisores propios maximales de x. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">esPrimoSumaDeDosPrimos</span><span class="w"> </span><span class="mi">19</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">esPrimoSumaDeDosPrimos</span><span class="w"> </span><span class="mi">20</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">esPrimoSumaDeDosPrimos</span><span class="w"> </span><span class="mi">23</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresPropiosMaximales</span><span class="w"> </span><span class="mi">30</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
+<span class="nf">divisoresPropiosMaximales</span><span class="w"> </span><span class="mi">420</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">140</span><span class="p">,</span><span class="mi">210</span><span class="p">]</span>
+<span class="nf">divisoresPropiosMaximales</span><span class="w"> </span><span class="mi">7</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">divisoresPropiosMaximales</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">4</span><span class="p">]))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3245</span>
 </pre></div>
 
 <ul>
-<li>primosSumaDeDosPrimos es la lista de los números primos que se pueden escribir como la suma de dos números primos. Por ejemplo,</li>
+<li>(nDivisoresPropiosMaximales x) es el número de  divisores propios maximales de x. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">17</span><span class="w"> </span><span class="n">primosSumaDeDosPrimos</span>
-<span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">43</span><span class="p">,</span><span class="mi">61</span><span class="p">,</span><span class="mi">73</span><span class="p">,</span><span class="mi">103</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">139</span><span class="p">,</span><span class="mi">151</span><span class="p">,</span><span class="mi">181</span><span class="p">,</span><span class="mi">193</span><span class="p">,</span><span class="mi">199</span><span class="p">,</span><span class="mi">229</span><span class="p">,</span><span class="mi">241</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">primosSumaDeDosPrimos</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
-<span class="mi">18409543</span>
+<div class="code"><pre class="code literal-block"><span class="nf">nDivisoresPropiosMaximales</span><span class="w"> </span><span class="mi">30</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
+<span class="nf">nDivisoresPropiosMaximales</span><span class="w"> </span><span class="mi">420</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
+<span class="nf">nDivisoresPropiosMaximales</span><span class="w"> </span><span class="mi">7</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">1</span>
+<span class="nf">nDivisoresPropiosMaximales</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">3</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">4</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">3245</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2018/11/26-numeros_primos_sumas_de_dos_primos/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/12/20-divisores_propios_maximales/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/23-ceros_finales_del_factorial/" class="u-url">Ceros finales del factorial</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/19-grado_exponencial/" class="u-url">Grado exponencial</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/11/23-ceros_finales_del_factorial/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-23T06:00:00+02:00" itemprop="datePublished" title="23-11-2018">23-11-2018</time></a>
+            <a href="posts/2018/12/19-grado_exponencial/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-19T06:00:00+02:00" itemprop="datePublished" title="19-12-2018">19-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">cerosDelFactorial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tal que (cerosDelFactorial n) es el número de ceros en que termina el factorial de n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">cerosDelFactorial</span><span class="w"> </span><span class="mi">24</span><span class="w">                           </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
-<span class="nf">cerosDelFactorial</span><span class="w"> </span><span class="mi">25</span><span class="w">                           </span><span class="o">==</span><span class="w">  </span><span class="mi">6</span>
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">cerosDelFactorial</span><span class="w"> </span><span class="p">(</span><span class="mi">1234</span><span class="o">^</span><span class="mi">5678</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">17552</span>
-</pre></div>
-
 <hr>
-<p class="more"><a href="posts/2018/11/23-ceros_finales_del_factorial/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/12/19-grado_exponencial/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/22-relacion_definida_por_una_particion/" class="u-url">Relación definida por una partición</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/18-numeros_primos_de_pierpont/" class="u-url">Números primos de Pierpont</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2018/11/22-relacion_definida_por_una_particion/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-22T06:00:00+02:00" itemprop="datePublished" title="22-11-2018">22-11-2018</time></a>
+            <a href="posts/2018/12/18-numeros_primos_de_pierpont/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-18T06:00:00+02:00" itemprop="datePublished" title="18-12-2018">18-12-2018</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Dos elementos están <a href="http://bit.ly/2Q1FzVD">relacionados por una partición</a>
-xss si pertenecen al mismo elemento de xss.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">relacionados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<p>Un <a href="https://en.wikipedia.org/wiki/Pierpont_prime">número primo de Pierpont</a> es un número primo de la forma \(2^{u}3^{v}+1\), para u y v enteros no negativos.</p>
+<p>Definir la sucesión</p>
+<div class="code"><pre class="code literal-block"><span class="nf">primosPierpont</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (relacionados xss y z) se verifica si los elementos y y z están relacionados por la partición xss. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">relacionados</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]]</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">relacionados</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]]</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-<span class="nf">relacionados</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]]</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
+<p>tal que sus elementos son los números primos de Pierpont. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="n">primosPierpont</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">37</span><span class="p">,</span><span class="mi">73</span><span class="p">,</span><span class="mi">97</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">163</span><span class="p">,</span><span class="mi">193</span><span class="p">,</span><span class="mi">257</span><span class="p">,</span><span class="mi">433</span><span class="p">,</span><span class="mi">487</span><span class="p">,</span><span class="mi">577</span><span class="p">,</span><span class="mi">769</span><span class="p">,</span><span class="mi">1153</span><span class="p">,</span><span class="mi">1297</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">primosPierpont</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">49</span>
+<span class="mi">8503057</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2018/11/22-relacion_definida_por_una_particion/">Leer más…</a></p>
+<p class="more"><a href="posts/2018/12/18-numeros_primos_de_pierpont/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/12/17-intercambio_de_la_primera_y_ultima_columna_de_una_matriz/" class="u-url">Intercambio de la primera y última columna de una matriz</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2018/12/17-intercambio_de_la_primera_y_ultima_columna_de_una_matriz/" rel="bookmark">
+            <time class="published dt-published" datetime="2018-12-17T06:00:00+02:00" itemprop="datePublished" title="17-12-2018">17-12-2018</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Las matrices se pueden representar mediante listas de listas. Por ejemplo, la matriz</p>
+<div class="code"><pre class="code literal-block"><span class="mf">8</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">7</span><span class="w"> </span><span class="mf">6</span>
+<span class="mf">4</span><span class="w"> </span><span class="mf">7</span><span class="w"> </span><span class="mf">6</span><span class="w"> </span><span class="mf">5</span>
+<span class="mf">3</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">8</span>
+</pre></div>
+
+<p>se puede representar por la lista</p>
+<div class="code"><pre class="code literal-block"><span class="p">[[</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">intercambia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+</pre></div>
+
+<p>tal que (intercambia xss) es la matriz obtenida intercambiando la primera y la última columna de xss. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">intercambia</span><span class="w"> </span><span class="p">[[</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
+<span class="p">[[</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">8</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2018/12/17-intercambio_de_la_primera_y_ultima_columna_de_una_matriz/">Leer más…</a></p>
 </div>
                 </div>
             </article>
@@ -464,7 +384,19 @@ xss si pertenecen al mismo elemento de xss.</p>
             <li class="next">
                 <a href="index-80.html" rel="next">Publicaciones anteriores</a>
             </li>
-        </ul></nav></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             
