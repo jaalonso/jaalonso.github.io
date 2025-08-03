@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Búsqueda</title>
+<script src="https://unpkg.com/lunr/lunr.js"></script><style>
+        body {
+            font-family: sans-serif;
+            padding: 2em;
+            max-width: 700px;
+            margin: auto;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.6em;
+            font-size: 1em;
+            margin-bottom: 1em;
+        }
+        .search-result {
+            margin-bottom: 1.5em;
+        }
+        .search-result a {
+            font-size: 1.2em;
+            color: #007acc;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Buscar</h1>
+    <input type="text" id="search-input" placeholder="Escribe para buscar..." autofocus><div id="search-results"></div>
+
+    <script>
+    const input = document.getElementById("search-input");
+    const resultsDiv = document.getElementById("search-results");
+
+    fetch("/search_index.json")
+        .then(response => response.json())
+        .then(data => {
+            const idx = lunr(function () {
+                this.ref("url");
+                this.field("title");
+                this.field("text");
+                data.forEach(doc => this.add(doc));
+            });
+
+            input.addEventListener("input", function () {
+                const query = this.value.trim();
+                resultsDiv.innerHTML = "";
+
+                if (query.length < 3) return;
+
+                const results = idx.search(query);
+
+                if (results.length === 0) {
+                    resultsDiv.innerHTML = "<p>No se encontraron resultados.</p>";
+                    return;
+                }
+
+                results.forEach(result => {
+                    const doc = data.find(d => d.url === result.ref);
+                    const div = document.createElement("div");
+                    div.className = "search-result";
+                    div.innerHTML = `<a href="${doc.url}">${doc.title}</a>`;
+                    resultsDiv.appendChild(div);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
