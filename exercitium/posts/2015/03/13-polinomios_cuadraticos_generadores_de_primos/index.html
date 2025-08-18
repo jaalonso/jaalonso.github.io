@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polinomios cuadráticos generadores de primos | Exercitium</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="es" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/exercitium/posts/2015/03/13-polinomios_cuadraticos_generadores_de_primos/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta name="twitter:title" content="Polinomios cuadráticos generadores de primos | Exercitium">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../12-el_triangulo_de_floyd/" title="El triángulo de Floyd" type="text/html">
+<link rel="next" href="../16-ordenacion_de_los_racionales/" title="Ordenación de los racionales" type="text/html">
+<meta property="og:site_name" content="Exercitium">
+<meta property="og:title" content="Polinomios cuadráticos generadores de primos">
+<meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2015/03/13-polinomios_cuadraticos_generadores_de_primos/">
+<meta property="og:description" content="En 1772, Euler publicó que el polinomio n² + n + 41 genera 40 números primos para todos los valores de n entre 0 y 39. Sin embargo, cuando n=40, 40²+40+41 = 40(40+1)+41 es divisible por 41.
+Usando ord">
+<meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2015-03-13T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Exercitium" rel="home">
+
+        <span id="blog-title">Exercitium</span>
+    </a></h1>
+    <div>Ejercicios de programación con Haskell y Python</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Polinomios cuadráticos generadores de primos</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2015-03-13T06:00:00+02:00" itemprop="datePublished" title="13-03-2015">13-03-2015</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>En 1772, Euler publicó que el polinomio n² + n + 41 genera 40 números primos para todos los valores de n entre 0 y 39. Sin embargo, cuando n=40, 40²+40+41 = 40(40+1)+41 es divisible por 41.</p>
+<p>Usando ordenadores, se descubrió el polinomio n² - 79n + 1601 que genera 80 números primos para todos los valores de n entre 0 y 79.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">generadoresMaximales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
+</pre></div>
+
+<p>tal que (generadoresMaximales n) es el par (m,xs) donde</p>
+<ul>
+<li>xs es la lista de pares (x,y) tales que n²+xn+y es uno de los polinomios que genera un número máximo de números primos consecutivos a partir de cero entre todos los polinomios de la forma n²+an+b, con |a| ≤ n y |b| ≤ n y</li>
+<li>m es dicho número máximo.</li>
+</ul>
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">generadoresMaximales</span><span class="w">    </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,[(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">    </span><span class="mi">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">   </span><span class="mi">50</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">43</span><span class="p">,[(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">47</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">  </span><span class="mi">100</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">48</span><span class="p">,[(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span><span class="mi">97</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">  </span><span class="mi">200</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">53</span><span class="p">,[(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span><span class="mi">197</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w"> </span><span class="mi">1650</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">80</span><span class="p">,[(</span><span class="o">-</span><span class="mi">79</span><span class="p">,</span><span class="mi">1601</span><span class="p">)])</span>
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">nub</span><span class="p">,</span><span class="w"> </span><span class="nf">sort</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Numbers.Primes</span><span class="w"> </span><span class="p">(</span><span class="nf">primes</span><span class="p">,</span><span class="w"> </span><span class="nf">isPrime</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">I1M.PolOperaciones</span><span class="w"> </span><span class="p">(</span><span class="nf">valor</span><span class="p">,</span><span class="w"> </span><span class="nf">consPol</span><span class="p">,</span><span class="w"> </span><span class="nf">polCero</span><span class="p">)</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">generadoresMaximales1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="p">(</span><span class="n">m</span><span class="p">,[((</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">nPrimos</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">])</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="p">[</span><span class="n">nPrimos</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+
+<span class="c1">-- (nPrimos a b) es el número de primos consecutivos generados por el</span>
+<span class="c1">-- polinomio n² + an + b a partir de n=0. Por ejemplo,</span>
+<span class="c1">--    nPrimos 1 41        ==  40</span>
+<span class="c1">--    nPrimos (-79) 1601  ==  80</span>
+<span class="nf">nPrimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">nPrimos</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">length</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="n">isPrime</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">a</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="n">b</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]]</span>
+
+<span class="c1">-- 2ª solución (reduciendo las cotas)</span>
+<span class="c1">-- ==================================</span>
+
+<span class="c1">-- Notas:</span>
+<span class="c1">-- 1. Se tiene que b es primo, ya que para n=0, se tiene que 0²+a*0+b =</span>
+<span class="c1">--    b es primo.</span>
+<span class="c1">-- 2. Se tiene que 1+a+b es primo, ya que es el valor del polinomio para</span>
+<span class="c1">--    n=1.</span>
+
+<span class="nf">generadoresMaximales2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">nPrimos</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="p">,(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">primes</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">                                      </span><span class="n">isPrime</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)]</span>
+<span class="w">          </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">          </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">          </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 3ª solución (reduciendo las cotas)</span>
+<span class="c1">-- ==================================</span>
+
+<span class="nf">generadoresMaximales3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">nPrimos</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="p">,(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">primes</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span>
+<span class="w">                                      </span><span class="kr">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">n</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span>
+<span class="w">                                      </span><span class="kr">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span><span class="o">-</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">          </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">          </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">          </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 4ª solución (con la librería de polinomios)</span>
+<span class="c1">-- ===========================================</span>
+
+<span class="nf">generadoresMaximales4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">nPrimos2</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="p">,(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="n">primes</span><span class="p">,</span>
+<span class="w">                                       </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span>
+<span class="w">                                       </span><span class="kr">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">n</span><span class="p">,</span>
+<span class="w">                                       </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span>
+<span class="w">                                       </span><span class="kr">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span><span class="o">-</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">          </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">          </span><span class="n">m</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">          </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- (nPrimos2 a b) es el número de primos consecutivos generados por el</span>
+<span class="c1">-- polinomio n² + an + b a partir de n=0. Por ejemplo,</span>
+<span class="c1">--    nPrimos2 1 41        ==  40</span>
+<span class="c1">--    nPrimos2 (-79) 1601  ==  80</span>
+<span class="nf">nPrimos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">nPrimos2</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">length</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="n">isPrime</span><span class="w"> </span><span class="p">[</span><span class="n">valor</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]]</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">consPol</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="n">consPol</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="n">consPol</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">polCero</span><span class="p">))</span>
+
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">--    λ&gt; generadoresMaximales1 200</span>
+<span class="c1">--    (53,[(-25,197)])</span>
+<span class="c1">--    (3.06 secs, 720683776 bytes)</span>
+<span class="c1">--    λ&gt; generadoresMaximales1 300</span>
+<span class="c1">--    (56,[(-31,281)])</span>
+<span class="c1">--    (6.65 secs, 1649274220 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; generadoresMaximales2 200</span>
+<span class="c1">--    (53,[(-25,197)])</span>
+<span class="c1">--    (0.25 secs, 94783464 bytes)</span>
+<span class="c1">--    λ&gt; generadoresMaximales2 300</span>
+<span class="c1">--    (56,[(-31,281)])</span>
+<span class="c1">--    (0.51 secs, 194776708 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; generadoresMaximales3 200</span>
+<span class="c1">--    (53,[(-25,197)])</span>
+<span class="c1">--    (0.00 secs, 84277672 bytes)</span>
+<span class="c1">--    λ&gt; generadoresMaximales3 300</span>
+<span class="c1">--    (56,[(-31,281)])</span>
+<span class="c1">--    (0.17 secs, 157788856 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; generadoresMaximales4 200</span>
+<span class="c1">--    (53,[(-25,197)])</span>
+<span class="c1">--    (0.20 secs, 105941096 bytes)</span>
+<span class="c1">--    λ&gt; generadoresMaximales4 300</span>
+<span class="c1">--    (56,[(-31,281)])</span>
+<span class="c1">--    (0.35 secs, 194858344 bytes)</span>
+</pre></div>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../12-el_triangulo_de_floyd/" rel="prev" title="El triángulo de Floyd">Publicación anterior</a>
+            </li>
+            <li class="next">
+                <a href="../16-ordenacion_de_los_racionales/" rel="next" title="Ordenación de los racionales">Siguiente publicación</a>
+            </li>
+        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
