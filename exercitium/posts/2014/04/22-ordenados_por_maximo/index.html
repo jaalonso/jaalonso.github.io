@@ -89,23 +89,36 @@ ghci&gt; ordenadosPorMaximo ["este","es","el","primero"]
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">)</span>
-<span class="kr">import</span><span class="w"> </span><span class="nn">GHC.Exts</span><span class="w"> </span><span class="p">(</span><span class="nf">sortWith</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">,</span><span class="w"> </span><span class="nf">sortOn</span><span class="p">,</span><span class="w"> </span><span class="nf">sortBy</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Ord</span><span class="w"> </span><span class="p">(</span><span class="nf">comparing</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="c1">-- 1ª definición</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">ordenadosPorMaximo1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
 <span class="nf">ordenadosPorMaximo1</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">maximum</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">])</span>
+<span class="w">  </span><span class="p">[</span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">maximum</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="n">xss</span><span class="p">]]</span>
 
-<span class="c1">-- 2ª definición</span>
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">ordenadosPorMaximo2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
 <span class="nf">ordenadosPorMaximo2</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">maximum</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">maximum</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="n">xss</span><span class="p">])</span>
 
-<span class="c1">-- 3ª definición:</span>
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">ordenadosPorMaximo3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
-<span class="nf">ordenadosPorMaximo3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sortWith</span><span class="w"> </span><span class="n">maximum</span>
+<span class="nf">ordenadosPorMaximo3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sortBy</span><span class="w"> </span><span class="p">(</span><span class="n">comparing</span><span class="w"> </span><span class="n">maximum</span><span class="p">)</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">ordenadosPorMaximo4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">ordenadosPorMaximo4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sortOn</span><span class="w"> </span><span class="n">maximum</span>
 
 <span class="c1">-- Verificación</span>
 <span class="c1">-- ============</span>
@@ -113,21 +126,61 @@ ghci&gt; ordenadosPorMaximo ["este","es","el","primero"]
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
 
-<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span><span class="w">  </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
 <span class="nf">specG</span><span class="w"> </span><span class="n">ordenadosPorMaximo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
 <span class="w">    </span><span class="n">ordenadosPorMaximo</span><span class="w"> </span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
 <span class="w">      </span><span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">ordenadosPorMaximo</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">      </span><span class="p">[[</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">ordenadosPorMaximo</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">      </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">]]</span>
 
 <span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
 <span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">ordenadosPorMaximo1</span>
 <span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">ordenadosPorMaximo2</span>
 <span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">ordenadosPorMaximo3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">ordenadosPorMaximo4</span>
 
 <span class="c1">-- La verificación es</span>
 <span class="c1">--    λ&gt; verifica</span>
-<span class="c1">--    3 examples, 0 failures</span>
+<span class="c1">--    12 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_ordenadosPorMaximo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_ordenadosPorMaximo</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">ordenadosPorMaximo1</span><span class="w"> </span><span class="n">yss</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">ordenadosPorMaximo2</span><span class="w"> </span><span class="n">yss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">ordenadosPorMaximo3</span><span class="w"> </span><span class="n">yss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">ordenadosPorMaximo4</span><span class="w"> </span><span class="n">yss</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">yss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="n">null</span><span class="p">)</span><span class="w"> </span><span class="n">xss</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_ordenadosPorMaximo</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (ordenadosPorMaximo1 [[1..n] | n &lt;- [1..10^4]])</span>
+<span class="c1">--    10000</span>
+<span class="c1">--    (6.52 secs, 3,607,440,800 bytes)</span>
+<span class="c1">--    λ&gt; length (ordenadosPorMaximo2 [[1..n] | n &lt;- [1..10^4]])</span>
+<span class="c1">--    10000</span>
+<span class="c1">--    (7.30 secs, 3,607,600,776 bytes)</span>
+<span class="c1">--    λ&gt; length (ordenadosPorMaximo3 [[1..n] | n &lt;- [1..10^4]])</span>
+<span class="c1">--    10000</span>
+<span class="c1">--    (7.53 secs, 3,604,559,928 bytes)</span>
+<span class="c1">--    λ&gt; length (ordenadosPorMaximo4 [[1..n] | n &lt;- [1..10^4]])</span>
+<span class="c1">--    10000</span>
+<span class="c1">--    (7.09 secs, 3,606,159,952 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
