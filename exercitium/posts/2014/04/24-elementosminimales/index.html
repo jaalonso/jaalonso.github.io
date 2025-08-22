@@ -72,8 +72,7 @@ minimales [[1,3],[2">
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <hr>
-<p>Definir la función</p>
+    <p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">minimales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
 </pre></div>
 
@@ -84,12 +83,18 @@ minimales [[1,3],[2">
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">nub</span><span class="p">,</span><span class="w"> </span><span class="nf">delete</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">ElementosMinimales</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">nub</span><span class="p">,</span><span class="w"> </span><span class="nf">delete</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">\\</span><span class="p">))</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Set</span><span class="w"> </span><span class="p">(</span><span class="nf">isSubsetOf</span><span class="p">,</span><span class="w"> </span><span class="nf">fromList</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">minimales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
-<span class="nf">minimales</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales1</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
 <span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
 <span class="w">        </span><span class="n">null</span><span class="w"> </span><span class="p">[</span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">]]</span>
 
@@ -105,23 +110,148 @@ minimales [[1,3],[2">
 <span class="w">    </span><span class="n">subconjuntoPropio'</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs'</span><span class="p">)</span><span class="w"> </span><span class="n">ys'</span><span class="w"> </span><span class="ow">=</span>
 <span class="w">      </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">ys'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs'</span><span class="w"> </span><span class="p">(</span><span class="n">delete</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys'</span><span class="p">)</span>
 
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales2</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">noTieneSubconjunto</span><span class="w"> </span><span class="n">xss</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">noTieneSubconjunto</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">xss</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales3</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">subconjuntoPropio2</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">xss</span><span class="p">]</span>
+
+<span class="nf">subconjuntoPropio2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">subconjuntoPropio2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">xs'</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">ys'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">xs'</span><span class="w"> </span><span class="o">\\</span><span class="w"> </span><span class="n">ys'</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">xs'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nub</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">        </span><span class="n">ys'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">nub</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales4</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">subconjuntoPropio2</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">xss</span><span class="p">)]</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales5</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">subconjuntoPropio3</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="n">xss</span><span class="p">]</span>
+
+<span class="nf">subconjuntoPropio3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">subconjuntoPropio3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">setXs</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">setYs</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">setXs</span><span class="w"> </span><span class="p">`</span><span class="n">isSubsetOf</span><span class="p">`</span><span class="w"> </span><span class="n">setYs</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">setXs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromList</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">        </span><span class="n">setYs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromList</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="n">agregarSiMinimal</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">agregarSiMinimal</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">yss</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">yss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">yss</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">flip</span><span class="w"> </span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">yss</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">minimales7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">minimales7</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">        </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">or</span><span class="w"> </span><span class="p">[</span><span class="n">subconjuntoPropio</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xss</span><span class="p">])]</span>
+
 <span class="c1">-- Verificación</span>
 <span class="c1">-- ============</span>
 
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
 
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">minimales</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">minimales</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span><span class="w">        </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">minimales</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+
 <span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
 <span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">    </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
-<span class="w">      </span><span class="n">minimales</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span><span class="w">        </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
-<span class="w">    </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
-<span class="w">      </span><span class="n">minimales</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">minimales7</span>
 
 <span class="c1">-- La verificación es</span>
 <span class="c1">--    λ&gt; verifica</span>
-<span class="c1">--    2 examples, 0 failures</span>
+<span class="c1">--    14 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_minimales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_minimales</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">minimales1</span><span class="w"> </span><span class="n">xss</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">minimales2</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">minimales3</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">minimales4</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">minimales5</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">minimales6</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">minimales7</span><span class="w"> </span><span class="n">xss</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=40}) prop_minimales</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (minimales1 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (2.27 secs, 973,011,248 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales2 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (2.19 secs, 973,170,440 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales3 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (0.14 secs, 37,972,696 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales4 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (0.12 secs, 37,804,728 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales5 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (0.05 secs, 39,607,648 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales6 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (0.12 secs, 36,018,976 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales7 [[1..n] | n &lt;- [1..100]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (2.16 secs, 973,840,760 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; length (minimales3 [[1..n] | n &lt;- [1..250]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (3.47 secs, 533,688,496 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales4 [[1..n] | n &lt;- [1..250]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (3.46 secs, 532,668,528 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales5 [[1..n] | n &lt;- [1..250]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (0.27 secs, 579,544,232 bytes)</span>
+<span class="c1">--    λ&gt; length (minimales6 [[1..n] | n &lt;- [1..250]])</span>
+<span class="c1">--    1</span>
+<span class="c1">--    (3.30 secs, 740,152,496 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
