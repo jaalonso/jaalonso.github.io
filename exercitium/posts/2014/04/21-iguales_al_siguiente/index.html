@@ -27,11 +27,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:title" content="Iguales al siguiente">
 <meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2014/04/21-iguales_al_siguiente/">
 <meta property="og:description" content="Definir la función
-   igualesAlSiguiente :: Eq a =&gt; [a] -&gt; [a]
+igualesAlSiguiente :: Eq a =&gt; [a] -&gt; [a]
 
 
 tal que (igualesAlSiguiente xs) es la lista de los elementos de xs que son iguales a su siguiente. Por ejemplo,
-   igualesAlSiguiente [">
+igualesAlSiguiente [1,2,2,">
 <meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2014-04-21T06:00:00+02:00">
@@ -74,44 +74,56 @@ tal que (igualesAlSiguiente xs) es la lista de los elementos de xs que son igual
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <hr>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">igualesAlSiguiente</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">a</span><span class="o">]</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">a</span><span class="o">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">igualesAlSiguiente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
 <p>tal que (igualesAlSiguiente xs) es la lista de los elementos de xs que son iguales a su siguiente. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">   igualesAlSiguiente [1,2,2,2,3,3,4]  ==  [2,2,3]
-   igualesAlSiguiente [1..10]          ==  []
+<div class="code"><pre class="code literal-block"><span class="nf">igualesAlSiguiente</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="nf">igualesAlSiguiente</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">]</span><span class="w">          </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
 </pre></div>
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones en Haskell</h2>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">group</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">Iguales_al_siguiente</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">group</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="nf">quickCheck</span><span class="p">)</span>
 
-<span class="c1">-- 1ª definición (por comprensión):</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="p">),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="p">]</span>
+<span class="w">  </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="p">),</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="p">]</span>
 
-<span class="c1">-- 2ª definición (por recursión):</span>
+<span class="c1">-- 2ª solución (por recursión):</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente2</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">y</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">igualesAlSiguiente2</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span>
 <span class="w">                             </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">igualesAlSiguiente2</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span>
 <span class="nf">igualesAlSiguiente2</span><span class="w"> </span><span class="kr">_</span><span class="w">                    </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
 
-<span class="c1">-- 3ª definición (con concat y comprensión):</span>
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[</span><span class="n">ys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
 
-<span class="c1">-- 4ª definición (con concat y map):</span>
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente4</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span>
 
-<span class="c1">-- 5ª definición (con =&lt;&lt;):</span>
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente5</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="o">=&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
 
-<span class="c1">-- Nota: En la definición anterior se usa el operador (=&lt;&lt;) ya que</span>
+<span class="c1">-- Nota: En la solución anterior se usa el operador (=&lt;&lt;) ya que</span>
 <span class="c1">--    f =&lt;&lt; xs</span>
 <span class="c1">-- es equivalente a</span>
 <span class="c1">--    concat (map f xs)</span>
@@ -129,15 +141,19 @@ tal que (igualesAlSiguiente xs) es la lista de los elementos de xs que son igual
 <span class="c1">--    ghci&gt; (++[0]) =&lt;&lt; [[1],[2,3,4],[3,7],[6]]</span>
 <span class="c1">--    [1,0,2,3,4,0,3,7,0,6,0]</span>
 
-<span class="c1">-- 6ª definición (con =&lt;&lt; y sin argumentos):</span>
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="o">=&lt;&lt;</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">group</span>
 
-<span class="c1">-- 7ª definición (con concatMap):</span>
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente7</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">tail</span><span class="w"> </span><span class="p">(</span><span class="n">group</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
 
-<span class="c1">-- Nota: En la definición anterior se usa la función ya que</span>
+<span class="c1">-- Nota: En la solución anterior se usa la función ya que</span>
 <span class="c1">--    concatMap f xs</span>
 <span class="c1">-- es equivalente a</span>
 <span class="c1">--    concat (map f xs)</span>
@@ -145,7 +161,9 @@ tal que (igualesAlSiguiente xs) es la lista de los elementos de xs que son igual
 <span class="c1">--    ghci&gt; concatMap tail [[1],[2,3,4],[9,7],[6]]</span>
 <span class="c1">--    [3,4,7]</span>
 
-<span class="c1">-- 8ª definición (con concatMap y sin argumentos):</span>
+<span class="c1">-- 8ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">igualesAlSiguiente8</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">igualesAlSiguiente8</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="n">concatMap</span><span class="w"> </span><span class="n">tail</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">group</span>
 
