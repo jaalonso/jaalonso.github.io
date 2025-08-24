@@ -91,6 +91,7 @@ tal que ">
 <span class="kr">import</span><span class="w"> </span><span class="nn">Data.Char</span><span class="w"> </span><span class="p">(</span><span class="nf">toLower</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Data.Function</span><span class="w"> </span><span class="p">(</span><span class="nf">on</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
 <span class="c1">-- 1ª solución</span>
 <span class="c1">-- ===========</span>
@@ -184,6 +185,62 @@ tal que ">
 <span class="c1">-- La verificación es</span>
 <span class="c1">--    λ&gt; verifica</span>
 <span class="c1">--    12 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- Genera un carácter. Por ejemplo.</span>
+<span class="c1">--    λ&gt; sample genCaracter</span>
+<span class="c1">--    'b'</span>
+<span class="c1">--    'O'</span>
+<span class="c1">--    'Y'</span>
+<span class="c1">--    't'</span>
+<span class="c1">--    'B'</span>
+<span class="c1">--    'm'</span>
+<span class="c1">--    'S'</span>
+<span class="c1">--    'z'</span>
+<span class="c1">--    'e'</span>
+<span class="c1">--    'c'</span>
+<span class="c1">--    'c'</span>
+<span class="nf">genCaracter</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="kt">Char</span>
+<span class="nf">genCaracter</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">elements</span><span class="w"> </span><span class="p">([</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'z'</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="sc">'A'</span><span class="o">..</span><span class="sc">'Z'</span><span class="p">])</span>
+
+<span class="c1">-- Genera una palabra. Por ejemplo.</span>
+<span class="c1">--    λ&gt; sample genPalabra</span>
+<span class="c1">--    ""</span>
+<span class="c1">--    "U"</span>
+<span class="c1">--    ""</span>
+<span class="c1">--    ""</span>
+<span class="c1">--    "SBNrDsv"</span>
+<span class="c1">--    "L"</span>
+<span class="c1">--    ""</span>
+<span class="c1">--    "WEbZepkEMiOT"</span>
+<span class="c1">--    "TPC"</span>
+<span class="c1">--    "MQKbhuiOSoiLhGKc"</span>
+<span class="c1">--    "TTUujizoQZxLtyKTH"</span>
+<span class="nf">genPalabra</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">genPalabra</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">genCaracter</span>
+
+<span class="c1">-- Genera una lista de palabras.</span>
+<span class="nf">genPalabras</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">[</span><span class="kt">String</span><span class="p">]</span>
+<span class="nf">genPalabras</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">genPalabra</span>
+
+<span class="c1">-- Propiedad con generador personalizado</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="n">genPalabra</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="ow">-&gt;</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="n">genPalabras</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="nf">\</span><span class="n">ys</span><span class="w"> </span><span class="ow">-&gt;</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">anagramas1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">anagramas2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anagramas3</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anagramas4</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anagramas5</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">anagramas6</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+<span class="c1">--    (0.16 secs, 240,359,144 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
