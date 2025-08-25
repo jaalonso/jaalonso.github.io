@@ -71,8 +71,7 @@ tal que (sumaSiTodosJustos xs) es justo la suma de todos los elementos de xs si 
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <hr>
-<p>Definir la función</p>
+    <p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">sumaSiTodosJustos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 </pre></div>
 
@@ -83,46 +82,49 @@ tal que (sumaSiTodosJustos xs) es justo la suma de todos los elementos de xs si 
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Maybe</span><span class="w"> </span><span class="p">(</span><span class="nf">catMaybes</span><span class="p">,</span><span class="w"> </span><span class="nf">fromJust</span><span class="p">,</span><span class="w"> </span><span class="nf">isJust</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Maybe</span><span class="w"> </span><span class="p">(</span><span class="nf">catMaybes</span><span class="p">,</span><span class="w"> </span><span class="nf">isJust</span><span class="p">,</span><span class="w"> </span><span class="nf">fromJust</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span><span class="w"> </span><span class="p">(</span><span class="nf">quickCheck</span><span class="p">)</span>
 
 <span class="c1">-- 1ª solución</span>
 <span class="c1">-- ===========</span>
 
 <span class="nf">sumaSiTodosJustos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 <span class="nf">sumaSiTodosJustos1</span><span class="w"> </span><span class="n">xs</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
 
-<span class="c1">-- (todosJustos xs) se verifica si todos los elementos de xs si todos</span>
-<span class="c1">-- son justos (es decir, si Nothing no pertenece a xs) y Nothing en caso</span>
+<span class="c1">-- (todosJustos xs) se verifica si todos los elementos de xs son justos</span>
+<span class="c1">-- (es decir, si Nothing no pertenece a xs) y Nothing en caso</span>
 <span class="c1">-- contrario. Por ejemplo,</span>
 <span class="c1">--    todosJustos [Just 2, Just 5]           == True</span>
 <span class="c1">--    todosJustos [Just 2, Just 5, Nothing]  == False</span>
+
+<span class="c1">-- 1ª definición de todosJustos:</span>
+<span class="nf">todosJustos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosJustos1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">notElem</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="c1">-- 2ª definición de todosJustos:</span>
 <span class="nf">todosJustos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosJustos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">notElem</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">todosJustos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">isJust</span>
 
 <span class="c1">-- 2ª solución</span>
 <span class="c1">-- ===========</span>
 
 <span class="nf">sumaSiTodosJustos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 <span class="nf">sumaSiTodosJustos2</span><span class="w"> </span><span class="n">xs</span>
-<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kt">Just</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
-<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
-
-<span class="nf">todosJustos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosJustos2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">isJust</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">fromJust</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
 
 <span class="c1">-- 3ª solución</span>
 <span class="c1">-- ===========</span>
 
 <span class="nf">sumaSiTodosJustos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 <span class="nf">sumaSiTodosJustos3</span><span class="w"> </span><span class="n">xs</span>
-<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">fromJust</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">fromJust</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span>
 <span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
 
 <span class="c1">-- 4ª solución</span>
-<span class="c1">-- ===========</span>
 
 <span class="nf">sumaSiTodosJustos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 <span class="nf">sumaSiTodosJustos4</span><span class="w"> </span><span class="n">xs</span>
@@ -143,18 +145,15 @@ tal que (sumaSiTodosJustos xs) es justo la suma de todos los elementos de xs si 
 <span class="c1">-- de xs de izquierda a derecha. Por ejemplo,</span>
 <span class="c1">--    sequence [Just 2, Just 5]   ==  Just [2,5]</span>
 <span class="c1">--    sequence [Just 2, Nothing]  ==  Nothing</span>
+<span class="c1">--    sequence [[2,4],[5,7]]      ==  [[2,5],[2,7],[4,5],[4,7]]</span>
+<span class="c1">--    sequence [[2,4],[5,7],[6]]  ==  [[2,5,6],[2,7,6],[4,5,6],[4,7,6]]</span>
+<span class="c1">--    sequence [[2,4],[5,7],[]]   ==  []</span>
 
 <span class="c1">-- 6ª solución</span>
 <span class="c1">-- ===========</span>
 
 <span class="nf">sumaSiTodosJustos6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
 <span class="nf">sumaSiTodosJustos6</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">sequence</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
-
-<span class="c1">-- Nota. En la solución anterior se usa la función</span>
-<span class="c1">--    fmap :: (a -&gt; b) -&gt; f a -&gt; f b</span>
-<span class="c1">-- tal que (fmap f x) aplica la función f al functor x. Por ejemplo,</span>
-<span class="c1">--    fmap (+2) (Just 3)  ==  Just 5</span>
-<span class="c1">--    fmap (+2) Nothing   ==  Nothing</span>
 
 <span class="c1">-- 7ª solución</span>
 <span class="c1">-- ===========</span>
@@ -168,12 +167,12 @@ tal que (sumaSiTodosJustos xs) es justo la suma de todos los elementos de xs si 
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 <span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
 
-<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
 <span class="nf">specG</span><span class="w"> </span><span class="n">sumaSiTodosJustos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
-<span class="w">    </span><span class="n">sumaSiTodosJustos</span><span class="w"> </span><span class="p">[</span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">7</span>
+<span class="w">    </span><span class="n">sumaSiTodosJustos</span><span class="w"> </span><span class="p">[</span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">5</span><span class="p">]</span><span class="w">           </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">7</span>
 <span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
-<span class="w">    </span><span class="n">sumaSiTodosJustos</span><span class="w"> </span><span class="p">[</span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="kt">Nothing</span><span class="p">]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">    </span><span class="n">sumaSiTodosJustos</span><span class="w"> </span><span class="p">[</span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="kt">Nothing</span><span class="p">]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="kt">Nothing</span>
 
 <span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
 <span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
@@ -188,6 +187,82 @@ tal que (sumaSiTodosJustos xs) es justo la suma de todos los elementos de xs si 
 <span class="c1">-- La verificación es</span>
 <span class="c1">--    λ&gt; verifica</span>
 <span class="c1">--    14 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_sumaSiTodosJustos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_sumaSiTodosJustos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">sumaSiTodosJustos1</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">sumaSiTodosJustos2</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sumaSiTodosJustos3</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sumaSiTodosJustos4</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sumaSiTodosJustos5</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sumaSiTodosJustos6</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sumaSiTodosJustos7</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+
+<span class="nf">verifica_sumaSiTodosJustos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica_sumaSiTodosJustos</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">quickCheck</span><span class="w"> </span><span class="n">prop_sumaSiTodosJustos</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; verifica_sumaSiTodosJustos</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="nf">ejemplo1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">ejemplo1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span>
+
+<span class="nf">ejemplo2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">ejemplo2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="kt">Nothing</span><span class="p">]</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos1 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (4.08 secs, 3,520,610,288 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos2 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (4.75 secs, 4,000,610,376 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos3 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (2.55 secs, 3,680,610,368 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos4 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (2.87 secs, 3,360,610,184 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos5 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (4.96 secs, 3,461,220,272 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos6 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (3.30 secs, 3,461,220,152 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos7 (ejemplo1 10000000)</span>
+<span class="c1">--    Just 50000005000000</span>
+<span class="c1">--    (4.10 secs, 3,461,220,304 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos1 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (3.22 secs, 3,200,600,632 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos2 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (2.12 secs, 3,200,600,688 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos3 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (3.22 secs, 3,200,600,704 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos4 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (2.34 secs, 3,200,600,616 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos5 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (4.02 secs, 3,061,210,672 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos6 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (2.81 secs, 3,061,210,568 bytes)</span>
+<span class="c1">--    λ&gt; sumaSiTodosJustos7 (ejemplo2 10000000)</span>
+<span class="c1">--    Nothing</span>
+<span class="c1">--    (2.61 secs, 3,061,210,720 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
