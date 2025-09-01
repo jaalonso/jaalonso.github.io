@@ -62,12 +62,15 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </span></p>
             <p class="dateline">
             <a href="../20-mayor_sucesion_3n%2B1/" rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-20T06:00:00+02:00" itemprop="datePublished" title="20-06-2014">20-06-2014</time></a>
+            <time class="published dt-published" datetime="2014-06-20T06:00:00+02:00" itemprop="datePublished" title="20-06-2014">20-06-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-09-01T06:00:00+02:00" itemprop="dateUpdated" title="01-09-2025">01-09-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>La sucesión 3n+1 generada por un número entero positivo x es  sucesión generada por el siguiente algoritmo: Se empieza con el número x. Si x es par, se divide entre 2. Si x es impar, se multiplica por 3 y se le suma 1. El  proceso se repite con el número obtenido hasta que se alcanza el valor 1. Por ejemplo, la sucesión de números generadas cuando se empieza en 22 es</p>
+    <hr>
+<p>La sucesión 3n+1 generada por un número entero positivo x es  sucesión generada por el siguiente algoritmo: Se empieza con el número x. Si x es par, se divide entre 2. Si x es impar, se multiplica por 3 y se le suma 1. El  proceso se repite con el número obtenido hasta que se alcanza el valor 1. Por ejemplo, la sucesión de números generadas cuando se empieza en 22 es</p>
 <div class="code"><pre class="code literal-block"><span class="mf">22</span><span class="w"> </span><span class="mf">11</span><span class="w"> </span><span class="mf">34</span><span class="w"> </span><span class="mf">17</span><span class="w"> </span><span class="mf">52</span><span class="w"> </span><span class="mf">26</span><span class="w"> </span><span class="mf">13</span><span class="w"> </span><span class="mf">40</span><span class="w"> </span><span class="mf">20</span><span class="w"> </span><span class="mf">10</span><span class="w"> </span><span class="mf">5</span><span class="w"> </span><span class="mf">16</span><span class="w"> </span><span class="mf">8</span><span class="w"> </span><span class="mf">4</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span>
 </pre></div>
 
@@ -76,7 +79,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <div class="code"><pre class="code literal-block"><span class="nf">mayorLongitud</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tal que (mayorLongitud i j) es el máximo de las longitudes de las sucesiones 3n+1 para todos los números comprendidos entre i y j, ambos inclusives. Por ejemplo,</p>
+<p>tal que <code>(mayorLongitud i j)</code> es el máximo de las longitudes de las sucesiones 3n+1 para todos los números comprendidos entre <code>i</code> y <code>j</code>, ambos inclusives. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">mayorLongitud</span><span class="w">   </span><span class="mi">1</span><span class="w">   </span><span class="mi">10</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">20</span>
 <span class="nf">mayorLongitud</span><span class="w"> </span><span class="mi">100</span><span class="w">  </span><span class="mi">200</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">125</span>
 <span class="nf">mayorLongitud</span><span class="w"> </span><span class="mi">201</span><span class="w">  </span><span class="mi">210</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">89</span>
@@ -85,15 +88,19 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="c1">-- 1ª solución</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">genericLength</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
 <span class="c1">-- ===========</span>
 
-<span class="nf">mayorLongitud1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">mayorLongitud1</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">sucesion</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+<span class="nf">mayorLongitud1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorLongitud1</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">genericLength</span><span class="w"> </span><span class="p">(</span><span class="n">sucesion</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
 
 <span class="c1">-- (sucesion n) es la sucesión 3n+1 generada por n. Por ejemplo,</span>
 <span class="c1">--    sucesion 22  ==  [22,11,34,17,52,26,13,40,20,10,5,16,8,4,2,1]</span>
-<span class="nf">sucesion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">sucesion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 <span class="nf">sucesion</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="nf">sucesion</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sucesion</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sucesion</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
@@ -101,13 +108,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="c1">-- 2ª solución</span>
 <span class="c1">-- ===========</span>
 
-<span class="nf">mayorLongitud2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">mayorLongitud2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 <span class="nf">mayorLongitud2</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">longitud</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
 
 <span class="c1">-- (longitud n) es la longitud de la sucesión 3n+1 generada por n. Por</span>
 <span class="c1">-- ejemplo,</span>
 <span class="c1">--    longitud 22  ==  16</span>
-<span class="nf">longitud</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">longitud</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 <span class="nf">longitud</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span>
 <span class="nf">longitud</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">n</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">longitud</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">longitud</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
@@ -115,15 +122,70 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="c1">-- 3ª solución (con iterate)</span>
 <span class="c1">-- =========================</span>
 
-<span class="nf">mayorLongitud3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">mayorLongitud3</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">sucesion2</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
+<span class="nf">mayorLongitud3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorLongitud3</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">genericLength</span><span class="w"> </span><span class="p">(</span><span class="n">sucesion2</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="o">..</span><span class="n">j</span><span class="p">]]</span>
 
 <span class="c1">-- (sucesion2 n) es la sucesión 3n+1 generada por n. Por ejemplo,</span>
 <span class="c1">--    sucesion2 22  ==  [22,11,34,17,52,26,13,40,20,10,5,16,8,4,2,1]</span>
-<span class="nf">sucesion2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">sucesion2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 <span class="nf">sucesion2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="o">/=</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">iterate</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">x</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
 <span class="w">              </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">mayorLongitud</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorLongitud</span><span class="w">   </span><span class="mi">1</span><span class="w">   </span><span class="mi">10</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">20</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorLongitud</span><span class="w"> </span><span class="mi">100</span><span class="w">  </span><span class="mi">200</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">125</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorLongitud</span><span class="w"> </span><span class="mi">201</span><span class="w">  </span><span class="mi">210</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">89</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorLongitud</span><span class="w"> </span><span class="mi">900</span><span class="w"> </span><span class="mi">1000</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="mi">174</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorLongitud1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorLongitud2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorLongitud3</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    12 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_mayorLongitud</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_mayorLongitud</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">mayorLongitud1</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">))</span>
+<span class="w">      </span><span class="p">[</span><span class="n">mayorLongitud2</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">),</span>
+<span class="w">       </span><span class="n">mayorLongitud3</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_mayorLongitud</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; mayorLongitud1 1 40000</span>
+<span class="c1">--    324</span>
+<span class="c1">--    (2.61 secs, 1,714,320,680 bytes)</span>
+<span class="c1">--    λ&gt; mayorLongitud2 1 40000</span>
+<span class="c1">--    324</span>
+<span class="c1">--    (2.64 secs, 1,457,194,704 bytes)</span>
+<span class="c1">--    λ&gt; mayorLongitud3 1 40000</span>
+<span class="c1">--    324</span>
+<span class="c1">--    (3.77 secs, 2,660,488,832 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
