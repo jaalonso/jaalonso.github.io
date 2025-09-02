@@ -45,7 +45,220 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/05/27-el_problema_de_las_n_torres/" class="u-url">El problema de las N torres</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/05/28-espacio_de_estado_del_problema_de_las_reinas/" class="u-url">Espacio de estados del problema de las N reinas</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/05/28-espacio_de_estado_del_problema_de_las_reinas/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-05-28T06:00:00+02:00" itemprop="datePublished" title="28-05-2019">28-05-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El problema de las N reinas consiste en colocar N reinas en  tablero rectangular de dimensiones N por N de forma que no se encuentren más de una en la misma línea: horizontal, vertical o diagonal. Por ejemplo, una solución para el problema de las 4 reinas es</p>
+<div class="code"><pre class="code literal-block">|---|---|---|---|
+|   | R |   |   |
+|---|---|---|---|
+|   |   |   | R |
+|---|---|---|---|
+| R |   |   |   |
+|---|---|---|---|
+|   |   | R |   |
+|---|---|---|---|
+</pre></div>
+
+<p>Los estados del problema de las N reinas son los tableros con las reinas colocadas. Inicialmente el tablero está vacío y, en cda paso se coloca una reina en la primera columna en la que aún no hay ninguna reina.</p>
+<p>Cada estado se representa por una lista de números que indican las filas donde se han colocado las reinas. Por ejemplo, el tablero anterior se representa por [2,4,1,3].</p>
+<p>Usando la librería de árboles <a href="https://hackage-content.haskell.org/package/containers-0.8/docs/Data-Tree.html">Data.Tree</a>, definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">arbolReinas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">nEstados</span><span class="w">    </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">soluciones</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">nSoluciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(arbolReinas n) es el árbol de estados para el problema de las n reinas. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolReinas</span><span class="w"> </span><span class="mi">4</span><span class="ss">)))</span>
+[]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span>
+`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>]
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>]
+
+λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolReinas</span><span class="w"> </span><span class="mi">5</span><span class="ss">)))</span>
+[]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">1</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">1</span>]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span><span class="w">           </span><span class="o">|</span>
+<span class="o">|</span><span class="w">           </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>]
+<span class="o">|</span><span class="w">           </span><span class="o">|</span>
+<span class="o">|</span><span class="w">           </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>]
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span>[<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>,<span class="mi">1</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>]
+<span class="o">|</span><span class="w">           </span><span class="o">|</span>
+<span class="o">|</span><span class="w">           </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>,<span class="mi">2</span>,<span class="mi">4</span>]
+<span class="o">|</span>
+`<span class="o">-</span><span class="w"> </span>[<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">2</span>,<span class="mi">5</span>]
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">3</span>,<span class="mi">5</span>]
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>]
+<span class="w">         </span><span class="o">|</span>
+<span class="w">         </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>]
+<span class="w">            </span><span class="o">|</span>
+<span class="w">            </span>`<span class="o">-</span><span class="w"> </span>[<span class="mi">2</span>,<span class="mi">4</span>,<span class="mi">1</span>,<span class="mi">3</span>,<span class="mi">5</span>]
+</pre></div>
+
+<ul>
+<li>(nEstados n) es el número de estados en el problema de las n reinas. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">nEstados 4            ==  17
+nEstados 5            ==  54
+map nEstados [0..10]  ==  [1,2,3,6,17,54,153,552,2057,8394,35539]
+</pre></div>
+
+<ul>
+<li>(soluciones n) es la lista de estados que son soluciones del problema de las n reinas. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; soluciones 4
+[[3,1,4,2],[2,4,1,3]]
+λ&gt; soluciones 5
+[[4,2,5,3,1],[3,5,2,4,1],[5,3,1,4,2],[4,1,3,5,2],[5,2,4,1,3],
+ [1,4,2,5,3],[2,5,3,1,4],[1,3,5,2,4],[3,1,4,2,5],[2,4,1,3,5]]
+</pre></div>
+
+<ul>
+<li>(nSoluciones n) es el número de soluciones del problema de las n reinas. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">nSoluciones 4            ==  2
+nSoluciones 5            ==  10
+map nSoluciones [0..10]  ==  [1,1,0,0,2,10,4,40,92,352,724]
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/05/28-espacio_de_estado_del_problema_de_las_reinas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/05/27-el_problema_de_las_n_torres/" class="u-url">El problema de las N torres</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -496,37 +709,6 @@ convergencia (10^12) ==  1000101125092
 <p><img alt="Las sucesiones de Loomis" src="images/Las_sucesiones_de_Loomis_2.png"></p>
 <hr>
 <p class="more"><a href="posts/2019/05/15-las_sucesiones_de_loomis/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/05/14-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" class="u-url">Mayor producto de n dígitos consecutivos de un número</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/05/14-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-05-14T06:00:00+02:00" itemprop="datePublished" title="14-05-2019">14-05-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">mayorProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del número x (suponiendo que x tiene al menos n dígitos). Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">mayorProducto 2 325                  ==  10
-mayorProducto 5 11111                ==  1
-mayorProducto 5 113111               ==  3
-mayorProducto 5 110111               ==  0
-mayorProducto 5 10151112             ==  10
-mayorProducto 5 101511124            ==  10
-mayorProducto 5 (product [1..1000])  ==  41472
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/05/14-mayor_producto_de_n_digitos_consecutivos_de_un_numero/">Leer más…</a></p>
 </div>
                 </div>
             </article>
