@@ -45,475 +45,508 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/09-ordenacion_de_ternas_de_enteros/" class="u-url">Ordenación de ternas de enteros</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/23-minima_profundidad/" class="u-url">Mínima profundidad</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/02/09-ordenacion_de_ternas_de_enteros/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-09T06:00:00+02:00" itemprop="datePublished" title="09-02-2021">09-02-2021</time></a>
+            <a href="posts/2021/03/23-minima_profundidad/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-23T06:00:00+02:00" itemprop="datePublished" title="23-03-2021">23-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Las ternas de números enteros positivos se pueden ordenar por su suma y las de la misma suma por orden lexicográfico. Por ejemplo,</p>
-<ul>
-<li>ternas de suma 3:</li>
-</ul>
-<div class="code"><pre class="code literal-block">(1,1,1)
+<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los árboles y los bosques como sigue</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="w">   </span><span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<ul>
-<li>ternas de suma 4:</li>
-</ul>
-<div class="code"><pre class="code literal-block">(1,1,2),(1,2,1),(2,1,1)
+<p>Por ejemplo, los árboles</p>
+<div class="code"><pre class="code literal-block">     1               3
+    / \             /|\
+   6   3           / | \
+       |          5  4  7
+       1          |     /\
+                  3    6  5
 </pre></div>
 
-<ul>
-<li>ternas de suma 5:</li>
-</ul>
-<div class="code"><pre class="code literal-block">(1,1,3),(1,2,2),(1,3,1),(2,1,2),(2,2,1),(3,1,1)
+<p>se representan por</p>
+<div class="code"><pre class="code literal-block">   ej1, ej2 :: Tree Int
+   ej1 = Node 1 [Node 6 [],Node 3 [Node 1 []]]
+   ej2 = Node 3 [Node 5 [Node 3 []], Node 4 [], Node 7 [Node 6 [], Node 5 []]]
 </pre></div>
 
-<ul>
-<li>ternas de suma 6</li>
-</ul>
-<div class="code"><pre class="code literal-block">(1,1,4),(1,2,3),(1,3,2),(1,4,1),(2,1,3),(2,2,2),(2,3,1),(3,1,2),(3,2,1),(4,1,1)
-</pre></div>
-
-<p>y así sucesivamente.</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ternas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="n">integer</span><span class="p">,</span><span class="n">integer</span><span class="p">,</span><span class="n">integer</span><span class="p">)]</span>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="n">minimaProfundidad</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que ternas es la lista de las ternas de enteros positivos con el orden descrito anteriormente. por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; take 20 ternas
-[(1,1,1),
- (1,1,2),(1,2,1),(2,1,1),
- (1,1,3),(1,2,2),(1,3,1),(2,1,2),(2,2,1),(3,1,1),
- (1,1,4),(1,2,3),(1,3,2),(1,4,1),(2,1,3),(2,2,2),(2,3,1),(3,1,2),(3,2,1),(4,1,1)]
+<p>tal que (minimaProfundidad x ns) es justamente la mínima  donde aparece x en el árbol ns, si aparece y Nothing, en caso contrario. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">    minimaProfundidad 1 ej1  ==  Just 0
+    minimaProfundidad 3 ej1  ==  Just 1
+    minimaProfundidad 2 ej1  ==  Nothing
+    minimaProfundidad 3 ej2  ==  Just 0
+    minimaProfundidad 4 ej2  ==  Just 1
+    minimaProfundidad 6 ej2  ==  Just 2
+    minimaProfundidad 9 ej2  ==  Nothing
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/02/09-ordenacion_de_ternas_de_enteros/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/23-minima_profundidad/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/08-mayor_numero_borrando_k_digitos/" class="u-url">Mayor número borrando k dígitos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/" class="u-url">Árbol de las divisiones por 2, 3 ó 5</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/02/08-mayor_numero_borrando_k_digitos/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-08T06:00:00+02:00" itemprop="datePublished" title="08-02-2021">08-02-2021</time></a>
+            <a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-22T06:00:00+02:00" itemprop="datePublished" title="22-03-2021">22-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">mayorBorrando</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los árboles y los bosques como sigue</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="w">   </span><span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (mayorBorrando k n) es el mayor número obtenido borrando k dígitos de n (se supone que n tiene más de k dígitos). Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">mayorBorrando 1 6782334  ==  782334
-mayorBorrando 3 6782334  ==  8334
-mayorBorrando 3 10020    ==  20
-mayorBorrando 1000000 (4256 + 10^1000004) == 14256
+<p>Se pueden definir árboles. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   ej = Node 3 [Node 5 [Node 9 []], Node 7 []]
+</pre></div>
+
+<p>Y se pueden dibujar con la función drawTree. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">ej</span><span class="ss">))</span>
+<span class="w">   </span><span class="mi">3</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">9</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">7</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">arbolDivisiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tal que (arbolDivisiones x) es el árbol de las divisiones enteras de x entre 2, 3 ó 5. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolDivisiones</span><span class="w"> </span><span class="mi">20</span><span class="ss">)))</span>
+<span class="w">   </span><span class="mi">20</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="o">|</span>
+<span class="w">         </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolDivisiones</span><span class="w"> </span><span class="mi">30</span><span class="ss">)))</span>
+<span class="w">   </span><span class="mi">30</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">15</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span><span class="o">+-</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="w">      </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="o">|</span>
+<span class="w">         </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/02/08-mayor_numero_borrando_k_digitos/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/05-borra_k_elementos/" class="u-url">Listas obtenidas borrando k elementos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/" class="u-url">Cálculo de pi mediante la fórmula de Beeler</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/02/05-borra_k_elementos/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-05T06:00:00+02:00" itemprop="datePublished" title="05-02-2021">05-02-2021</time></a>
+            <a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-19T06:00:00+02:00" itemprop="datePublished" title="19-03-2021">19-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">borra</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<p>El pasado 12 de marzo se publicó en Twitter un mensaje con una fórmula de Beeler para el cálculo de pi:
+<img alt="Cálculo de pi mediante la fórmula de Beeler" src="images/Calculo_de_pi_mediante_la_formula_de_Beeler.png"></p>
+<p>Los primeros valores son</p>
+<div class="code"><pre class="code literal-block">   λ&gt; 2*1
+   2
+   λ&gt; 2*(1+1/3)
+   2.6666666666666665
+   λ&gt; 2*(1+1/3+(1*2)/(3*5))
+   2.933333333333333
+   λ&gt; 2*(1+1/3+(1*2)/(3*5)+(1*2*3)/(3*5*7))
+   3.0476190476190474
+   λ&gt; 2*(1+1/3+(1*2)/(3*5)+(1*2*3)/(3*5*7)+(1*2*3*4)/(3*5*7*9))
+   3.098412698412698
 </pre></div>
 
-<p>tal que (borra n xs) es la lista de las listas obtenidas borrando n elementos de xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">borra 0 "abcd"  ==  ["abcd"]
-borra 1 "abcd"  ==  ["abc","abd","acd","bcd"]
-borra 2 "abcd"  ==  ["ab","ac","ad","bc","bd","cd"]
-borra 3 "abcd"  ==  ["a","b","c","d"]
-borra 4 "abcd"  ==  [""]
-borra 5 "abcd"  ==  []
-borra 6 "abcd"  ==  []
-length (borra 2 [1..300])  ==  44850
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2021/02/05-borra_k_elementos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/04-pares_con_multiplos_con_igual_numero_de_divisores/" class="u-url">Pares con múltiplos con igual número de divisores</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2021/02/04-pares_con_multiplos_con_igual_numero_de_divisores/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-04T06:00:00+02:00" itemprop="datePublished" title="04-02-2021">04-02-2021</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">paresNoDivisible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)]</span>
-</pre></div>
-
-<p>tal que paresNoDivisible es la lista de los pares (n,k) tales que n &lt; k y k no es divisible por n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; take 10 paresNoDivisible
-[(2,3),(3,4),(2,5),(3,5),(4,5),(4,6),(5,6),(2,7),(3,7),(4,7)]
-</pre></div>
-
-<p>Se observa que en el resultado los pares se ordenan primero según su segundo elemento y los que tienen el mismo segundo elemento se ordenan por el primer elemento.</p>
-<p>Un par especial es un par de enteros positivos (n,k) tales que existe algún s tal que \(s \times n\) y \(s \times k\) tienen el mismo número de divisores. Por ejemplo, (3,4) es un par especial ya que \(2 \times 3\) y \(2 \times 4\) tienen 4 divisores.</p>
-<p>Comprobar con QuickCheck todos los elementos de paresNoDivisible son pares especiales.</p>
-<p><strong>Nota</strong>: Este ejercicio está basado en el problema N1 de la <a href="https://www.imo-official.org/problems/IMO2018SL.pdf">Olimpíada Internacional de Matemáticas (IMO) del 2018</a>.</p>
-<hr>
-<p class="more"><a href="posts/2021/02/04-pares_con_multiplos_con_igual_numero_de_divisores/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/03-los_numeros_armonicos_no_son_enteros/" class="u-url">Los números armónicos no son enteros</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2021/02/03-los_numeros_armonicos_no_son_enteros/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-03T06:00:00+02:00" itemprop="datePublished" title="03-02-2021">03-02-2021</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Los <a href="https://en.wikipedia.org/wiki/Harmonic_number">números armónicos</a> son las sumas de los inversos de de los primeros números enteros positivos; es decir, el n-ésimo número armónico es</p>
-<div class="code"><pre class="code literal-block">H(n) = 1 + 1/2 + 1/3 + ··· + 1/n
-</pre></div>
-
-<p>Los primeros números armónicos son</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="o">/</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="o">/</span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">25</span><span class="o">/</span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">137</span><span class="o">/</span><span class="mf">60</span><span class="p">,</span><span class="w"> </span><span class="mf">..</span>
-</pre></div>
-
-<p>Definir, usando la librería de los números racionales (<a href="https://hackage.haskell.org/package/base-4.14.1.0/docs/Data-Ratio.html">Data.Ratio</a>), las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">armonico</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Rational</span>
-<span class="nf">armonicos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Rational</span><span class="p">]</span>
-<span class="nf">esEntero</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Rational</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(armonico n) es el n-ésimo número armónico. Por ejemplo,</li>
+<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Beeler. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">armonico 2  ==    3 % 2
-armonico 3  ==   11 % 6
-armonico 4  ==   25 % 12
-armonico 5  ==  137 % 60
+<div class="code"><pre class="code literal-block">     aproximacionPi 0    ==  2.0
+     aproximacionPi 1    ==  2.6666666666666665
+     aproximacionPi 2    ==  2.933333333333333
+     aproximacionPi 3    ==  3.0476190476190474
+     aproximacionPi 4    ==  3.098412698412698
+     aproximacionPi 10   ==  3.141106021601377
+     aproximacionPi 100  ==  3.1415926535897922
+     pi                  ==  3.141592653589793
 </pre></div>
 
 <ul>
-<li>armonicos es la lista de los números armónicos. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">take 5 armonicos  ==  [1 % 1,3 % 2,11 % 6,25 % 12,137 % 60]
-</pre></div>
-
-<ul>
-<li>(esEntero x) se verifica si x es un número entero. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">esEntero (1 % 7)           ==  False
-esEntero (1 % 7 + 20 % 7)  ==  True
-</pre></div>
-
-<p>Comprobar con QuickCheck que</p>
-<ul>
-<li>
-<p>nigún número armónico, excepto el primero, es un número entero y</p>
-</li>
-<li>
-<p>la diferencia de dos números armónicos distintos nunca es un número entero.</p>
+<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [0..99]) dibuja
+<img alt="Cálculo de pi mediante la fórmula de Beeler" src="images/Calculo_de_pi_mediante_la_formula_de_Beeler_1.png">
 </li>
 </ul>
-<p><strong>Nota</strong>: Este ejercicio está basado en el artículo <a href="https://www.johndcook.com/blog/2021/01/23/sums-of-consecutive-reciprocals/">Sums of consecutive reciprocals</a> publicado por John D. Cook en su <a href="https://www.johndcook.com/blog/">blog</a> el 23 de enero de 2021.</p>
 <hr>
-<p class="more"><a href="posts/2021/02/03-los_numeros_armonicos_no_son_enteros/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/02-particion_por_suma/" class="u-url">Partición por suma</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/" class="u-url">Números ordenados con cuadrados ordenados</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/02/02-particion_por_suma/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-02T06:00:00+02:00" itemprop="datePublished" title="02-02-2021">02-02-2021</time></a>
+            <a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-18T06:00:00+02:00" itemprop="datePublished" title="18-03-2021">18-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">particion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<p>Un número es ordenado si cada uno de sus dígitos es menor o igual  el siguiente dígito. Por ejemplo, 116 es un número creciente  cuadrado es 13456 que también es ordenado. En cambio, 115 es ordenado pero su cuadrado es 13225 que no es ordenado.</p>
+<p>Definir la lista</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">numerosOrdenadosConCuadradosOrdenados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (particion n xs) es la lista de los elementos de xs, en el mismo orden, agrupados en listas con sumas menores o iguales que n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">particion 6 [1,1,1,3,2,2,2,1,2,2,3] == [[1,1,1,3],[2,2,2],[1,2,2],[3]]
-particion 5 [1,1,1,3,2,2,2,1,2,2,3] == [[1,1,1],[3,2],[2,2,1],[2,2],[3]]
-particion 4 [1,1,1,3,2,2,2,1,2,2,3] == [[1,1,1],[3],[2,2],[2,1],[2,2],[3]]
-particion 3 [1,1,1,3,2,2,2,1,2,2,3] == [[1,1,1],[3],[2],[2],[2,1],[2],[2],[3]]
-particion 2 [1,1,1,3,2,2,2,1,2,2,3] == []
+<p>cuyos elementos son los números ordenados cuyos cuadrados también lo son. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; take 20 numerosOrdenadosConCuadradosOrdenados
+   [0,1,2,3,4,5,6,7,12,13,15,16,17,34,35,37,38,67,116,117]
+   λ&gt; length (show (numerosOrdenadosConCuadradosOrdenados !! (10^6)))
+   1411
+   λ&gt; length (show (numerosOrdenadosConCuadradosOrdenados !! (5*10^6)))
+   3159
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/02/02-particion_por_suma/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/02/01-con_algun_nueve/" class="u-url">Con algún nueve</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/" class="u-url">Números con cuadrados con dígitos pares</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/02/01-con_algun_nueve/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-02-01T06:00:00+02:00" itemprop="datePublished" title="01-02-2021">01-02-2021</time></a>
+            <a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-17T06:00:00+02:00" itemprop="datePublished" title="17-03-2021">17-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>Definir la lista</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">numerosConCuadradosConDigitosPares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>cuyos elementos son los números cuyos cuadrados tienen todos sus dígitos pares. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; take 20 numerosConCuadradosConDigitosPares
+   [0,2,8,20,22,68,78,80,92,162,168,200,202,220,262,298,478,492,498,668]
+</pre></div>
+
+<p>Comprobar con QuickCheck que numerosConCuadradosConDigitosPares es infinita; es decir, para cualquier n posee algún elemento mayor que n.</p>
+<hr>
+<p class="more"><a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/" class="u-url">Cálculo de pi mediante la fórmula de Bauer</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-16T06:00:00+02:00" itemprop="datePublished" title="16-03-2021">16-03-2021</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El pasado 10 de marzo se publicó en Twitter un mensaje con una [fórmula de Bauer}(https://en.wikipedia.org/wiki/Gustav_Conrad_Bauer#Footnotes_in_the_history_of_mathematics) para el cálculo de pi
+<img alt="Cálculo de pi mediante la fórmula de Bauer" src="images/Calculo_de_pi_mediante_la_formula_de_Bauer.png"></p>
+<p>Los primeros valores son</p>
+<div class="code"><pre class="code literal-block">   λ&gt; 2/1
+   2.0
+   λ&gt; 2/(1 - 5*(1/2)^3)
+   5.333333333333333
+   λ&gt; 2/(1 - 5*(1/2)^3 + 9*((1*3)/(2*4))^3)
+   2.354022988505747
+   λ&gt; 2/(1 - 5*(1/2)^3 + 9*((1*3)/(2*4))^3 - 13*((1*3*5)/(2*4*6))^3)
+   4.416172506738545
+</pre></div>
+
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">numerosConNueve</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">conNueve</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>numerosConNueve es la lista de los números con algún dígito igual a 9. Por ejemplo,</li>
+<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Bauer. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; take 20 numerosConNueve
-[9,19,29,39,49,59,69,79,89,90,91,92,93,94,95,96,97,98,99,109]
+<div class="code"><pre class="code literal-block">     aproximacionPi 0         ==  2.0
+     aproximacionPi 1         ==  5.333333333333333
+     aproximacionPi 2         ==  2.354022988505747
+     aproximacionPi 3         ==  4.416172506738545
+     aproximacionPi (10^2)    ==  2.974407762733626
+     aproximacionPi (10^2+1)  ==  3.3277148010019233
+     aproximacionPi (10^3)    ==  3.0865454975585744
+     aproximacionPi (10^3+1)  ==  3.1986099487445463
+     aproximacionPi (10^4)    ==  3.1239682112773868
+     aproximacionPi (10^4+1)  ==  3.1594161911246594
+     aproximacionPi (10^5)    ==  3.135997665507836
+     aproximacionPi (10^5+1)  ==  3.147207613460776
+     pi                       ==  3.141592653589793
 </pre></div>
 
 <ul>
-<li>(conNueve n) es la cantidad de números enteros no negativos menores o iguales que n con algún dígito igual a 9. Por ejemplo,</li>
+<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [0..99]) dibuja
+<img alt="Cálculo de pi mediante la fórmula de Bauer" src="images/Calculo_de_pi_mediante_la_formula_de_Bauer_1.png">
+</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nv">conNueve</span><span class="w"> </span><span class="mi">1</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">0</span>
-<span class="nv">conNueve</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">1</span>
-<span class="nv">conNueve</span><span class="w"> </span><span class="mi">90</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
-<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">conNueve</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">3</span><span class="ss">)))</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
-<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">conNueve</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">30</span><span class="ss">)))</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">30</span>
-<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">conNueve</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">300</span><span class="ss">)))</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">300</span>
-<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">conNueve</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">3000</span><span class="ss">)))</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">3000</span>
-<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">conNueve</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">30000</span><span class="ss">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">30000</span>
-</pre></div>
-
 <hr>
-<p class="more"><a href="posts/2021/02/01-con_algun_nueve/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/01/29-terna_pitagorica_en_la_que_el_perimetro_es_multiplo_de_uno_de_los_catetos/" class="u-url">Terna pitagórica en la que el perímetro es múltiplo de uno de los catetos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/" class="u-url">Cálculo de pi mediante la fórmula de Euler</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/01/29-terna_pitagorica_en_la_que_el_perimetro_es_multiplo_de_uno_de_los_catetos/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-01-29T06:00:00+02:00" itemprop="datePublished" title="29-01-2021">29-01-2021</time></a>
+            <a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-15T06:00:00+02:00" itemprop="datePublished" title="15-03-2021">15-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>La terna (n,a,b) es una terna pitagórica si n² = a²+b² y b &lt; a &lt; n. Por ejemplo, (5,4,3) y (10,8,6) son ternas pitagóricas.</p>
-<p>Una terna pitagórica es primitiva si sus tres componentes son primos entre sí. Por ejemplo, (5,4,3) es una terna pitagórica primitiva y (10,8,6) es una terna pitagórica no primitiva (ya que sus tres lados son divisibles por 2).</p>
-<p>Los elementos (n,a,b) de una terna pitagórica son las longitudes de los lados de un triágulo rectángulo; concretamente n es la longitud de la hipotenusa, a la del cateto mayor y b la del cateto menor. Su perímetro es n+a+b.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ternasPPPDC</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
-</pre></div>
-
-<p>tal que ternasPPPDC es la lista de las ternas pitagóricas primitivas tales que su perímetro es divisibe por alguno de los catetos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="n">ternasPPPDC</span>
-<span class="p">[(</span><span class="m">5</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">13</span><span class="p">,</span><span class="m">12</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">17</span><span class="p">,</span><span class="m">15</span><span class="p">,</span><span class="m">8</span><span class="p">),(</span><span class="m">25</span><span class="p">,</span><span class="m">24</span><span class="p">,</span><span class="m">7</span><span class="p">),(</span><span class="m">37</span><span class="p">,</span><span class="m">35</span><span class="p">,</span><span class="m">12</span><span class="p">)]</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="n">ternasPPPDC</span><span class="p">]</span>
-<span class="p">[</span><span class="m">5</span><span class="p">,</span><span class="m">13</span><span class="p">,</span><span class="m">17</span><span class="p">,</span><span class="m">25</span><span class="p">,</span><span class="m">37</span><span class="p">,</span><span class="m">41</span><span class="p">,</span><span class="m">61</span><span class="p">,</span><span class="m">65</span><span class="p">,</span><span class="m">85</span><span class="p">,</span><span class="m">101</span><span class="p">,</span><span class="m">113</span><span class="p">,</span><span class="m">145</span><span class="p">,</span><span class="m">145</span><span class="p">,</span><span class="m">181</span><span class="p">,</span><span class="m">197</span><span class="p">]</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="n">ternasPPPDC</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="m">80</span>
-<span class="p">(</span><span class="m">4705</span><span class="p">,</span><span class="m">4704</span><span class="p">,</span><span class="m">97</span><span class="p">)</span>
-</pre></div>
-
-<p>Comprobar con QuickCheck que existen infinitas ternas pitagóricas primitivas tales que su perímetro es divisibe por alguno de los catetos; es decir, para todo x existe alguna terna (n,a,b) en ternasPPPDC tal que n es mayor que x.</p>
-<p><strong>Referencia</strong>: Este ejercicio está basado en el artículo <a href="https://hojaynumeros.blogspot.com/2021/01/terna-pitagorica-en-la-que-el-perimetro.html?utm_source=feedburner&amp;utm_medium=feed&amp;utm_campaign=Feed:+blogspot/hojaynumeros+(N%C3%BAmeros+y+hoja+de+c%C3%A1lculo)">Terna pitagórica en la que el perímetro es múltiplo de uno de los catetos</a> publicado por Antonio Roldán en "Números y hoja de cálculo" el 21 de enero de 2021.</p>
-<hr>
-<p class="more"><a href="posts/2021/01/29-terna_pitagorica_en_la_que_el_perimetro_es_multiplo_de_uno_de_los_catetos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/01/28-el_numero_de_dottie/" class="u-url">El número de Dottie</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2021/01/28-el_numero_de_dottie/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-01-28T06:00:00+02:00" itemprop="datePublished" title="28-01-2021">28-01-2021</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>La sucesión de Dottie correspondiente a un número x se obtiene a partir de x aplicándole la función coseno al término anterior. Por ejemplo, empezando en el 2021 los términos de la sucesión de Dottie son</p>
-<div class="code"><pre class="code literal-block">d(0) = 2021
-d(1) = cos(2021)                = -0.5768544484396986
-d(2) = cos(-0.5768544484396986) = 0.8381823464377144
-d(3) = cos(0.8381823464377144)  = 0.6688152257126013
-d(4) = cos(0.6688152257126013)  = 0.7845568438177061
-d(5) = cos(0.7845568438177061)  = 0.7077014336446841
-d(6) = cos(0.7077014336446841)  = 0.7598581544800473
-d(7) = cos(0.7598581544800473)  = 0.7249337238692606
-d(8) = cos(0.7249337238692606)  = 0.7485433703735275
-</pre></div>
-
+<p>El pasado 6 de marzo se publicó en Twitter un mensaje con la siguiente fórmula de Euler para el cálculo de pi</p>
+<p><img alt="Cálculo de pi mediante la fórmula de Euler" src="images/Calculo_de_pi_mediante_la_formula_de_Euler.png"></p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sucesionDottie</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
-<span class="nf">limite</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(sucesionDottie x) es la lista de los términos de la sucesión de Dottie correspondiente a x. Por ejemplo,</li>
+<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Euler. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; mapM_ print (take 10 (sucesionDottie 2021))
-2021.0
--0.5768544484396986
-0.8381823464377144
-0.6688152257126013
-0.7845568438177061
-0.7077014336446841
-0.7598581544800473
-0.7249337238692606
-0.7485433703735275
-0.7326809874975466
-λ&gt; mapM_ print (take 10 (drop 85 (sucesionDottie 2021)))
-0.7390851332151601
-0.739085133215161
-0.7390851332151605
-0.7390851332151608
-0.7390851332151606
-0.7390851332151607
-0.7390851332151607
-0.7390851332151607
-0.7390851332151607
-0.7390851332151607
+<div class="code"><pre class="code literal-block">     aproximacionPi 1        ==  2.449489742783178
+     aproximacionPi 10       ==  3.04936163598207
+     aproximacionPi 100      ==  3.1320765318091053
+     aproximacionPi 1000     ==  3.1406380562059946
+     aproximacionPi 10000    ==  3.1414971639472147
+     aproximacionPi 100000   ==  3.141583104326456
+     aproximacionPi 1000000  ==  3.1415916986605086
+     pi                      ==  3.141592653589793
 </pre></div>
 
 <ul>
-<li>(limite xs a n) es el límite de xs con aproximación a y amplitud n; es decir, el primer término x de la sucesión tal que el valor absoluto de x y cualquiera de sus n siguentes elementos es menor que a. Por ejemplo,</li>
+<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [1..100]) dibuja</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="p">[(</span><span class="m">2</span><span class="o">*</span><span class="n">n</span><span class="m">+1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="m">+5</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="n">..</span><span class="p">]]</span><span class="w"> </span><span class="m">0.001</span><span class="w"> </span><span class="m">300</span>
-<span class="m">1.993991989319092</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="p">[(</span><span class="m">2</span><span class="o">*</span><span class="n">n</span><span class="m">+1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="m">+5</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="n">..</span><span class="p">]]</span><span class="w"> </span><span class="m">1e-6</span><span class="w"> </span><span class="m">300</span>
-<span class="m">1.9998260062637745</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="p">[(</span><span class="m">1+1</span><span class="o">/</span><span class="n">n</span><span class="p">)</span><span class="o">**</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="n">..</span><span class="p">]]</span><span class="w"> </span><span class="m">0.001</span><span class="w"> </span><span class="m">300</span>
-<span class="m">2.7155953364173175</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="nf">limite </span><span class="p">(</span><span class="n">sucesionDottie</span><span class="w"> </span><span class="m">2021</span><span class="p">)</span><span class="w"> </span><span class="m">1e-16</span><span class="w"> </span><span class="m">100</span>
-<span class="m">0.7390851332151607</span>
-λ<span class="o">&gt;</span><span class="w"> </span><span class="nf">limite </span><span class="p">(</span><span class="n">sucesionDottie</span><span class="w"> </span><span class="m">27</span><span class="p">)</span><span class="w"> </span><span class="m">1e-16</span><span class="w"> </span><span class="m">100</span>
-<span class="m">0.7390851332151607</span>
-</pre></div>
-
-<p>Comprobar con QuickCheck que, para todo número x, el límite de la
-sucesión de Dottie generada por  x es mismo; es decir, si x e y son
-dos números cualesquiera, entonces</p>
-<div class="code"><pre class="code literal-block">limite (sucesionDottie x) 1e-16 100 ==
-limite (sucesionDottie y) 1e-16 100
-</pre></div>
-
-<p>Dicho límite es el <strong>número de Dottie</strong>.</p>
-<p><strong>Referencia</strong>: Este ejercicio está basado en el artículo <a href="https://www.gaussianos.com/el-numero-de-dottie/">El número de Dottie</a> publicado por Miguel Ángel Morales en Gaussianos el 20 de enero de 2021.</p>
+<p><img alt="Cálculo de pi mediante la fórmula de Euler" src="images/Calculo_de_pi_mediante_la_formula_de_Euler_1.png"></p>
 <hr>
-<p class="more"><a href="posts/2021/01/28-el_numero_de_dottie/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/01/27-arboles_con_valores_acotados/" class="u-url">Árboles con valores acotados</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/" class="u-url">Representaciones de un número como potencia</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/01/27-arboles_con_valores_acotados/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-01-27T06:00:00+02:00" itemprop="datePublished" title="27-01-2021">27-01-2021</time></a>
+            <a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-12T06:00:00+02:00" itemprop="datePublished" title="12-03-2021">12-03-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Los árboles binarios se pueden representar mediante el tipo Arbol definido por</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="n">a</span>
-<span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
-</pre></div>
-
-<p>Por ejemplo, el árbol</p>
-<div class="code"><pre class="code literal-block">      7
-     / \
-    /   \
-   /     \
-  4       9
- / \     / \
-1   3   5   6
-</pre></div>
-
-<p>se puede representar por</p>
-<div class="code"><pre class="code literal-block">N 7 (N 4 (H 1) (H 3)) (N 9 (H 5) (H 6))
-</pre></div>
-
-<p>Un árbol está acotado por un conjunto ys si todos los valores de sus hojas y sus nodos pertenecen a ys. Por ejemplo, el árbol anterior está acotado por [1..10] pero no lo está por [1..7].</p>
-<p>Un árbol es monovalorado si todos sus elementos son iguales. Por ejemplo, de los siguientes árboles sólo son monovalorados los dos primeros</p>
-<div class="code"><pre class="code literal-block">  5          9           5          9
- / \        / \         / \        / \
-5   5      9   9       5   6      9   7
-              / \                    / \
-             9   9                  9   9
+<p>El número 512 se puede escribir de tres maneras como potencias:</p>
+<div class="code"><pre class="code literal-block">   512 = 2⁹ = 8³ = 512¹
 </pre></div>
 
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">acotado</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">monovalorados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Arbol</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">potencias</span><span class="w">       </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">numeroPotencias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(acotado a ys) se verifica si a está acotado por ys. Por ejemplo,</li>
+<li>(potencias x) es la lista de las representaciones de x como potencias de números enteros positivos. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">acotado (N 7 (N 4 (H 1) (H 3)) (N 9 (H 5) (H 6))) [1..10] == True
-acotado (N 7 (N 4 (H 1) (H 3)) (N 9 (H 5) (H 6))) [1..7]  == False
+<div class="code"><pre class="code literal-block">     potencias 7      ==  [(7,1)]
+     potencias 8      ==  [(2,3),(8,1)]
+     potencias 512    ==  [(2,9),(8,3),(512,1)]
+     potencias 16384  ==  [(2,14),(4,7),(128,2),(16384,1)]
+     potencias 65536  ==  [(2,16),(4,8),(16,4),(256,2),(65536,1)]
 </pre></div>
 
 <ul>
-<li>(monovalorado a) se verifica si a es monovalorado. Por ejemplo,</li>
+<li>(numeroPotencias x) de las representaciones de x como potencias de números enteros positivos. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">monovalorado (N 5 (H 5) (H 5))              ==  True
-monovalorado (N 5 (H 5) (H 6))              ==  False
-monovalorado (N 9 (H 9) (N 9 (H 9) (H 9)))  ==  True
-monovalorado (N 9 (H 9) (N 7 (H 9) (H 9)))  ==  False
-monovalorado (N 9 (H 9) (N 9 (H 7) (H 9)))  ==  False
+<div class="code"><pre class="code literal-block">     numeroPotencias 7          ==  1
+     numeroPotencias 8          ==  2
+     numeroPotencias 512        ==  3
+     numeroPotencias 16384      ==  4
+     numeroPotencias 65536      ==  5
+     numeroPotencias (2^(10^5)) ==  36
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/01/27-arboles_con_valores_acotados/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/" class="u-url">Cálculo de pi mediante la fórmula de Brouncker</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-11T06:00:00+02:00" itemprop="datePublished" title="11-03-2021">11-03-2021</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El mes de marzo es el mes de pi, ya que el 14 de marzo (3/14) es el <a href="https://es.wikipedia.org/wiki/D%C3%ADa_de_%CF%80">día de pi</a>. Con ese motivo, el pasado 3 de marzo se publicó en Twitter un mensaje con la <a href="https://en.wikipedia.org/wiki/William_Brouncker,_2nd_Viscount_Brouncker#Brouncker's_formula">fórmula de Brouncker para el cálculo de pi</a>
+<img alt="Cálculo de pi mediante la fórmula de Brouncker" src="images/Calculo_de_pi_mediante_la_formula_de_Brouncker.png"></p>
+<p>La primeras aproximaciones son</p>
+<div class="code"><pre class="code literal-block">     a(1) = 4                                  =  4
+     a(2) = 4/(1+1^2)                          =  2.0
+     a(3) = 4/(1+1^2/(2+3^2))                  =  3.666666666666667
+     a(4) = 4/(1+1^2/(2+3^2/(2+5^2)))          =  2.8
+     a(5) = 4/(1+1^2/(2+3^2/(2+5^2/(2+7^2))))  =  3.395238095238095
+</pre></div>
+
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Brouncker. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     aproximacionPi 1      ==  4.0
+     aproximacionPi 2      ==  2.0
+     aproximacionPi 3      ==  3.666666666666667
+     aproximacionPi 4      ==  2.8
+     aproximacionPi 5      ==  3.395238095238095
+     aproximacionPi 10     ==  3.0301437124966535
+     aproximacionPi 1000   ==  3.1405916523380406
+     aproximacionPi 1001   ==  3.142592653839793
+     aproximacionPi 10000  ==  3.141492643588543
+     aproximacionPi 10001  ==  3.1416926535900433
+     pi                    ==  3.141592653589793
+</pre></div>
+
+<ul>
+<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [10..100]) dibuja
+<img alt="Cálculo de pi mediante la fórmula de Brouncker" src="images/Calculo_de_pi_mediante_la_formula_de_Brouncker_1.png">
+</li>
+</ul>
+<hr>
+<p class="more"><a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/" class="u-url">Cálculo de pi mediante la serie de Madhava</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-03-10T06:00:00+02:00" itemprop="datePublished" title="10-03-2021">10-03-2021</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El mes de marzo es el mes de pi, ya que el 14 de marzo (3/14) es el <a href="https://es.wikipedia.org/wiki/D%C3%ADa_de_%CF%80">día de pi</a>. Con ese motivo, el pasado 1 de marzo se publicó en Twitter un mensaje con la <a href="https://en.wikipedia.org/wiki/Madhava_series#Another_formula_for_the_circumference_of_a_circle">fórmula de Madhava para el cálculo de pi</a>
+<img alt="Cálculo de pi mediante la serie de Madhava" src="images/Calculo_de_pi_mediante_la_serie_de_Madhava.png"></p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Madhava. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">     aproximacionPi 0   ==  3.4641016151377544
+     aproximacionPi 1   ==  3.0792014356780038
+     aproximacionPi 2   ==  3.156181471569954
+     aproximacionPi 10  ==  3.1415933045030813
+     aproximacionPi 21  ==  3.1415926535879337
+     pi                 ==  3.141592653589793
+</pre></div>
+
+<ul>
+<li>(grafica n) dibuja la gráfica de las k-ésimas aproximaciones de pi para k desde 0 a n. Por ejemplo, (grafica 30) dibuja
+<img alt="Cálculo de pi mediante la serie de Madhava" src="images/Calculo_de_pi_mediante_la_serie_de_Madhava_1.png">
+</li>
+</ul>
+<hr>
+<p class="more"><a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/">Leer más…</a></p>
 </div>
                 </div>
             </article>
@@ -525,19 +558,7 @@ monovalorado (N 9 (H 9) (N 9 (H 7) (H 9)))  ==  False
             <li class="next">
                 <a href="index-56.html" rel="next">Publicaciones anteriores</a>
             </li>
-        </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-        processEscapes: true
-    },
-    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
-    "HTML-CSS": {
-        styles: {'.MathJax_Display': {"margin": 0}}
-    }
-});
-</script></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             

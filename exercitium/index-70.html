@@ -45,361 +45,504 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/09-suma_de_primos_menores/" class="u-url">Suma de primos menores</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/20-maximos_locales_en_los_numeros_de_descomposiciones_de_goldbach/" class="u-url">Máximos locales en los números de descomposiciones de Goldbach</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/12/09-suma_de_primos_menores/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-09T06:00:00+02:00" itemprop="datePublished" title="09-12-2019">09-12-2019</time></a>
+            <a href="posts/2020/01/20-maximos_locales_en_los_numeros_de_descomposiciones_de_goldbach/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-20T06:00:00+02:00" itemprop="datePublished" title="20-01-2020">20-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>La suma de los primos menores que 10 es 2 + 3 + 5 + 7 = 17.</p>
+<p>La <a href="https://en.wikipedia.org/wiki/Goldbach's_conjecture">conjetura de Goldbach</a> afirma que todo número entero mayor que 2 se puede expresar como suma de dos primos.</p>
+<p>Las descomposiciones de Goldbach son las maneras de expresar un número como suma de dos primos. Por ejemplo, el número 10 tiene dos descomposiciones de Goldbach ya que se puede expresar como la suma de 3 y 7 y la suma de 5 y 5.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">descomposicionesGoldbach</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">numeroGoldbach</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">tieneMaximoLocalGoldbach</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(descomposicionesGoldbach n) es la lista de las descomposiciones de Goldbach del número n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">descomposicionesGoldbach 5   ==  [(2,3)]
+descomposicionesGoldbach 10  ==  [(3,7),(5,5)]
+descomposicionesGoldbach 22  ==  [(3,19),(5,17),(11,11)]
+descomposicionesGoldbach 34  ==  [(3,31),(5,29),(11,23),(17,17)]
+descomposicionesGoldbach 35  ==  []
+descomposicionesGoldbach (9+10^9)  ==  [(2,1000000007)]
+</pre></div>
+
+<ul>
+<li>(numeroGolbach n) es el número de descomposiciones de Goldbach del número n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="n">numeroGoldbach</span><span class="w"> </span><span class="m">5</span><span class="w">         </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="n">numeroGoldbach</span><span class="w"> </span><span class="m">10</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="n">numeroGoldbach</span><span class="w"> </span><span class="m">22</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="n">numeroGoldbach</span><span class="w"> </span><span class="m">34</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="m">4</span>
+<span class="n">numeroGoldbach</span><span class="w"> </span><span class="m">35</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="m">0</span>
+<span class="nf">numeroGoldbach </span><span class="p">(</span><span class="m">9+10</span><span class="o">^</span><span class="m">9</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">numeroGoldbach</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">2</span><span class="kc">..3000</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">128</span>
+</pre></div>
+
+<ul>
+<li>(tieneMaximoLocalGoldbach n) se verifica si en n se alcanza un máximo local en el número de descomposiciones de Goldbach; es decir, los números n tales que el número de descomposiciones de Goldbach de n es mayor o igual que las de n-1 y las de n+1. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; filter tieneMaximoLocalGoldbach [1..45]
+[1,2,4,5,6,7,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44]
+</pre></div>
+
+<p>En el ejemplo anterior se comprueba que en los múltiplos de 6 (es decir, en 6, 12, 18, 24, 30, 36 y 42), el número de descomposiciones de Goldbach alcanza un máximo local. Comprobar con QuickCheck que esta propiedad se cumple en general; es decir, para todo entero positivo n, el número de descomposiciones de Goldbach en 6n es un máximo local.</p>
+<hr>
+<p class="more"><a href="posts/2020/01/20-maximos_locales_en_los_numeros_de_descomposiciones_de_goldbach/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/17-teorema_de_la_amistad/" class="u-url">Teorema de la amistad</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2020/01/17-teorema_de_la_amistad/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-17T06:00:00+02:00" itemprop="datePublished" title="17-01-2020">17-01-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El <strong>teorema de la amistad</strong> afirma que</p>
+<blockquote>
+<p>En cualquier reunión de n personas hay al menos dos personas que tienen el mismo número de amigos (suponiendo que la relación de amistad es simétrica).</p>
+</blockquote>
+<p>Se pueden usar las siguientes representaciones:</p>
+<ul>
+<li>números enteros para representar a las personas,</li>
+<li>pares de enteros (x,y), con x &lt; y, para representar que la persona x e y so amigas y</li>
+<li>lista de pares de enteros para representar la reunión junto con las relaciones de amistad.</li>
+</ul>
+<p>Por ejemplo, [(2,3),(3,5)] representa una reunión de tres personas
+(2, 3 y 5) donde</p>
+<ul>
+<li>2 es amiga de 3,</li>
+<li>3 es amiga de 2 y 5 y</li>
+<li>5 es amiga de 3.
+Si clasificamos las personas poniendo en la misma clase las que tienen el mismo número de amigos, se obtiene [[2,5],[3]] ya que 2 y 5 tienen 1 amigo y 3 tiene 2 amigos.</li>
+</ul>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sumaPrimosMenores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<div class="code"><pre class="code literal-block"><span class="nf">clasesAmigos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (sumaPrimosMenores n) es la suma de los primos menores que n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">sumaPrimosMenores 10        ==  17
-sumaPrimosMenores (5*10^5)  ==  9914236195
+<p>tal que (clasesAmigos r) es la clasificación según el número de amigos de las personas de la reunión r; es decir, la lista cuyos elementos son las listas de personas con 1 amigo, con 2 amigos y así hasta que se completa todas las personas de la reunión r. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">]]</span>
+<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">2020</span><span class="p">]])</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span>
 </pre></div>
 
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=10">problema 10</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
+<p>Comprobar con QuickCheck el teorema de la amistad; es decir, si r es una lista de pares de enteros, entonces (clasesAmigos r') donde r' es la lista de los pares (x,y) de r con x &lt; y y se supone que r' es no vacía.</p>
 <hr>
-<p class="more"><a href="posts/2019/12/09-suma_de_primos_menores/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/17-teorema_de_la_amistad/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/06-primos_o_cuadrados_de_primos/" class="u-url">Primos o cuadrados de primos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/16-elementos_multiplos_de_la_longitud_de_la_lista/" class="u-url">Elementos múltiplos de la longitud de la lista</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/12/06-primos_o_cuadrados_de_primos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-06T06:00:00+02:00" itemprop="datePublished" title="06-12-2019">06-12-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la constante</p>
-<div class="code"><pre class="code literal-block"><span class="nf">primosOcuadradosDePrimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>cuyos elementos son los número primos o cuadrados de primos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; take 20 primosOcuadradosDePrimos
-[2,3,4,5,7,9,11,13,17,19,23,25,29,31,37,41,43,47,49,53]
-</pre></div>
-
-<p>Comprobar con QuickCheck que las lista primosOcuadradosDePrimos y unifactorizables (definida en el ejercicio anterior) son iguales.</p>
-<hr>
-<p class="more"><a href="posts/2019/12/06-primos_o_cuadrados_de_primos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/05-sublistas_con_producto_dado/" class="u-url">Sublistas con producto dado</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/12/05-sublistas_con_producto_dado/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-05T06:00:00+02:00" itemprop="datePublished" title="05-12-2019">05-12-2019</time></a>
+            <a href="posts/2020/01/16-elementos_multiplos_de_la_longitud_de_la_lista/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-16T06:00:00+02:00" itemprop="datePublished" title="16-01-2020">16-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sublistasConProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
-<span class="nf">unifactorizables</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">multiplosDeLaLongitud</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">multiplosDeLaLongitudDeConsecutivos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(sublistasConProducto n xs) es la lista de las sublistas de la lista ordenada estrictamente creciente xs (cuyos elementos son enteros mayores que 1) cuyo producto es el número entero n (con n mayor que 1). Por ejemplo,</li>
+<li>(multiplosDeLaLongitud xs) es la lista de los elementos de xs que son múltiplos de la longitud de xs. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; sublistasConProducto 72 [2,3,4,5,6,7,9,10,16]
-[[2,4,9],[3,4,6]]
-λ&gt; sublistasConProducto 720 [2,3,4,5,6,7,9,10,16]
-[[2,3,4,5,6],[2,4,9,10],[3,4,6,10],[5,9,16]]
-λ&gt; sublistasConProducto 2 [4,7]
-[]
-λ&gt; length (sublistasConProducto 1234567 [1..1234567])
-4
+<div class="code"><pre class="code literal-block">multiplosDeLaLongitud [2,4,6,8] == [4,8]
 </pre></div>
 
 <ul>
-<li>unifactorizables es la lísta de los números enteros mayores que 1 que se pueden escribir sólo de una forma única como producto de enteros distintos mayores que uno. Por ejemplo,</li>
+<li>(multiplosDeLaLongitudDeConsecutivos n m) es la lista de elementos de [n..n+m-1] que son múltiplos de n. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; take 20 unifactorizables
-[2,3,4,5,7,9,11,13,17,19,23,25,29,31,37,41,43,47,49,53]
-λ&gt; unifactorizables !! 300
-1873
+<div class="code"><pre class="code literal-block">multiplosDeLaLongitudDeConsecutivos 9 2  ==  [10]
+multiplosDeLaLongitudDeConsecutivos 9 12 ==  [12]
 </pre></div>
 
+<p>Comprobar con QuickCheck si se verifican las siguientes propiedades</p>
+<ul>
+<li>En cualquier conjunto de m elementos consecutivos, m divide exactamente a uno de dichos elementos. En otras palabras, si n y m son enteros positivos, entonces (multiplosDeLaLongitudDeConsecutivos n m) tiene exactamente un elemento.</li>
+<li>Si n es un entero positivo y m &gt;= n, entonces (multiplosDeLaLongitudDeConsecutivos n m) es igual a [m]</li>
+<li>Si n y n son enteros positivos y m &lt; n, entonces (multiplosDeLaLongitudDeConsecutivos n m) es igual a [m * ceiling (n' / m')] donde n' y m' son las formas decimales de n y m respectivamente.</li>
+</ul>
 <hr>
-<p class="more"><a href="posts/2019/12/05-sublistas_con_producto_dado/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/16-elementos_multiplos_de_la_longitud_de_la_lista/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/04-transformaciones_lineales_de_triangulares/" class="u-url">Transformaciones lineales de números triangulares</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/15-las_conjeturas_de_catalan_y_de_pillai/" class="u-url">Las conjeturas de Catalan y de Pillai</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/12/04-transformaciones_lineales_de_triangulares/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-04T06:00:00+02:00" itemprop="datePublished" title="04-12-2019">04-12-2019</time></a>
+            <a href="posts/2020/01/15-las_conjeturas_de_catalan_y_de_pillai/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-15T06:00:00+02:00" itemprop="datePublished" title="15-01-2020">15-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>La sucesión de los números triangulares se obtiene sumando los números naturales. Así, los 8 primeros números triangulares son</p>
-<div class="code"><pre class="code literal-block"> 1 = 1
- 3 = 1+2
- 6 = 1+2+3
-10 = 1+2+3+4
-15 = 1+2+3+4+5
-21 = 1+2+3+4+5+6
-28 = 1+2+3+4+5+6+7
-36 = 1+2+3+4+5+6+7+8
+<p>La <a href="https://en.wikipedia.org/wiki/Catalan's_conjecture">conjetura de Catalan</a>, enunciada en 1844 por Eugène Charles Catalan y demostrada 2002 por Preda Mihăilescu1, afirma que</p>
+<blockquote>
+<p>Las únicas dos potencias de números enteros consecutivos son 8 y 9 (que son respectivamente 2³ y 3²).</p>
+</blockquote>
+<p>En otras palabras, la única solución entera de la ecuación</p>
+<div class="code"><pre class="code literal-block">x^a - y^b = 1
 </pre></div>
 
-<p>Para cada número triangular n existen números naturales a y b, tales que <code>a . n + b</code> también es triangular. Para n = 6, se tiene que</p>
-<div class="code"><pre class="code literal-block"> 6 = 1 <span class="gs">* 6 + 0</span>
-<span class="gs">15 = 2 *</span> 6 + 3
-21 = 3 <span class="gs">* 6 + 3</span>
-<span class="gs">28 = 4 *</span> 6 + 4
-36 = 5 * 6 + 5
+<p>para x, a, y, b &gt; 1 es x = 3, a = 2, y = 2, b = 3.</p>
+<p>La <a href="https://en.wikipedia.org/wiki/Catalan's_conjecture#Pillai's_conjecture">conjetura de Pillai</a>, propuesta por S.S. Pillai en 1942, generaliza este resultado y es un problema abierto. Afirma que cada entero se puede escribir sólo un número finito de veces como una diferencia de dos potencias perfectas. En otras palabras, para todo entero positivo n, el conjunto de soluciones de</p>
+<div class="code"><pre class="code literal-block">x^a - y^b = n
 </pre></div>
 
-<p>son números triangulares</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">transformaciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<p>para x, a, y, b &gt; 1 es finito.</p>
+<p>Por ejemplo, para n = 4, hay 3 soluciones</p>
+<div class="code"><pre class="code literal-block">(2,3, 2,2) ya que 2³ -  2² =   8 -   4 = 4
+(6,2, 2,5) ya que 6² -  2⁵ =  36 -  32 = 4
+(5,3,11,2) ya que 5³ - 11² = 125 - 121 = 4
 </pre></div>
 
-<p>tal que si n es triangular, (transformaciones n) es la lista de los pares (a,b) tales que a es un entero positivo y b el menor número tal que <code>a . n + b</code> es triangular. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">take</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">transformaciones</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">)]</span>
-<span class="nf">take</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">transformaciones</span><span class="w"> </span><span class="mi">15</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">10</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
-<span class="nf">transformaciones</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="mi">7</span><span class="o">*</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">(</span><span class="mi">70000001</span><span class="p">,</span><span class="mi">39732</span><span class="p">)</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/12/04-transformaciones_lineales_de_triangulares/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/03-multiplos_con_ceros_y_unos/" class="u-url">Múltiplos con ceros y unos</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/12/03-multiplos_con_ceros_y_unos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-03T06:00:00+02:00" itemprop="datePublished" title="03-12-2019">03-12-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Se observa que todos los primeros números naturales tienen al menos un múltiplo no nulo que está formado solamente por ceros y unos. Por ejemplo, 1x10=10, 2x5=10, 3x37=111, 4x25=100, 5x2=10, 6x185=1110; 7x143=1001; 8X125=1000; 9x12345679=111111111.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">multiplosCon1y0</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que (multiplosCon1y0 n) es la lista de los múltiplos de n cuyos dígitos son 1 ó 0. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">take 4 (multiplosCon1y0 3)      ==  [111,1011,1101,1110]
-take 3 (multiplosCon1y0 23)     ==  [110101,1011011,1101010]
-head (multiplosCon1y0 1234658)  ==  110101101101000000110
-</pre></div>
-
-<p>Comprobar con QuickCheck que todo entero positivo tiene algún múltiplo cuyos dígitos son 1 ó 0.</p>
-<hr>
-<p class="more"><a href="posts/2019/12/03-multiplos_con_ceros_y_unos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/12/02-multiplos_palindromos/" class="u-url">Múltiplos palíndromos</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/12/02-multiplos_palindromos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-12-02T06:00:00+02:00" itemprop="datePublished" title="02-12-2019">02-12-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Los números 545, 5995 y 15151 son los tres menores palíndromos (capicúas) que son divisibles por 109.</p>
+<p>Las soluciones se pueden representar por la menor potencia (en el caso anterior, por 4, 32 y 121) ya que dado n (en el caso anterior es 4), la potencia mayor es la menor más n.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">multiplosPalindromos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">multiplosPalindromosMenores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">potenciasPerfectas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">solucionesPillati</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">solucionesPillatiAcotadas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(multiplosPalindromos n) es la lista de los palíndromos divisibles por n. Por ejemplo,</li>
+<li>potenciasPerfectas es la lista de las potencias perfectas (es decir, de los números de la forma x^a con x y a mayores que 1). Por  ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">take 5 (multiplosPalindromos 109) == [545,5995,15151,64746,74447]
+<div class="code"><pre class="code literal-block">take 10 potenciasPerfectas  ==  [4,8,9,16,25,27,32,36,49,64]
+potenciasPerfectas !! 200   ==  28224
 </pre></div>
 
 <ul>
-<li>(multiplosPalindromosMenoresx n) es la lista de los palíndromos divisibles por n, menores que x. Por ejemplo,</li>
+<li>(solucionesPillati n) es la lista de las menores potencias de las soluciones de la ecuación de Pillati x^a - y^b = n; es decir, es la lista de los u tales que u y u+n son potencias perfectas. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; multiplosPalindromosMenores (10^5) 109
-[545,5995,15151,64746,74447,79897,84148,89598,99299]
+<div class="code"><pre class="code literal-block">take 3 (solucionesPillati 4)  ==  [4,32,121]
+take 2 (solucionesPillati 5)  ==  [4,27]
+take 4 (solucionesPillati 7)  ==  [9,25,121,32761]
 </pre></div>
 
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=655">problema 655</a> del <a href="https://projecteuler.net">Proyecto Euler</a>.</p>
+<ul>
+<li>(solucionesPillatiAcotadas c n) es la lista de elementos de (solucionesPillati n) menores que n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">solucionesPillatiAcotadas (10^3) 1  ==  [8]
+solucionesPillatiAcotadas (10^3) 2  ==  [25]
+solucionesPillatiAcotadas (10^3) 3  ==  [125]
+solucionesPillatiAcotadas (10^3) 4  ==  [4,32,121]
+solucionesPillatiAcotadas (10^3) 5  ==  [4,27]
+solucionesPillatiAcotadas (10^3) 6  ==  []
+solucionesPillatiAcotadas (10^3) 7  ==  [9,25,121]
+solucionesPillatiAcotadas (10^5) 7  ==  [9,25,121,32761]
+</pre></div>
+
 <hr>
-<p class="more"><a href="posts/2019/12/02-multiplos_palindromos/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/15-las_conjeturas_de_catalan_y_de_pillai/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/11/29-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" class="u-url">Mayor producto de n dígitos consecutivos de un número</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/14-codificacion_de_godel/" class="u-url">Codificación de Gödel</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/11/29-mayor_producto_de_n_digitos_consecutivos_de_un_numero/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-11-29T06:00:00+02:00" itemprop="datePublished" title="29-11-2019">29-11-2019</time></a>
+            <a href="posts/2020/01/14-codificacion_de_godel/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-14T06:00:00+02:00" itemprop="datePublished" title="14-01-2020">14-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">mayorProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<p>La 40ª Conferencia General de la UNESCO ha proclamado el de enero  el <a href="https://www.unesco.org/en/days/world-logic">Día mundial de la Lógica</a>. La fecha del 14 de enero se ha eligido para rendir homenaje a dos grandes lógicos del siglo XX: <a href="https://en.wikipedia.org/wiki/Kurt_G%C3%B6del">Kurt Gödel</a> (que falleció el 14 de enero de 1978) y <a href="https://en.wikipedia.org/wiki/Alfred_Tarski">Alfred Tarski</a> (que nació el 14 de enero de 1901).</p>
+<p>Gödel demostró en 1931 los <a href="https://en.wikipedia.org/wiki/G%C3%B6del's_incompleteness_theorems">teoremas de incompletitud</a> y para su demostración introdujo la actualmente conocida como <a href="https://en.wikipedia.org/wiki/G%C3%B6del_numbering">codificación de Gödel</a> que asigna a cada fórmula de un lenguaje formal un número único.</p>
+<p>En este ejercicio aplicaremos la codificación de Gödel a las listas de números enteros.</p>
+<p>Dada una lista de números naturales xs, la <strong>codificación de Gödel</strong> de xs se obtiene multiplicando las potencias de los primos sucesivos, siendo los exponentes los sucesores de los elementos de xs. Por ejemplo, si xs es [6,0,4], la codificación de xs es</p>
+<div class="code"><pre class="code literal-block"><span class="mf">2</span><span class="o">^</span><span class="p">(</span><span class="mf">6</span><span class="o">+</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">3</span><span class="o">^</span><span class="p">(</span><span class="mf">0</span><span class="o">+</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">5</span><span class="o">^</span><span class="p">(</span><span class="mf">4</span><span class="o">+</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1200000</span>
 </pre></div>
 
-<p>tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del número x (suponiendo que x tiene al menos n dígitos). Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">mayorProducto 2 325                  ==  10
-mayorProducto 5 11111                ==  1
-mayorProducto 5 113111               ==  3
-mayorProducto 5 110111               ==  0
-mayorProducto 5 10151112             ==  10
-mayorProducto 5 101511124            ==  10
-mayorProducto 5 (product [1..1000])  ==  41472
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">codificaG</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">decodificaG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=8">problema 8</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
+<p>tales que</p>
+<ul>
+<li>(codificaG xs) es la codificación de Gödel de xs. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">codificaG [6,0,4]            ==  1200000
+codificaG [3,1,1]            ==  3600
+codificaG [3,1,0,0,0,0,0,1]  ==  4423058640
+codificaG [1..6]             ==  126111168580452537982500
+</pre></div>
+
+<ul>
+<li>(decodificaG n) es la lista xs cuya codificación es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">decodificaG 1200000                   ==  [6,0,4]
+decodificaG 3600                      ==  [3,1,1]
+decodificaG 4423058640                ==  [3,1,0,0,0,0,0,1]
+decodificaG 126111168580452537982500  ==  [1,2,3,4,5,6]
+</pre></div>
+
+<p>Comprobar con QuickCheck que decodificaG es la inversa por la izquierda de codificaG; es decir, para toda lista xs de números enteros, se verifica que</p>
+<div class="code"><pre class="code literal-block">decodificaG (codificaG ys) == ys
+</pre></div>
+
+<p>donde ys es la lista de los valores absolutos de los elementos de xs.</p>
 <hr>
-<p class="more"><a href="posts/2019/11/29-mayor_producto_de_n_digitos_consecutivos_de_un_numero/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/14-codificacion_de_godel/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/11/28-menor_divisible_por_todos/" class="u-url">Menor divisible por todos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/13-numeros_de_munchausen/" class="u-url">Números de Munchausen</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/11/28-menor_divisible_por_todos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-11-28T06:00:00+02:00" itemprop="datePublished" title="28-11-2019">28-11-2019</time></a>
+            <a href="posts/2020/01/13-numeros_de_munchausen/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-13T06:00:00+02:00" itemprop="datePublished" title="13-01-2020">13-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
+<p>Un <a href="https://mathworld.wolfram.com/MuenchhausenNumber.html">número de Munchausen</a> es un número entero positivo tal que es igual a la suma de sus dígitos elevados a sí mismo. Por ejemplo, 3435 es un número de Munchausen ya que</p>
+<div class="code"><pre class="code literal-block"><span class="mf">3</span><span class="n">³</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">4</span><span class="n">⁴</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="n">³</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">5</span><span class="n">⁵</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">27</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">256</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">27</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3125</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3435</span>
+</pre></div>
+
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">menorDivisible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esMunchausen</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que (menorDivisible a b) es el menor número divisible por todos los números desde a hasta b, ambos inclusive. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">menorDivisible 1 10                         ==  2520
-length (show (menorDivisible6 1 (3*10^5)))  ==  130141
+<p>tal que (esMunchausen n) se verifica si n es un número de Munchausen. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">esMunchausen 3435  ==  True
+esMunchausen 2020  ==  False
 </pre></div>
 
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=5">problema 5</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
+<p>Comprobar con QuickCheck que que los únicos números de Munchausen son 1 y 3435.</p>
+<p><strong>Nota 1:</strong> No usar la propiedad en la definición.</p>
+<p><strong>Nota 2:</strong> El ejercicio está basado en el artículo <a href="https://elpais.com/elpais/2018/01/18/el_aleph/1516291212_942294.html?ssm=TW_CC">¿Por qué 3435 es uno de mis números favoritos?</a> de Miguel Ángel Morales en <a href="https://elpais.com/agr/el_aleph/a/">El Aleph</a>.</p>
 <hr>
-<p class="more"><a href="posts/2019/11/28-menor_divisible_por_todos/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/13-numeros_de_munchausen/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/11/27-menor_numero_triangular_con_mas_de_n_divisores/" class="u-url">Menor número triangular con más de n divisores</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/10-teorema_de_existencia_de_divisores/" class="u-url">Teorema de existencia de divisores</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/11/27-menor_numero_triangular_con_mas_de_n_divisores/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-11-27T06:00:00+02:00" itemprop="datePublished" title="27-11-2019">27-11-2019</time></a>
+            <a href="posts/2020/01/10-teorema_de_existencia_de_divisores/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-10T06:00:00+02:00" itemprop="datePublished" title="10-01-2020">10-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>La sucesión de los <a href="https://es.wikipedia.org/wiki/N%C3%BAmero_triangular">números triangulares</a> se obtiene sumando los números naturales.</p>
-<div class="code"><pre class="code literal-block"><span class="k">*</span>     <span class="gs">*      *</span>        <span class="gs">*         *</span>
-     <span class="k">*</span> *    <span class="gs">* *</span>      <span class="gs">* *</span>       <span class="gs">* *</span>
-           <span class="k">*</span> * <span class="gs">*    *</span> * <span class="gs">*     *</span> * *
-                   <span class="k">*</span> * <span class="gs">* *</span>   <span class="gs">* *</span> * *
-                            <span class="k">*</span> * <span class="gs">* *</span> *
-1     3      6        10        15
+<p>El <strong>teorema de existencia de divisores</strong> afirma que</p>
+<blockquote>
+<p>En cualquier subconjunto de {1, 2, ..., 2m} con al menos m+1 elementos existen números distintos a, b tales que a divide a b.</p>
+</blockquote>
+<p>Un conjunto de números naturales xs es mayoritario si existe un m tal que la lista de xs es un subconjunto de {1,2,...,2m} con al menos m+1 elementos. Por ejemplo, {2,3,5,6} porque es un subconjunto de {1,2,...,6} con más de 3 elementos.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">esMayoritario</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>Así, el 7º número triangular es</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">6</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">28.</span>
+<p>tales que</p>
+<ul>
+<li>(divisores xs) es la lista de pares de elementos distintos de (a,b) tales que a divide a b. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">divisoresMultiplos [2,3,5,6]  ==  [(2,6),(3,6)]
+divisoresMultiplos [2,3,5]    ==  []
+divisoresMultiplos [4..8]     ==  [(4,8)]
 </pre></div>
 
-<p>Los primeros 10 números triangulares son</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span><span class="w"> </span><span class="mf">21</span><span class="p">,</span><span class="w"> </span><span class="mf">28</span><span class="p">,</span><span class="w"> </span><span class="mf">36</span><span class="p">,</span><span class="w"> </span><span class="mf">45</span><span class="p">,</span><span class="w"> </span><span class="mf">55</span><span class="p">,</span><span class="w"> </span><span class="mf">...</span>
+<ul>
+<li>(esMayoritario xs) se verifica xs es mayoritario. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esMayoritario [2,3,5,6]  ==  True
+esMayoritario [2,3,5]    ==  False
 </pre></div>
 
-<p>Los divisores de los primeros 7 números triangulares son:</p>
-<div class="code"><pre class="code literal-block"> 1: 1
- 3: 1,3
- 6: 1,2,3,6
-10: 1,2,5,10
-15: 1,3,5,15
-21: 1,3,7,21
-28: 1,2,4,7,14,28
+<p>Comprobar con QuickCheck el teorema de existencia de divisores; es decir, en cualquier conjunto mayoritario existen números distintos a, b tales que a divide a b. Para la comprobación se puede usar el siguiente generador de conjuntos mayoritarios</p>
+<div class="code"><pre class="code literal-block"><span class="nf">mayoritario</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">mayoritario</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">m'</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="kr">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="n">m'</span>
+<span class="w">  </span><span class="n">xs'</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">sublistOf</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">]</span><span class="w"> </span><span class="p">`</span><span class="n">suchThat</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">ys</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="n">xs'</span>
 </pre></div>
 
-<p>Como se puede observar, 28 es el menor número triangular con más de 5 divisores.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">menorTriangularConAlMenosNDivisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<p>con lo que la propiedad que hay que comprobar con QuickCheck es</p>
+<div class="code"><pre class="code literal-block"><span class="nf">teorema_de_existencia_de_divisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">teorema_de_existencia_de_divisores</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="n">mayoritario</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">divisoresMultiplos</span><span class="p">)</span>
 </pre></div>
 
-<p>tal que (menorTriangularConAlMenosNDivisores n) es el menor número triangular que tiene al menos n divisores. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">menorTriangularConAlMenosNDivisores 5    ==  28
-menorTriangularConAlMenosNDivisores 50   ==  25200
-menorTriangularConAlMenosNDivisores 500  ==  76576500
-</pre></div>
-
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=12">problema 12</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
 <hr>
-<p class="more"><a href="posts/2019/11/27-menor_numero_triangular_con_mas_de_n_divisores/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/10-teorema_de_existencia_de_divisores/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/11/26-mayor_divisor_primo/" class="u-url">Mayor divisor primo</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/09-teorema_de_hilbert-waring/" class="u-url">Teorema de Hilbert-Waring</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/11/26-mayor_divisor_primo/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-11-26T06:00:00+02:00" itemprop="datePublished" title="26-11-2019">26-11-2019</time></a>
+            <a href="posts/2020/01/09-teorema_de_hilbert-waring/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-09T06:00:00+02:00" itemprop="datePublished" title="09-01-2020">09-01-2020</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Los divisores primos de 13195 son 5, 7, 13 y 29. Por tanto, el mayor divisor primo de 13195 es 29.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">mayorDivisorPrimo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<p>El <a href="https://en.wikipedia.org/wiki/Waring's_problem">problema de Waring</a>, propuesto por Edward Waring consiste en determinar si, para cada número entero k mayor que 1, existe un número n tal que todo entero positivo se puede escribir como una suma de k-potencias de números positivos con n sumandos como máximo.</p>
+<p>La respuesta afirmativa al problema, aportada por David Hilbert, se
+conoce como el teorema de Hilbert-Waring. Su enunciado es</p>
+<blockquote>
+<p>Para cada número entero k, con k ≥ 2, existe un entero positivo g(k) tal que todo entero positivo se puede expresar como una suma de a lo más g(k) k-ésimas potencias.</p>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">descomposiciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+<span class="nf">orden</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tal que (mayorDivisorPrimo n) es el mayor divisor primo de n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">mayorDivisorPrimo 13195            ==  29
-mayorDivisorPrimo 152416333181401  ==  12345701
+<p>tales que</p>
+<ul>
+<li>(descomposiciones x k n) es la lista de descomposiciones de x como suma de n potencias con exponente k de números enteros positivos.</li>
+</ul>
+<div class="code"><pre class="code literal-block">descomposiciones 9   2 1  ==  [[9]]
+descomposiciones 9   3 1  ==  []
+descomposiciones 9   3 2  ==  [[1,8]]
+descomposiciones 9   4 9  ==  [[1,1,1,1,1,1,1,1,1]]
+descomposiciones 25  2 2  ==  [[9,16]]
+descomposiciones 133 2 3  ==  [[8,125]]
+descomposiciones 38  3 2  ==  [[1,1,36],[4,9,25]]
 </pre></div>
 
-<p><strong>Nota</strong>: Este ejercicio está basado en el <a href="https://projecteuler.net/problem=3">problema 3</a> del <a href="https://projecteuler.net">Proyecto Euler</a></p>
+<ul>
+<li>(orden x k) es el menor número de sumandos necesario para expresar x como suma de k-ésimas potencias. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">9</span><span class="w">  </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">9</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="n">orden</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">10</span>
+<span class="p">[</span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">orden</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..1000</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..6</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">9</span><span class="p">,</span><span class="m">19</span><span class="p">,</span><span class="m">37</span><span class="p">,</span><span class="m">73</span><span class="p">]</span>
+</pre></div>
+
+<p>Comprobar el teorema de Hilbert-Waring para k hasta 7; es decir, para todo número x positivo se verifica que</p>
+<div class="code"><pre class="code literal-block">orden x 2 &lt;= 4
+orden x 3 &lt;= 9
+orden x 4 &lt;= 19
+orden x 5 &lt;= 37
+orden x 6 &lt;= 73
+orden x 7 &lt;= 143
+</pre></div>
+
+<p>y, en general,</p>
+<div class="code"><pre class="code literal-block">orden x k &lt;= 2^k + floor ((3/2)^k) - 2
+</pre></div>
+
 <hr>
-<p class="more"><a href="posts/2019/11/26-mayor_divisor_primo/">Leer más…</a></p>
+<p class="more"><a href="posts/2020/01/09-teorema_de_hilbert-waring/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/08-enteros_como_sumas_de_tres_coprimos/" class="u-url">Enteros como sumas de tres coprimos</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2020/01/08-enteros_como_sumas_de_tres_coprimos/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-08T06:00:00+02:00" itemprop="datePublished" title="08-01-2020">08-01-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Dos números enteros son <a href="https://es.wikipedia.org/wiki/N%C3%BAmeros_coprimos">coprimos</a> (o <strong>primos entre sí</strong>) si no tienen ningún factor primo en común. Por ejemplo, 4 y 15 son coprimos.</p>
+<p>Una terna coprima es una terna (a,b,c) tal que</p>
+<ul>
+<li>a y b son coprimos,</li>
+<li>a y c son coprimos y</li>
+<li>b y c son coprimos.</li>
+</ul>
+<p>Por ejemplo, (3,4,5) es una terna coprima.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">sumas3coprimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+</pre></div>
+
+<p>tal que (sumas3coprimos n) es la lista de las ternas coprimas cuya suma es n. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">sumas3coprimos 10  ==  [(2,3,5)]
+sumas3coprimos 11  ==  []
+sumas3coprimos 12  ==  [(2,3,7),(3,4,5)]
+length (sumas3coprimos 4000)  ==  546146
+</pre></div>
+
+<p>Comprobar con QuickCheck que todo número entero mayor que 15 se puede escribir como suma de alguna terna coprima; es decir, para todo entero n, (sumas3coprimos2 (18 + abs n)) tiene algún elemento.</p>
+<hr>
+<p class="more"><a href="posts/2020/01/08-enteros_como_sumas_de_tres_coprimos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/07-la_mayor_potencia_de_dos_no_es_divisor/" class="u-url">La mayor potencia de dos no es divisor</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2020/01/07-la_mayor_potencia_de_dos_no_es_divisor/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-07T06:00:00+02:00" itemprop="datePublished" title="07-01-2020">07-01-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Para cada número entero positivo n, se define el conjunto</p>
+<div class="code"><pre class="code literal-block">S(n) = {1, 2, 3, ..., n}
+</pre></div>
+
+<p>de los números desde el 1 hasta n.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">mayorPotenciaDeDosEnS</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tal que (mayorPotenciaDeDosEnS n) es la mayor potencia de 2 en S(n). Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">mayorPotenciaDeDosEnS 3  ==  2
+mayorPotenciaDeDosEnS 4  ==  4
+</pre></div>
+
+<p>Comprobar con QuickCheck que la mayor potencia de 2 en S(n) no divide a ningún otro elemento de S(n).</p>
+<hr>
+<p class="more"><a href="posts/2020/01/07-la_mayor_potencia_de_dos_no_es_divisor/">Leer más…</a></p>
 </div>
                 </div>
             </article>
