@@ -45,396 +45,476 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/08-numeros_de_lucas/" class="u-url">Números de Lucas</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/05/02-expresiones_aritmeticas_normalizadas/" class="u-url">Expresiones aritmética normalizadas</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/04/08-numeros_de_lucas/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-08T06:00:00+02:00" itemprop="datePublished" title="08-04-2016">08-04-2016</time></a>
+            <a href="posts/2016/05/02-expresiones_aritmeticas_normalizadas/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-05-02T06:00:00+02:00" itemprop="datePublished" title="02-05-2016">02-05-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Los <a href="https://es.wikipedia.org/wiki/N%C3%BAmero_de_Lucas">números de Lucas</a> son los elementos de la sucesión L(n) definida por</p>
-<div class="code"><pre class="code literal-block">L(0) = 2
-L(1) = 1
-L(n) = L(n-1) + L(n-2), si n &gt; 1.
+<p>El siguiente tipo de dato representa expresiones construidas con variables, sumas y productos</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Var</span><span class="w"> </span><span class="kt">String</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expre</span>
 </pre></div>
 
-<p>Los primeros números de Lucas son</p>
-<div class="code"><pre class="code literal-block"><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">18</span><span class="p">,</span><span class="w"> </span><span class="mi">29</span><span class="p">,</span><span class="w"> </span><span class="mi">47</span><span class="p">,</span><span class="w"> </span><span class="mi">76</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="o">...</span>
-</pre></div>
-
+<p>Por ejemplo, x.(y+z) se representa por (P (V "x") (S (V "y") (V "z")))</p>
+<p>Una expresión es un término si es un producto de variables. Por ejemplo, x.(y.z) es un término pero x+(y.z) ni x.(y+z) lo son.</p>
+<p>Una expresión está en forma normal si es una suma de términos. Por ejemplo, x.(y,z) y x+(y.z) está en forma normal; pero x.(y+z) y (x+y).(x+z) no lo están.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">nLucas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-<span class="nf">lucas</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esTermino</span><span class="p">,</span><span class="w"> </span><span class="n">esNormal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(nLucas n) es el n-ésimo número de Lucas. Por ejemplo,</li>
+<li>(esTermino a) se verifica si a es un término. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">nLucas</span><span class="w"> </span><span class="mi">5</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="mi">11</span>
-<span class="nf">nLucas</span><span class="w"> </span><span class="mi">32</span><span class="w">                      </span><span class="o">==</span><span class="w">  </span><span class="mi">4870847</span>
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">nLucas</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">20899</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w">                                    </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
 </pre></div>
 
 <ul>
-<li>lucas es la lista de los números de Lucas. Por ejemplo,</li>
+<li>(esNormal a) se verifica si a está en forma normal. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">take</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="n">lucas</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">47</span><span class="p">,</span><span class="mi">76</span><span class="p">,</span><span class="mi">123</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w">                                     </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2016/04/08-numeros_de_lucas/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/05/02-expresiones_aritmeticas_normalizadas/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/06-inverso_multiplicativo_modular/" class="u-url">Inverso multiplicativo modular</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/29-operaciones_con_series_de_potencias/" class="u-url">Operaciones con series de potencias</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/04/06-inverso_multiplicativo_modular/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-06T06:00:00+02:00" itemprop="datePublished" title="06-04-2016">06-04-2016</time></a>
+            <a href="posts/2016/04/29-operaciones_con_series_de_potencias/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-29T06:00:00+02:00" itemprop="datePublished" title="29-04-2016">29-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El <a href="https://es.wikipedia.org/wiki/Inverso_multiplicativo_(aritm%C3%A9tica_modular)">inverso multiplicativo modular</a> de un entero n módulo p es el número m, entre 1 y p-1, tal que</p>
-<div class="code"><pre class="code literal-block">mn = 1 (mod p)
+<p>Una <a href="https://en.wikipedia.org/wiki/Power_series">serie de potencias</a> es una serie de la forma</p>
+<div class="code"><pre class="code literal-block">a₀ + a₁x + a₂x² + a₃x³ + ...
 </pre></div>
 
-<p>Por ejemplo, el inverso multiplicativo de 2 módulo 5 es 3, ya que 1 &lt;= 3 &lt;= 4 y 2x3 = 1 (mod 5).</p>
-<p>El inverso multipicativo de n módulo p existe si y sólo si n y p son coprimos; es decir, si mcd(n,p) = 1.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">invMod</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<p>Las series de potencias se pueden representar mediante listas
+infinitas. Por ejemplo, la serie de la función exponencial es</p>
+<div class="code"><pre class="code literal-block">e^x = 1 + x + x²/2! + x³/3! + ...
 </pre></div>
 
-<p>tal que (invMod n p) es justo el inverso multiplicativo de n módulo p, si existe y Nothing en caso contrario. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">invMod</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">5</span>
-<span class="kt">Just</span><span class="w"> </span><span class="mi">3</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">invMod</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span>
-<span class="kt">Nothing</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">invMod</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">4</span><span class="p">]]</span>
-<span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="kt">Nothing</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">2</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">4</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">invMod</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="p">]]</span>
-<span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="kt">Nothing</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">1</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="kt">Nothing</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="kt">Nothing</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="kt">Nothing</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="kt">Just</span><span class="w"> </span><span class="mi">5</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">invMod</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">10</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="n">n</span><span class="p">)</span>
-<span class="kt">True</span>
+<p>y se puede representar por [1, 1, 1/2, 1/6, 1/24, 1/120, ...]</p>
+<p>Las operaciones con series se pueden ver como una generalización de las de los polinomios.</p>
+<p>En lo que sigue, usaremos el tipo (Serie a) para representar las series de potencias con coeficientes en a y su definición es</p>
+<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2016/04/06-inverso_multiplicativo_modular/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/05-clases_de_equivalencia/" class="u-url">Clases de equivalencia</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/04/05-clases_de_equivalencia/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-05T06:00:00+02:00" itemprop="datePublished" title="05-04-2016">05-04-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">clasesEquivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
-</pre></div>
-
-<p>tal que (clasesEquivalencia xs r) es la lista de las clases de equivalencia de xs respecto de la relación de equivalencia r. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">clasesEquivalencia</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
-<span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">19</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">20</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">18</span><span class="p">]]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">clasesEquivalencia</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
-<span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">16</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">17</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">18</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">19</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">20</span><span class="p">]]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">clasesEquivalencia</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
-<span class="p">[[</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">]]</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2016/04/05-clases_de_equivalencia/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/04-factorial_generalizado/" class="u-url">Factorial generalizado</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/04/04-factorial_generalizado/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-04T06:00:00+02:00" itemprop="datePublished" title="04-04-2016">04-04-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El factorial generalizado de x respecto de y y z es el producto x(x-z)(x-2z) ... (x-(y-1)z). Por ejemplo, el factorial generalizado de 7 respecto de 3 y 2 es 7x5x3 = 105 y el de 7 respecto de 2 y 3 es 7x4 = 28</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">factGen</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tal que (factGen x y z) es el factorial generalizado de x respecto de y y z. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">factGen</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">105</span>
-<span class="nf">factGen</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">28</span>
-</pre></div>
-
-<p>Nota: Se supone que x, y y z son positivos y z &lt; x.</p>
-<p>Comprobar con QuickCheck que (factGen x x 1) es el factorial de x.</p>
-<hr>
-<p class="more"><a href="posts/2016/04/04-factorial_generalizado/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/01-representacion_decimal_de_numeros_racionales/" class="u-url">Representación decimal de números racionales</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/04/01-representacion_decimal_de_numeros_racionales/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-01T06:00:00+02:00" itemprop="datePublished" title="01-04-2016">01-04-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Los números decimales se representan por ternas, donde el primer elemento es la parte entera, el segundo es el anteperíodo y el tercero es el período. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"> 6/2  = 3                  se representa por (3,[],[])
- 1/2  = 0.5                se representa por (0,[5],[])
- 1/3  = 0.333333...        se representa por (0,[],[3])
-23/14 = 1.6428571428571... se representa por (1,[6],[4,2,8,5,7,1])
-</pre></div>
-
-<p>Su tipo es</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Decimal</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="p">,[</span><span class="kt">Integer</span><span class="p">],[</span><span class="kt">Integer</span><span class="p">])</span>
-</pre></div>
-
-<p>Los números racionales se representan por un par de enteros, donde el  primer elemento es el numerador y el segundo el denominador. Por ejemplo, el número 2/3 se representa por (2,3). Su tipo es</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Racional</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)</span>
-</pre></div>
-
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">decimal</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Racional</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Decimal</span>
-<span class="nf">racional</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Decimal</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Racional</span>
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">opuesta</span><span class="w">      </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">suma</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">resta</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">producto</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">cociente</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="kt">Fractional</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">derivada</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Enum</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">integral</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Fractional</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Enum</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">expx</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">Serie</span><span class="w"> </span><span class="kt">Rational</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(decimal r) es la representación decimal del número racional r. Por ejemplo,</li>
+<li>(opuesta xs) es la opuesta de la serie xs. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">0</span><span class="p">,[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="kt">[]</span><span class="p">)</span>
-<span class="nf">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kt">[]</span><span class="p">,[</span><span class="mi">3</span><span class="p">])</span>
-<span class="nf">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">14</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="mi">6</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">opuesta</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>
 </pre></div>
 
 <ul>
-<li>(racional d) es el número racional cuya representación decimal es d. Por ejemplo,</li>
+<li>(suma xs ys) es la suma de las series xs e ys. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">racional</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="kt">[]</span><span class="p">)</span><span class="w">           </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="nf">racional</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="kt">[]</span><span class="p">,[</span><span class="mi">3</span><span class="p">])</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-<span class="nf">racional</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,[</span><span class="mi">6</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">14</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">suma</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">27</span><span class="p">]</span>
 </pre></div>
 
-<p>Con la función decimal se puede calcular los períodos de los números racionales. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="mi">14</span><span class="p">)</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">p</span>
-<span class="s">"428571"</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">47</span><span class="p">)</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">p</span>
-<span class="s">"0212765957446808510638297872340425531914893617"</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="kr">let</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="kr">_</span><span class="p">,</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">decimal</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">541</span><span class="p">)</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
-<span class="mi">540</span>
+<ul>
+<li>(resta xs ys) es la resta de las series xs es ys. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">resta</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">resta</span><span class="w"> </span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">27</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">]</span>
 </pre></div>
 
-<p>Comprobar con QuickCheck si las funciones decimal y racional son inversas.</p>
+<ul>
+<li>(producto xs ys) es el producto de las series xs e ys. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">producto</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">170</span><span class="p">,</span><span class="mi">266</span><span class="p">,</span><span class="mi">392</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>(cociente xs ys) es el cociente de las series xs e ys. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">cociente</span><span class="w"> </span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">170</span><span class="p">,</span><span class="mi">266</span><span class="p">,</span><span class="mi">392</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">4.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">12.0</span><span class="p">,</span><span class="mf">14.0</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>(derivada xs) es la derivada de la serie xs. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">derivada</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">112</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>(integral xs) es la integral de la serie xs. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">integral</span><span class="w"> </span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">112</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">4.0</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">12.0</span><span class="p">,</span><span class="mf">14.0</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>expx es la serie de la función exponencial. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="n">expx</span>
+<span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">720</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5040</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="n">derivada</span><span class="w"> </span><span class="n">expx</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">720</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5040</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="n">integral</span><span class="w"> </span><span class="n">expx</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">720</span><span class="p">,</span><span class="mi">1</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5040</span><span class="p">]</span>
+</pre></div>
+
 <hr>
-<p class="more"><a href="posts/2016/04/01-representacion_decimal_de_numeros_racionales/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/29-operaciones_con_series_de_potencias/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/03/31-diccionario_de_frecuencias/" class="u-url">Diccionario de frecuencias</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/28-pandigitales_primos/" class="u-url">Pandigitales primos</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/03/31-diccionario_de_frecuencias/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-31T06:00:00+02:00" itemprop="datePublished" title="31-03-2016">31-03-2016</time></a>
+            <a href="posts/2016/04/28-pandigitales_primos/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-28T06:00:00+02:00" itemprop="datePublished" title="28-04-2016">28-04-2016</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Un número con n dígitos es pandigital si contiene todos los dígitos del 1 a n exactamente una vez. Por ejemplo, 2143 es un pandigital con 4 dígitos y, además, es primo.</p>
+<p>Definir la constante</p>
+<div class="code"><pre class="code literal-block"><span class="nf">pandigitalesPrimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+</pre></div>
+
+<p>tal que sus elementos son los números pandigitales, ordenados de mayor a menor. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">take</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="n">pandigitalesPrimos</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">7652413</span><span class="p">,</span><span class="mi">7642513</span><span class="p">,</span><span class="mi">7641253</span><span class="p">]</span>
+<span class="mi">2143</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">pandigitalesPrimos</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
+<span class="nf">length</span><span class="w"> </span><span class="n">pandigitalesPrimos</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">538</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2016/04/28-pandigitales_primos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/27-minimo_numero_de_cambios_para_igualar_una_lista/" class="u-url">Mínimo número de cambios para igualar una lista</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2016/04/27-minimo_numero_de_cambios_para_igualar_una_lista/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-27T06:00:00+02:00" itemprop="datePublished" title="27-04-2016">27-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">frecuencias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Map</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="nf">nMinimoCambios</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que (frecuencias xs) es el diccionario formado por los elementos de xs junto con el número de veces que aparecen en xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuencias</span><span class="w"> </span><span class="s">"sosos"</span>
-<span class="nf">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'o'</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="sc">'s'</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuencias</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">100</span><span class="p">))</span>
-<span class="nf">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'0'</span><span class="p">,</span><span class="mi">100</span><span class="p">),(</span><span class="sc">'1'</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuencias</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">cycle</span><span class="w"> </span><span class="s">"abc"</span><span class="p">))</span>
-<span class="nf">fromList</span><span class="w"> </span><span class="p">[(</span><span class="sc">'a'</span><span class="p">,</span><span class="mi">333334</span><span class="p">),(</span><span class="sc">'b'</span><span class="p">,</span><span class="mi">333333</span><span class="p">),(</span><span class="sc">'c'</span><span class="p">,</span><span class="mi">333333</span><span class="p">)]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="p">(</span><span class="n">frecuencias</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">cycle</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">])))</span>
-<span class="mi">1000000</span>
+<p>tal que (nMinimoCambios xs) es el menor número de elementos de xs que hay que cambiar para que todos sean iguales. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">nMinimoCambios</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
+<span class="nf">nMinimoCambios</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
+<span class="nf">nMinimoCambios</span><span class="w"> </span><span class="s">"Salamanca"</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="mi">5</span>
+<span class="nf">nMinimoCambios</span><span class="w"> </span><span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">500000</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">499999</span>
 </pre></div>
 
+<p>En el primer ejemplo, los elementos que hay que cambiar son 5, 7, 9 y 6.</p>
 <hr>
-<p class="more"><a href="posts/2016/03/31-diccionario_de_frecuencias/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/27-minimo_numero_de_cambios_para_igualar_una_lista/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/03/30-numeros_cuyas_cifras_coinciden_con_sus_factores_primos/" class="u-url">Números cuyos dígitos coinciden con los de sus factores primos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/26-numeracion_con_multiples_base/" class="u-url">Numeración con múltiples bases</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/03/30-numeros_cuyas_cifras_coinciden_con_sus_factores_primos/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-30T06:00:00+02:00" itemprop="datePublished" title="30-03-2016">30-03-2016</time></a>
+            <a href="posts/2016/04/26-numeracion_con_multiples_base/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-26T06:00:00+02:00" itemprop="datePublished" title="26-04-2016">26-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Un número n es especial si al unir los dígitos de sus factores primos, se obtienen exactamente los dígitos de n, aunque puede ser en otro orden. Por ejemplo, 1255 es especial, pues los factores primos de 1255 son 5 y 251.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esEspecial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<p>Sea \(\{b_i \mid i \geq 1\}\) una sucesión infinita de números enteros mayores que 1. Entonces, todo entero \(x\) mayor que cero se puede escribir de forma única como
+\[
+x = x_0 + x_1 b_1 + x_2 b_1 b_2 + \dots + x_n b_1 b_2 \dotsm b_n,
+\]
+donde cada \(x_i\) satisface la condición \(0 \leq x_i &lt; b_{i+1}\). Se dice que \([x_n, x_{n-1}, \dots, x_2, x_1, x_0]\) es la <strong>representación de \(x\) en la base \((b_i)</strong>.</p>
+<p>Por ejemplo, la representación de 377 en la base \((2i)_{i \geq 1}\) es \([7,5,0,1]\), ya que
+\[
+377 = 1 + 0 \times 2 + 5 \times 2 \times 4 + 7 \times 2 \times 4 \times 6,
+\]
+y además:
+\[
+0 \leq 1 &lt; 2, \quad 0 \leq 0 &lt; 4, \quad 0 \leq 5 &lt; 6, \quad 0 \leq 7 &lt; 8.
+\]</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">decimalAmultiple</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">multipleAdecimal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que (esEspecial n) se verifica si un número n es especial. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esEspecial</span><span class="w"> </span><span class="mi">1255</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
-<span class="nf">esEspecial</span><span class="w"> </span><span class="mi">125</span><span class="w">  </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<p>tales que (decimalAmultiple bs x) es la representación del número x en la base bs y (multipleAdecimal bs cs) es el número decimal cuya representación en la base bs es cs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">decimalAmultiple</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="mi">377</span><span class="w">                      </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">multipleAdecimal</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">377</span>
+<span class="nf">decimalAmultiple</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="mi">377</span><span class="w">                      </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">multipleAdecimal</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">377</span>
+<span class="nf">decimalAmultiple</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">^</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]]</span><span class="w"> </span><span class="mi">2015</span><span class="w">          </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">multipleAdecimal</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">^</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]]</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2015</span>
+<span class="nf">decimalAmultiple</span><span class="w"> </span><span class="p">(</span><span class="n">repeat</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="mi">2015</span><span class="w">                 </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<span class="nf">multipleAdecimal</span><span class="w"> </span><span class="p">(</span><span class="n">repeat</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="mi">2015</span>
 </pre></div>
 
-<p>Comprobar con QuickCheck que todo número primo es especial.</p>
-<p>Calcular los 5 primeros números especiales que no son primos.</p>
+<p>Comprobar con QuickCheck que se verifican las siguientes propiedades</p>
+<div class="code"><pre class="code literal-block"><span class="nf">prop_inversas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_inversas</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span><span class="w"> </span><span class="n">multipleAdecimal</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAmultiple</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span>
+
+<span class="nf">prop_coeficientes</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_coeficientes</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="n">bs</span><span class="p">]</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">decimalAmultiple</span><span class="w"> </span><span class="n">bs</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+<p>para distintas bases dadas. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheck</span><span class="w"> </span><span class="p">(</span><span class="n">prop_inversas</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheck</span><span class="w"> </span><span class="p">(</span><span class="n">prop_inversas</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">])</span>
+<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheck</span><span class="w"> </span><span class="p">(</span><span class="n">prop_coeficientes</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">])</span>
+<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheck</span><span class="w"> </span><span class="p">(</span><span class="n">prop_coeficientes</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">])</span>
+<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+</pre></div>
+
 <hr>
-<p class="more"><a href="posts/2016/03/30-numeros_cuyas_cifras_coinciden_con_sus_factores_primos/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/26-numeracion_con_multiples_base/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/03/29-evaluacion_de_expresiones_aritmeticas/" class="u-url">Evaluación de expresiones aritméticas</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/25-productos_de_2_y_3_consecutivos/" class="u-url">Productos simultáneos de dos y tres números consecutivos</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/03/29-evaluacion_de_expresiones_aritmeticas/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-29T06:00:00+02:00" itemprop="datePublished" title="29-03-2016">29-03-2016</time></a>
+            <a href="posts/2016/04/25-productos_de_2_y_3_consecutivos/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-25T06:00:00+02:00" itemprop="datePublished" title="25-04-2016">25-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Las expresiones aritméticas se pueden definir mediante el siguiente tipo de dato</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Expr</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">V</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">Sum</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">Mul</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span>
-<span class="w">             </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
-</pre></div>
-
-<p>Por ejemplo, (x+3)+(7*y) se representa por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ejExpr</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span>
-<span class="nf">ejExpr</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="sc">'x'</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="p">))(</span><span class="kt">Mul</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="sc">'y'</span><span class="p">))</span>
-</pre></div>
-
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">valor</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="nf">productos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (valor e) es 'Just v' si la expresión e es numérica y v es su valor, o bien 'Nothing' si e no es numérica. Por ejemplo:</p>
-<div class="code"><pre class="code literal-block"><span class="nf">valor</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="p">))</span><span class="w">                            </span><span class="o">==</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">16</span>
-<span class="nf">valor</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="sc">'x'</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="p">))(</span><span class="kt">Mul</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="sc">'y'</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">Nothing</span>
-<span class="nf">valor</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">Sum</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="p">))(</span><span class="kt">Mul</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="p">)))</span><span class="w">     </span><span class="o">==</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="mi">18</span>
+<p>tal que (productos n x) es las listas de n elementos consecutivos cuyo producto es x. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">productos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+<span class="nf">productos</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">6</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+<span class="nf">productos</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1680</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
+<span class="nf">productos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">5</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
 </pre></div>
 
+<p>Comprobar con QuickCheck que si n &gt; 0 y x &gt; 0, entonces</p>
+<div class="code"><pre class="code literal-block"><span class="nf">productos</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="o">..</span><span class="n">x</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[[</span><span class="n">x</span><span class="o">..</span><span class="n">x</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+
+<p>Usando productos, definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">productosDe2y3consecutivos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+</pre></div>
+
+<p>cuyos elementos son los números naturales (no nulos) que pueden expresarse simultáneamente como producto de dos y tres números consecutivos. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">head</span><span class="w"> </span><span class="n">productosDe2y3consecutivos</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">6</span>
+</pre></div>
+
+<p><strong>Nota</strong>. Según demostró Mordell en 1962, productosDe2y3consecutivos sólo tiene dos elementos.</p>
 <hr>
-<p class="more"><a href="posts/2016/03/29-evaluacion_de_expresiones_aritmeticas/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/25-productos_de_2_y_3_consecutivos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/03/28-posiciones_de_maximos_locales/" class="u-url">Posiciones de máximos locales</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/22-conflictos_de_horarios/" class="u-url">Conflictos de horarios</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/03/28-posiciones_de_maximos_locales/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-28T06:00:00+02:00" itemprop="datePublished" title="28-03-2016">28-03-2016</time></a>
+            <a href="posts/2016/04/22-conflictos_de_horarios/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-22T06:00:00+02:00" itemprop="datePublished" title="22-04-2016">22-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Los vectores se definen usando tablas como sigue:</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Vector</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Array</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="n">a</span>
+<p>Los horarios de los cursos se pueden representar mediante matrices donde las filas indican los curso, las columnas las horas de clase y el valor correspondiente al curso i y la hora j es verdadero indica que i tiene clase a la hora j.</p>
+<p>En Haskell, podemos usar la matrices de la librería Data.Matrix y definir el tipo de los horarios por</p>
+<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Horario</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>Un elemento de un vector es un máximo local si no tiene ningún elemento adyacente mayor o igual que él.</p>
+<p>Un ejemplo de horario es</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ejHorarios1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Horario</span>
+<span class="nf">ejHorarios1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="kt">True</span><span class="p">,</span><span class="w">  </span><span class="kt">True</span><span class="p">,</span><span class="w">  </span><span class="kt">False</span><span class="p">,</span><span class="w"> </span><span class="kt">False</span><span class="p">],</span>
+<span class="w">                         </span><span class="p">[</span><span class="kt">False</span><span class="p">,</span><span class="w"> </span><span class="kt">True</span><span class="p">,</span><span class="w">  </span><span class="kt">True</span><span class="p">,</span><span class="w">  </span><span class="kt">False</span><span class="p">],</span>
+<span class="w">                         </span><span class="p">[</span><span class="kt">False</span><span class="p">,</span><span class="w"> </span><span class="kt">False</span><span class="p">,</span><span class="w"> </span><span class="kt">True</span><span class="p">,</span><span class="w">  </span><span class="kt">True</span><span class="p">]]</span>
+</pre></div>
+
+<p>en el que el 1º curso tiene clase a la 1ª y 2ª hora, el 2º a la 2ª y a la 3ª y el 3º a la 3ª y a la 4ª.</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posMaxVec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Vector</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">cursosConflictivos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Horario</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que (posMaxVec p) devuelve las posiciones del vector p en las que  p tiene un máximo local. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">posMaxVec</span><span class="w"> </span><span class="p">(</span><span class="n">listArray</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-<span class="nf">posMaxVec</span><span class="w"> </span><span class="p">(</span><span class="n">listArray</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span><span class="w">         </span><span class="o">==</span><span class="w"> </span><span class="kt">[]</span>
-<span class="nf">posMaxVec</span><span class="w"> </span><span class="p">(</span><span class="n">listArray</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">])</span><span class="w">           </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<p>tal que (cursosConflictivos h is) se verifica para si los cursos de la lista is hay alguna hora en la que más de uno tiene clase a dicha hora. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">cursosConflictivos</span><span class="w"> </span><span class="n">ejHorarios1</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
+<span class="nf">cursosConflictivos</span><span class="w"> </span><span class="n">ejHorarios1</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2016/03/28-posiciones_de_maximos_locales/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/22-conflictos_de_horarios/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/03/18-comportamiento_del_ultimo_digito_en_primos_consecutivos/" class="u-url">Comportamiento del último dígito en primos consecutivos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/21-polinomios_cuadraticos_generadores_de_primos/" class="u-url">Polinomios cuadráticos generadores de primos</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2016/03/18-comportamiento_del_ultimo_digito_en_primos_consecutivos/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-03-18T06:00:00+02:00" itemprop="datePublished" title="18-03-2016">18-03-2016</time></a>
+            <a href="posts/2016/04/21-polinomios_cuadraticos_generadores_de_primos/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-21T06:00:00+02:00" itemprop="datePublished" title="21-04-2016">21-04-2016</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El pasado 11 de marzo se ha publicado el artículo <a href="http://arxiv.org/abs/1603.03720">Unexpected biases in the distribution of consecutive primes</a> en el que muestra que los números primos repelen a otros primos que terminan en el mismo dígito.</p>
-<p>La lista de los últimos dígitos de los 30 primeros números es</p>
-<div class="code"><pre class="code literal-block">[2,3,5,7,1,3,7,9,3,9,1,7,1,3,7,3,9,1,7,1,3,9,3,9,7,1,3,7,9,3]
-</pre></div>
-
-<p>Se observa que hay 6 números que su último dígito es un 1 y de sus consecutivos 4 terminan en 3 y 2 terminan en 7.</p>
+<p>En 1772, Euler publicó que el polinomio n² + n + 41 genera 40 números primos para todos los valores de n entre 0 y 39. Sin embargo, cuando n=40, 40²+40+41 = 40(40+1)+41 es divisible por 41.</p>
+<p>Usando ordenadores, se descubrió el polinomio n² - 79n + 1601 que genera 80 números primos para todos los valores de n entre 0 y 79.</p>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">distribucionUltimos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">M</span><span class="o">.</span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Integer</span>
+<div class="code"><pre class="code literal-block"><span class="nf">generadoresMaximales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)])</span>
 </pre></div>
 
-<p>tal que (distribucionUltimos n) es la matriz cuyo elemento (i,j) indica cuántos de los n primeros números primos terminan en i y su siguiente número primo termina en j. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionUltimos</span><span class="w"> </span><span class="mi">30</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionUltimos</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">4104</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">7961</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">8297</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">4605</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">1</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">5596</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">3604</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">1</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">7419</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">8387</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">1</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">6438</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">6928</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">3627</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">8022</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">8830</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">6513</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">5671</span><span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="mi">3995</span><span class="w"> </span><span class="p">)</span>
+<p>tal que (generadoresMaximales n) es el par (m,xs) donde</p>
+<ul>
+<li>xs es la lista de pares (x,y) tales que n²+xn+y es uno de los polinomios que genera un número máximo de números primos consecutivos a partir de cero entre todos los polinomios de la forma n²+an+b, con |a| ≤ n y |b| ≤ n y</li>
+<li>m es dicho número máximo.</li>
+</ul>
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">generadoresMaximales</span><span class="w">    </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="p">,[(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">    </span><span class="mi">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="p">,[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">   </span><span class="mi">50</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">43</span><span class="p">,[(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">47</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">  </span><span class="mi">100</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">48</span><span class="p">,[(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span><span class="mi">97</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w">  </span><span class="mi">200</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">53</span><span class="p">,[(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span><span class="mi">197</span><span class="p">)])</span>
+<span class="nf">generadoresMaximales</span><span class="w"> </span><span class="mi">1650</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">(</span><span class="mi">80</span><span class="p">,[(</span><span class="o">-</span><span class="mi">79</span><span class="p">,</span><span class="mi">1601</span><span class="p">)])</span>
 </pre></div>
 
-<p><strong>Nota</strong>: Se observa cómo se "repelen" ya que en las filas del 1, 3, 7 y 9 el menor elemento es el de la diagonal.</p>
 <hr>
-<p class="more"><a href="posts/2016/03/18-comportamiento_del_ultimo_digito_en_primos_consecutivos/">Leer más…</a></p>
+<p class="more"><a href="posts/2016/04/21-polinomios_cuadraticos_generadores_de_primos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/" class="u-url">Término ausente en una progresión aritmética</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-20T06:00:00+02:00" itemprop="datePublished" title="20-04-2016">20-04-2016</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Una progresión aritmética es una sucesión de números tales que la diferencia de dos términos sucesivos cualesquiera de la sucesión es constante.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ausente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+
+<p>tal que (ausente xs) es el único término ausente de la progresión aritmética xs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">5</span>
+<span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
+<span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">9</span>
+<span class="nf">ausente</span><span class="w"> </span><span class="p">([</span><span class="mi">1</span><span class="o">..</span><span class="mi">9</span><span class="p">]</span><span class="o">++</span><span class="p">[</span><span class="mi">11</span><span class="o">..</span><span class="p">])</span><span class="w">          </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
+<span class="nf">ausente2</span><span class="w"> </span><span class="p">([</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">+</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">1000001</span>
+</pre></div>
+
+<p><strong>Nota</strong>. Se supone que la lista tiene al menos 3 elementos, que puede ser
+infinita y que sólo hay exactamente un término de la progresión aritmética que no está en la lista.</p>
+<hr>
+<p class="more"><a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/19-matriz_zigzagueante/" class="u-url">Matriz zigzagueante</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2016/04/19-matriz_zigzagueante/" rel="bookmark">
+            <time class="published dt-published" datetime="2016-04-19T06:00:00+02:00" itemprop="datePublished" title="19-04-2016">19-04-2016</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>La matriz zizagueante de orden n es la matriz cuadrada con n filas y n columnas y cuyos elementos son los n² primeros números naturales colocados de manera creciente a lo largo de las diagonales secundarias. Por ejemplo, La matriz zigzagueante de orden 5 es</p>
+<div class="code"><pre class="code literal-block"> 0  1  5  6 14
+ 2  4  7 13 15
+ 3  8 12 16 21
+ 9 11 17 20 22
+10 18 19 23 24
+</pre></div>
+
+<p>La colocación de los elementos se puede ver gráficamente en
+<img src="http://static.wixstatic.com/media/b8ddd9_9a86b93a19f04de88ccaa402c87edc5b.gif_srz_306_306_75_22_0.50_1.20_0.00_gif_srz" alt="Matriz zigzagueante"></p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">zigZag</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Array</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tal que (zigZag n) es la matriz zigzagueante de orden n. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">elems</span><span class="w"> </span><span class="p">(</span><span class="n">zigZag</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">elems</span><span class="w"> </span><span class="p">(</span><span class="n">zigZag</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">elems</span><span class="w"> </span><span class="p">(</span><span class="n">zigZag</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="p">(</span><span class="n">elems</span><span class="w"> </span><span class="p">(</span><span class="n">zigZag</span><span class="w"> </span><span class="mi">1000</span><span class="p">))</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">44</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">65</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">90</span><span class="p">,</span><span class="mi">91</span><span class="p">,</span><span class="mi">119</span><span class="p">]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2016/04/19-matriz_zigzagueante/">Leer más…</a></p>
 </div>
                 </div>
             </article>
@@ -446,7 +526,19 @@ L(n) = L(n-1) + L(n-2), si n &gt; 1.
             <li class="next">
                 <a href="index-125.html" rel="next">Publicaciones anteriores</a>
             </li>
-        </ul></nav></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             

@@ -45,109 +45,457 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/27-suma_minimal_de_productos_de_pares_de_elementos_consecutivos/" class="u-url">Suma minimal de productos de pares de elementos consecutivos</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/20-regresion_lineal/" class="u-url">Regresión lineal</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2017/01/27-suma_minimal_de_productos_de_pares_de_elementos_consecutivos/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-27T06:00:00+02:00" itemprop="datePublished" title="27-01-2017">27-01-2017</time></a>
+            <a href="posts/2017/02/20-regresion_lineal/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-20T06:00:00+02:00" itemprop="datePublished" title="20-02-2017">20-02-2017</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Al permutar los elementos de la lista [1,2,3,4] se obtienen los siguientes valores de la suma de pares de elementos consecutivos:</p>
-<ul>
-<li>10, por ejemplo con [1,4,2,3] ya que 1x4+2x3 = 10</li>
-<li>11, por ejemplo con [1,3,2,4] ya que 1x3+2x4 = 11</li>
-<li>14, por ejemplo con [1,2,3,4] ya que 1x2+3x4 = 14</li>
-</ul>
-<p>Por tanto, la mínima suma de los productos de elementos consecutivos en las permutaciones de [1,2,3,4] es 10 y una permutación con dicha suma es [1,4,2,3].</p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">minimaSumaProductos</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
-<span class="nf">permutacionMinimal</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<p>Dadas dos listas de valores</p>
+<div class="code"><pre class="code literal-block">xs = [x(1), x(2), ..., x(n)]
+ys = [y(1), y(2), ..., y(n)]
+</pre></div>
+
+<p>la ecuación de la recta de regresión de ys sobre xs es y = a+bx, donde
+\[b = \frac{n \sum x_i y_i - \sum x_i \sum y_i}{n \sum x_i^2 - \left(\sum x_i\right)^2}\]
+\[a = \frac{\sum y_i - b \sum x_i}{n}\]</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">regresionLineal</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">Double</span><span class="p">,</span><span class="kt">Double</span><span class="p">)</span>
+</pre></div>
+
+<p>tal que (regresionLineal xs ys) es el par (a,b) de los coeficientes de la recta de regresión de ys sobre xs. Por ejemplo, para los valores</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ejX</span><span class="p">,</span><span class="w"> </span><span class="n">ejY</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
+<span class="nf">ejX</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="w">  </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span><span class="w"> </span><span class="mi">14</span><span class="p">]</span>
+<span class="nf">ejY</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="mi">29</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">]</span>
+</pre></div>
+
+<p>se tiene</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">regresionLineal</span><span class="w"> </span><span class="n">ejX</span><span class="w"> </span><span class="n">ejY</span>
+<span class="p">(</span><span class="mf">5.195045748716805</span><span class="p">,</span><span class="mf">0.9218924347243919</span><span class="p">)</span>
+</pre></div>
+
+<p>Para comprobar la definición se define el procedimiento</p>
+<div class="code"><pre class="code literal-block"><span class="nf">grafica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">grafica</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">plotPathsStyle</span>
+<span class="w">      </span><span class="p">[</span><span class="kt">YRange</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="o">+</span><span class="n">mY</span><span class="p">)]</span>
+<span class="w">      </span><span class="p">[(</span><span class="n">defaultStyle</span><span class="w"> </span><span class="p">{</span><span class="n">plotType</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Points</span><span class="p">,</span>
+<span class="w">                      </span><span class="n">lineSpec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CustomStyle</span><span class="w"> </span><span class="p">[</span><span class="kt">LineTitle</span><span class="w"> </span><span class="s">"Datos"</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">PointType</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">PointSize</span><span class="w"> </span><span class="mf">2.5</span><span class="p">]},</span>
+<span class="w">                     </span><span class="n">zip</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="p">),</span>
+<span class="w">       </span><span class="p">(</span><span class="n">defaultStyle</span><span class="w"> </span><span class="p">{</span><span class="n">plotType</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Lines</span><span class="p">,</span>
+<span class="w">                      </span><span class="n">lineSpec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CustomStyle</span><span class="w"> </span><span class="p">[</span><span class="kt">LineTitle</span><span class="w"> </span><span class="s">"Ajuste"</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">LineWidth</span><span class="w"> </span><span class="mi">2</span><span class="p">]},</span>
+<span class="w">                     </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">*</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">mX</span><span class="p">]])]</span>
+<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">regresionLineal</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">          </span><span class="n">mX</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">          </span><span class="n">mY</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="n">ys</span>
+</pre></div>
+
+<p>tal que (grafica xs ys) pintea los puntos correspondientes a las listas de valores xs e ys y su recta de regresión. Por ejemplo,  con (grafica ejX ejY) se obtiene el siguiente dibujo</p>
+<p><img alt="Regresión lineal" src="images/Regresion_lineal.png"></p>
+<hr>
+<p class="more"><a href="posts/2017/02/20-regresion_lineal/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/17-sucesion_de_trazas_de_digitos_de_pi/" class="u-url">Sucesión de trazas de dígitos de pi</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/17-sucesion_de_trazas_de_digitos_de_pi/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-17T06:00:00+02:00" itemprop="datePublished" title="17-02-2017">17-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El fichero <a href="Digitos_de_pi.txt">Digitos_de_pi.txt</a> contiene el número pi con un millón de decimales; es decir,</p>
+<div class="code"><pre class="code literal-block"><span class="mf">3.1415926535897932384626433832</span><span class="w"> </span><span class="mf">...</span><span class="w"> </span><span class="mf">83996346460422090106105779458151</span>
+</pre></div>
+
+<p>Las matrices de orden 1x1, 2x2, ..., 5x5 formadas por los primeros dígitos de pi son</p>
+<div class="code"><pre class="code literal-block"><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">)</span>
+<span class="w">                           </span><span class="p">(</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">)</span>
+<span class="w">                                        </span><span class="p">(</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">)</span>
+</pre></div>
+
+<p>y sus trazas (es decir, sumas de los elementos de la diagonal principal) son 3, 4, 13, 20 y 25, respectivamente.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">trazas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+</pre></div>
+
+<p>tal que (trazas n) es la lista de las trazas de las matrices de orden 1x1, 2x2, 3x3, ..., nxn formadas por los primeros dígitos de pi. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">trazas</span><span class="w"> </span><span class="mi">20</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">41</span><span class="p">,</span><span class="mi">59</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">58</span><span class="p">,</span><span class="mi">75</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">99</span><span class="p">,</span><span class="mi">78</span><span class="p">,</span><span class="mi">108</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ts</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">trazas</span><span class="w"> </span><span class="mi">1000</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="n">ts</span>
+<span class="mi">4644</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">trazas</span><span class="w"> </span><span class="mi">1000</span>
+<span class="mi">4644</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/17-sucesion_de_trazas_de_digitos_de_pi/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/16-distribucion_de_digitos_de_pi/" class="u-url">Distribución de dígitos de pi</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/16-distribucion_de_digitos_de_pi/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-16T06:00:00+02:00" itemprop="datePublished" title="16-02-2017">16-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Se pueden generar los dígitos de Pi, como se explica en el artículo <a href="https://www.cs.ox.ac.uk/people/jeremy.gibbons/publications/spigot.pdf">Unbounded spigot algorithms for the digits of pi</a>, con la función digitosPi definida por</p>
+<div class="code"><pre class="code literal-block"><span class="nf">digitosPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">digitosPi</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">g</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="mi">4</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">t</span>
+<span class="w">    </span><span class="kr">then</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">n</span><span class="o">*</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">div</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="p">))</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">else</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="o">*</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="p">)</span><span class="o">*</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="o">*</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">div</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="o">*</span><span class="p">(</span><span class="mi">7</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="n">l</span><span class="p">),</span><span class="w"> </span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="n">digitosPi</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+
+<p>La distribución de los primeros 25 dígitos de pi es [0,2,3,5,3,3,3,1,2,3] ya que el 0 no aparece, el 1 ocurre 2 veces, el 3 ocurre 3 veces, el 4 ocurre 5 veces, ...</p>
+<p>Usando digitosPi, definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">distribucionDigitosPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">frecuenciaDigitosPi</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(minimaSumaProductos xs) es la mínima suma de los productos de elementos consecutivos en las permutaciones de lista xs, suponiendo que xs tiene un número par de elementos. Por ejemplo,</li>
+<li>(distribucionDigitosPi n) es la distribución de los n primeros dígitos de pi. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">minimaSumaProductos</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
-<span class="nf">minimaSumaProductos</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">34</span>
-<span class="nf">minimaSumaProductos</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">74</span>
-<span class="nf">minimaSumaProductos</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">6</span>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionDigitosPi</span><span class="w"> </span><span class="mi">10</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionDigitosPi</span><span class="w"> </span><span class="mi">100</span>
+<span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionDigitosPi</span><span class="w"> </span><span class="mi">1000</span>
+<span class="p">[</span><span class="mi">93</span><span class="p">,</span><span class="mi">116</span><span class="p">,</span><span class="mi">103</span><span class="p">,</span><span class="mi">103</span><span class="p">,</span><span class="mi">93</span><span class="p">,</span><span class="mi">97</span><span class="p">,</span><span class="mi">94</span><span class="p">,</span><span class="mi">95</span><span class="p">,</span><span class="mi">101</span><span class="p">,</span><span class="mi">105</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">distribucionDigitosPi</span><span class="w"> </span><span class="mi">5000</span>
+<span class="p">[</span><span class="mi">466</span><span class="p">,</span><span class="mi">531</span><span class="p">,</span><span class="mi">496</span><span class="p">,</span><span class="mi">460</span><span class="p">,</span><span class="mi">508</span><span class="p">,</span><span class="mi">525</span><span class="p">,</span><span class="mi">513</span><span class="p">,</span><span class="mi">488</span><span class="p">,</span><span class="mi">492</span><span class="p">,</span><span class="mi">521</span><span class="p">]</span>
 </pre></div>
 
 <ul>
-<li>(permutacionMinimal xs) es una permutación de xs cuya suma de productos de elementos consecutivos de xs es la mínima suma de los productos de elementos consecutivos en las permutaciones de lista xs, suponiendo que xs tiene un número par de elementos. Por ejemplo,</li>
+<li>(frecuenciaDigitosPi n) es la frecuencia de los n primeros dígitos de pi. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block"><span class="nf">permutacionMinimal</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
-<span class="nf">permutacionMinimal</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
-<span class="nf">permutacionMinimal</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
-<span class="nf">permutacionMinimal</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuenciaDigitosPi</span><span class="w"> </span><span class="mi">10</span>
+<span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">20.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">20.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">20.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuenciaDigitosPi</span><span class="w"> </span><span class="mi">100</span>
+<span class="p">[</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">12.0</span><span class="p">,</span><span class="mf">12.0</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">9.0</span><span class="p">,</span><span class="mf">8.0</span><span class="p">,</span><span class="mf">12.0</span><span class="p">,</span><span class="mf">13.0</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuenciaDigitosPi</span><span class="w"> </span><span class="mi">1000</span>
+<span class="p">[</span><span class="mf">9.3</span><span class="p">,</span><span class="mf">11.6</span><span class="p">,</span><span class="mf">10.3</span><span class="p">,</span><span class="mf">10.3</span><span class="p">,</span><span class="mf">9.3</span><span class="p">,</span><span class="mf">9.7</span><span class="p">,</span><span class="mf">9.4</span><span class="p">,</span><span class="mf">9.5</span><span class="p">,</span><span class="mf">10.1</span><span class="p">,</span><span class="mf">10.5</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frecuenciaDigitosPi</span><span class="w"> </span><span class="mi">5000</span>
+<span class="p">[</span><span class="mf">9.32</span><span class="p">,</span><span class="mf">10.62</span><span class="p">,</span><span class="mf">9.92</span><span class="p">,</span><span class="mf">9.2</span><span class="p">,</span><span class="mf">10.16</span><span class="p">,</span><span class="mf">10.5</span><span class="p">,</span><span class="mf">10.26</span><span class="p">,</span><span class="mf">9.76</span><span class="p">,</span><span class="mf">9.84</span><span class="p">,</span><span class="mf">10.42</span><span class="p">]</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2017/01/27-suma_minimal_de_productos_de_pares_de_elementos_consecutivos/">Leer más…</a></p>
+<p class="more"><a href="posts/2017/02/16-distribucion_de_digitos_de_pi/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/26-maxima_potencia_que_divide_al_factorial/" class="u-url">Máxima potencia que divide al factorial</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/15-busqueda_en_los_digitos_de_pi/" class="u-url">Búsqueda en los dígitos de pi</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2017/01/26-maxima_potencia_que_divide_al_factorial/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-26T06:00:00+02:00" itemprop="datePublished" title="26-01-2017">26-01-2017</time></a>
+            <a href="posts/2017/02/15-busqueda_en_los_digitos_de_pi/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-15T06:00:00+02:00" itemprop="datePublished" title="15-02-2017">15-02-2017</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>La máxima potencia de 2 que divide al factorial de 5 es 3, ya que 5! = 120, 120 es divisible por 2^3 y no lo es por 2^4.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">maxPotDivFact</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<p>El fichero <a href="Digitos_de_pi.txt">Digitos_de_pi.txt</a> contiene el número pi con un
+millón de decimales; es decir,</p>
+<div class="code"><pre class="code literal-block"><span class="mf">3.1415926535897932384626433832</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="mi">83996346460422090106105779458151</span>
 </pre></div>
 
-<p>tal que (maxPotDivFact p n), para cada primo p, es el mayor k tal que p^k divide al factorial de n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">5</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">6</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">8</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">10</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">97</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">3</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">994</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">4</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">9995</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">99994</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">999993</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">49995</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">499993</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">16662</span>
-<span class="nf">maxPotDivFact</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">166664</span>
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">maxPotDivFact</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">20000</span><span class="p">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">20000</span>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">posicion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="p">(</span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span>
+</pre></div>
+
+<p>tal que (posicion n) es (Just k) si k es la posición de n en la sucesión formada por un millón dígitos decimales del número pi y Nothing si n no ocurre en dicha sucesión. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"15"</span>
+<span class="kt">Just</span><span class="w"> </span><span class="mi">3</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"2017"</span>
+<span class="kt">Just</span><span class="w"> </span><span class="mi">8897</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"022017"</span>
+<span class="kt">Just</span><span class="w"> </span><span class="mi">382052</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"14022017"</span>
+<span class="kt">Nothing</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"999999"</span>
+<span class="kt">Just</span><span class="w"> </span><span class="mi">762</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posicion</span><span class="w"> </span><span class="s">"458151"</span>
+<span class="kt">Just</span><span class="w"> </span><span class="mi">999995</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2017/01/26-maxima_potencia_que_divide_al_factorial/">Leer más…</a></p>
+<p class="more"><a href="posts/2017/02/15-busqueda_en_los_digitos_de_pi/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/25-arboles_continuos/" class="u-url">Árboles continuos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/14-calculo_de_pi_usando_la_formula_de_vieta/" class="u-url">Cálculo de pi usando la fórmula de Vieta</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2017/01/25-arboles_continuos/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-25T06:00:00+02:00" itemprop="datePublished" title="25-01-2017">25-01-2017</time></a>
+            <a href="posts/2017/02/14-calculo_de_pi_usando_la_formula_de_vieta/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-14T06:00:00+02:00" itemprop="datePublished" title="14-02-2017">14-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>La <a href="https://proofwiki.org/wiki/Vieta's_Formula_for_Pi">fórmula de Vieta</a> para el cálculo de pi es la siguiente
+\[
+\pi = 2 \times \frac{2}{\sqrt{2}} \times \frac{2}{\sqrt{2 + \sqrt{2}}} \times \frac{2}{\sqrt{2 + \sqrt{2 + \sqrt{2}}}} \times \frac{2}{\sqrt{2 + \sqrt{2 + \sqrt{2 + \sqrt{2}}}}} \times \cdots
+\]</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(aproximacionPi n) es la aproximación de pi usando n factores de la fórmula de Vieta. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">aproximacionPi</span><span class="w">  </span><span class="mi">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.140331156954753</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.1415914215112</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">15</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.141592652386592</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">20</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.1415926535886207</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">25</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.141592653589795</span>
+</pre></div>
+
+<ul>
+<li>(errorPi x) es el menor número de factores de la fórmula de Vieta necesarios para obtener pi con un error menor que x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.1</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.01</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">4</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.001</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">6</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.0001</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">1e-4</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">1e-14</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="mi">24</span>
+<span class="nf">pi</span><span class="w">                 </span><span class="o">==</span><span class="w">  </span><span class="mf">3.141592653589793</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">24</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.1415926535897913</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/14-calculo_de_pi_usando_la_formula_de_vieta/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/13-calculo_de_pi_con_el_producto_de_wallis/" class="u-url">Cálculo de pi usando el producto de Wallis</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/13-calculo_de_pi_con_el_producto_de_wallis/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-13T06:00:00+02:00" itemprop="datePublished" title="13-02-2017">13-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El <a href="https://es.wikipedia.org/wiki/Producto_de_Wallis">producto de Wallis</a> es una expresión, descubierta por John Wallis en 1655, para representar el valor de π y que establece que:
+\[
+\frac{\pi}{2} = \frac{2}{1} \cdot \frac{2}{3} \cdot \frac{4}{3} \cdot \frac{4}{5} \cdot \frac{6}{5} \cdot \frac{6}{7} \cdot \frac{8}{7} \cdot \frac{8}{9} \cdots
+\]</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">factoresWallis</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Rational</span><span class="p">]</span>
+<span class="nf">productosWallis</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Rational</span><span class="p">]</span>
+<span class="nf">aproximacionPi</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
+<span class="nf">errorPi</span><span class="w">         </span><span class="ow">::</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tales que
++ factoresWallis es la sucesión de los factores del productos de Wallis. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="n">factoresWallis</span>
+<span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">11</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>productosWallis es la sucesión de los productos de los primeros factores de Wallis. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">productosWallis</span>
+<span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="mi">16</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="mi">64</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="mi">128</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">75</span><span class="p">,</span><span class="mi">256</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">175</span><span class="p">,</span><span class="mi">2048</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">1225</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>(aproximacionPi n) es la aproximación de pi obtenida multiplicando los n primeros factores de Wallis. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">20</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mf">3.2137849402931895</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">200</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mf">3.1493784731686008</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">2000</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mf">3.142377365093878</span>
+<span class="nf">aproximacionPi</span><span class="w"> </span><span class="mi">20000</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">3.141671186534396</span>
+</pre></div>
+
+<ul>
+<li>(errorPi x) es el menor número de factores de Wallis necesarios para obtener pi con un error menor que x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.1</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">14</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.01</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">155</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.001</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">1569</span>
+<span class="nf">errorPi</span><span class="w"> </span><span class="mf">0.0001</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">15707</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/13-calculo_de_pi_con_el_producto_de_wallis/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/10-caminos_en_un_arbol_binario_con_suma_dada/" class="u-url">Caminos en un árbol binario con suma dada</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/10-caminos_en_un_arbol_binario_con_suma_dada/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-10T06:00:00+02:00" itemprop="datePublished" title="10-02-2017">10-02-2017</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <p>Los árboles binarios se pueden representar con el de tipo de dato algebraico</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
-<span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
+<span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+</pre></div>
+
+<p>Por ejemplo, los árboles</p>
+<div class="code"><pre class="code literal-block">    3                7                 1
+   / \              / \               /  \
+  2   4            5   8             /    \
+ / \   \          /   / \           /      \
+1   7   5        6   4   9         3       -1
+                                  / \     /  \
+                                 2   1   4    5
+                                    /   / \    \
+                                   1   1   2    6
+</pre></div>
+
+<p>se representan por</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="p">,</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+<span class="nf">ej3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+<span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)))</span>
+</pre></div>
+
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">caminos</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminosSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(caminos a) es la lista de los caminos entre dos nodos cualesquiera del árbol a. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminos</span><span class="w"> </span><span class="n">ej1</span>
+<span class="p">[[</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>
+<span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">1</span><span class="p">],[</span><span class="mi">7</span><span class="p">],[</span><span class="mi">4</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminos</span><span class="w"> </span><span class="n">ej2</span>
+<span class="p">[[</span><span class="mi">7</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span>
+<span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">6</span><span class="p">],[</span><span class="mi">8</span><span class="p">],[</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="mi">4</span><span class="p">],[</span><span class="mi">9</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">caminos</span><span class="w"> </span><span class="n">ej3</span><span class="p">)</span>
+<span class="mi">33</span>
+</pre></div>
+
+<ul>
+<li>(caminosSuma a k) es la lista de los caminos entre dos nodos cualesquiera del árbol a cuya suma es k. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej1</span><span class="w"> </span><span class="mi">3</span>
+<span class="p">[[</span><span class="mi">3</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="mi">3</span>
+<span class="p">[[</span><span class="mi">3</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="mi">4</span>
+<span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="mi">5</span>
+<span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="mi">6</span>
+<span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">6</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosSuma</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="mi">7</span>
+<span class="kt">[]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/10-caminos_en_un_arbol_binario_con_suma_dada/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/09-maximo_comun_divisor_de_x_e_y_veces_n/" class="u-url">Máximo común divisor de x e y veces n</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/09-maximo_comun_divisor_de_x_e_y_veces_n/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-09T06:00:00+02:00" itemprop="datePublished" title="09-02-2017">09-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">repite</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mcdR</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(repite x n) es el número obtenido repitiendo x veces el número n. Por ejemplo.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">repite</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">123</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">123123123</span>
+</pre></div>
+
+<ul>
+<li>(mcdR n x y) es el máximo común divisor de los números obtenidos repitiendo x veces e y veces el número n. Por ejemplo.</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">mcdR</span><span class="w"> </span><span class="mi">123</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w">                     </span><span class="o">==</span><span class="w">  </span><span class="mi">123</span>
+<span class="nf">mcdR</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">6</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="mi">44</span>
+<span class="nf">mcdR</span><span class="w"> </span><span class="mi">2017</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">1000</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="mi">10</span><span class="o">^</span><span class="mi">1000</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">20172017</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/09-maximo_comun_divisor_de_x_e_y_veces_n/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/" class="u-url">Caminos desde la raíz en un árbol binario</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-08T06:00:00+02:00" itemprop="datePublished" title="08-02-2017">08-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Los árboles binarios se pueden representar con el de tipo de dato algebraico</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
+<span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Arbol</span>
 <span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
 </pre></div>
 
@@ -155,362 +503,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <div class="code"><pre class="code literal-block">    3                7
    / \              / \
   2   4            5   8
- / \   \          / \   \
-1   3   5        6   4   10
+ / \   \          /   / \
+1   7   5        6   4   9
 </pre></div>
 
 <p>se representan por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-</pre></div>
-
-<p>Un árbol binario es <strong>continuo</strong> si el valor absoluto de la diferencia de los elementos adyacentes es 1. Por ejemplo, el árbol ej1 es continuo ya que el valor absoluto de sus pares de elementos adyacentes son</p>
-<div class="code"><pre class="code literal-block">|3-2| = |2-1| = |2-3| = |3-4| = |4-5| = 1
-</pre></div>
-
-<p>En cambio, el ej2 no lo es ya que |8-10| ≠ 1.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esContinuo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-</pre></div>
-
-<p>tal que (esContinuo x) se verifica si el árbol x es continuo. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esContinuo</span><span class="w"> </span><span class="n">ej1</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
-<span class="nf">esContinuo</span><span class="w"> </span><span class="n">ej2</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/25-arboles_continuos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/24-la_sucesion_mira_y_di/" class="u-url">La sucesión "Mira y di"</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/24-la_sucesion_mira_y_di/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-24T06:00:00+02:00" itemprop="datePublished" title="24-01-2017">24-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>La sucesión "Mira y di" (en inglés, <a href="https://en.wikipedia.org/wiki/Look-and-say_sequence">Look-and-Say</a>) es una sucesión de números naturales en donde cada término se obtiene agrupando las cifras iguales del anterior y recitándolas. Por ejemplo, si x(0) = 1 se lee como "un uno" y por tanto x(1) = 11. Análogamente,</p>
-<div class="code"><pre class="code literal-block"><span class="n">x</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">11</span><span class="w">     </span><span class="p">(</span><span class="n">dos</span><span class="w"> </span><span class="n">unos</span><span class="w">                          </span><span class="o">--&gt;</span><span class="w"> </span><span class="mi">21</span><span class="p">)</span>
-<span class="n">x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">21</span><span class="w">     </span><span class="p">(</span><span class="n">un</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">un</span><span class="w"> </span><span class="n">uno</span><span class="w">                     </span><span class="o">--&gt;</span><span class="w"> </span><span class="mi">1211</span><span class="p">)</span>
-<span class="n">x</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1211</span><span class="w">   </span><span class="p">(</span><span class="n">un</span><span class="w"> </span><span class="n">uno</span><span class="w"> </span><span class="n">un</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">unos</span><span class="w">            </span><span class="o">--&gt;</span><span class="w"> </span><span class="mi">111221</span><span class="p">)</span>
-<span class="n">x</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">111221</span><span class="w"> </span><span class="p">(</span><span class="n">tres</span><span class="w"> </span><span class="n">unos</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">doses</span><span class="w"> </span><span class="n">un</span><span class="w"> </span><span class="n">uno</span><span class="w">        </span><span class="o">--&gt;</span><span class="w"> </span><span class="mi">312211</span><span class="p">)</span>
-<span class="n">x</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">312211</span><span class="w"> </span><span class="p">(</span><span class="n">un</span><span class="w"> </span><span class="n">tres</span><span class="w"> </span><span class="n">un</span><span class="w"> </span><span class="n">uno</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">doses</span><span class="w"> </span><span class="n">dos</span><span class="w"> </span><span class="n">unos</span><span class="w"> </span><span class="o">--&gt;</span><span class="w"> </span><span class="mi">13112221</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
 </pre></div>
 
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sucMiraYDi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">caminosDesdeRaiz</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (sucMiraYDi n) es la sucesión "Mira y di" cuyo primer término es n. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="n">sucMiraYdi</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">1211</span><span class="p">,</span><span class="mi">111221</span><span class="p">,</span><span class="mi">312211</span><span class="p">,</span><span class="mi">13112221</span><span class="p">,</span><span class="mi">1113213211</span><span class="p">,</span><span class="mi">31131211131221</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">sucMiraYdi</span><span class="w"> </span><span class="mi">2017</span><span class="p">)</span>
-<span class="p">[</span><span class="mi">2017</span><span class="p">,</span><span class="mi">12101117</span><span class="p">,</span><span class="mi">111211103117</span><span class="p">,</span><span class="mi">31123110132117</span><span class="p">,</span><span class="mi">1321121321101113122117</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">sucMiraYDi</span><span class="w"> </span><span class="mi">22</span><span class="p">)</span>
-<span class="p">[</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">22</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">sucMiraYDi</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">11</span>
-<span class="mi">3113112221232112111312211312113211</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">sucMiraYDi</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">12</span>
-<span class="mi">1321132132111213122112311311222113111221131221</span>
-</pre></div>
-
-<p>Independientemente del término inicial x(0) elegido (con la única salvedad del
-22), la sucesión diverge y la razón entre el número de cifras de x(n) y el de
-x(n-1) tiende a un valor fijo que es la
-<a href="https://es.wikipedia.org/wiki/Constante_de_Conway">constante de Conway</a> λ ≈ 1.303577269. Por ejemplo, para x(0) = 1, las razones son</p>
-<div class="code"><pre class="code literal-block"><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1.3333333333333333</span><span class="p">,</span><span class="w"> </span><span class="mf">1.25</span><span class="p">,</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span><span class="w"> </span><span class="mf">1.4285714285714286</span><span class="p">,</span><span class="w"> </span><span class="mf">1.3</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">aproximacionConway</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tal que (aproximacionConway n e) es el menor k tal que la diferencia entre la constante de Conway y la razón entre el número de cifras de x(k) x(k-1) es, en valor absoluto, menor que e. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">0.3</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
-<span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">0.1</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">5</span>
-<span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">0.01</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">9</span>
-<span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">0.001</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">24</span>
-<span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mf">0.0001</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">43</span>
-<span class="nf">aproximacionConway</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mf">0.0001</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">47</span>
+<p>tal que (caminosDesdeRaiz a) es la lista de las caminosDesdeRaiz desde la raíz de a hasta cualquiera de sus nodos. Por ejemplo.</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosDesdeRaiz</span><span class="w"> </span><span class="n">ej1</span>
+<span class="p">[[</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosDesdeRaiz</span><span class="w"> </span><span class="n">ej2</span>
+<span class="p">[[</span><span class="mi">7</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]]</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2017/01/24-la_sucesion_mira_y_di/">Leer más…</a></p>
+<p class="more"><a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/23-cadena_de_primos/" class="u-url">Cadena de primos</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/07-prefijo_con_suma_acotada/" class="u-url">Prefijo con suma acotada</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2017/01/23-cadena_de_primos/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-23T06:00:00+02:00" itemprop="datePublished" title="23-01-2017">23-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>La lista de los primeros números primos es</p>
-<div class="code"><pre class="code literal-block">[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71]
-</pre></div>
-
-<p>Los primeros elementos de la cadena obtenida concatenado los números primos es</p>
-<div class="code"><pre class="code literal-block">"23571113171923293137414347535961677173798389971011"
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">primoEnPosicion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tal que (primoEnPosicion n) es el número primo que tiene algún dígito en la posición n de la cadena obtenida concatenado los números primos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">0</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">1</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">4</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">11</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">5</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">11</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">6</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mi">13</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">1022</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">2011</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">1023</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">2017</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">1026</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">2017</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="mi">1027</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="mi">2027</span>
-<span class="nf">primoEnPosicion</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">21242357</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/23-cadena_de_primos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/20-notacion_polaca_inversa/" class="u-url">Notación polaca inversa</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/20-notacion_polaca_inversa/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-20T06:00:00+02:00" itemprop="datePublished" title="20-01-2017">20-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>La <a href="https://es.wikipedia.org/wiki/Notaci%C3%B3n_polaca_inversa">notación polaca inversa</a> (en inglés, <em>Reverse Polish Notation</em>, o <em>RPN</em>), es una forma alternativa de escribir expresiones matemáticas. Por ejemplo, la expresión <code>"20 - (4 + 3) * 2"</code> en RPN es <code>"20 4 3 + 2 * -"</code>.</p>
-<p>Para evaluar una expresión en RPN, usamos una lista auxiliar (inicialmente vacía) y recorremos la expresión de izquierda a derecha. Cada vez que encontramos un número, lo añadimos a la lista auxiliar. Cuando encontramos un operador, retiramos los dos números que hay al principio de la pila, utilizamos el operador con ellos y los quitamos de la lista y le añadimos el resultado. Cuando alcancemos el final de la expresión, debemos tener un solo número en la lista auxiliar si la expresión estaba bien formada, y éste representa el resultado de la expresión. Por ejemplo, la evaluación de RPN <code>"20 4 3 + 2 * -"</code> es la siguiente</p>
-<div class="code"><pre class="code literal-block">""                 []
-"20"               [20]
-"20 4"             [4, 20]
-"20 4 3"           [3, 4, 20]
-"20 4 3 +"         [7, 20]
-"20 4 3 + 2"       [2, 7, 20]
-"20 4 3 + 2 <span class="gs">*"     [14, 20]</span>
-<span class="gs">"20 4 3 + 2 *</span> -"   [6]
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">valor</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Float</span>
-</pre></div>
-
-<p>tal que (valor cs) es el valor de la expresión RPN cs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">valor</span><span class="w"> </span><span class="s">"4"</span><span class="w">               </span><span class="o">==</span><span class="w">  </span><span class="mf">4.0</span>
-<span class="nf">valor</span><span class="w"> </span><span class="s">"4 3 +"</span><span class="w">           </span><span class="o">==</span><span class="w">  </span><span class="mf">7.0</span>
-<span class="nf">valor</span><span class="w"> </span><span class="s">"4 3 + 2 *"</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mf">14.0</span>
-<span class="nf">valor</span><span class="w"> </span><span class="s">"20 4 3 + 2 * -"</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mf">6.0</span>
-<span class="nf">valor</span><span class="w"> </span><span class="s">"3 7 + 2 /"</span><span class="w">       </span><span class="o">==</span><span class="w">  </span><span class="mf">5.0</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/20-notacion_polaca_inversa/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/19-la_conjetura_de_rodolfo/" class="u-url">La conjetura de Rodolfo</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/19-la_conjetura_de_rodolfo/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-19T06:00:00+02:00" itemprop="datePublished" title="19-01-2017">19-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El pasado 1 de enero, Claudio Meller publicó el artículo <a href="https://simplementenumeros.blogspot.com/2017/01/1472-la-conjetura-de-rodolfo.html">La conjetura de Rodolfo</a> que afirma que</p>
-<blockquote>
-<p>Todos los números naturales se pueden números pueden expresarse como la suma de un capicúa y un capicúa especial (siendo los capicúas especiales los números que al quitarles los ceros finales son capicúas; por ejemplo, 32300, 50500 y 78987).</p>
-</blockquote>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">descomposiciones</span><span class="w">               </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)]</span>
-<span class="nf">contraejemplosConjeturaRodolfo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>tales que</p>
-<ul>
-<li>(descomposiciones x) es la lista de las descomposiciones de x como la suma de un capicúa y un capicúa especial. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">descomposiciones</span><span class="w"> </span><span class="mi">1980</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">99</span><span class="p">,</span><span class="mi">1881</span><span class="p">),(</span><span class="mi">979</span><span class="p">,</span><span class="mi">1001</span><span class="p">)]</span>
-<span class="nf">descomposiciones</span><span class="w"> </span><span class="mi">2016</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">575</span><span class="p">,</span><span class="mi">1441</span><span class="p">),(</span><span class="mi">606</span><span class="p">,</span><span class="mi">1410</span><span class="p">)]</span>
-<span class="nf">descomposiciones</span><span class="w"> </span><span class="mi">1971</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">161</span><span class="p">,</span><span class="mi">1810</span><span class="p">),(</span><span class="mi">1771</span><span class="p">,</span><span class="mi">200</span><span class="p">),(</span><span class="mi">1881</span><span class="p">,</span><span class="mi">90</span><span class="p">)]</span>
-</pre></div>
-
-<ul>
-<li>contraejemplosConjeturaRodolfo es la lista de contraejemplos de la conjetura de Rodolfo; es decir, de los números que no pueden expresarse com la suma de un capicúa y un capicúa especial. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="n">contraejemplosConjeturaRodolfo</span>
-<span class="p">[</span><span class="mi">1200</span><span class="p">,</span><span class="mi">1220</span><span class="p">,</span><span class="mi">1240</span><span class="p">,</span><span class="mi">1250</span><span class="p">,</span><span class="mi">1260</span><span class="p">,</span><span class="mi">1270</span><span class="p">,</span><span class="mi">1280</span><span class="p">,</span><span class="mi">1290</span><span class="p">,</span><span class="mi">1300</span><span class="p">,</span><span class="mi">1330</span><span class="p">,</span><span class="mi">1350</span><span class="p">,</span><span class="mi">1360</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">(</span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span><span class="w"> </span><span class="n">contraejemplosConjeturaRodolfo</span><span class="p">)</span>
-<span class="p">[</span><span class="mi">3020</span><span class="p">,</span><span class="mi">3240</span><span class="p">,</span><span class="mi">3350</span><span class="p">,</span><span class="mi">3460</span><span class="p">,</span><span class="mi">3570</span><span class="p">,</span><span class="mi">3680</span><span class="p">,</span><span class="mi">3920</span><span class="p">,</span><span class="mi">4030</span><span class="p">,</span><span class="mi">4250</span><span class="p">,</span><span class="mi">4360</span><span class="p">,</span><span class="mi">4470</span><span class="p">,</span><span class="mi">4580</span><span class="p">]</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/19-la_conjetura_de_rodolfo/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/18-sustitucion_en_una_posicion/" class="u-url">Sustitución en una posición</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/18-sustitucion_en_una_posicion/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-18T06:00:00+02:00" itemprop="datePublished" title="18-01-2017">18-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Los árboles binarios se pueden representar con el de dato algebraico</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
-<span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">             </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
-</pre></div>
-
-<p>Por ejemplo, los árboles</p>
-<div class="code"><pre class="code literal-block">     9                9
-    / \              /
-   /   \            /
-  8     6          8
- / \   / \        / \
-3   2 4   5      3   2
-</pre></div>
-
-<p>se pueden representar por</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="kt">H</span>
-</pre></div>
-
-<p>Para indicar las posiciones del árbol se define el tipo</p>
-<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Direccion</span><span class="p">]</span>
-</pre></div>
-
-<p>donde</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Direccion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">D</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">I</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Eq</span>
-</pre></div>
-
-<p>representa un movimiento hacia la derecha (D) o a la izquierda. Por ejemplo, las posiciones de los elementos del ej1 son</p>
-<div class="code"><pre class="code literal-block"><span class="mi">9</span><span class="w"> </span><span class="err">[]</span>
-<span class="mi">8</span><span class="w"> </span><span class="o">[</span><span class="n">I</span><span class="o">]</span>
-<span class="mi">3</span><span class="w"> </span><span class="o">[</span><span class="n">I,I</span><span class="o">]</span>
-<span class="mi">2</span><span class="w"> </span><span class="o">[</span><span class="n">I,D</span><span class="o">]</span>
-<span class="mi">6</span><span class="w"> </span><span class="o">[</span><span class="n">D</span><span class="o">]</span>
-<span class="mi">4</span><span class="w"> </span><span class="o">[</span><span class="n">D,I</span><span class="o">]</span>
-<span class="mi">5</span><span class="w"> </span><span class="o">[</span><span class="n">D,D</span><span class="o">]</span>
-</pre></div>
-
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sustitucion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Posicion</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>tal que (sustitucion ds z x) es el árbol obtenido sustituyendo el elemento de x en la posición ds por z. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sustitucion</span><span class="w"> </span><span class="p">[</span><span class="kt">I</span><span class="p">,</span><span class="kt">D</span><span class="p">]</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">ej1</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sustitucion</span><span class="w"> </span><span class="p">[</span><span class="kt">D</span><span class="p">,</span><span class="kt">D</span><span class="p">]</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">ej1</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sustitucion</span><span class="w"> </span><span class="p">[</span><span class="kt">I</span><span class="p">]</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">ej1</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sustitucion</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="n">ej1</span>
-<span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/18-sustitucion_en_una_posicion/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/17-sumas_de_dos_capicuas/" class="u-url">Sumas de dos capicúas</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/17-sumas_de_dos_capicuas/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-17T06:00:00+02:00" itemprop="datePublished" title="17-01-2017">17-01-2017</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sumas2Capicuas</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)]</span>
-<span class="nf">noSuma2Capicuas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>tales que</p>
-<ul>
-<li>(sumas2Capicuas x) es la lista de las descomposiciones de x como suma de dos capicúas (con el primer sumando menor o igual que el segundo). Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">17</span><span class="w">  </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">6</span><span class="p">,</span><span class="mi">11</span><span class="p">),(</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">)]</span>
-<span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">187</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">6</span><span class="p">,</span><span class="mi">181</span><span class="p">),(</span><span class="mi">66</span><span class="p">,</span><span class="mi">121</span><span class="p">),(</span><span class="mi">88</span><span class="p">,</span><span class="mi">99</span><span class="p">)]</span>
-<span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">165</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">4</span><span class="p">,</span><span class="mi">161</span><span class="p">),(</span><span class="mi">44</span><span class="p">,</span><span class="mi">121</span><span class="p">),(</span><span class="mi">66</span><span class="p">,</span><span class="mi">99</span><span class="p">),(</span><span class="mi">77</span><span class="p">,</span><span class="mi">88</span><span class="p">)]</span>
-<span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">382</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">9</span><span class="p">,</span><span class="mi">373</span><span class="p">),(</span><span class="mi">191</span><span class="p">,</span><span class="mi">191</span><span class="p">)]</span>
-<span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">151</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">151</span><span class="p">)]</span>
-<span class="nf">sumas2Capicuas</span><span class="w"> </span><span class="mi">201</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">[]</span>
-</pre></div>
-
-<ul>
-<li>noSuma2Capicuas es la sucesión de los números que no se pueden escribir como suma de dos capicúas. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="n">noSuma2Capicuas</span>
-<span class="p">[</span><span class="mi">21</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">43</span><span class="p">,</span><span class="mi">54</span><span class="p">,</span><span class="mi">65</span><span class="p">,</span><span class="mi">76</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">98</span><span class="p">,</span><span class="mi">201</span><span class="p">,</span><span class="mi">1031</span><span class="p">,</span><span class="mi">1041</span><span class="p">,</span><span class="mi">1042</span><span class="p">,</span><span class="mi">1051</span><span class="p">,</span><span class="mi">1052</span><span class="p">,</span><span class="mi">1053</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">noSuma2Capicuas</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">3000</span>
-<span class="mi">19941</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2017/01/17-sumas_de_dos_capicuas/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/01/16-inversa_del_factorial/" class="u-url">Inversa del factorial</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2017/01/16-inversa_del_factorial/" rel="bookmark">
-            <time class="published dt-published" datetime="2017-01-16T06:00:00+02:00" itemprop="datePublished" title="16-01-2017">16-01-2017</time></a>
+            <a href="posts/2017/02/07-prefijo_con_suma_acotada/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-07T06:00:00+02:00" itemprop="datePublished" title="07-02-2017">07-02-2017</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">inversaFactorial</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<div class="code"><pre class="code literal-block"><span class="nf">prefijoAcotado</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (inversaFactorial x) es (Just n) si el factorial de n es x y es Nothing si no existe ningún número n tal que el factorial de n es x. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">inversaFactorial</span><span class="w"> </span><span class="mi">24</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">4</span>
-<span class="nf">inversaFactorial</span><span class="w"> </span><span class="mi">25</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
+<p>tal que (prefijoAcotado x ys) es el mayor prefijo de ys cuya suma es menor que x. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">prefijoAcotado</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="nf">prefijoAcotado</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2017/01/16-inversa_del_factorial/">Leer más…</a></p>
+<p class="more"><a href="posts/2017/02/07-prefijo_con_suma_acotada/">Leer más…</a></p>
 </div>
                 </div>
             </article>
@@ -522,7 +563,19 @@ x(n-1) tiende a un valor fijo que es la
             <li class="next">
                 <a href="index-115.html" rel="next">Publicaciones anteriores</a>
             </li>
-        </ul></nav></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             

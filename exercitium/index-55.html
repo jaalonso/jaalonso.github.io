@@ -45,508 +45,326 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/23-minima_profundidad/" class="u-url">Mínima profundidad</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/14-raices_digitales_de_sucesiones_de_raices_digitales/" class="u-url">Raíces digitales de sucesiones de raíces digitales</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/23-minima_profundidad/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-23T06:00:00+02:00" itemprop="datePublished" title="23-03-2021">23-03-2021</time></a>
+            <a href="posts/2021/04/14-raices_digitales_de_sucesiones_de_raices_digitales/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-14T06:00:00+02:00" itemprop="datePublished" title="14-04-2021">14-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los árboles y los bosques como sigue</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">   </span><span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
-</pre></div>
-
-<p>Por ejemplo, los árboles</p>
-<div class="code"><pre class="code literal-block">     1               3
-    / \             /|\
-   6   3           / | \
-       |          5  4  7
-       1          |     /\
-                  3    6  5
-</pre></div>
-
-<p>se representan por</p>
-<div class="code"><pre class="code literal-block">   ej1, ej2 :: Tree Int
-   ej1 = Node 1 [Node 6 [],Node 3 [Node 1 []]]
-   ej2 = Node 3 [Node 5 [Node 3 []], Node 4 [], Node 7 [Node 6 [], Node 5 []]]
+<p>La raíz digital de un número entero positivo n es el dígito que resulta al sumar sus dígitos, volviendo a sumar reiteradamente los resultados de esa suma y de las siguientes hasta que la suma sea un número de un dígito, al que se llama la raíz digital del número n y se representa pod D(n). Por ejemplo, la raíz digital del número 2345 es 6, porque 2+3+4+5+1 = 15 y sumando los dígitos del 15 resulta 6.</p>
+<p>La sucesión de las raices digitales definida por un número a es la sucesión a(n) tal que a(0) = a y a(n+1) es la suma de a(n) y la raíz dígital de a(n). Por ejemplo, los primeros términos de la sucesión de las raíces digitales definida por 1 son</p>
+<div class="code"><pre class="code literal-block">   1,2,4,8,16,23,28,29,31,35,43,50,55,56,58,62,70,77,82,83,85,89,...
 </pre></div>
 
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="n">minimaProfundidad</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">raicesDigitalesSucesionRaicesDigitales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (minimaProfundidad x ns) es justamente la mínima  donde aparece x en el árbol ns, si aparece y Nothing, en caso contrario. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">    minimaProfundidad 1 ej1  ==  Just 0
-    minimaProfundidad 3 ej1  ==  Just 1
-    minimaProfundidad 2 ej1  ==  Nothing
-    minimaProfundidad 3 ej2  ==  Just 0
-    minimaProfundidad 4 ej2  ==  Just 1
-    minimaProfundidad 6 ej2  ==  Just 2
-    minimaProfundidad 9 ej2  ==  Nothing
+<p>tal que (raicesDigitalesSucesionRaicesDigitales a) es la lista de las raíces digitales de los elementos de la sucesión de raíces digitales definidas por a. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; take 20 (raicesDigitalesSucesionRaicesDigitales 1)
+   [1,2,4,8,7,5,1,2,4,8,7,5,1,2,4,8,7,5,1,2]
+   λ&gt; take 20 (raicesDigitalesSucesionRaicesDigitales 2021)
+   [5,1,2,4,8,7,5,1,2,4,8,7,5,1,2,4,8,7,5,1]
+   λ&gt; raicesDigitalesSucesionRaicesDigitales (9^100) !! (10^9)
+   9
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/03/23-minima_profundidad/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/14-raices_digitales_de_sucesiones_de_raices_digitales/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/" class="u-url">Árbol de las divisiones por 2, 3 ó 5</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/13-sucesiones_de_raices_digitales/" class="u-url">Sucesiones de raices digitales</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-22T06:00:00+02:00" itemprop="datePublished" title="22-03-2021">22-03-2021</time></a>
+            <a href="posts/2021/04/13-sucesiones_de_raices_digitales/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-13T06:00:00+02:00" itemprop="datePublished" title="13-04-2021">13-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los árboles y los bosques como sigue</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">   </span><span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
+<p>La raíz digital de un número entero positivo n es el dígito  resulta al sumar sus dígitos, volviendo a sumar reiteradamente  resultados de esa suma y de las siguientes hasta que la suma sea un número de un dígito, al que se llama la raíz digital del número n y se representa pod D(n). Por ejemplo, la raíz digital del número 23451 es 6, porque 2+3+4+5+1 = 15 y sumando los dígitos del 15 resulta 6.</p>
+<p>La sucesión de las raices digitales definida por un número a es la sucesión a(n) tal que a(0) = a y a(n+1) es la suma de a(n) y la raíz dígital de a(n). Por ejemplo, los primeros términos de la sucesión de las raíces digitales definida por 1 son</p>
+<div class="code"><pre class="code literal-block">   1,2,4,8,16,23,28,29,31,35,43,50,55,56,58,62,70,77,82,83,85,89,...
 </pre></div>
 
-<p>Se pueden definir árboles. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">   ej = Node 3 [Node 5 [Node 9 []], Node 7 []]
+<p>Se observa que el menor número que no pertenece a la sucesión anterior es 3. Los primeros términos de la sucesión de las raíces digitales definida por 3 son</p>
+<div class="code"><pre class="code literal-block">   3,6,12,15,21,24,30,33,39,42,48,51,57,60,66,69,75,78,84,87,93,96,...
 </pre></div>
 
-<p>Y se pueden dibujar con la función drawTree. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">ej</span><span class="ss">))</span>
-<span class="w">   </span><span class="mi">3</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">9</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">7</span>
+<p>Se observa que el menor número que no pertenece a las 2 sucesiones anteriores es 5. Los primeros términos de la sucesión de las raíces digitales definida por 5 son</p>
+<div class="code"><pre class="code literal-block">   5,10,11,13,17,25,32,37,38,40,44,52,59,64,65,67,71,79,86,91,92,94,...
 </pre></div>
 
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">arbolDivisiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="kt">Int</span>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">sucesionSucesionesRaicesDigitales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (arbolDivisiones x) es el árbol de las divisiones enteras de x entre 2, 3 ó 5. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolDivisiones</span><span class="w"> </span><span class="mi">20</span><span class="ss">)))</span>
-<span class="w">   </span><span class="mi">20</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">10</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">4</span>
-<span class="w">      </span><span class="o">|</span>
-<span class="w">      </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">         </span><span class="o">|</span>
-<span class="w">         </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-
-<span class="w">   </span>λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbolDivisiones</span><span class="w"> </span><span class="mi">30</span><span class="ss">)))</span>
-<span class="w">   </span><span class="mi">30</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">15</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span><span class="o">+-</span><span class="w"> </span><span class="mi">10</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
-<span class="w">   </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">   </span><span class="o">|</span>
-<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">6</span>
-<span class="w">      </span><span class="o">|</span>
-<span class="w">      </span><span class="o">+-</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">      </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
-<span class="w">      </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">      </span><span class="o">|</span>
-<span class="w">      </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">         </span><span class="o">|</span>
-<span class="w">         </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<p>tal que sus elementos son las sucesiones de raíces digitales tal  el primer elemento de cada sucesión es el menor elemento que no pertenece a las sucesiones anteriores. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   λ&gt; map (take 5) (take 4 sucesionSucesionesRaicesDigitales)
+   [[1,2,4,8,16],[3,6,12,15,21],[5,10,11,13,17],[7,14,19,20,22]]
 </pre></div>
 
+<p>Comprobar con QuickCheck que sucesionSucesionesRaicesDigitales tiene exactamente 5 elementos.</p>
 <hr>
-<p class="more"><a href="posts/2021/03/22-arbol_de_las_divisiones_por_2_3_o_5/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/13-sucesiones_de_raices_digitales/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/" class="u-url">Cálculo de pi mediante la fórmula de Beeler</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/12-raices_digitales_de_los_numeros_de_fibonacci/" class="u-url">Raíces digitales de los números de Fibonacci</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-19T06:00:00+02:00" itemprop="datePublished" title="19-03-2021">19-03-2021</time></a>
+            <a href="posts/2021/04/12-raices_digitales_de_los_numeros_de_fibonacci/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-12T06:00:00+02:00" itemprop="datePublished" title="12-04-2021">12-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El pasado 12 de marzo se publicó en Twitter un mensaje con una fórmula de Beeler para el cálculo de pi:
-<img alt="Cálculo de pi mediante la fórmula de Beeler" src="images/Calculo_de_pi_mediante_la_formula_de_Beeler.png"></p>
-<p>Los primeros valores son</p>
-<div class="code"><pre class="code literal-block">   λ&gt; 2*1
-   2
-   λ&gt; 2*(1+1/3)
-   2.6666666666666665
-   λ&gt; 2*(1+1/3+(1*2)/(3*5))
-   2.933333333333333
-   λ&gt; 2*(1+1/3+(1*2)/(3*5)+(1*2*3)/(3*5*7))
-   3.0476190476190474
-   λ&gt; 2*(1+1/3+(1*2)/(3*5)+(1*2*3)/(3*5*7)+(1*2*3*4)/(3*5*7*9))
-   3.098412698412698
+<p>La <a href="https://es.wikipedia.org/wiki/Sucesi%C3%B3n_de_Fibonacci">sucesión Fibonacci</a> es la siguiente sucesión infinita de números naturales:</p>
+<div class="code"><pre class="code literal-block">   1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, ...
 </pre></div>
 
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
-<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<p>La sucesión comienza con los números 1 y 1 y, a partir de estos, cada término es la suma de los dos anteriores.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">raizDigitalFibonacci</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tales que</p>
-<ul>
-<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Beeler. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     aproximacionPi 0    ==  2.0
-     aproximacionPi 1    ==  2.6666666666666665
-     aproximacionPi 2    ==  2.933333333333333
-     aproximacionPi 3    ==  3.0476190476190474
-     aproximacionPi 4    ==  3.098412698412698
-     aproximacionPi 10   ==  3.141106021601377
-     aproximacionPi 100  ==  3.1415926535897922
-     pi                  ==  3.141592653589793
+<p>tal que (raizDigitalFibonacci n) es la raíz digital del n-ésimo número de Fibonacci. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   raizDigitalFibonacci 6         ==  4
+   raizDigitalFibonacci 7         ==  3
+   raizDigitalFibonacci (3*10^7)  ==  1
 </pre></div>
 
-<ul>
-<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [0..99]) dibuja
-<img alt="Cálculo de pi mediante la fórmula de Beeler" src="images/Calculo_de_pi_mediante_la_formula_de_Beeler_1.png">
-</li>
-</ul>
 <hr>
-<p class="more"><a href="posts/2021/03/19-calculo_de_pi_mediante_la_formula_de_beeler/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/12-raices_digitales_de_los_numeros_de_fibonacci/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/" class="u-url">Números ordenados con cuadrados ordenados</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/09-raices_digitales_de_los_numeros_de_fermat/" class="u-url">Raíces digitales de los números de Fermat</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-18T06:00:00+02:00" itemprop="datePublished" title="18-03-2021">18-03-2021</time></a>
+            <a href="posts/2021/04/09-raices_digitales_de_los_numeros_de_fermat/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-09T06:00:00+02:00" itemprop="datePublished" title="09-04-2021">09-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Un número es ordenado si cada uno de sus dígitos es menor o igual  el siguiente dígito. Por ejemplo, 116 es un número creciente  cuadrado es 13456 que también es ordenado. En cambio, 115 es ordenado pero su cuadrado es 13225 que no es ordenado.</p>
-<p>Definir la lista</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">numerosOrdenadosConCuadradosOrdenados</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<p>Los <a href="https://en.wikipedia.org/wiki/Fermat_number">números de Fermat</a> son los número de la forma F(n) = 2^(2^n) + 1, donde n esun número natural.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">raizDigitalFermat</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>cuyos elementos son los números ordenados cuyos cuadrados también lo son. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">   λ&gt; take 20 numerosOrdenadosConCuadradosOrdenados
-   [0,1,2,3,4,5,6,7,12,13,15,16,17,34,35,37,38,67,116,117]
-   λ&gt; length (show (numerosOrdenadosConCuadradosOrdenados !! (10^6)))
-   1411
-   λ&gt; length (show (numerosOrdenadosConCuadradosOrdenados !! (5*10^6)))
-   3159
+<p>tal que (raizDigitalFermat n) es la raíz digital del n-ésimo número de Fermat. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   raizDigitalFermat 3          ==  5
+   raizDigitalFermat (10^2021)  ==  8
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/03/18-numeros_ordenados_con_cuadrados_ordenados/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/09-raices_digitales_de_los_numeros_de_fermat/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/" class="u-url">Números con cuadrados con dígitos pares</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/08-persistencia_aditiva/" class="u-url">Persistencia aditiva</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-17T06:00:00+02:00" itemprop="datePublished" title="17-03-2021">17-03-2021</time></a>
+            <a href="posts/2021/04/08-persistencia_aditiva/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-08T06:00:00+02:00" itemprop="datePublished" title="08-04-2021">08-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la lista</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">numerosConCuadradosConDigitosPares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<p>La raíz digital de un número entero positivo n es el dígito  resulta al sumar sus dígitos, volviendo a sumar reiteradamente los resultados de esa suma y de las siguientes hasta que la suma sea un número de un dígito, al que se llama la raíz digital del número n y se representa pod D(n). Por ejemplo, la raíz digital del número 23451 es 6, porque 2+3+4+5+1 = 15 y sumando los dígitos del 15 resulta 6.</p>
+<p>La persistencia aditiva de un número entero positivo es el número de veces que hay sumar sus dígitos para llegar a su raíz digital. Por ejemplo, la persistencia aditiva de 2718 es 2: primero encontramos que 2+7+1+8 = 18, luego que 1+8 = 9.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">persistencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>cuyos elementos son los números cuyos cuadrados tienen todos sus dígitos pares. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">   λ&gt; take 20 numerosConCuadradosConDigitosPares
-   [0,2,8,20,22,68,78,80,92,162,168,200,202,220,262,298,478,492,498,668]
+<p>tal que (persistencia n) es la persistencia del número entero positivo n. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   persistencia 2718                     ==  2
+   persistencia 199                      ==  3
+   persistencia 19999999999999999999999  ==  4
 </pre></div>
 
-<p>Comprobar con QuickCheck que numerosConCuadradosConDigitosPares es infinita; es decir, para cualquier n posee algún elemento mayor que n.</p>
 <hr>
-<p class="more"><a href="posts/2021/03/17-numeros_con_cuadrados_con_digitos_pares/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/08-persistencia_aditiva/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/" class="u-url">Cálculo de pi mediante la fórmula de Bauer</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/07-raices_digitales_de_potencias_de_dos/" class="u-url">Raíces digitales de potencias de dos</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-16T06:00:00+02:00" itemprop="datePublished" title="16-03-2021">16-03-2021</time></a>
+            <a href="posts/2021/04/07-raices_digitales_de_potencias_de_dos/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-07T06:00:00+02:00" itemprop="datePublished" title="07-04-2021">07-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El pasado 10 de marzo se publicó en Twitter un mensaje con una [fórmula de Bauer}(https://en.wikipedia.org/wiki/Gustav_Conrad_Bauer#Footnotes_in_the_history_of_mathematics) para el cálculo de pi
-<img alt="Cálculo de pi mediante la fórmula de Bauer" src="images/Calculo_de_pi_mediante_la_formula_de_Bauer.png"></p>
-<p>Los primeros valores son</p>
-<div class="code"><pre class="code literal-block">   λ&gt; 2/1
-   2.0
-   λ&gt; 2/(1 - 5*(1/2)^3)
-   5.333333333333333
-   λ&gt; 2/(1 - 5*(1/2)^3 + 9*((1*3)/(2*4))^3)
-   2.354022988505747
-   λ&gt; 2/(1 - 5*(1/2)^3 + 9*((1*3)/(2*4))^3 - 13*((1*3*5)/(2*4*6))^3)
-   4.416172506738545
+<p>La raíz digital de un número entero positivo n es el dígito  resulta al sumar sus dígitos, volviendo a sumar reiteradamente los resultados de esa suma y de las siguientes hasta que la suma sea un número de un dígito, al que se llama la raíz digital del número n y se representa por D(n). Por ejemplo, la raíz digital del número 23451 es 6, porque 2+3+4+5+1 = 15 y sumando los dígitos del 15 resulta 6.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">raizDigitalPotencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
-<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<p>tal que (raizDigitalPotencia n) es la raíz digital de 2^n. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   raizDigitalPotencia 6            ==  1
+   raizDigitalPotencia (10^(10^8))  ==  7
 </pre></div>
 
-<p>tales que</p>
-<ul>
-<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Bauer. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     aproximacionPi 0         ==  2.0
-     aproximacionPi 1         ==  5.333333333333333
-     aproximacionPi 2         ==  2.354022988505747
-     aproximacionPi 3         ==  4.416172506738545
-     aproximacionPi (10^2)    ==  2.974407762733626
-     aproximacionPi (10^2+1)  ==  3.3277148010019233
-     aproximacionPi (10^3)    ==  3.0865454975585744
-     aproximacionPi (10^3+1)  ==  3.1986099487445463
-     aproximacionPi (10^4)    ==  3.1239682112773868
-     aproximacionPi (10^4+1)  ==  3.1594161911246594
-     aproximacionPi (10^5)    ==  3.135997665507836
-     aproximacionPi (10^5+1)  ==  3.147207613460776
-     pi                       ==  3.141592653589793
-</pre></div>
-
-<ul>
-<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [0..99]) dibuja
-<img alt="Cálculo de pi mediante la fórmula de Bauer" src="images/Calculo_de_pi_mediante_la_formula_de_Bauer_1.png">
-</li>
-</ul>
 <hr>
-<p class="more"><a href="posts/2021/03/16-calculo_de_pi_mediante_la_formula_de_bauer/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/07-raices_digitales_de_potencias_de_dos/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/" class="u-url">Cálculo de pi mediante la fórmula de Euler</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/06-raiz_digital/" class="u-url">Raíz digital</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-15T06:00:00+02:00" itemprop="datePublished" title="15-03-2021">15-03-2021</time></a>
+            <a href="posts/2021/04/06-raiz_digital/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-06T06:00:00+02:00" itemprop="datePublished" title="06-04-2021">06-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El pasado 6 de marzo se publicó en Twitter un mensaje con la siguiente fórmula de Euler para el cálculo de pi</p>
-<p><img alt="Cálculo de pi mediante la fórmula de Euler" src="images/Calculo_de_pi_mediante_la_formula_de_Euler.png"></p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
-<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<p>La raíz digital de un número entero positivo n es el dígito que resulta al sumar sus dígitos, volviendo a sumar reiteradamente los resultados de esa suma y de las siguientes hasta que la suma sea un número de un dígito, al que se llama la raíz digital del número n y se representa pod D(n). Por ejemplo, la raíz digital del número 23451 es 6, porque 2+3+4+5+1 = 15 y sumando los dígitos del 15 resulta 6.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">raizDigital</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tales que</p>
-<ul>
-<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Euler. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     aproximacionPi 1        ==  2.449489742783178
-     aproximacionPi 10       ==  3.04936163598207
-     aproximacionPi 100      ==  3.1320765318091053
-     aproximacionPi 1000     ==  3.1406380562059946
-     aproximacionPi 10000    ==  3.1414971639472147
-     aproximacionPi 100000   ==  3.141583104326456
-     aproximacionPi 1000000  ==  3.1415916986605086
-     pi                      ==  3.141592653589793
+<p>tal que (raizDigital n) es la raíz digital del entero positivo n. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   raizDigital 23451  ==  6
 </pre></div>
 
+<p>Comprobar con QuickCheck las siguientes propiedades de la raíz digital:</p>
 <ul>
-<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [1..100]) dibuja</li>
+<li>D(m + n) = D(D(m) + D(n)).</li>
+<li>D(mn) = D(D(m)D(n)).</li>
+<li>D(m^n) = D(D(m)^n).</li>
+<li>D(D(n)) = D(n).</li>
+<li>D(n + 9) = D(n).</li>
+<li>D(9n) = 9.</li>
 </ul>
-<p><img alt="Cálculo de pi mediante la fórmula de Euler" src="images/Calculo_de_pi_mediante_la_formula_de_Euler_1.png"></p>
 <hr>
-<p class="more"><a href="posts/2021/03/15-calculo_de_pi_mediante_la_formula_de_euler/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/06-raiz_digital/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/" class="u-url">Representaciones de un número como potencia</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/05-antiimagenes_de_funcion_creciente_bidimensional/" class="u-url">Antiimágenes de funciones crecientes bidimensionales</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-12T06:00:00+02:00" itemprop="datePublished" title="12-03-2021">12-03-2021</time></a>
+            <a href="posts/2021/04/05-antiimagenes_de_funcion_creciente_bidimensional/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-05T06:00:00+02:00" itemprop="datePublished" title="05-04-2021">05-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El número 512 se puede escribir de tres maneras como potencias:</p>
-<div class="code"><pre class="code literal-block">   512 = 2⁹ = 8³ = 512¹
-</pre></div>
-
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">potencias</span><span class="w">       </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
-<span class="w">   </span><span class="n">numeroPotencias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tales que</p>
+<p>Una función f de pares de números naturales en números naturales es estrictamente creciente en ambos argumentos si</p>
 <ul>
-<li>(potencias x) es la lista de las representaciones de x como potencias de números enteros positivos. Por ejemplo,</li>
+<li>para x1 &lt; x2, se tiene f(x1,y) &lt; f(x1,y), para todo y y</li>
+<li>para y1 &lt; y2, se tiene f(x,y1) &lt; f(x,y2), para todo x.</li>
 </ul>
-<div class="code"><pre class="code literal-block">     potencias 7      ==  [(7,1)]
-     potencias 8      ==  [(2,3),(8,1)]
-     potencias 512    ==  [(2,9),(8,3),(512,1)]
-     potencias 16384  ==  [(2,14),(4,7),(128,2),(16384,1)]
-     potencias 65536  ==  [(2,16),(4,8),(16,4),(256,2),(65536,1)]
+<p>Por ejemplo, la función f definida por f(x,y) = x^2+3^y escreciente
+en ambos argumentos.</p>
+<p>Las antiimágenes por f de t son los pares (x,y) tales que f(x,y) = t. Por ejemplo, las antimágenes por f(x,y) = x^2+3^y de 82 son los pares (1,4) y (9,0).</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">antiimagenes</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)]</span>
 </pre></div>
 
-<ul>
-<li>(numeroPotencias x) de las representaciones de x como potencias de números enteros positivos. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     numeroPotencias 7          ==  1
-     numeroPotencias 8          ==  2
-     numeroPotencias 512        ==  3
-     numeroPotencias 16384      ==  4
-     numeroPotencias 65536      ==  5
-     numeroPotencias (2^(10^5)) ==  36
+<p>tal que (antiimagenes f t) es la lista de las antiimágenes por f de
+t, donde se supone que f es una función de pares de números naturales
+en números naturales que es estrictamente creciente en ambos
+argumentos. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">antiimagenes</span><span class="w"> </span><span class="p">(</span><span class="err">\</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="o">+</span><span class="mi">3</span><span class="o">^</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="mi">82</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">antiimagenes</span><span class="w"> </span><span class="p">(</span><span class="err">\</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="o">+</span><span class="mi">3</span><span class="o">^</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="mi">387421785</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[(</span><span class="mi">36</span><span class="p">,</span><span class="mi">18</span><span class="p">)]</span>
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2021/03/12-representaciones_de_un_numero_como_potencia/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/05-antiimagenes_de_funcion_creciente_bidimensional/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/" class="u-url">Cálculo de pi mediante la fórmula de Brouncker</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/02-antiimagen_de_funcion_creciente/" class="u-url">Antiimagen de función creciente</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-11T06:00:00+02:00" itemprop="datePublished" title="11-03-2021">11-03-2021</time></a>
+            <a href="posts/2021/04/02-antiimagen_de_funcion_creciente/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-02T06:00:00+02:00" itemprop="datePublished" title="02-04-2021">02-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El mes de marzo es el mes de pi, ya que el 14 de marzo (3/14) es el <a href="https://es.wikipedia.org/wiki/D%C3%ADa_de_%CF%80">día de pi</a>. Con ese motivo, el pasado 3 de marzo se publicó en Twitter un mensaje con la <a href="https://en.wikipedia.org/wiki/William_Brouncker,_2nd_Viscount_Brouncker#Brouncker's_formula">fórmula de Brouncker para el cálculo de pi</a>
-<img alt="Cálculo de pi mediante la fórmula de Brouncker" src="images/Calculo_de_pi_mediante_la_formula_de_Brouncker.png"></p>
-<p>La primeras aproximaciones son</p>
-<div class="code"><pre class="code literal-block">     a(1) = 4                                  =  4
-     a(2) = 4/(1+1^2)                          =  2.0
-     a(3) = 4/(1+1^2/(2+3^2))                  =  3.666666666666667
-     a(4) = 4/(1+1^2/(2+3^2/(2+5^2)))          =  2.8
-     a(5) = 4/(1+1^2/(2+3^2/(2+5^2/(2+7^2))))  =  3.395238095238095
+<p>Una función f de los números naturales en los números naturales es estrictamente creciente si para cualquier par de números x, y tales que x &lt; y se verifica que f(x) &lt; f(y). La antiimagen por f de un número natural t es el número natural x tal que f(x) = t. No todos los números tienen antiimiagen por f, pero en caso de tenerla es única.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
-<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<p>tal que, suponiendo que f es una función creciente de los naturales en los naturales, (antiimagen f t) es justamente la antiimagen por f de t, si existe y es Nothing, en caso contrario. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="err">\</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">47</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="n">Just</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="err">\</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">48</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="n">Nothing</span>
+<span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="err">\</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="o">^</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="mi">1024</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="n">Just</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="p">)</span><span class="w"> </span><span class="mi">1024</span><span class="w">           </span><span class="o">==</span><span class="w">  </span><span class="n">Just</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">))</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="n">Just</span><span class="w"> </span><span class="mi">10000000</span>
+<span class="w">   </span><span class="n">antiimagen</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">^</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">^</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">))</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="n">Nothing</span>
 </pre></div>
 
-<p>tales que</p>
-<ul>
-<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Brouncker. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     aproximacionPi 1      ==  4.0
-     aproximacionPi 2      ==  2.0
-     aproximacionPi 3      ==  3.666666666666667
-     aproximacionPi 4      ==  2.8
-     aproximacionPi 5      ==  3.395238095238095
-     aproximacionPi 10     ==  3.0301437124966535
-     aproximacionPi 1000   ==  3.1405916523380406
-     aproximacionPi 1001   ==  3.142592653839793
-     aproximacionPi 10000  ==  3.141492643588543
-     aproximacionPi 10001  ==  3.1416926535900433
-     pi                    ==  3.141592653589793
-</pre></div>
-
-<ul>
-<li>(grafica xs) dibuja la gráfica de las k-ésimas aproximaciones de pi para k en xs. Por ejemplo, (grafica [10..100]) dibuja
-<img alt="Cálculo de pi mediante la fórmula de Brouncker" src="images/Calculo_de_pi_mediante_la_formula_de_Brouncker_1.png">
-</li>
-</ul>
 <hr>
-<p class="more"><a href="posts/2021/03/11-calculo_de_pi_mediante_la_formula_de_brouncker/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/02-antiimagen_de_funcion_creciente/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/" class="u-url">Cálculo de pi mediante la serie de Madhava</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/04/01-reduccion_de_consecutivos_relacionados/" class="u-url">Reducción de consecutivos relacionados</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/" rel="bookmark">
-            <time class="published dt-published" datetime="2021-03-10T06:00:00+02:00" itemprop="datePublished" title="10-03-2021">10-03-2021</time></a>
+            <a href="posts/2021/04/01-reduccion_de_consecutivos_relacionados/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-04-01T06:00:00+02:00" itemprop="datePublished" title="01-04-2021">01-04-2021</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>El mes de marzo es el mes de pi, ya que el 14 de marzo (3/14) es el <a href="https://es.wikipedia.org/wiki/D%C3%ADa_de_%CF%80">día de pi</a>. Con ese motivo, el pasado 1 de marzo se publicó en Twitter un mensaje con la <a href="https://en.wikipedia.org/wiki/Madhava_series#Another_formula_for_the_circumference_of_a_circle">fórmula de Madhava para el cálculo de pi</a>
-<img alt="Cálculo de pi mediante la serie de Madhava" src="images/Calculo_de_pi_mediante_la_serie_de_Madhava.png"></p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">aproximacionPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Double</span>
-<span class="w">   </span><span class="n">grafica</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">reducida</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tales que</p>
-<ul>
-<li>(aproximacionPi n) es la n-ésima aproximación de pi con la fórmula de Madhava. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">     aproximacionPi 0   ==  3.4641016151377544
-     aproximacionPi 1   ==  3.0792014356780038
-     aproximacionPi 2   ==  3.156181471569954
-     aproximacionPi 10  ==  3.1415933045030813
-     aproximacionPi 21  ==  3.1415926535879337
-     pi                 ==  3.141592653589793
+<p>tal que (reducida r xs) obtenida elimando en xs las repeticiones de elementos consecutivos queverifican la relación r. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   reducida (==) [4,4,2,1,1,1,2,5]  ==  [4,2,1,2,5]
+   reducida (&lt;)  [4,4,2,1,1,1,2,5]  ==  [4,4,2,1,1,1]
+   reducida (&gt;=) [4,4,2,1,1,1,2,5]  ==  [4,5]
+   reducida (&gt;)  [4,4,2,1,1,1,2,5]  ==  [4,4,5]
+   reducida (/=) [4,4,2,1,1,1,2,5]  ==  [4,4]
 </pre></div>
 
-<ul>
-<li>(grafica n) dibuja la gráfica de las k-ésimas aproximaciones de pi para k desde 0 a n. Por ejemplo, (grafica 30) dibuja
-<img alt="Cálculo de pi mediante la serie de Madhava" src="images/Calculo_de_pi_mediante_la_serie_de_Madhava_1.png">
-</li>
-</ul>
 <hr>
-<p class="more"><a href="posts/2021/03/10-calculo_de_pi_mediante_la_serie_de_madhava/">Leer más…</a></p>
+<p class="more"><a href="posts/2021/04/01-reduccion_de_consecutivos_relacionados/">Leer más…</a></p>
 </div>
                 </div>
             </article>

@@ -45,440 +45,568 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/18-permutacion_de_consecutivos/" class="u-url">Permutación de elementos consecutivos</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/09-la_conjetura_de_collatz/" class="u-url">La conjetura de Collatz</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/03/18-permutacion_de_consecutivos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-18T06:00:00+02:00" itemprop="datePublished" title="18-03-2019">18-03-2019</time></a>
+            <a href="posts/2019/04/09-la_conjetura_de_collatz/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-09T07:00:00+02:00" itemprop="datePublished" title="09-04-2019">09-04-2019</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">permutaConsecutivos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<p>La <a href="https://en.wikipedia.org/wiki/Collatz_conjecture">conjetura de Collatz</a>, conocida también como conjetura 3n+1, fue enunciada por Lothar Collatz en 1937 y, hasta la fecha, no se ha resuelto.</p>
+<p>La conjetura hace referencia a una propiedad de las sucesiones de Siracusa. La <strong>sucesión de Siracusa</strong> de un número entero positivo x es  la sucesión cuyo primer término es x y el siguiente de un término  se obtiene dividiéndolo entre 2, si es par o multiplicándolo por 3 y sumándole 1, si es impar. Por ejemplo, la sucesión de Siracusa de 12 es</p>
+<div class="code"><pre class="code literal-block"><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">....</span>
 </pre></div>
 
-<p>tal que (permutaConsecutivos xs) es la lista obtenida permutando los elementos consecutivos de xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nx">permutaConsecutivos</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">.</span><span class="m m-Double">.8</span><span class="p">]</span><span class="w">         </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
-<span class="nx">permutaConsecutivos</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">.</span><span class="m m-Double">.9</span><span class="p">]</span><span class="w">         </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
-<span class="nx">permutaConsecutivos</span><span class="w"> </span><span class="s">"simplemente"</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="s">"ispmelemtne"</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/18-permutacion_de_consecutivos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/15-cambio_con_el_menor_numero_de_monedas/" class="u-url">Cambio con el menor número de monedas</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/15-cambio_con_el_menor_numero_de_monedas/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-15T06:00:00+02:00" itemprop="datePublished" title="15-03-2019">15-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El problema del cambio con el menor número de monedas consiste en, dada una lista ms de tipos de monedas (con infinitas monedas de cada tipo) y una cantidad objetivo x, calcular el menor número de monedas de ms cuya suma es x. Por ejemplo, con monedas de 1, 3 y 4 céntimos se puede obtener 6 céntimos de 4 formas</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span>
-<span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span>
-</pre></div>
-
-<p>El menor número de monedas que se necesita es 2. En cambio, con monedas de 2, 5 y 10 es imposible obtener 3.</p>
-<p>Definir</p>
-<div class="code"><pre class="code literal-block"><span class="nf">monedas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tal que (monedas ms x) es el menor número de monedas de ms cuya suma es x, si es posible obtener dicha suma y es Nothing en caso contrario. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">monedas [1,3,4]  6                    ==  Just 2
-monedas [2,5,10] 3                    ==  Nothing
-monedas [1,2,5,10,20,50,100,200] 520  ==  Just 4
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/15-cambio_con_el_menor_numero_de_monedas/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/14-maxima_longitud_de_sublistas_crecientes/" class="u-url">Máxima longitud de sublistas crecientes</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/14-maxima_longitud_de_sublistas_crecientes/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-14T06:00:00+02:00" itemprop="datePublished" title="14-03-2019">14-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">longitudMayorSublistaCreciente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-</pre></div>
-
-<p>tal que (longitudMayorSublistaCreciente xs) es la el máximo de las longitudes de las sublistas crecientes de xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
-<span class="mi">3</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">41</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">80</span><span class="p">]</span>
-<span class="mi">6</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">15</span><span class="p">]</span>
-<span class="mi">6</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente</span> <span class="p">[</span><span class="mf">1..2000</span><span class="p">]</span>
-<span class="mi">2000</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente</span> <span class="p">[</span><span class="mi">2000</span><span class="p">,</span><span class="mf">1999..1</span><span class="p">]</span>
-<span class="mi">1</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">System.Random</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">xs</span> <span class="o">&lt;-</span> <span class="n">sequence</span> <span class="p">[</span><span class="n">randomRIO</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">)</span> <span class="o">|</span> <span class="n">_</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mf">1..10</span><span class="o">^</span><span class="mi">3</span><span class="p">]]</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente2</span> <span class="n">xs</span>
-<span class="mi">61</span>
-<span class="n">λ</span><span class="o">&gt;</span> <span class="n">longitudMayorSublistaCreciente3</span> <span class="n">xs</span>
-<span class="mi">61</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/14-maxima_longitud_de_sublistas_crecientes/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/13-diagonales_invertidas/" class="u-url">Diagonales invertidas</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/13-diagonales_invertidas/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-13T06:00:00+02:00" itemprop="datePublished" title="13-03-2019">13-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">diagonalesInvertidas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>tal que (diagonalesInvertidas q) es la matriz obtenida invirtiendo el orden de los elementos de la diagonal principal y de la diagonal secundaria de q. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; fromList 5 5 [1..]
-┌                ┐
-│  1  2  3  4  5 │
-│  6  7  8  9 10 │
-│ 11 12 13 14 15 │
-│ 16 17 18 19 20 │
-│ 21 22 23 24 25 │
-└                ┘
-λ&gt; diagonalesInvertidas (fromList 5 5 [1..])
-┌                ┐
-│ 25  2  3  4 21 │
-│  6 19  8 17 10 │
-│ 11 12 13 14 15 │
-│ 16  9 18  7 20 │
-│  5 22 23 24  1 │
-└                ┘
-λ&gt; fromList 3 3 ['a','b'..]
-┌             ┐
-│ 'a' 'b' 'c' │
-│ 'd' 'e' 'f' │
-│ 'g' 'h' 'i' │
-└             ┘
-λ&gt; diagonalesInvertidas (fromList 3 3 ['a','b'..])
-┌             ┐
-│ 'i' 'b' 'g' │
-│ 'd' 'e' 'f' │
-│ 'c' 'h' 'a' │
-└             ┘
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/13-diagonales_invertidas/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/12-numeros_ciclopes/" class="u-url">Números cíclopes</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/12-numeros_ciclopes/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-12T06:00:00+02:00" itemprop="datePublished" title="12-03-2019">12-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Un número cíclope es un número natural cuya representación binaria sólo tiene un cero en el centro. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">  0      es ciclope porque su representación binaria es 0
-  1   no es ciclope porque su representación binaria es 1
-  5      es ciclope porque su representación binaria es 101
-  9   no es ciclope porque su representación binaria es 1001
- 10   no es ciclope porque su representación binaria es 1010
- 27      es ciclope porque su representación binaria es 11011
- 85   no es ciclope porque su representación binaria es 1010101
-101   no es ciclope porque su representación binaria es 1100101
-111   no es ciclope porque su representación binaria es 1101111
-119      es ciclope porque su representación binaria es 1110111
-</pre></div>
-
+<p>La <strong>conjetura de Collatz</strong> afirma que para todo número entero positivo x, el 1 pertenece a la sucesión de Siracusa de x.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">esCiclope</span><span class="w">       </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">ciclopes</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">graficaCiclopes</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<div class="code"><pre class="code literal-block"><span class="nf">siracusa</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">graficaSiracusa</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(esCiclope n) se verifica si el número natual n es cíclope. Por ejemplo,</li>
+<li>(siracusa x) es la sucesión de Siracusa de x. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">esCiclope 0    ==  True
-esCiclope 1    ==  False
-esCiclope 5    ==  True
-esCiclope 9    ==  False
-esCiclope 10   ==  False
-esCiclope 27   ==  True
-esCiclope 85   ==  False
-esCiclope 101  ==  False
-esCiclope 111  ==  False
-esCiclope 119  ==  True
+<div class="code"><pre class="code literal-block">λ&gt; take 20 (siracusa 12)
+[12,6,3,10,5,16,8,4,2,1,4,2,1,4,2,1,4,2,1,4]
+λ&gt; take 20 (siracusa 22)
+[22,11,34,17,52,26,13,40,20,10,5,16,8,4,2,1,4,2,1,4]
 </pre></div>
 
 <ul>
-<li>ciclopes es la lista de los número cíclopes. Por ejemplo,</li>
+<li>(graficaSiracusa n xs) dibuja los n primeros términos de las sucesiones de Siracusas de los elementos de xs. Por ejemplo, (graficaSiracusa 100 [27]) dibuja</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">take</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="nv">ciclopes</span>
-[<span class="mi">0</span>,<span class="mi">5</span>,<span class="mi">27</span>,<span class="mi">119</span>,<span class="mi">495</span>,<span class="mi">2015</span>,<span class="mi">8127</span>,<span class="mi">32639</span>,<span class="mi">130815</span>,<span class="mi">523775</span>,<span class="mi">2096127</span>,<span class="mi">8386559</span>]
-λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">ciclopes</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="ss">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">5</span><span class="ss">)))</span>
-<span class="mi">60207</span>
-</pre></div>
-
-<ul>
-<li>(graficaCiclopes n) dibuja la gráfica del último dígito de los n primeros números cíclopes. Por ejemplo, (graficaCiclopes n) dibuja</li>
-</ul>
-<p><img alt="Números cíclopes" src="images/Numeros_ciclopes.png"></p>
+<p><img alt="La conjetura de Collatz" src="images/La_conjetura_de_Collatz_1.png"></p>
+<p>y (graficaSiracusa 150 [1..1000]) dibuja</p>
+<p><img alt="La conjetura de Collatz" src="images/La_conjetura_de_Collatz_2.png"></p>
+<p>Comprobar con QuickCheck la conjetura de Collatz.</p>
 <hr>
-<p class="more"><a href="posts/2019/03/12-numeros_ciclopes/">Leer más…</a></p>
+<p class="more"><a href="posts/2019/04/09-la_conjetura_de_collatz/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/11-combinaciones_divisibles/" class="u-url">Combinaciones divisibles</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/08-numeros_en_una_cadena/" class="u-url">Números en una cadena</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/03/11-combinaciones_divisibles/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-11T06:00:00+02:00" itemprop="datePublished" title="11-03-2019">11-03-2019</time></a>
+            <a href="posts/2019/04/08-numeros_en_una_cadena/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-08T07:00:00+02:00" itemprop="datePublished" title="08-04-2019">08-04-2019</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
 <p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">tieneCombinacionDivisible</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<div class="code"><pre class="code literal-block"><span class="nf">numeros</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (tieneCombinacionDivisible xs m) se verifica si existe alguna forma de combinar todos los elementos de la lista (con las operaciones suma o resta) de forma que el resultado sea divisible por m. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">tieneCombinacionDivisible [1,3,4,6] 4  ==  True
-tieneCombinacionDivisible [1,3,9]   2  ==  False
+<p>tal que (numeros cs) es la lista de los números enteros de la cadena cs. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">λ&gt; numeros "Esta cadena tiene 3 numeros: el 16 y el 2019 solamente."
+[3,16,2019]
 </pre></div>
 
-<p>En el primer ejemplo, 1 - 2 + 3 + 4 + 6 = 12 es una combinación divisible por 4. En el segundo ejemplo, las combinaciones de [1,3,9] son</p>
-<div class="code"><pre class="code literal-block"> 1 + 3 + 9 =  13
--1 + 3 + 9 =  11
- 1 - 3 + 9 =   7
--1 - 3 + 9 =   5
- 1 + 3 - 9 =  -5
--1 + 3 - 9 =  -7
- 1 - 3 - 9 = -11
--1 - 3 - 9 = -13
-</pre></div>
-
-<p>y ninguna de las 4 es divisible por 2.</p>
 <hr>
-<p class="more"><a href="posts/2019/03/11-combinaciones_divisibles/">Leer más…</a></p>
+<p class="more"><a href="posts/2019/04/08-numeros_en_una_cadena/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/" class="u-url">Camino de máxima suma en una matriz</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/" class="u-url">Conjetura de las familias estables por uniones</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-08T06:00:00+02:00" itemprop="datePublished" title="08-03-2019">08-03-2019</time></a>
+            <a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-05T07:00:00+02:00" itemprop="datePublished" title="05-04-2019">05-04-2019</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<div class="code"><pre class="code literal-block">(  1  6 11  2 )
-(  7 12  3  8 )
-(  3  8  4  9 )
-</pre></div>
-
-<p>moviéndose en cada paso una casilla hacia abajo o hacia la derecha, son los siguientes:</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w">  </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-</pre></div>
-
-<p>Las sumas de los caminos son 32, 41, 36, 40, 40, 35, 39, 34, 38 y 37, respectivamente. El camino de máxima suma es el segundo (1, 7, 12, 8, 4, 9) que tiene una suma de 41.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">caminoMaxSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que (caminoMaxSuma m) es un camino de máxima suma en la matriz m desde el extremo superior izquierdo hasta el extremo inferior derecho, moviéndose en cada paso una casilla hacia abajo o hacia la  derecha. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; caminoMaxSuma (fromLists [[1,6,11,2],[7,12,3,8],[3,8,4,9]])
-[1,7,12,8,4,9]
-λ&gt; sum (caminoMaxSuma3 (fromList 800 800 [1..]))
-766721999
-(1.68 secs, 1,082,106,856 bytes)
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/07-suma_de_segmentos_iniciales/" class="u-url">Suma de segmentos iniciales</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/07-suma_de_segmentos_iniciales/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-07T06:00:00+02:00" itemprop="datePublished" title="07-03-2019">07-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Los segmentos iniciales de [3,1,2,5] son [3], [3,1], [3,1,2] y [3,1,2,5]. Sus sumas son 3, 4, 6 y 9, respectivamente. La suma de dichas sumas es 24.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sumaSegmentosIniciales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tal que (sumaSegmentosIniciales xs) es la suma de las sumas de los segmentos iniciales de xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">sumaSegmentosIniciales [3,1,2,5]     ==  24
-sumaSegmentosIniciales3 [1..3*10^6]  ==  4500004500001000000
-</pre></div>
-
-<p>Comprobar con QuickCheck que la suma de las sumas de los segmentos iniciales de la lista formada por n veces el número uno es el n-ésimo número triangular; es decir que</p>
-<div class="code"><pre class="code literal-block">sumaSegmentosIniciales (genericReplicate n 1)
-</pre></div>
-
-<p>es igual a</p>
-<div class="code"><pre class="code literal-block"><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n n-Quoted">`div`</span><span class="w"> </span><span class="mi">2</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/07-suma_de_segmentos_iniciales/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/06-numero_como_suma_de_sus_digitos/" class="u-url">Números como suma de sus dígitos</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/06-numero_como_suma_de_sus_digitos/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-06T06:00:00+02:00" itemprop="datePublished" title="06-03-2019">06-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El número 23 se puede escribir de 4 formas como suma de sus dígitos</p>
-<div class="code"><pre class="code literal-block"><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
-<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
-<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
-<span class="mf">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">3</span>
-</pre></div>
-
-<p>La de menor número de sumando es la última, que tiene 8 sumandos.</p>
+<p>La <a href="https://en.wikipedia.org/wiki/Union-closed_sets_conjecture">conjetura de las familias estables por uniones</a> fue planteada por Péter Frankl en 1979 y aún sigue abierta.</p>
+<p>Una familia de conjuntos es estable por uniones si la unión de dos conjuntos cualesquiera de la familia pertenece a la familia. Por ejemplo, {∅, {1}, {2}, {1,2}, {1,3}, {1,2,3}} es estable por uniones; pero {{1}, {2}, {1,3}, {1,2,3}} no lo es.</p>
+<p>La conjetura afirma que toda familia no vacía estable por uniones y distinta {∅} posee algún elemento que pertenece al menos a la mitad de los conjuntos de la familia.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">minimoSumandosDigitos</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-<span class="nf">graficaMinimoSumandosDigitos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<div class="code"><pre class="code literal-block"><span class="nf">esEstable</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">familiasEstables</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">))</span>
+<span class="nf">mayoritarios</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">conjeturaFrankl</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(minimoSumandosDigitos n) es el menor número de dígitos de n cuya suma es n. Por ejemplo,</li>
+<li>(esEstable f) se verifica si la familia f es estable por uniones. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">minimoSumandosDigitos 23    ==  8
-minimoSumandosDigitos 232   ==  78
-minimoSumandosDigitos 2323  ==  775
+<div class="code"><pre class="code literal-block">λ&gt; esEstable (fromList [empty, fromList [1,2], fromList [1..5]])
+True
+λ&gt; esEstable (fromList [empty, fromList [1,7], fromList [1..5]])
+False
+λ&gt; esEstable (fromList [fromList [1,2], singleton 3, fromList [1..3]])
+True
 </pre></div>
 
 <ul>
-<li>(graficaMinimoSumandosDigitos n) dibuja la gráfica de (minimoSumandosDigitos k) par los k primeros números naturales. Por ejemplo, (graficaMinimoSumandosDigitos 300) dibuja</li>
+<li>(familiasEstables c) es el conjunto de las familias estables por uniones formadas por elementos del conjunto c. Por ejemplo,</li>
 </ul>
-<p><img alt="Números como suma de sus dígitos" src="images/Numero_como_suma_de_sus_digitos.png"></p>
+<div class="code"><pre class="code literal-block">λ&gt; familiasEstables (fromList [1..2])
+fromList
+  [ fromList []
+  , fromList [fromList []]
+  , fromList [fromList [],fromList [1]]
+  , fromList [fromList [],fromList [1],fromList [1,2]],
+  fromList [fromList [],fromList [1],fromList [1,2],fromList [2]]
+  , fromList [fromList [],fromList [1,2]]
+  , fromList [fromList [],fromList [1,2],fromList [2]]
+  , fromList [fromList [],fromList [2]]
+  , fromList [fromList [1]]
+  , fromList [fromList [1],fromList [1,2]]
+  , fromList [fromList [1],fromList [1,2],fromList [2]]
+  , fromList [fromList [1,2]]
+  , fromList [fromList [1,2],fromList [2]]
+  , fromList [fromList [2]]]
+λ&gt; size (familiasEstables (fromList [1,2]))
+14
+λ&gt; size (familiasEstables (fromList [1..3]))
+122
+λ&gt; size (familiasEstables (fromList [1..4]))
+4960
+</pre></div>
+
+<ul>
+<li>(mayoritarios f) es la lista de elementos que pertenecen al menos a la mitad de los conjuntos de la familia f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">mayoritarios (fromList [empty, fromList [1,3], fromList [3,5]]) == [3]
+mayoritarios (fromList [empty, fromList [1,3], fromList [4,5]]) == []
+</pre></div>
+
+<ul>
+<li>(conjeturaFrankl n) se verifica si para toda familia f formada por elementos del conjunto {1,2,...,n} no vacía, estable por uniones y  distinta de {∅} posee algún elemento que pertenece al menos a la mitad de los conjuntos de f. Por ejemplo.</li>
+</ul>
+<div class="code"><pre class="code literal-block">conjeturaFrankl 2  ==  True
+conjeturaFrankl 3  ==  True
+conjeturaFrankl 4  ==  True
+</pre></div>
+
 <hr>
-<p class="more"><a href="posts/2019/03/06-numero_como_suma_de_sus_digitos/">Leer más…</a></p>
+<p class="more"><a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/05-las_torres_de_hanoi/" class="u-url">Las torres de Hanói</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/04-distribucion_de_diferencias_de_digitos_consecutivos_de_pi/" class="u-url">Distribución de diferencias de dígitos consecutivos de pi</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
                    </span></p>
             <p class="dateline">
-            <a href="posts/2019/03/05-las_torres_de_hanoi/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-05T06:00:00+02:00" itemprop="datePublished" title="05-03-2019">05-03-2019</time></a>
+            <a href="posts/2019/04/04-distribucion_de_diferencias_de_digitos_consecutivos_de_pi/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-04T07:00:00+02:00" itemprop="datePublished" title="04-04-2019">04-04-2019</time></a>
             </p>
 		    <p><span class="text-dark">Misceláneas</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Las <a href="https://es.wikipedia.org/wiki/Torres_de_Han%C3%B3i">torres de Hanoi</a> es un rompecabeza que consta de tres postes que llamaremos A, B y C. Hay N discos de distintos tamaños en el poste A, de forma que no hay un disco situado sobre otro de menor tamaño. Los postes B y C están vacíos. Sólo puede moverse un disco a la vez y todos los discos deben de estar ensartados en algún poste. Ningún disco puede situarse sobre otro de menor tamaño. El problema consiste en colocar los N discos en el poste C.</p>
-<p>Los postes se pueden representar mediante el siguiente tipo de datos</p>
-<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Poste</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">A</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">B</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">C</span>
-<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+<p>Usando la librería <a href="https://hackage.haskell.org/package/numbers-3000.2.0.1/docs/Data-Number-CReal.html">Data.Number.CReal</a>, que se instala con</p>
+<div class="code"><pre class="code literal-block">cabal install number
 </pre></div>
 
+<p>se pueden calcular el número pi con la precisión que se desee. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="n">λ</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">Data.Number.CReal</span>
+<span class="n">λ</span><span class="o">&gt;</span> <span class="n">showCReal</span> <span class="mi">60</span> <span class="n">pi</span>
+<span class="s2">"3.141592653589793238462643383279502884197169399375105820974945"</span>
+</pre></div>
+
+<p>importa la librería y calcula el número pi con 60 decimales.</p>
+<p>La distribución de las diferencias de los dígitos consecutivos para los 18 primeros n dígitos de pi se calcula como sigue: los primeros 18 dígitos de pi son</p>
+<div class="code"><pre class="code literal-block"><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span>
+</pre></div>
+
+<p>Las diferencias de sus elementos consecutivos es</p>
+<div class="code"><pre class="code literal-block"><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span>
+</pre></div>
+
+<p>y la distribución de sus frecuencias en el intervalo [-9,9] es</p>
+<div class="code"><pre class="code literal-block"><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span>
+</pre></div>
+
+<p>es decir, el desde el -9 a -5 no aparecen, el -4 aparece 3 veces, el -2 aparece 2 veces y así sucesivamente.</p>
 <p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">movimientos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Poste</span><span class="p">,</span><span class="kt">Poste</span><span class="p">)]</span>
-<span class="nf">hanoi</span><span class="w">       </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<div class="code"><pre class="code literal-block"><span class="nf">distribucionDDCpi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">graficas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">FilePath</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
 </pre></div>
 
 <p>tales que</p>
 <ul>
-<li>(movimientos n) es la lista de los movimientos para resolver el problema de las torres de hanoi con n discos. Por ejemplo,</li>
+<li>(distribucionDDCpi n) es la distribución de las diferencias de los dígitos consecutivos para los primeros n dígitos de pi. Por ejemplo,</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; movimientos 1
-[(1,A,C)]
-λ&gt; movimientos 2
-[(1,A,B),(2,A,C),(1,B,C)]
-λ&gt; movimientos 3
-[(1,A,C),(2,A,B),(1,C,B),(3,A,C),(1,B,A),(2,B,C),(1,A,C)]
+<div class="code"><pre class="code literal-block">λ&gt; distribucionDDCpi 18
+[0,0,0,0,0,3,2,2,2,0,2,3,1,0,0,1,1,0,0]
+λ&gt; distribucionDDCpi 100
+[1,2,1,7,7,7,6,5,8,6,7,14,4,9,3,6,4,1,0]
+λ&gt; distribucionDDCpi 200
+[3,6,2,13,14,12,11,12,15,17,15,19,11,17,8,13,9,2,0]
+λ&gt; distribucionDDCpi 1000
+[16,25,23,44,57,61,55,75,92,98,80,88,64,65,42,54,39,14,8]
+λ&gt; distribucionDDCpi 5000
+[67,99,130,196,245,314,361,391,453,468,447,407,377,304,242,221,134,97,47]
 </pre></div>
 
 <ul>
-<li>(hanoi n) escribe los mensajes de los movimientos para resolver el problema de las torres de hanoi con n discos. Por ejemplo,</li>
+<li>(graficas ns f) dibuja en el fichero f las gráficas de las distribuciones de las diferencias de los dígitos consecutivos para los primeros n dígitos de pi, para n en ns. Por ejemplo, al evaluar (graficas [100,250..4000] "distribucionDDCpi.png" se escribe en el fichero "distribucionDDCpi.png" la siguiente gráfica</li>
 </ul>
-<div class="code"><pre class="code literal-block">λ&gt; hanoi 3
-Mueve el disco 1 de A a C
-Mueve el disco 2 de A a B
-Mueve el disco 1 de C a B
-Mueve el disco 3 de A a C
-Mueve el disco 1 de B a A
-Mueve el disco 2 de B a C
-Mueve el disco 1 de A a C
+<p><img alt="Distribución de diferencias de dígitos consecutivos de pi" src="images/Distribucion_de_diferencias_de_digitos_consecutivos_de_pi.png"></p>
+<hr>
+<p class="more"><a href="posts/2019/04/04-distribucion_de_diferencias_de_digitos_consecutivos_de_pi/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/03-calculo_de_digitos_de_pi_y_su_distribucion/" class="u-url">Cálculo de dígitos de pi y su distribución</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/04/03-calculo_de_digitos_de_pi_y_su_distribucion/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-03T07:00:00+02:00" itemprop="datePublished" title="03-04-2019">03-04-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Se pueden generar los dígitos de Pi, como se explica en el artículo <a href="https://www.cs.ox.ac.uk/people/jeremy.gibbons/publications/spigot.pdf">Unbounded spigot algorithms for the digits of pi</a> c0on la función digitosPi definida por</p>
+<div class="code"><pre class="code literal-block"><span class="nf">digitosPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">digitosPi</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">g</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="mi">4</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="o">-</span><span class="n">t</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">t</span>
+<span class="w">    </span><span class="kr">then</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">n</span><span class="o">*</span><span class="n">t</span><span class="p">),</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">div</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="p">))</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">else</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="o">*</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">q</span><span class="o">+</span><span class="n">r</span><span class="p">)</span><span class="o">*</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="o">*</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">div</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="o">*</span><span class="p">(</span><span class="mi">7</span><span class="o">*</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">r</span><span class="o">*</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="n">l</span><span class="p">),</span><span class="w"> </span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">λ&gt; take 25 digitosPi
+[3,1,4,1,5,9,2,6,5,3,5,8,9,7,9,3,2,3,8,4,6,2,6,4,3]
+</pre></div>
+
+<p>La distribución de los primeros 25 dígitos de pi es [0,2,3,5,3,3,3,1,2,3] ya que el 0 no aparece, el 1 ocurre 2 veces, el 3 ocurre 3 veces, el 4 ocurre 5 veces, ...</p>
+<p>Usando digitosPi, definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">distribucionDigitosPi</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">frecuenciaDigitosPi</span><span class="w">   </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Double</span><span class="p">]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(distribucionDigitosPi n) es la distribución de los n primeros dígitos de pi. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; distribucionDigitosPi 10
+[0,2,1,2,1,2,1,0,0,1]
+λ&gt; distribucionDigitosPi 100
+[8,8,12,12,10,8,9,8,12,13]
+λ&gt; distribucionDigitosPi 1000
+[93,116,103,103,93,97,94,95,101,105]
+λ&gt; distribucionDigitosPi 5000
+[466,531,496,460,508,525,513,488,492,521]
+</pre></div>
+
+<ul>
+<li>(frecuenciaDigitosPi n) es la frecuencia de los n primeros dígitos de pi. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; frecuenciaDigitosPi 10
+[0.0,20.0,10.0,20.0,10.0,20.0,10.0,0.0,0.0,10.0]
+λ&gt; frecuenciaDigitosPi 100
+[8.0,8.0,12.0,12.0,10.0,8.0,9.0,8.0,12.0,13.0]
+λ&gt; frecuenciaDigitosPi 1000
+[9.3,11.6,10.3,10.3,9.3,9.7,9.4,9.5,10.1,10.5]
+λ&gt; frecuenciaDigitosPi 5000
+[9.32,10.62,9.92,9.2,10.16,10.5,10.26,9.76,9.84,10.42]
 </pre></div>
 
 <hr>
-<p class="more"><a href="posts/2019/03/05-las_torres_de_hanoi/">Leer más…</a></p>
+<p class="more"><a href="posts/2019/04/03-calculo_de_digitos_de_pi_y_su_distribucion/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/02-huecos_de_aquiles/" class="u-url">Huecos de Aquiles</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/04/02-huecos_de_aquiles/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-02T07:00:00+02:00" itemprop="datePublished" title="02-04-2019">02-04-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Un número de Aquiles es un número natural n que es potente (es decir, si p es un divisor primo de n, entonces p² también lo es) y no es una potencia perfecta (es decir, no existen números naturales m y k tales que n es igual a m^k). Por ejemplo,</p>
+<ul>
+<li>108 es un número de Aquiles proque es un número potente (ya que su factorización es 2^2 · 3^3, sus divisores primos son 2 and 3 y sus cuadrados (2^2 = 4 y 3^2 = 9) son divisores de 108. Además, 108 no es una potencia perfecta.</li>
+<li>360 no es un número de Aquiles ya que 5 es un divisor primo de 360, pero 5^2 = 15 no lo es.</li>
+<li>784 no es un número de Aquiles porque, aunque es potente, es una potencia perfecta ya que 784 = 28^2.</li>
+</ul>
+<p>Los primeros números de Aquiles son</p>
+<div class="code"><pre class="code literal-block"><span class="mf">72</span><span class="p">,</span><span class="w"> </span><span class="mf">108</span><span class="p">,</span><span class="w"> </span><span class="mf">200</span><span class="p">,</span><span class="w"> </span><span class="mf">288</span><span class="p">,</span><span class="w"> </span><span class="mf">392</span><span class="p">,</span><span class="w"> </span><span class="mf">432</span><span class="p">,</span><span class="w"> </span><span class="mf">500</span><span class="p">,</span><span class="w"> </span><span class="mf">648</span><span class="p">,</span><span class="w"> </span><span class="mf">675</span><span class="p">,</span><span class="w"> </span><span class="mf">800</span><span class="p">,</span><span class="w"> </span><span class="mf">864</span><span class="p">,</span><span class="w"> </span><span class="mf">968</span><span class="p">,</span><span class="w"> </span><span class="mf">972</span><span class="p">,</span><span class="w"> </span><span class="mf">...</span>
+</pre></div>
+
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esAquiles</span><span class="w">              </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">huecosDeAquiles</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">graficaHuecosDeAquiles</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(esAquiles x) se verifica si x es un número de Aquiles. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esAquiles 108         ==  True
+esAquiles 360         ==  False
+esAquiles 784         ==  False
+esAquiles 5425069447  ==  True
+esAquiles 5425069448  ==  True
+</pre></div>
+
+<ul>
+<li>huecosDeAquiles es la sucesión de la diferencias entre los números de Aquiles consecutivos. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; take 15 huecosDeAquiles
+[36,92,88,104,40,68,148,27,125,64,104,4,153,27,171]
+</pre></div>
+
+<ul>
+<li>(graficaHuecosDeAquiles n) dibuja la gráfica de los n primeros huecos de Aquiles. Por ejemplo, (graficaHuecosDeAquiles 160) dibuja</li>
+</ul>
+<p><img alt="Huecos de Aquiles" src="images/Huecos_de_Aquiles.png"></p>
+<hr>
+<p class="more"><a href="posts/2019/04/02-huecos_de_aquiles/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/01-arbol_de_divisores/" class="u-url">Árbol de divisores</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/04/01-arbol_de_divisores/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-01T07:00:00+02:00" itemprop="datePublished" title="01-04-2019">01-04-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Se dice que a es un divisor propio maximal de un número b si a es un divisor de b distinto de b y no existe ningún número c tal que a &lt; c &lt; b, a es un divisor de c y c es un divisor de b. Por ejemplo, 15 es un divisor propio maximal de 30, pero 5 no lo es.</p>
+<p>El árbol de los divisores de un número x es el árbol que tiene como raíz el número x y cada nodo tiene como hijos sus divisores propios maximales. Por ejemplo, el árbol de divisores de 30 es</p>
+<div class="code"><pre class="code literal-block">       30
+       /|\
+      / | \
+     /  |  \
+    /   |   \
+   /    |    \
+  6    10    15
+ / \   / \   / \
+2   3 2   5 3   5
+</pre></div>
+
+<p>Usando el tipo de dato</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="p">[</span><span class="kt">Arbol</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
+</pre></div>
+
+<p>el árbol anterior se representa por</p>
+<div class="code"><pre class="code literal-block"><span class="kt">N</span><span class="w"> </span><span class="mi">30</span>
+<span class="w">  </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">     </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span>
+<span class="w">      </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">]],</span>
+<span class="w">   </span><span class="kt">N</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">     </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span>
+<span class="w">      </span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">]],</span>
+<span class="w">   </span><span class="kt">N</span><span class="w"> </span><span class="mi">15</span>
+<span class="w">     </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span>
+<span class="w">      </span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">[]</span><span class="p">]]]</span>
+</pre></div>
+
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">arbolDivisores</span><span class="w">             </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="nf">nOcurrenciasArbolDivisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(arbolDivisores x) es el árbol de los divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; arbolDivisores 30
+N 30 [N 6  [N 2 [N 1 []],N 3 [N 1 []]],
+      N 10 [N 2 [N 1 []],N 5 [N 1 []]],
+      N 15 [N 3 [N 1 []],N 5 [N 1 []]]]
+</pre></div>
+
+<ul>
+<li>(nOcurrenciasArbolDivisores x y) es el número de veces que aparece el número x en el árbol de los divisores del número y. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">nOcurrenciasArbolDivisores  3 30  ==  2
+nOcurrenciasArbolDivisores  6 30  ==  1
+nOcurrenciasArbolDivisores 30 30  ==  1
+nOcurrenciasArbolDivisores  1 30  ==  6
+nOcurrenciasArbolDivisores  9 30  ==  0
+nOcurrenciasArbolDivisores  2 (product [1..10])  ==  360360
+nOcurrenciasArbolDivisores  3 (product [1..10])  ==  180180
+nOcurrenciasArbolDivisores  5 (product [1..10])  ==  90090
+nOcurrenciasArbolDivisores  7 (product [1..10])  ==  45045
+nOcurrenciasArbolDivisores  6 (product [1..10])  ==  102960
+nOcurrenciasArbolDivisores 10 (product [1..10])  ==  51480
+nOcurrenciasArbolDivisores 14 (product [1..10])  ==  25740
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/04/01-arbol_de_divisores/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/29-triangulo_de_euler/" class="u-url">Triángulo de Euler</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/03/29-triangulo_de_euler/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-03-29T06:00:00+02:00" itemprop="datePublished" title="29-03-2019">29-03-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El triángulo de Euler se construye a partir de las siguientes relaciones</p>
+<div class="code"><pre class="code literal-block">A(n,1) = A(n,n) = 1
+A(n,m) = (n-m)A(n-1,m-1) + (m+1)A(n-1,m).
+</pre></div>
+
+<p>Sus primeros términos son</p>
+<div class="code"><pre class="code literal-block"><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">4</span><span class="w">   </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">11</span><span class="w">  </span><span class="mf">11</span><span class="w">    </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">26</span><span class="w">  </span><span class="mf">66</span><span class="w">    </span><span class="mf">26</span><span class="w">    </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">57</span><span class="w">  </span><span class="mf">302</span><span class="w">   </span><span class="mf">302</span><span class="w">   </span><span class="mf">57</span><span class="w">     </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">120</span><span class="w"> </span><span class="mf">1191</span><span class="w">  </span><span class="mf">2416</span><span class="w">  </span><span class="mf">1191</span><span class="w">   </span><span class="mf">120</span><span class="w">   </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">247</span><span class="w"> </span><span class="mf">4293</span><span class="w">  </span><span class="mf">15619</span><span class="w"> </span><span class="mf">15619</span><span class="w">  </span><span class="mf">4293</span><span class="w">  </span><span class="mf">247</span><span class="w">   </span><span class="mf">1</span>
+<span class="mf">1</span><span class="w"> </span><span class="mf">502</span><span class="w"> </span><span class="mf">14608</span><span class="w"> </span><span class="mf">88234</span><span class="w"> </span><span class="mf">156190</span><span class="w"> </span><span class="mf">88234</span><span class="w"> </span><span class="mf">14608</span><span class="w"> </span><span class="mf">502</span><span class="w"> </span><span class="mf">1</span>
+</pre></div>
+
+<p>Definir las siguientes funciones:</p>
+<div class="code"><pre class="code literal-block"><span class="nf">numeroEuler</span><span class="w">        </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">filaTrianguloEuler</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">trianguloEuler</span><span class="w">     </span><span class="ow">::</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(numeroEuler n k) es el número de Euler A(n,k). Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nv">numeroEuler</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w"> </span><span class="mi">15619</span>
+<span class="nv">numeroEuler</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">21598596303099900</span>
+<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">numeroEuler</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="mi">500</span><span class="ss">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2567</span>
+</pre></div>
+
+<ul>
+<li>(filaTrianguloEuler n) es la n-ésima fila del triángulo de Euler. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nv">filaTrianguloEuler</span><span class="w"> </span><span class="mi">7</span><span class="w">  </span><span class="o">==</span><span class="w">  </span>[<span class="mi">1</span>,<span class="mi">120</span>,<span class="mi">1191</span>,<span class="mi">2416</span>,<span class="mi">1191</span>,<span class="mi">120</span>,<span class="mi">1</span>]
+<span class="nv">filaTrianguloEuler</span><span class="w"> </span><span class="mi">8</span><span class="w">  </span><span class="o">==</span><span class="w">  </span>[<span class="mi">1</span>,<span class="mi">247</span>,<span class="mi">4293</span>,<span class="mi">15619</span>,<span class="mi">15619</span>,<span class="mi">4293</span>,<span class="mi">247</span>,<span class="mi">1</span>]
+<span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">maximum</span><span class="w"> </span><span class="ss">(</span><span class="nv">filaTrianguloEuler</span><span class="w"> </span><span class="mi">1000</span><span class="ss">)))</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2567</span>
+</pre></div>
+
+<ul>
+<li>trianguloEuler es la lista con las filas del triángulo de Euler</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">take</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="nv">trianguloEuler</span>
+[[<span class="mi">1</span>],[<span class="mi">1</span>,<span class="mi">1</span>],[<span class="mi">1</span>,<span class="mi">4</span>,<span class="mi">1</span>],[<span class="mi">1</span>,<span class="mi">11</span>,<span class="mi">11</span>,<span class="mi">1</span>],[<span class="mi">1</span>,<span class="mi">26</span>,<span class="mi">66</span>,<span class="mi">26</span>,<span class="mi">1</span>],[<span class="mi">1</span>,<span class="mi">57</span>,<span class="mi">302</span>,<span class="mi">302</span>,<span class="mi">57</span>,<span class="mi">1</span>]]
+λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">length</span><span class="w"> </span><span class="ss">(</span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">maximum</span><span class="w"> </span><span class="ss">(</span><span class="nv">trianguloEuler</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">999</span><span class="ss">)))</span>
+<span class="mi">2567</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/03/29-triangulo_de_euler/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/28-subconjuntos_divisibles/" class="u-url">Subconjuntos divisibles</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/03/28-subconjuntos_divisibles/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-03-28T06:00:00+02:00" itemprop="datePublished" title="28-03-2019">28-03-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">subconjuntosDivisibles</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+</pre></div>
+
+<p>tal que (subconjuntosDivisibles xs) es la lista de todos los subconjuntos de xs en los que todos los elementos tienen un factor  común mayor que 1. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">subconjuntosDivisibles []         ==  [[]]
+subconjuntosDivisibles [1]        ==  [[]]
+subconjuntosDivisibles [3]        ==  [[3],[]]
+subconjuntosDivisibles [1,3]      ==  [[3],[]]
+subconjuntosDivisibles [3,6]      ==  [[3,6],[3],[6],[]]
+subconjuntosDivisibles [1,3,6]    ==  [[3,6],[3],[6],[]]
+subconjuntosDivisibles [2,3,6]    ==  [[2,6],[2],[3,6],[3],[6],[]]
+subconjuntosDivisibles [2,3,6,8]  ==  [[2,6,8],[2,6],[2,8],[2],[3,6],[3],[6,8],[6],[8],[]]
+length (subconjuntosDivisibles [1..10])  ==  41
+length (subconjuntosDivisibles [1..20])  ==  1097
+length (subconjuntosDivisibles [1..30])  ==  33833
+length (subconjuntosDivisibles [1..40])  ==  1056986
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/03/28-subconjuntos_divisibles/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/27-matriz_girada_180_grados/" class="u-url">Matriz girada 180 grados</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/03/27-matriz_girada_180_grados/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-03-27T06:00:00+02:00" itemprop="datePublished" title="27-03-2019">27-03-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">matrizGirada180</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+
+<p>tal que (matrizGirada180 p) es la matriz obtenida girando 180 grados la matriz p. Por  ejemplo,</p>
+<div class="code"><pre class="code literal-block">λ&gt; fromList 4 3 [1..]
+(  1  2  3 )
+(  4  5  6 )
+(  7  8  9 )
+( 10 11 12 )
+
+λ&gt; matrizGirada180 (fromList 4 3 [1..])
+( 12 11 10 )
+(  9  8  7 )
+(  6  5  4 )
+(  3  2  1 )
+
+λ&gt; fromList 3 4 [1..]
+(  1  2  3  4 )
+(  5  6  7  8 )
+(  9 10 11 12 )
+
+λ&gt; matrizGirada180 (fromList 3 4 [1..])
+( 12 11 10  9 )
+(  8  7  6  5 )
+(  4  3  2  1 )
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/03/27-matriz_girada_180_grados/">Leer más…</a></p>
 </div>
                 </div>
             </article>

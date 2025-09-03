@@ -66,16 +66,19 @@ tal que (enteroPositivo cs) es justo el contenido de la cadena cs, si dicho cont
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-06-24T06:00:00+02:00" itemprop="datePublished" title="24-06-2014">24-06-2014</time></a>
+            <time class="published dt-published" datetime="2014-06-24T06:00:00+02:00" itemprop="datePublished" title="24-06-2014">24-06-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-09-03T06:00:00+02:00" itemprop="dateUpdated" title="03-09-2025">03-09-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la función</p>
+    <hr>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">enteroPositivo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que (enteroPositivo cs) es justo el contenido de la cadena cs, si dicho contenido es un entero positivo, y Nothing en caso contrario.  Por ejemplo,</p>
+<p>tal que <code>(enteroPositivo cs)</code> es justo el contenido de la cadena <code>cs</code>, si dicho contenido es un entero positivo, y <code>Nothing</code> en caso contrario.  Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">enteroPositivo</span><span class="w"> </span><span class="s">"235"</span><span class="w">    </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">235</span>
 <span class="nf">enteroPositivo</span><span class="w"> </span><span class="s">"-235"</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
 <span class="nf">enteroPositivo</span><span class="w"> </span><span class="s">"23.5"</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
@@ -89,11 +92,16 @@ tal que (enteroPositivo cs) es justo el contenido de la cadena cs, si dicho cont
 <div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Maybe</span><span class="w"> </span><span class="p">(</span><span class="nf">listToMaybe</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Numeric</span><span class="w"> </span><span class="p">(</span><span class="nf">readDec</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Data.Char</span><span class="w"> </span><span class="p">(</span><span class="nf">isDigit</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">enteroPositivo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">enteroPositivo</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
-<span class="nf">enteroPositivo</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
-<span class="w">                  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo1</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo1</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos1</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
 
 <span class="c1">-- (todosDigitos cs) se verifica si todos los elementos de cs son</span>
 <span class="c1">-- dígitos. Por ejemplo,</span>
@@ -102,51 +110,265 @@ tal que (enteroPositivo cs) es justo el contenido de la cadena cs, si dicho cont
 <span class="c1">--    todosDigitos "23.5"   ==  False</span>
 <span class="c1">--    todosDigitos "235 "   ==  False</span>
 <span class="c1">--    todosDigitos "cinco"  ==  False</span>
-
-<span class="c1">-- 1ª definición de todosDigitos (por comprensión):</span>
-<span class="nf">todosDigitos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosDigitos</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">esDigito</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
-
-<span class="c1">-- 2ª definición de todosDigitos (por recursión):</span>
-<span class="nf">todosDigitos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosDigitos2</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
-<span class="nf">todosDigitos2</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="kt">:</span><span class="n">cs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">esDigito</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">todosDigitos2</span><span class="w"> </span><span class="n">cs</span>
-
-<span class="c1">-- 3ª definición de todosDigitos (por recursión):</span>
-<span class="nf">todosDigitos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosDigitos3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="p">((</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">esDigito</span><span class="p">)</span><span class="w"> </span><span class="kt">True</span>
-
-<span class="c1">-- 4ª definición de todosDigitos (con all):</span>
-<span class="nf">todosDigitos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosDigitos4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">esDigito</span>
+<span class="nf">todosDigitos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos1</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">esDigito1</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
 
 <span class="c1">-- (esDigito c) se verifica si el carácter c es un dígito. Por ejemplo,</span>
 <span class="c1">--    esDigito '5'  ==  True</span>
 <span class="c1">--    esDigito 'a'  ==  False</span>
-
-<span class="c1">-- 1ª definición de esDigito:</span>
 <span class="nf">esDigito1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 <span class="nf">esDigito1</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="s">"0123456789"</span>
 
-<span class="c1">-- 2ª definición de esDigito:</span>
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo2</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo2</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos2</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos2</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">esDigito2</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
+
 <span class="nf">esDigito2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 <span class="nf">esDigito2</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">]</span>
 
-<span class="c1">-- 3ª definición de esDigito:</span>
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo3</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo3</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos3</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos3</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">esDigito3</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
+
 <span class="nf">esDigito3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 <span class="nf">esDigito3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">(`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">])</span>
 
-<span class="c1">-- 4ª definición de esDigito:</span>
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo4</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo4</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos4</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos4</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">esDigito4</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
+
 <span class="nf">esDigito4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 <span class="nf">esDigito4</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="sc">'0'</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">'9'</span>
 
-<span class="c1">-- 5ª definición de esDigito:</span>
-<span class="nf">esDigito5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">esDigito5</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">isDigit</span>
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
 
-<span class="c1">-- Usaremos como definición de esDigito la 5ª:</span>
-<span class="nf">esDigito</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">esDigito</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">esDigito5</span>
+<span class="nf">enteroPositivo5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo5</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo5</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos5</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos5</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">isDigit</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cs</span><span class="p">]</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo6</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo6</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos6</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos6</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">todosDigitos6</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="kt">:</span><span class="n">cs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">isDigit</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">todosDigitos6</span><span class="w"> </span><span class="n">cs</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo7</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo7</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos7</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos7</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="p">((</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">isDigit</span><span class="p">)</span><span class="w"> </span><span class="kt">True</span>
+
+<span class="c1">-- 8ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo8</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo8</span><span class="w"> </span><span class="s">""</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">enteroPositivo8</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">todosDigitos8</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">read</span><span class="w"> </span><span class="n">cs</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosDigitos8</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosDigitos8</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">isDigit</span>
+
+<span class="c1">-- 9ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo9</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo9</span><span class="w"> </span><span class="n">cs</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">xs</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">readDec</span><span class="w"> </span><span class="n">cs</span><span class="p">,</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">y</span><span class="p">]</span>
+
+<span class="c1">-- Nota. En la solución anterior se ha usado la función readDec de la</span>
+<span class="c1">-- librería Numeric. El valor de (readDec cs) es la lista de los pares</span>
+<span class="c1">-- (x,y) tales que x es el entero positivo al principio de cs e y es el</span>
+<span class="c1">-- resto. Por ejemplo,</span>
+<span class="c1">--    readDec "235"    ==  [(235,"")]</span>
+<span class="c1">--    readDec "-235"   ==  []</span>
+<span class="c1">--    readDec "23.5"   ==  [(23,".5")]</span>
+<span class="c1">--    readDec "235 "   ==  [(235," ")]</span>
+<span class="c1">--    readDec "cinco"  ==  []</span>
+<span class="c1">--    readDec ""       ==  []</span>
+
+<span class="c1">-- 10ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">enteroPositivo10</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">enteroPositivo10</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">fmap</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">listToMaybe</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">snd</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">readDec</span>
+
+<span class="c1">-- Nota. En la solución anterior se ha usado la función listToMaybe</span>
+<span class="c1">-- (de la librería Data.Maybe) tal que (listToMaybe xs) es Nothing si xs</span>
+<span class="c1">-- es la lista vacía o (Just x) donde x es el primer elemento de xs. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    listToMaybe []       ==  Nothing</span>
+<span class="c1">--    listToMaybe [3,2,5]  ==  Just 3</span>
+<span class="c1">-- y la función fmap tal que (fmap f x) le aplica la función f a los</span>
+<span class="c1">-- elementos de x. Por ejemplo,</span>
+<span class="c1">--    fmap (+2) (Just 3)  ==  Just 5</span>
+<span class="c1">--    fmap (+2) Nothing   ==  Nothing</span>
+<span class="c1">--    fmap (+2) [3,4,6]   ==  [5,6,8]</span>
+<span class="c1">--    fmap (+2) []        ==  []</span>
+
+<span class="c1">-- Nota. Ejemplos de cálculo con enteroPositivo3</span>
+<span class="c1">--    enteroPositivo10 "325"</span>
+<span class="c1">--    = (fmap fst . listToMaybe . filter (null . snd) . readDec) "325"</span>
+<span class="c1">--    = (fmap fst . listToMaybe . filter (null . snd)) [(325,"")]</span>
+<span class="c1">--    = (fmap fst . listToMaybe) [(325,"")]</span>
+<span class="c1">--    = fmap fst (Just (325,""))</span>
+<span class="c1">--    = Just 325</span>
+<span class="c1">--</span>
+<span class="c1">--    enteroPositivo10 "32.5"</span>
+<span class="c1">--    = (fmap fst . listToMaybe . filter (null . snd) . readDec) "32.5"</span>
+<span class="c1">--    = (fmap fst . listToMaybe . filter (null . snd)) [(32,".5")]</span>
+<span class="c1">--    = (fmap fst . listToMaybe ) []</span>
+<span class="c1">--    = fmap fst Nothing</span>
+<span class="c1">--    = Nothing</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">"235"</span><span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="mi">235</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">"-235"</span><span class="w">   </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">"23.5"</span><span class="w">   </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">"235 "</span><span class="w">   </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e5"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">"cinco"</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e6"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">enteroPositivo</span><span class="w"> </span><span class="s">""</span><span class="w">       </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo7</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 8"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo8</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 9"</span><span class="w">  </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo9</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 10"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">enteroPositivo10</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    60 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- Generador de cadenas. Por ejemplo.</span>
+<span class="c1">--    λ&gt; generate cadenaArbitraria</span>
+<span class="c1">--    "69883777219"</span>
+<span class="c1">--    λ&gt; generate cadenaArbitraria</span>
+<span class="c1">--    "iyodnfsw2m78mhu651bvtt7"</span>
+<span class="nf">cadenaArbitraria</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">cadenaArbitraria</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">frequency</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="p">(</span><span class="n">elements</span><span class="w"> </span><span class="p">[</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">])),</span><span class="w">                </span><span class="c1">-- 50% solo dígitos</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="p">(</span><span class="n">elements</span><span class="w"> </span><span class="p">([</span><span class="sc">'0'</span><span class="o">..</span><span class="sc">'9'</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'z'</span><span class="p">])))</span><span class="w"> </span><span class="c1">-- 50% alfanuméricos</span>
+<span class="w">  </span><span class="p">]</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_enteroPositivo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_enteroPositivo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">forAll</span><span class="w"> </span><span class="n">cadenaArbitraria</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="nf">\</span><span class="n">s</span><span class="w"> </span><span class="ow">-&gt;</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">enteroPositivo1</span><span class="w"> </span><span class="n">s</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">enteroPositivo2</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo3</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo4</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo5</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo6</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo7</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo8</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo9</span><span class="w"> </span><span class="n">s</span><span class="p">,</span>
+<span class="w">       </span><span class="n">enteroPositivo10</span><span class="w"> </span><span class="n">s</span><span class="p">]</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_enteroPositivo</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; ej = replicate (2*10^6) '5'</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo1 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (2.19 secs, 2,187,674,312 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo2 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.97 secs, 2,235,673,400 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo3 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.52 secs, 1,243,673,336 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo4 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.87 secs, 1,467,673,352 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo5 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.45 secs, 1,243,673,400 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo6 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.49 secs, 1,099,673,184 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo7 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (1.04 secs, 1,035,673,176 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo8 ej</span>
+<span class="c1">--    Just 2000000</span>
+<span class="c1">--    (0.97 secs, 1,019,673,232 bytes)</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo9 ej</span>
+<span class="c1">--    Just Interrupted.</span>
+<span class="c1">--    λ&gt; (length . show) &lt;$&gt; enteroPositivo10 ej</span>
+<span class="c1">--    Just Interrupted.</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
