@@ -45,7 +45,97 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/04/25-recorrido_en_zigzag/" class="u-url">Recorrido en ZigZag</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/04/26-normalizacion_de_expresiones_aritmetica/" class="u-url">Normalización de expresiones aritméticas</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/04/26-normalizacion_de_expresiones_aritmetica/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-04-26T06:00:00+02:00" itemprop="datePublished" title="26-04-2017">26-04-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El siguiente tipo de dato representa expresiones construidas con variables, sumas y productos</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Var</span><span class="w"> </span><span class="kt">String</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expr</span>
+<span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kt">Expre</span>
+<span class="w">          </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Show</span><span class="p">)</span>
+</pre></div>
+
+<p>Por ejemplo, <code>x*(y+z)</code> se representa por <code>(P (V "x") (S (V "y") (V "z")))</code></p>
+<p>Una expresión es un término si es un producto de variables. Por ejemplo, <code>x*(y*z)</code> es un término pero <code>x+(y*z)</code> ni <code>x*(y+z)</code> lo son.</p>
+<p>Una expresión está en forma normal si es una suma de términos. Por ejemplo, <code>x*(y*z)</code> y <code>x+(y*z)</code> están en forma normal; pero <code>x*(y+z)</code> y <code>(x+y)*(x+z)</code> no lo están.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esTermino</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">normal</span><span class="w">    </span><span class="ow">::</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Expr</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(esTermino a) se verifica si a es un término. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w">                         </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<span class="nf">esTermino</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+</pre></div>
+
+<ul>
+<li>(esNormal a) se verifica si a está en forma normal. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w">                                     </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w">             </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
+<span class="nf">esNormal</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
+</pre></div>
+
+<ul>
+<li>(normal e) es la forma normal de la expresión e obtenida aplicando, mientras que sea posible, las propiedades distributivas:</li>
+</ul>
+<div class="code"><pre class="code literal-block">(a+b)*c = a*c+b*c
+c*(a+b) = c*a+c*b
+</pre></div>
+
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">))</span>
+<span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">))</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)))</span>
+<span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"u"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"v"</span><span class="p">)))</span>
+<span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"u"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"v"</span><span class="p">)))</span>
+<span class="w">   </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"u"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"v"</span><span class="p">)))</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="p">(</span><span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">))</span>
+<span class="kt">S</span><span class="w"> </span><span class="p">(</span><span class="kt">P</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"y"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"z"</span><span class="p">)</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normal</span><span class="w"> </span><span class="p">(</span><span class="kt">V</span><span class="w"> </span><span class="s">"x"</span><span class="p">)</span>
+<span class="kt">V</span><span class="w"> </span><span class="s">"x"</span>
+</pre></div>
+
+<p>Comprobar con QuickCheck que para cualquier expresión e, (normal e) está en forma normal y que (normal (normal e)) es igual a (normal e).</p>
+<p><strong>Nota</strong>. Para la comprobación se usará el siguiente generador de expresiones aritméticas</p>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Control.Monad</span>
+
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="kt">Expr</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sized</span><span class="w"> </span><span class="n">arb</span>
+<span class="w">    </span><span class="kr">where</span>
+<span class="w">      </span><span class="n">arb</span><span class="w"> </span><span class="mi">0</span><span class="w">         </span><span class="ow">=</span><span class="w"> </span><span class="n">liftM</span><span class="w"> </span><span class="kt">V</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">      </span><span class="n">arb</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">oneof</span><span class="w"> </span><span class="p">[</span><span class="n">liftM</span><span class="w"> </span><span class="kt">V</span><span class="w"> </span><span class="n">arbitrary</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">liftM2</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="n">sub</span><span class="w"> </span><span class="n">sub</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">liftM2</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="n">sub</span><span class="w"> </span><span class="n">sub</span><span class="p">]</span>
+<span class="w">        </span><span class="kr">where</span><span class="w"> </span><span class="n">sub</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">arb</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/04/26-normalizacion_de_expresiones_aritmetica/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/04/25-recorrido_en_zigzag/" class="u-url">Recorrido en ZigZag</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4611,43 +4701,6 @@ siete en siete:</p>
 
 <hr>
 <p class="more"><a href="posts/2016/12/08-suma_de_los_maximos_de_los_subconjuntos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/12/07-elementos_que_respetan_la-ordenacion/" class="u-url">Elementos que respetan la ordenación</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/12/07-elementos_que_respetan_la-ordenacion/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-12-07T06:00:00+02:00" itemprop="datePublished" title="07-12-2016">07-12-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Se dice que un elemento x de una lista xs respeta la ordenación si x es mayor o igual que todos lo que tiene delante en xs y es menor o igual que todos lo que tiene detrás en xs. Por ejemplo, en la lista lista [3,2,1,4,6,5,7,9,8] el número 4 respeta la ordenación pero el número 5 no la respeta (porque es mayor que el 6 que está delante).</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">respetuosos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que (respetuosos xs) es la lista de los elementos de xs que respetan la ordenación. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">respetuosos</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="s">"abaco"</span><span class="w">              </span><span class="o">==</span><span class="w">  </span><span class="s">"aco"</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="s">"amor"</span><span class="w">               </span><span class="o">==</span><span class="w">  </span><span class="s">"amor"</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="s">"romanos"</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="s">"s"</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">9</span><span class="p">]</span><span class="w">               </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
-<span class="nf">respetuosos</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="o">..</span><span class="mi">1</span><span class="p">]</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
-</pre></div>
-
-<p>Comprobar con QuickCheck que para cualquier lista de enteros xs se verifican las siguientes propiedades:</p>
-<ul>
-<li>todos los elementos de (sort xs) respetan la ordenación y</li>
-<li>en la lista (nub (reverse (sort xs))) hay como máximo un elemento que respeta la ordenación.</li>
-</ul>
-<hr>
-<p class="more"><a href="posts/2016/12/07-elementos_que_respetan_la-ordenacion/">Leer más…</a></p>
 </div>
                 </div>
             </article>
