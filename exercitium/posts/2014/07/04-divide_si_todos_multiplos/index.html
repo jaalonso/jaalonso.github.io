@@ -66,44 +66,199 @@ tal que (divideSiTodosMultiplos x ys) es justo la lista de los cocientes de los 
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-07-04T06:00:00+02:00" itemprop="datePublished" title="04-07-2014">04-07-2014</time></a>
+            <time class="published dt-published" datetime="2014-07-04T06:00:00+02:00" itemprop="datePublished" title="04-07-2014">04-07-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-09-09T06:00:00+02:00" itemprop="dateUpdated" title="09-09-2025">09-09-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la función</p>
+    <hr>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">divideSiTodosMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (divideSiTodosMultiplos x ys) es justo la lista de los cocientes de los elementos de ys entre x si todos son múltiplos de x y Nothing en caso contrario. Por ejemplo,</p>
+<p>tal que <code>(divideSiTodosMultiplos x ys)</code> es justo la lista de los cocientes de los elementos de <code>ys</code> entre x si todos son múltiplos de de número no nulo <code>x</code> y Nothing en caso contrario. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">divideSiTodosMultiplos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
 <span class="nf">divideSiTodosMultiplos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">Nothing</span>
 </pre></div>
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="c1">-- 1ª definición (por comprensión)</span>
-<span class="nf">divideSiTodosMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-<span class="nf">divideSiTodosMultiplos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">todosMultiplos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Maybe</span><span class="w"> </span><span class="p">(</span><span class="nf">isNothing</span><span class="p">,</span><span class="w"> </span><span class="nf">fromJust</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosMultiplos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
 
 <span class="c1">-- (todosMultiplos x ys) se verifica si todos los elementos de ys son</span>
 <span class="c1">-- múltiplos de x. Por ejemplo,</span>
 <span class="c1">--    todosMultiplos 2 [6,10,4]  ==  True</span>
 <span class="c1">--    todosMultiplos 2 [6,10,5]  ==  False</span>
 <span class="nf">todosMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">todosMultiplos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+<span class="nf">todosMultiplos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
 
-<span class="c1">-- 2ª definición (por recursión)</span>
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">divideSiTodosMultiplos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-<span class="nf">divideSiTodosMultiplos2</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">[]</span>
-<span class="nf">divideSiTodosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">Nothing</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">((</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">divideSiTodosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
-<span class="w">          </span><span class="kt">Just</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span>
+<span class="nf">divideSiTodosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">todosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">            </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="nf">todosMultiplos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">todosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">y</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos3</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">divideSiTodosMultiplos3</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">divideSiTodosMultiplos3</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">isNothing</span><span class="w"> </span><span class="n">aux</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">((</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">fromJust</span><span class="w"> </span><span class="n">aux</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">divideSiTodosMultiplos3</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos4</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="nf">divideSiTodosMultiplos4</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">divideSiTodosMultiplos4</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">case</span><span class="w"> </span><span class="n">divideSiTodosMultiplos4</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">                  </span><span class="kt">Nothing</span><span class="w">   </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Nothing</span>
+<span class="w">                  </span><span class="kt">Just</span><span class="w"> </span><span class="n">qs</span><span class="w">   </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">qs</span><span class="p">)</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos5</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sequence</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">divide</span><span class="p">`)</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+
+<span class="c1">-- (divide x y) es justo el cociente de x entre y, si x es divisible por</span>
+<span class="c1">-- y y Nothing, en caso contrario. Por ejemplo,</span>
+<span class="nf">divide</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">divide</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Just</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="kt">Nothing</span>
+
+<span class="c1">-- Nota. En la solución anterior se usa la función</span>
+<span class="c1">--    sequence :: Monad m =&gt; [m a] -&gt; m [a]</span>
+<span class="c1">-- tal que (sequence xs) es la mónada obtenida evaluando cada una de las</span>
+<span class="c1">-- de xs de izquierda a derecha. Por ejemplo,</span>
+<span class="c1">--    sequence [Just 2, Just 5]   ==  Just [2,5]</span>
+<span class="c1">--    sequence [Just 2, Nothing]  ==  Nothing</span>
+<span class="c1">--    sequence [[2,4],[5,7]]      ==  [[2,5],[2,7],[4,5],[4,7]]</span>
+<span class="c1">--    sequence [[2,4],[5,7],[6]]  ==  [[2,5,6],[2,7,6],[4,5,6],[4,7,6]]</span>
+<span class="c1">--    sequence [[2,4],[5,7],[]]   ==  []</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos6</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">sequence</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">divide</span><span class="p">`)</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">divideSiTodosMultiplos7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">divideSiTodosMultiplos7</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">mapM</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">divide</span><span class="p">`)</span>
+
+<span class="c1">-- Nota. En la solución anterior se usa la función mapM ya que</span>
+<span class="c1">--    mapM f</span>
+<span class="c1">-- es equivalente a</span>
+<span class="c1">--    sequence . map f</span>
+<span class="c1">-- Por ejemplo,</span>
+<span class="c1">--    λ&gt; mapM (\n -&gt; if even n then Just (2*n) else Nothing) [4,6,10]</span>
+<span class="c1">--    Just [8,12,20]</span>
+<span class="c1">--    λ&gt; mapM (\n -&gt; if even n then Just (2*n) else Nothing) [4,6,11]</span>
+<span class="c1">--    Nothing</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Maybe</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">divideSiTodosMultiplos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Just</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">divideSiTodosMultiplos</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">Nothing</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">divideSiTodosMultiplos7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    21 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_divideSiTodosMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonZero</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_divideSiTodosMultiplos</span><span class="w"> </span><span class="n">x'</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">divideSiTodosMultiplos1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">divideSiTodosMultiplos2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">divideSiTodosMultiplos3</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">divideSiTodosMultiplos4</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">divideSiTodosMultiplos5</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">divideSiTodosMultiplos6</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">getNonZero</span><span class="w"> </span><span class="n">x'</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_divideSiTodosMultiplos</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos1 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.40 secs, 284,605,936 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos2 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.32 secs, 212,605,792 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos3 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (1.30 secs, 595,295,824 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos4 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.98 secs, 462,908,920 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos5 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.73 secs, 405,609,672 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos6 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.81 secs, 405,609,800 bytes)</span>
+<span class="c1">--    λ&gt; last &lt;$&gt; (divideSiTodosMultiplos7 2 [2,4..10^6])</span>
+<span class="c1">--    Just 500000</span>
+<span class="c1">--    (0.72 secs, 377,609,624 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
