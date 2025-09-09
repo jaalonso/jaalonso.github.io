@@ -26,15 +26,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:site_name" content="Exercitium">
 <meta property="og:title" content="Renombramiento de un árbol">
 <meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2014/07/03-renombra_arbol/">
-<meta property="og:description" content='Los árboles binarios se pueden representar mediante el tipo Arbol definido por
+<meta property="og:description" content="Los árboles binarios se pueden representar mediante el tipo Arbol definido por
 data Arbol a = H a
              | N a (Arbol a) (Arbol a)
-             deriving Show
+  deriving (Show, Eq, Foldable, Functor)
 
 
-Por ejemplo, el árbol
-      "C"
-  '>
+Por ejemplo, el árbo">
 <meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2014-07-03T06:00:00+02:00">
@@ -75,10 +73,11 @@ Por ejemplo, el árbol
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Los árboles binarios se pueden representar mediante el tipo Arbol definido por</p>
+    <hr>
+<p>Los árboles binarios se pueden representar mediante el tipo <code>Arbol</code> definido por</p>
 <div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="n">a</span>
 <span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">             </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Foldable</span><span class="p">,</span><span class="w"> </span><span class="kt">Functor</span><span class="p">)</span>
 </pre></div>
 
 <p>Por ejemplo, el árbol</p>
@@ -100,7 +99,7 @@ Por ejemplo, el árbol
 <div class="code"><pre class="code literal-block"><span class="nf">renombraArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que (renombraArbol a) es el árbol obtenido sustituyendo el valor de los nodos y hojas por números tales que tengan el mismo valor si y sólo si coincide su contenido. Por ejemplo,</p>
+<p>tal que <code>(renombraArbol a)</code> es el árbol obtenido sustituyendo el valor de los nodos y hojas por números tales que tengan el mismo valor si y sólo si coincide su contenido. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">renombraArbol</span><span class="w"> </span><span class="n">ej1</span>
 <span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
 </pre></div>
@@ -117,20 +116,33 @@ Por ejemplo, el árbol
 
 <hr>
 <!-- TEASER_END --><h2>Soluciones</h2>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span>
+<div class="code"><pre class="code literal-block"><span class="cm">{-# LANGUAGE DeriveFoldable, DeriveFunctor #-}</span>
+<span class="cm">{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nn">Renombra_arbol</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Map.Strict</span><span class="w"> </span><span class="p">(</span><span class="kt">Map</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="nf">fromList</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">nub</span><span class="p">,</span><span class="w"> </span><span class="nf">sort</span><span class="p">,</span><span class="w"> </span><span class="nf">elemIndex</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Maybe</span><span class="w"> </span><span class="p">(</span><span class="nf">fromJust</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Foldable</span><span class="w"> </span><span class="p">(</span><span class="nf">toList</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
 <span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="n">a</span>
 <span class="w">             </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
-<span class="w">             </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">,</span><span class="w"> </span><span class="kt">Foldable</span><span class="p">,</span><span class="w"> </span><span class="kt">Functor</span><span class="p">)</span>
 
 <span class="nf">ej1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">String</span>
 <span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="s">"C"</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="s">"B"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"A"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"B"</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="s">"A"</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"B"</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="s">"C"</span><span class="p">))</span>
 
-<span class="nf">renombraArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">renombraArbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">a</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w">            </span><span class="ow">=</span><span class="w"> </span><span class="n">valores</span><span class="w"> </span><span class="n">a</span>
-<span class="w">          </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
-<span class="w">          </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">renombraArbol1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">renombraArbol1</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w">            </span><span class="ow">=</span><span class="w"> </span><span class="n">valores</span><span class="w"> </span><span class="n">a</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
 
 <span class="c1">-- (valores a) es la lista de los valores en los nodos y las hojas del</span>
 <span class="c1">-- árbol a. Por ejemplo,</span>
@@ -142,8 +154,146 @@ Por ejemplo, el árbol
 
 <span class="c1">-- (posicion x ys) es la posición de x en ys. Por ejemplo.</span>
 <span class="c1">--    posicion 7 [5,3,7,8]  ==  2</span>
-<span class="nf">posicion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+<span class="nf">posicion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">posicion</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">renombraArbol2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">renombraArbol2</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">valores</span><span class="w"> </span><span class="n">a</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="n">posicion2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">posicion2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+
+<span class="nf">posicion2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">posicion2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">fromJust</span><span class="w"> </span><span class="p">(</span><span class="n">elemIndex</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">renombraArbol3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">renombraArbol3</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="p">(</span><span class="n">nub</span><span class="w"> </span><span class="p">(</span><span class="n">toList</span><span class="w"> </span><span class="n">a</span><span class="p">))</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="n">fromJust</span><span class="w"> </span><span class="p">(</span><span class="n">elemIndex</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">))</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">fromJust</span><span class="w"> </span><span class="p">(</span><span class="n">elemIndex</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">ys</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">renombraArbol4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">renombraArbol4</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fmap</span><span class="w"> </span><span class="n">convertir</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">indice</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">(</span><span class="n">nub</span><span class="w"> </span><span class="p">(</span><span class="n">toList</span><span class="w"> </span><span class="n">a</span><span class="p">)))</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+<span class="w">    </span><span class="n">convertir</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromJust</span><span class="w"> </span><span class="p">(</span><span class="n">lookup</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">indice</span><span class="p">)</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="c1">-- (dicValores a) es el diccionario de los valores en los nodos y las</span>
+<span class="c1">-- hojas del árbol a. Por ejemplo,</span>
+<span class="c1">--    λ&gt; dicValores ej1</span>
+<span class="c1">--    fromList [("A",0),("B",1),("C",2)]</span>
+<span class="nf">dicValores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Map</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">dicValores</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">fromList</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="p">(</span><span class="n">valores</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+
+<span class="nf">renombraArbol5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">renombraArbol5</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">repl</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">dic</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">dicValores</span><span class="w"> </span><span class="n">a</span>
+<span class="w">    </span><span class="n">repl</span><span class="w"> </span><span class="p">(</span><span class="kt">H</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="n">dic</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="n">repl</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">dic</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">repl</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">repl</span><span class="w"> </span><span class="n">d</span><span class="p">)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">renombraArbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">renombraArbol</span><span class="w"> </span><span class="n">ej1</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">    </span><span class="s">"N 2 (N 1 (H 0) (H 1)) (N 0 (H 1) (H 2))"</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">renombraArbol1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">renombraArbol2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">renombraArbol3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">renombraArbol4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">renombraArbol5</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    5 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- (genArbol n) genera un árbol aleatorio de orden n. Por ejemplo,</span>
+<span class="c1">--    λ&gt; generate (genArbol 3 :: Gen (Arbol Int))</span>
+<span class="c1">--    N (-13) (H 1) (N 30 (H (-10)) (H (-1)))</span>
+<span class="c1">--    λ&gt; generate (genArbol 3 :: Gen (Arbol Int))</span>
+<span class="c1">--    N (-3) (H (-29)) (N (-17) (H 8) (H 28))</span>
+<span class="nf">genArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="nf">genArbol</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="nf">genArbol</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">frequency</span>
+<span class="w">  </span><span class="p">[</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">arbitrary</span><span class="p">)</span>
+<span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">arbitrary</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">sub</span><span class="w"> </span><span class="o">&lt;*&gt;</span><span class="w"> </span><span class="n">sub</span><span class="p">)]</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">sub</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genArbol</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">-- Arbol es subclase de Arbitraria</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbol</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sized</span><span class="w"> </span><span class="n">genArbol</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_renombraArbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_renombraArbol</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">renombraArbol1</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">renombraArbol2</span><span class="w"> </span><span class="n">a</span><span class="p">,</span>
+<span class="w">       </span><span class="n">renombraArbol3</span><span class="w"> </span><span class="n">a</span><span class="p">,</span>
+<span class="w">       </span><span class="n">renombraArbol4</span><span class="w"> </span><span class="n">a</span><span class="p">,</span>
+<span class="w">       </span><span class="n">renombraArbol5</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_renombraArbol</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- (arbol n) es el árbol completo de profundidad n. Por ejemplo,</span>
+<span class="c1">--    λ&gt; arbol 2</span>
+<span class="c1">--    N 12 (N 11 (H 0) (H 0)) (N 11 (H 0) (H 0))</span>
+<span class="c1">--    λ&gt; renombraArbol1 (arbol 2)</span>
+<span class="c1">--    N 2 (N 1 (H 0) (H 0)) (N 1 (H 0) (H 0))</span>
+<span class="nf">arbol</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">arbol</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="mi">0</span>
+<span class="nf">arbol</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">arbol</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="n">arbol</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (renombraArbol1 (arbol 20))</span>
+<span class="c1">--    2097151</span>
+<span class="c1">--    (2.13 secs, 1,191,782,032 bytes)</span>
+<span class="c1">--    λ&gt; length (renombraArbol2 (arbol 20))</span>
+<span class="c1">--    2097151</span>
+<span class="c1">--    (2.26 secs, 1,191,782,056 bytes)</span>
+<span class="c1">--    λ&gt; length (renombraArbol3 (arbol 20))</span>
+<span class="c1">--    2097151</span>
+<span class="c1">--    (2.16 secs, 1,225,336,576 bytes)</span>
+<span class="c1">--    λ&gt; length (renombraArbol4 (arbol 20))</span>
+<span class="c1">--    2097151</span>
+<span class="c1">--    (1.96 secs, 1,032,398,632 bytes)</span>
+<span class="c1">--    λ&gt; length (renombraArbol5 (arbol 20))</span>
+<span class="c1">--    2097151</span>
+<span class="c1">--    (2.00 secs, 1,191,782,056 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
