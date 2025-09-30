@@ -21,7 +21,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta name="twitter:title" content="Producto de matrices como listas de listas | Exercitium">
 <meta name="author" content="José A. Alonso">
-<link rel="prev" href="../15-sucesiones_pucelanas/" title="Sucesiones pucelanas." type="text/html">
+<link rel="prev" href="../15-sucesiones_pucelanas/" title="Sucesiones pucelanas" type="text/html">
 <link rel="next" href="../17-insercion_en_arboles_binarios_de_busqueda/" title="Inserción en árboles binarios de búsqueda" type="text/html">
 <meta property="og:site_name" content="Exercitium">
 <meta property="og:title" content="Producto de matrices como listas de listas">
@@ -67,12 +67,15 @@ puede representarse por [[1,0,-">
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-07-16T06:00:00+02:00" itemprop="datePublished" title="16-07-2014">16-07-2014</time></a>
+            <time class="published dt-published" datetime="2014-07-16T06:00:00+02:00" itemprop="datePublished" title="16-07-2014">16-07-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-09-30T06:00:00+02:00" itemprop="dateUpdated" title="30-09-2025">30-09-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Las matrices pueden representarse mediante una lista de listas donde cada una de las lista representa una fila  de la matriz. Por ejemplo, la matriz</p>
+    <hr>
+<p>Las matrices pueden representarse mediante una lista de listas donde cada una de las lista representa una fila  de la matriz. Por ejemplo, la matriz</p>
 <div class="code"><pre class="code literal-block">|1 0 -2|
 |0 3 -1|
 </pre></div>
@@ -82,7 +85,7 @@ puede representarse por [[1,0,-">
 <div class="code"><pre class="code literal-block"><span class="nf">producto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (producto p q) es el producto de las matrices p y q. Por ejemplo,</p>
+<p>tal que <code>(producto p q)</code> es el producto de las matrices <code>p</code> y <code>q</code>. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]]</span>
 <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">],[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">7</span><span class="p">]]</span>
 </pre></div>
@@ -90,15 +93,130 @@ puede representarse por [[1,0,-">
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
 <div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">transpose</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Matrix</span><span class="w"> </span><span class="p">(</span><span class="nf">fromLists</span><span class="p">,</span><span class="w"> </span><span class="nf">toLists</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">producto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
-<span class="nf">producto</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[[</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">fil</span><span class="w"> </span><span class="n">col</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">transpose</span><span class="w"> </span><span class="n">q</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">fil</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">p</span><span class="p">]</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">producto1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">producto1</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">sum</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">zip</span><span class="w"> </span><span class="n">fila</span><span class="w"> </span><span class="n">col</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cols</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">fila</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">p</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">cols</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">transpose</span><span class="w"> </span><span class="n">q</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">producto2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">producto2</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">sum</span><span class="w"> </span><span class="p">(</span><span class="n">zipWith</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">fila</span><span class="w"> </span><span class="n">col</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">col</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">cols</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">fila</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">p</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">cols</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">transpose</span><span class="w"> </span><span class="n">q</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">producto3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">producto3</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">producto3</span><span class="w"> </span><span class="p">(</span><span class="n">fila</span><span class="kt">:</span><span class="n">filas</span><span class="p">)</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">productoEscalar</span><span class="w"> </span><span class="n">fila</span><span class="p">)</span><span class="w"> </span><span class="n">cols</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">producto3</span><span class="w"> </span><span class="n">filas</span><span class="w"> </span><span class="n">q</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">cols</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">transpose</span><span class="w"> </span><span class="n">q</span>
+
+<span class="nf">productoEscalar</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">productoEscalar</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">productoEscalar</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span>
+<span class="nf">productoEscalar</span><span class="w"> </span><span class="kr">_</span><span class="w">      </span><span class="kr">_</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">producto4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">producto4</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">fila</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">productoEscalar</span><span class="w"> </span><span class="n">fila</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">transpose</span><span class="w"> </span><span class="n">q</span><span class="p">))</span><span class="w"> </span><span class="n">p</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">producto5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">producto5</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">toLists</span><span class="w"> </span><span class="p">(</span><span class="n">fromLists</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">fromLists</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([[</span><span class="kt">Integer</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">producto</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">producto</span><span class="w"> </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]]</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">5</span><span class="p">],[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">7</span><span class="p">]]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">producto1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">producto2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">producto3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">producto4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">producto5</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    5 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- Generador de matrices compatibles</span>
+<span class="nf">genMatrices</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]],</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span><span class="w"> </span><span class="p">)</span>
+<span class="nf">genMatrices</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="n">j</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vectorOf</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">(</span><span class="n">vectorOf</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="n">arbitrary</span><span class="p">)</span>
+<span class="w">  </span><span class="n">q</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">vectorOf</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="p">(</span><span class="n">vectorOf</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">arbitrary</span><span class="p">)</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_producto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_producto</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="p">(</span><span class="n">genMatrices</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">([[</span><span class="kt">Integer</span><span class="p">]],</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]))</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="nf">\</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">producto1</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">producto2</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">       </span><span class="n">producto3</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">       </span><span class="n">producto4</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">       </span><span class="n">producto5</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_producto</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; ej = replicate 2000 [1..2000]</span>
+<span class="c1">--    λ&gt; last (last (producto1 ej ej))</span>
+<span class="c1">--    4002000000</span>
+<span class="c1">--    (0.23 secs, 774,699,016 bytes)</span>
+<span class="c1">--    λ&gt; last (last (producto2 ej ej))</span>
+<span class="c1">--    4002000000</span>
+<span class="c1">--    (0.20 secs, 774,490,928 bytes)</span>
+<span class="c1">--    λ&gt; last (last (producto3 ej ej))</span>
+<span class="c1">--    4002000000</span>
+<span class="c1">--    (0.20 secs, 774,909,856 bytes)</span>
+<span class="c1">--    λ&gt; last (last (producto4 ej ej))</span>
+<span class="c1">--    4002000000</span>
+<span class="c1">--    (0.20 secs, 774,588,984 bytes)</span>
+<span class="c1">--    λ&gt; last (last (producto5 ej ej))</span>
+<span class="c1">--    4002000000</span>
+<span class="c1">--    (5.18 secs, 4,431,551,416 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
 <li class="previous">
-                <a href="../15-sucesiones_pucelanas/" rel="prev" title="Sucesiones pucelanas.">Publicación anterior</a>
+                <a href="../15-sucesiones_pucelanas/" rel="prev" title="Sucesiones pucelanas">Publicación anterior</a>
             </li>
             <li class="next">
                 <a href="../17-insercion_en_arboles_binarios_de_busqueda/" rel="next" title="Inserción en árboles binarios de búsqueda">Siguiente publicación</a>
