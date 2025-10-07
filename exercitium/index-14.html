@@ -45,7 +45,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/06/16-suma_de_posteriores/" class="u-url">Suma de posteriores</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/06/17-polinomio_cromatico_de_un_grafo/" class="u-url">Polinomio cromático de un grafo</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2015/06/17-polinomio_cromatico_de_un_grafo/" rel="bookmark">
+            <time class="published dt-published" datetime="2015-06-17T06:00:00+02:00" itemprop="datePublished" title="17-06-2015">17-06-2015</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El <a href="https://es.wikipedia.org/wiki/Coloraci%C3%B3n_de_grafos#Polinomio_crom.C3.A1tico">polinomio cromático de un grafo</a> calcula el número de maneras en las cuales puede ser coloreado el grafo usando un número de colores  dado, de forma que dos vértices adyacentes no tengan el mismo color.</p>
+<p>En el caso del grafo completo de n vértices, su polinomio cromático es</p>
+<div class="code"><pre class="code literal-block">P(n,x) = x(x-1)(x-2) ... (x-(n-1))
+</pre></div>
+
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">P(3,x) = x(x-1)(x-2)      = x^3 - 3·x^2 + 2·x
+P(4,x) = x(x-1)(x-2)(x-3) = x^4 - 6·x^3 + 11·x^2 - 6·x
+</pre></div>
+
+<p>Lo que significa que P(4)(x) es el número de formas de colorear el grafo completo de 4 vértices con x colores. Por tanto,</p>
+<div class="code"><pre class="code literal-block">P(4,2) =  0 (no se puede colorear con 2 colores)
+P(4,4) = 24 (hay 24 formas de colorearlo con 4 colores)
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">polGC</span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Polinomio</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>tal que (polGC n) es el polinomio cromático del grafo completo de n vértices. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">polGC</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="n">x</span><span class="o">^</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">11</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">x</span>
+<span class="nf">polGC</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="n">x</span><span class="o">^</span><span class="mi">5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mi">10</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">35</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">-</span><span class="mi">50</span><span class="o">*</span><span class="n">x</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">24</span><span class="o">*</span><span class="n">x</span>
+</pre></div>
+
+<p>Comprobar con QuickCheck que si el número de colores (x) coincide con el número de vértices del grafo (n), el número de maneras de colorear el grafo es n!.</p>
+<p><strong>Nota 1</strong>. Al hacer la comprobación limitar el tamaño de las pruebas como se indica a continuación</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheckWith</span><span class="w"> </span><span class="p">(</span><span class="n">stdArgs</span><span class="w"> </span><span class="p">{</span><span class="n">maxSize</span><span class="ow">=</span><span class="mi">7</span><span class="p">})</span><span class="w"> </span><span class="n">prop_polGC</span>
+<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
+</pre></div>
+
+<p><strong>Nota 2:</strong> Este ejercicio debe realizarse usando únicamente las funciones de la librería de polinomios (I1M.PolOperaciones) que <a href="https://hackage.haskell.org/package/I1M">aquí</a>.</p>
+<hr>
+<p class="more"><a href="posts/2015/06/17-polinomio_cromatico_de_un_grafo/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/06/16-suma_de_posteriores/" class="u-url">Suma de posteriores</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -3662,64 +3710,6 @@ y además:
 
 <hr>
 <p class="more"><a href="posts/2015/02/02-siguiente_elemento_en_una_lista/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2015/01/30-numeros_polidivisibles/" class="u-url">Números polidivisibles</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2015/01/30-numeros_polidivisibles/" rel="bookmark">
-            <time class="published dt-published" datetime="2015-01-30T06:00:00+02:00" itemprop="datePublished" title="30-01-2015">30-01-2015</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Un número natural es <a href="https://es.wikipedia.org/wiki/N%C3%BAmero_polidivisible">polidivisible</a> si cumple las siguientes condiciones:</p>
-<ul>
-<li>El número formado por sus dos primeros dígitos es divisible por 2.</li>
-<li>El número formado por sus tres primeros dígitos es divisible por 3.</li>
-<li>El número formado por sus cuatros primeros dígitos es divisible por 4.</li>
-<li>etcétera.</li>
-</ul>
-<p>Por ejemplo, el número 345654 es un número polidivisible ya que</p>
-<ul>
-<li>34 es divisible por 2,</li>
-<li>345 es divisible por 3,</li>
-<li>3456 es divisible por 4,</li>
-<li>34565 es divisible por 5 y</li>
-<li>345654 es divisible por 6.</li>
-</ul>
-<p>pero 123456 no lo es, porque 1234 no es divisible por 4.</p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">polidivisibles</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">polidivisiblesN</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-</pre></div>
-
-<p>tales que</p>
-<ul>
-<li>polidivisible es la sucesión cuyos elementos son los números polidivisibles. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="n">polidivisibles</span>
-<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">(</span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="n">polidivisibles</span><span class="p">)</span>
-<span class="p">[</span><span class="mi">102</span><span class="p">,</span><span class="mi">105</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">120</span><span class="p">,</span><span class="mi">123</span><span class="p">,</span><span class="mi">126</span><span class="p">,</span><span class="mi">129</span><span class="p">,</span><span class="mi">141</span><span class="p">,</span><span class="mi">144</span><span class="p">,</span><span class="mi">147</span><span class="p">]</span>
-</pre></div>
-
-<ul>
-<li>(polidivisiblesN k) es la lista de los números polidivisibles con k dígitos. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">polidivisiblesN</span><span class="w"> </span><span class="mi">2</span>
-<span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">34</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">42</span><span class="p">,</span><span class="mi">44</span><span class="p">,</span><span class="mi">46</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span>
-<span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">54</span><span class="p">,</span><span class="mi">56</span><span class="p">,</span><span class="mi">58</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">66</span><span class="p">,</span><span class="mi">68</span><span class="p">,</span><span class="mi">70</span><span class="p">,</span><span class="mi">72</span><span class="p">,</span><span class="mi">74</span><span class="p">,</span><span class="mi">76</span><span class="p">,</span><span class="mi">78</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">82</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">86</span><span class="p">,</span><span class="mi">88</span><span class="p">,</span>
-<span class="w"> </span><span class="mi">90</span><span class="p">,</span><span class="mi">92</span><span class="p">,</span><span class="mi">94</span><span class="p">,</span><span class="mi">96</span><span class="p">,</span><span class="mi">98</span><span class="p">]</span>
-</pre></div>
-
-<p>Comprobar que, para n entre 1 y 5, la cantidad de números polidivisibles de n dígitos es 9*10^(n-1)/n!.</p>
-<hr>
-<p class="more"><a href="posts/2015/01/30-numeros_polidivisibles/">Leer más…</a></p>
 </div>
                 </div>
             </article>
