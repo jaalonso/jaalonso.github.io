@@ -21,7 +21,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="twitter:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta name="twitter:title" content="Laberinto numérico | Exercitium">
 <meta name="author" content="José A. Alonso">
-<link rel="prev" href="../24-sustitucion_en_una_expresion/" title="Sustitución en una expresión" type="text/html">
+<link rel="prev" href="../24-sustitucion_en_una_expresion/" title="Sustitución en una expresión aritmética" type="text/html">
 <link rel="next" href="../30-divisibles_por_el_primero/" title="Divisibles por el primero" type="text/html">
 <meta property="og:site_name" content="Exercitium">
 <meta property="og:title" content="Laberinto numérico">
@@ -65,12 +65,15 @@ dividir por ">
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-07-25T06:00:00+02:00" itemprop="datePublished" title="25-07-2014">25-07-2014</time></a>
+            <time class="published dt-published" datetime="2014-07-25T06:00:00+02:00" itemprop="datePublished" title="25-07-2014">25-07-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-10-11T06:00:00+02:00" itemprop="dateUpdated" title="11-10-2025">11-10-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>El problema del laberinto numérico consiste en, dados un par de números, encontrar la longitud del camino más corto entre ellos usando sólo las siguientes operaciones:</p>
+    <hr>
+<p>El problema del laberinto numérico consiste en, dados un par de números, encontrar la longitud del camino más corto entre ellos usando sólo las siguientes operaciones:</p>
 <ul>
 <li>multiplicar por 2,</li>
 <li>dividir por 2 (sólo para los pares) y</li>
@@ -87,7 +90,7 @@ dividir por ">
 <div class="code"><pre class="code literal-block"><span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
 </pre></div>
 
-<p>tal que (longitudCaminoMinimo x y) es la longitud del camino mínimo desde x hasta y en el laberinto numérico.</p>
+<p>tal que <code>(longitudCaminoMinimo x y)</code> es la longitud del camino mínimo desde <code>x</code> hasta <code>y</code> en el laberinto numérico.</p>
 <div class="code"><pre class="code literal-block"><span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">12</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
 <span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">2</span>
 <span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">2</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="mi">8</span>
@@ -95,9 +98,18 @@ dividir por ">
 </pre></div>
 
 <hr>
-<!-- TEASER_END --><div class="code"><pre class="code literal-block"><span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
-<span class="nf">longitudCaminoMinimo</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">orbita</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">,</span><span class="w"> </span><span class="nf">nub</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Set</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Set</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">longitudCaminoMinimo1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">longitudCaminoMinimo1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">head</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">orbita</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
 
 <span class="c1">-- (orbita n xs) es el conjunto de números que se pueden obtener aplicando</span>
 <span class="c1">-- como máximo n veces las operaciones a los elementos de xs. Por ejemplo,</span>
@@ -107,14 +119,84 @@ dividir por ">
 <span class="nf">orbita</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 <span class="nf">orbita</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="n">xs</span>
 <span class="nf">orbita</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="p">(</span><span class="n">nub</span><span class="w"> </span><span class="p">(</span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[</span><span class="n">sucesores</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ys</span><span class="p">]))</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">orbita</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
-<span class="w">          </span><span class="n">sucesores</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">odd</span><span class="w"> </span><span class="n">x</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
-<span class="w">                      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">orbita</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- (sucesores x) es la lista de los sucesores de x; es decir, los</span>
+<span class="c1">-- números obtenidos aplicándole la operaciones a x. Por ejemplo,</span>
+<span class="c1">--    sucesores 3 == [6,5]</span>
+<span class="c1">--    sucesores 4 == [8,6,2]</span>
+<span class="nf">sucesores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">sucesores</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">even</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">longitudCaminoMinimo2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">longitudCaminoMinimo2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">anchura</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)]</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="o">.</span><span class="n">singleton</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">anchura</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">    </span><span class="n">anchura</span><span class="w"> </span><span class="p">((</span><span class="n">nodo</span><span class="p">,</span><span class="w"> </span><span class="n">dist</span><span class="p">)</span><span class="kt">:</span><span class="n">cola</span><span class="p">)</span><span class="w"> </span><span class="n">visitados</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">nodo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">dist</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">anchura</span><span class="w"> </span><span class="p">(</span><span class="n">cola</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">nuevos</span><span class="p">])</span>
+<span class="w">                            </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="kt">Set</span><span class="o">.</span><span class="n">insert</span><span class="w"> </span><span class="n">visitados</span><span class="w"> </span><span class="n">nuevos</span><span class="p">)</span>
+<span class="w">      </span><span class="kr">where</span>
+<span class="w">        </span><span class="n">nuevos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">(`</span><span class="kt">Set</span><span class="o">.</span><span class="n">notMember</span><span class="p">`</span><span class="w"> </span><span class="n">visitados</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">sucesores</span><span class="w"> </span><span class="n">nodo</span><span class="p">)</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">longitudCaminoMinimo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">8</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">longitudCaminoMinimo</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">longitudCaminoMinimo1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">longitudCaminoMinimo2</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    8 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_longitudCaminoMinimo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_longitudCaminoMinimo</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">longitudCaminoMinimo1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">longitudCaminoMinimo2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_longitudCaminoMinimo</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; longitudCaminoMinimo1 1 511</span>
+<span class="c1">--    17</span>
+<span class="c1">--    (2.29 secs, 58,152,384 bytes)</span>
+<span class="c1">--    λ&gt; longitudCaminoMinimo2 1 511</span>
+<span class="c1">--    17</span>
+<span class="c1">--    (0.20 secs, 683,548,744 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
 <li class="previous">
-                <a href="../24-sustitucion_en_una_expresion/" rel="prev" title="Sustitución en una expresión">Publicación anterior</a>
+                <a href="../24-sustitucion_en_una_expresion/" rel="prev" title="Sustitución en una expresión aritmética">Publicación anterior</a>
             </li>
             <li class="next">
                 <a href="../30-divisibles_por_el_primero/" rel="next" title="Divisibles por el primero">Siguiente publicación</a>
