@@ -44,7 +44,73 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/18-seleccion_con_fallo/" class="u-url">Selección hasta el primero que falla inclusive</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/19-buscaminas/" class="u-url">Buscaminas</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2014/06/19-buscaminas/" rel="bookmark">
+            <time class="published dt-published" datetime="2014-06-19T06:00:00+02:00" itemprop="datePublished" title="19-06-2014">19-06-2014</time><span class="updated"> (actualizado
+                    <time class="dt-updated" datetime="2025-09-01T06:00:00+02:00" itemprop="dateUpdated" title="01-09-2025">01-09-2025</time>)</span>
+            </a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<hr>
+<p>El buscaminas es un juego cuyo objetivo es despejar un campo de minas sin detonar ninguna.</p>
+<p>El campo de minas se representa mediante un cuadrado con NxN casillas. Algunas casillas tienen un número, este número indica las minas que hay en todas las casillas vecinas. Cada casilla tiene como máximo 8 vecinas. Por ejemplo, el campo 4x4 de la izquierda contiene dos minas, cada una representada por el número 9, y a la  derecha se muestra el campo obtenido anotando las minas vecinas de cada casilla</p>
+<div class="code"><pre class="code literal-block"><span class="mf">9</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">       </span><span class="mf">9</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span>
+<span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">       </span><span class="mf">2</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span>
+<span class="mf">0</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">       </span><span class="mf">1</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span>
+<span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">       </span><span class="mf">1</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span>
+</pre></div>
+
+<p>de la misma forma, la anotación del siguiente a la izquierda es el de la derecha</p>
+<div class="code"><pre class="code literal-block"><span class="mf">9</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">     </span><span class="mf">9</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span>
+<span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">     </span><span class="mf">3</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span>
+<span class="mf">0</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span><span class="w">     </span><span class="mf">1</span><span class="w"> </span><span class="mf">9</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="mf">0</span>
+</pre></div>
+
+<p>Utilizando la librería <code>Data.Matrix</code>, los campos de minas se representan mediante matrices:</p>
+<div class="code"><pre class="code literal-block"><span class="kr">type</span><span class="w"> </span><span class="kt">Campo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span>
+</pre></div>
+
+<p>Por ejemplo, los anteriores campos de la izquierda se definen por</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ejCampo1</span><span class="p">,</span><span class="w"> </span><span class="n">ejCampo2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Campo</span>
+<span class="nf">ejCampo1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">                      </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">                      </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">                      </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+<span class="nf">ejCampo2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fromLists</span><span class="w"> </span><span class="p">[[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">                      </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">                      </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">buscaminas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Campo</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Campo</span>
+</pre></div>
+
+<p>tal que <code>buscaminas c</code> es el campo obtenido anotando las minas vecinas de cada casilla. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buscaminas</span><span class="w"> </span><span class="n">ejCampo1</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buscaminas</span><span class="w"> </span><span class="n">ejCampo2</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2014/06/19-buscaminas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2014/06/18-seleccion_con_fallo/" class="u-url">Selección hasta el primero que falla inclusive</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
