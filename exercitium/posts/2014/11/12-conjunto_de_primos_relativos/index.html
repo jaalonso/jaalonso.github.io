@@ -62,18 +62,21 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-11-12T06:00:00+02:00" itemprop="datePublished" title="12-11-2014">12-11-2014</time></a>
+            <time class="published dt-published" datetime="2014-11-12T06:00:00+02:00" itemprop="datePublished" title="12-11-2014">12-11-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-11-05T06:00:00+02:00" itemprop="dateUpdated" title="05-11-2025">05-11-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Dos números enteros son <a href="https://es.wikipedia.org/wiki/N%C3%BAmeros_coprimos">primos relativos</a> si no tienen ningún factor primo en común, o, dicho de otra manera, si no tienen otro divisor común más que 1 y -1. Equivalentemente son primos entre sí, si y sólo si, su máximo común divisor es igual a 1.</p>
+    <hr>
+<p>Dos números enteros son <a href="https://es.wikipedia.org/wiki/N%C3%BAmeros_coprimos">primos relativos</a> si no tienen ningún factor primo en común, o, dicho de otra manera, si no tienen otro divisor común más que 1 y -1. Equivalentemente son primos entre sí, si y sólo si, su máximo común divisor es igual a 1.</p>
 <p>Por ejemplo, 6 y 35 son primos entre sí, pero 6 y 27 no lo son porque ambos son divisibles por 3</p>
 <p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">primosRelativos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 </pre></div>
 
-<p>tal que (primosRelativos xs) se verifica si los elementos de xs son primos relativos dos a dos. Por ejemplo,</p>
+<p>tal que <code>(primosRelativos xs)</code> se verifica si los elementos de <code>xs</code> son primos relativos dos a dos. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">35</span><span class="p">]</span><span class="w">         </span><span class="o">==</span><span class="w">  </span><span class="kt">True</span>
 <span class="nf">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">27</span><span class="p">]</span><span class="w">         </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
 <span class="nf">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">        </span><span class="o">==</span><span class="w">  </span><span class="kt">False</span>
@@ -84,10 +87,120 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <hr>
 <!-- TEASER_END --><h3 id="Soluciones">Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="nf">primosRelativos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">primosRelativos</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
-<span class="nf">primosRelativos</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">gcd</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">primosRelativos</span><span class="w"> </span><span class="n">xs</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Numbers.Primes</span><span class="w"> </span><span class="p">(</span><span class="nf">primes</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">primosRelativos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">primosRelativos1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">gcd</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">pares</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+
+<span class="c1">-- (pares xs) es la lista de los pares de elementos de xs. Por ejemplo,</span>
+<span class="c1">--    pares [2,3,4,5]  ==  [(2,3),(2,4),(2,5),(3,4),(3,5),(4,5)]</span>
+<span class="nf">pares</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)]</span>
+<span class="nf">pares</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">pares</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">pares</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">primosRelativos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">primosRelativos2</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">primosRelativos2</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">and</span><span class="w"> </span><span class="p">[</span><span class="n">sonPrimosRelativos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">primosRelativos2</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- (sonPrimosRelativos x y) se verifica si x e y son primos</span>
+<span class="c1">-- relativos. Por ejemplo,</span>
+<span class="c1">--    sonPrimosRelativos 6 35  ==  True</span>
+<span class="c1">--    sonPrimosRelativos 6 27  ==  False</span>
+<span class="nf">sonPrimosRelativos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">sonPrimosRelativos</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">gcd</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">primosRelativos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">primosRelativos3</span><span class="w"> </span><span class="kt">[]</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">primosRelativos3</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="n">sonPrimosRelativos</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">primosRelativos3</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">primosRelativos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">primosRelativos4</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">primosRelativos4</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">((</span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">gcd</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">primosRelativos4</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">([</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">primosRelativos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">35</span><span class="p">]</span><span class="w">         </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">True</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">27</span><span class="p">]</span><span class="w">         </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">False</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">        </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">False</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">      </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">True</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e5"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">221</span><span class="p">]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">True</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e6"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">primosRelativos</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">231</span><span class="p">]</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w">  </span><span class="kt">False</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">primosRelativos1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">primosRelativos2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">primosRelativos3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">primosRelativos4</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    24 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_primosRelativos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_primosRelativos</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">primosRelativos1</span><span class="w"> </span><span class="n">ys</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">primosRelativos2</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">primosRelativos3</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">       </span><span class="n">primosRelativos4</span><span class="w"> </span><span class="n">ys</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">getPositive</span><span class="w"> </span><span class="o">&lt;$&gt;</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_primosRelativos</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; ej = take 2000 primes</span>
+<span class="c1">--    λ&gt; primosRelativos1 ej</span>
+<span class="c1">--    True</span>
+<span class="c1">--    (1.65 secs, 2,081,369,936 bytes)</span>
+<span class="c1">--    λ&gt; primosRelativos2 ej</span>
+<span class="c1">--    True</span>
+<span class="c1">--    (1.27 secs, 1,777,761,720 bytes)</span>
+<span class="c1">--    λ&gt; primosRelativos3 ej</span>
+<span class="c1">--    True</span>
+<span class="c1">--    (0.97 secs, 1,537,737,728 bytes)</span>
+<span class="c1">--    λ&gt; primosRelativos4 ej</span>
+<span class="c1">--    True</span>
+<span class="c1">--    (0.76 secs, 1,474,185,496 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
