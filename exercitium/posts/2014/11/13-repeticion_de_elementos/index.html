@@ -30,7 +30,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 repiteElementos :: Int -&gt; [a] -&gt; [a]
 
 
-tal que (repiteElementos k xs) es la lista obtenida repitiendo cada elemento de xs k veces. Por ejemplo,
+tal que (repiteElementos k xs) es la lista obtenida repitiendo k veces cada elemento de xs. Por ejemplo,
 repiteElementos 3 [5,2,7,4]  ==  [5,5">
 <meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta property="og:type" content="article">
@@ -67,68 +67,125 @@ repiteElementos 3 [5,2,7,4]  ==  [5,5">
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-11-13T06:00:00+02:00" itemprop="datePublished" title="13-11-2014">13-11-2014</time></a>
+            <time class="published dt-published" datetime="2014-11-13T06:00:00+02:00" itemprop="datePublished" title="13-11-2014">13-11-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-11-05T07:00:00+02:00" itemprop="dateUpdated" title="05-11-2025">05-11-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la función</p>
+    <hr>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">repiteElementos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (repiteElementos k xs) es la lista obtenida repitiendo cada elemento de xs k veces. Por ejemplo,</p>
+<p>tal que <code>(repiteElementos k xs)</code> es la lista obtenida repitiendo <code>k</code> veces cada elemento de <code>xs</code>. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">repiteElementos</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
 </pre></div>
 
-<p>Comprobar con QuickCheck que, para todo número natural k y toda lista xs, el número de elementos de (repiteElementos k xs) es k veces el número de elementos de xs.</p>
-<p><strong>Nota</strong>. Al hacer la comprobación limitar el tamaño de las pruebas como
-se indica a continuación</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">quickCheckWith</span><span class="w"> </span><span class="p">(</span><span class="n">stdArgs</span><span class="w"> </span><span class="p">{</span><span class="n">maxSize</span><span class="ow">=</span><span class="mi">7</span><span class="p">})</span><span class="w"> </span><span class="n">prop_repiteElementos</span>
-<span class="o">+++</span><span class="w"> </span><span class="kt">OK</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="n">tests</span><span class="o">.</span>
-</pre></div>
-
+<p>Comprobar con QuickCheck que, para todo número natural <code>k</code> y toda lista <code>xs</code>, el número de elementos de <code>(repiteElementos k xs)</code> es <code>k</code> veces el número de elementos de <code>xs</code>.</p>
 <hr>
 <!-- TEASER_END --><h3 id="Soluciones">Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="c1">-- 1ª definición (por comprensión):</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">repiteElementos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">repiteElementos1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[</span><span class="n">replicate</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
 
-<span class="c1">-- 2ª definición (con map)</span>
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">repiteElementos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">repiteElementos2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">replicate</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
 
-<span class="c1">-- 3ª definición (con concatMap):</span>
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">repiteElementos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">repiteElementos3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="p">(</span><span class="n">replicate</span><span class="w"> </span><span class="n">k</span><span class="p">)</span>
 
-<span class="c1">-- 4ª definición (por recursión):</span>
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">repiteElementos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-<span class="nf">repiteElementos4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">repiteElementos4</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
 <span class="nf">repiteElementos4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">replicate</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">repiteElementos4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span>
 
-<span class="c1">-- 5ª definición (por plegado):</span>
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">repiteElementos5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">repiteElementos5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foldr</span><span class="w"> </span><span class="p">((</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">replicate</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="kt">[]</span>
 
-<span class="c1">-- Propiedad de equivalencia</span>
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">repiteElementos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">repiteElementos</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">repiteElementos1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">repiteElementos2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">repiteElementos3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">repiteElementos4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">repiteElementos5</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    5 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
 <span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
 <span class="nf">prop_equivalencia</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">repiteElementos2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">    </span><span class="n">repiteElementos3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">    </span><span class="n">repiteElementos4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">    </span><span class="n">repiteElementos5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">repiteElementos1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">  </span><span class="n">repiteElementos2</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">repiteElementos3</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">repiteElementos4</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">repiteElementos5</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">repiteElementos1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span>
 
-<span class="c1">-- Su comprobación es</span>
+<span class="c1">-- La comprobación es</span>
 <span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=10}) prop_equivalencia</span>
 <span class="c1">--    +++ OK, passed 100 tests.</span>
 
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (repiteElementos1 10000 [1..10000])</span>
+<span class="c1">--    100000000</span>
+<span class="c1">--    (1.28 secs, 11,202,762,144 bytes)</span>
+<span class="c1">--    λ&gt; length (repiteElementos2 10000 [1..10000])</span>
+<span class="c1">--    100000000</span>
+<span class="c1">--    (1.28 secs, 11,202,442,120 bytes)</span>
+<span class="c1">--    λ&gt; length (repiteElementos3 10000 [1..10000])</span>
+<span class="c1">--    100000000</span>
+<span class="c1">--    (1.26 secs, 11,201,562,128 bytes)</span>
+<span class="c1">--    λ&gt; length (repiteElementos4 10000 [1..10000])</span>
+<span class="c1">--    100000000</span>
+<span class="c1">--    (1.30 secs, 11,202,762,024 bytes)</span>
+<span class="c1">--    λ&gt; length (repiteElementos5 10000 [1..10000])</span>
+<span class="c1">--    100000000</span>
+<span class="c1">--    (1.33 secs, 11,202,202,208 bytes)</span>
+
+<span class="c1">-- Comprobación de la propiedad</span>
+<span class="c1">-- ============================</span>
+
 <span class="c1">-- La propiedad es</span>
-<span class="nf">prop_repiteElementos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
-<span class="nf">prop_repiteElementos</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">k</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">==&gt;</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">repiteElementos1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">prop_repiteElementos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonNegative</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_repiteElementos</span><span class="w"> </span><span class="p">(</span><span class="kt">NonNegative</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">repiteElementos1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span>
 
 <span class="c1">-- La comprobación es</span>
 <span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=7}) prop_repiteElementos</span>
