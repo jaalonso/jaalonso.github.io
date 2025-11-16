@@ -45,7 +45,451 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/04-bee_mochila/" class="u-url">El problema de la mochila (mediante espacio de estados)</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/05-coladeprioridad/" class="u-url">El tipo abstracto de datos de las colas de prioridad</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2023/07/05-coladeprioridad/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-07-05T06:00:00+02:00" itemprop="datePublished" title="05-07-2023">05-07-2023</time></a>
+            </p>
+		    <p><span class="text-dark">Búsqueda en espacios de estados</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <h2>1. El tipo abstracto de datos de las colas de prioridad</h2>
+<p>Una cola de prioridad es una cola en la que cada elemento tiene asociada una prioridad. La operación de extracción siempre elige el elemento de menor prioridad.</p>
+<p>Las operaciones que definen a tipo abstracto de datos (TAD) de las colas de prioridad (cuyos elementos son del tipo a) son las siguientes:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">vacia</span><span class="w">   </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">inserta</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">primero</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">resto</span><span class="w">   </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="n">esVacia</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>vacia es la cola de prioridad vacía.</li>
+<li>(inserta x c) añade el elemento x a la cola de prioridad c.</li>
+<li>(primero c) es el primer elemento de la cola de prioridad c.</li>
+<li>(resto c) es el resto de la cola de prioridad c.</li>
+<li>(esVacia c) se verifica si la cola de prioridad c es vacía.</li>
+</ul>
+<p>Las operaciones tienen que verificar las siguientes propiedades:</p>
+<ul>
+<li>inserta x (inserta y c) == inserta y (inserta x c)</li>
+<li>primero (inserta x vacia) == x</li>
+<li>Si x &lt;= y, entonces primero (inserta y (inserta x c)) == primero (inserta x c)</li>
+<li>resto (inserta x vacia) == vacia</li>
+<li>Si x &lt;= y, entonces resto (inserta y (inserta x c)) == inserta y (resto (inserta x c))</li>
+<li>esVacia vacia</li>
+<li>not (esVacia (inserta x c))</li>
+</ul>
+<h2>2. Las colas de prioridad en Haskell</h2>
+<h3>2.1. El tipo abstracto de datos de las colas de prioridad en Haskell</h3>
+<p>El TAD de las colas de prioridadd se encuentra en el módulo <a href="https://github.com/jaalonso/Exercitium/blob/main/src/TAD/ColaDePrioridad.hs">ColaDePrioridad.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">TAD.ColaDePrioridad</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">CPrioridad</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Ord a =&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; a -&gt; CPrioridad a -&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.ColaDePrioridadConListas</span>
+</pre></div>
+
+<p>Para usar el TAD hay que usar una implementación concreta. En principio,
+solo considearemos una que usa las listas.</p>
+<h3>2.2. Implementación de las colas de prioridad mediante listas</h3>
+<p>La implementación se encuentra en el módulo <a href="https://github.com/jaalonso/Exercitium/blob/main/src/TAD/ColaDePrioridadConListas.hs">ColaDePrioridadConListas.hs</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="cm">{-# LANGUAGE FlexibleInstances #-}</span>
+<span class="cm">{-# OPTIONS_GHC -fno-warn-unused-top-binds #-}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nn">TAD.ColaDePrioridadConListas</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">CPrioridad</span><span class="p">,</span>
+<span class="w">   </span><span class="nf">vacia</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Ord a =&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">inserta</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; a -&gt; CPrioridad a -&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">primero</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; a</span>
+<span class="w">   </span><span class="nf">resto</span><span class="p">,</span><span class="w">   </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; CPrioridad a</span>
+<span class="w">   </span><span class="nf">esVacia</span><span class="p">,</span><span class="w"> </span><span class="c1">-- Ord a =&gt; CPrioridad a -&gt; Bool</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+
+<span class="c1">-- Colas de prioridad mediante listas.</span>
+<span class="kr">newtype</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CP</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Eq</span>
+
+<span class="c1">-- (escribeColaDePrioridad c) es la cadena correspondiente a la cola de</span>
+<span class="c1">-- prioridad c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; escribeColaDePrioridad (inserta 5 (inserta 2 (inserta 3 vacia)))</span>
+<span class="c1">--    "2 | 3 | 5"</span>
+<span class="nf">escribeColaDePrioridad</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">escribeColaDePrioridad</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="kt">[]</span><span class="p">)</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="s">"-"</span>
+<span class="nf">escribeColaDePrioridad</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span>
+<span class="nf">escribeColaDePrioridad</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="s">" | "</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">escribeColaDePrioridad</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- Procedimiento de escritura de colas de prioridad.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="p">(</span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">show</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">escribeColaDePrioridad</span>
+
+<span class="c1">-- Ejemplo de cola de prioridad</span>
+<span class="c1">--    λ&gt; inserta 5 (inserta 2 (inserta 3 vacia))</span>
+<span class="c1">--    2 | 3 | 5</span>
+
+<span class="c1">-- vacia es la cola de prioridad vacía. Por ejemplo,</span>
+<span class="c1">--    λ&gt; vacia</span>
+<span class="c1">--    CP []</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">vacia</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CP</span><span class="w"> </span><span class="kt">[]</span>
+
+<span class="c1">-- (inserta x c) es la cola obtenida añadiendo el elemento x a la cola</span>
+<span class="c1">-- de prioridad c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; inserta 5 (foldr inserta vacia [3,1,7,2,9])</span>
+<span class="c1">--    1 | 2 | 3 | 5 | 7 | 9</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CP</span><span class="w"> </span><span class="p">(</span><span class="n">ins</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">q</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ins</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="kt">[]</span><span class="w">                   </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
+<span class="w">        </span><span class="n">ins</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">r</span><span class="o">@</span><span class="p">(</span><span class="n">e</span><span class="kt">:</span><span class="n">r'</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">e</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">y</span><span class="kt">:</span><span class="n">r</span>
+<span class="w">                       </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">e</span><span class="kt">:</span><span class="n">ins</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">r'</span>
+
+<span class="c1">-- (primero c) es el primer elemento de la cola de prioridad c. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    primero (foldr inserta vacia [3,1,7,2,9])  ==  1</span>
+<span class="nf">primero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">primero</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="kr">_</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span>
+<span class="nf">primero</span><span class="w"> </span><span class="kr">_</span><span class="w">         </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"primero: cola de prioridad vacia"</span>
+
+<span class="c1">-- (resto c) es la cola de prioridad obtenida eliminando el primer</span>
+<span class="c1">-- elemento de la cola de prioridad c. Por ejemplo,</span>
+<span class="c1">--    λ&gt; resto (foldr inserta vacia [3,1,7,2,9])</span>
+<span class="c1">--    2 | 3 | 7 | 9</span>
+<span class="nf">resto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span>
+<span class="nf">resto</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">xs</span><span class="p">))</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">CP</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">resto</span><span class="w"> </span><span class="kr">_</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"resto: cola de prioridad vacia"</span>
+
+<span class="c1">-- (esVacia c) se verifica si la cola de prioridad c es vacía. Por</span>
+<span class="c1">-- ejemplo,</span>
+<span class="c1">--    esVacia (foldr inserta vacia [3,1,7,2,9]) ==  False</span>
+<span class="c1">--    esVacia vacia                             ==  True</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esVacia</span><span class="w"> </span><span class="p">(</span><span class="kt">CP</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- Generador de colas de prioridad</span>
+<span class="c1">-- ===============================</span>
+
+<span class="c1">-- genCPrioridad es un generador de colas de enteros. Por ejemplo,</span>
+<span class="c1">--    λ&gt; sample genCPrioridad</span>
+<span class="c1">--    -</span>
+<span class="c1">--    0 | 0</span>
+<span class="c1">--    4</span>
+<span class="c1">--    -4 | -3 | 6 | 6</span>
+<span class="c1">--    -7 | -6 | -2 | 0</span>
+<span class="c1">--    -10 | -10 | -5 | 1 | 4 | 6 | 6 | 9 | 10</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -13 | -11 | -9 | -5 | -2 | -1 | 0 | 1 | 2 | 2 | 13 | 14</span>
+<span class="c1">--    -15 | -13 | -13 | -5 | -3 | -1 | 3 | 5 | 7 | 9 | 9 | 14 | 16</span>
+<span class="c1">--    -</span>
+<span class="c1">--    -17 | -15 | -14 | -5 | -2 | 1 | 1 | 2 | 5 | 7</span>
+<span class="nf">genCPrioridad</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w">  </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="nf">genCPrioridad</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">listOf</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- El tipo cola de prioridad es una instancia del arbitrario.</span>
+<span class="kr">instance</span><span class="w"> </span><span class="p">(</span><span class="kt">Arbitrary</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Num</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Arbitrary</span><span class="w"> </span><span class="p">(</span><span class="kt">CPrioridad</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">arbitrary</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">genCPrioridad</span>
+
+<span class="c1">-- Propiedades de las colas de prioridad</span>
+<span class="c1">-- =====================================</span>
+
+<span class="c1">-- Propiedad. Si se añade dos elementos a una cola de prioridad se</span>
+<span class="c1">-- obtiene la misma cola de prioridad idependientemente del orden en</span>
+<span class="c1">-- que se añadan los elementos.</span>
+<span class="nf">prop_inserta_conmuta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_inserta_conmuta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_inserta_conmuta</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. La cabeza de la cola de prioridad obtenida añadiendo un</span>
+<span class="c1">-- elemento x a la cola de prioridad vacía es x.</span>
+<span class="nf">prop_primero_inserta_vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_primero_inserta_vacia</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_primero_inserta_vacia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. El primer elemento de una cola de prioridad c no cambia</span>
+<span class="c1">-- cuando se le añade un elemento mayor o igual que algún elemento de c.</span>
+<span class="nf">prop_primero_inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_primero_inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==&gt;</span><span class="w"> </span><span class="n">primero</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c'</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">primero</span><span class="w"> </span><span class="n">c'</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">c'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_primero_inserta</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. El resto de añadir un elemento a la cola de prioridad</span>
+<span class="c1">-- vacía es la cola vacía.</span>
+<span class="nf">prop_resto_inserta_vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_resto_inserta_vacia</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">vacia</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_resto_inserta_vacia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. El resto de la cola de prioridad obtenida añadiendo un</span>
+<span class="c1">-- elemento y a una cola c' (que tiene algún elemento menor o igual que</span>
+<span class="c1">-- y) es la cola que se obtiene añadiendo y al resto de c'.</span>
+<span class="nf">prop_resto_inserta</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_resto_inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">==&gt;</span><span class="w"> </span><span class="n">resto</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">c'</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="p">(</span><span class="n">resto</span><span class="w"> </span><span class="n">c'</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">c'</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span>
+
+<span class="c1">-- Comprobación:</span>
+<span class="c1">--    λ&gt; quickCheck prop_resto_inserta</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. vacia es una cola vacía.</span>
+<span class="nf">prop_vacia_es_vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_vacia_es_vacia</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">esVacia</span><span class="w"> </span><span class="p">(</span><span class="n">vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="p">)</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_vacia_es_vacia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Propiedad. Si se añade un elemento a una cola de prioridad se obtiene</span>
+<span class="c1">-- una cola no vacía.</span>
+<span class="nf">prop_inserta_no_es_vacia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">CPrioridad</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_inserta_no_es_vacia</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">esVacia</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">c</span><span class="p">))</span>
+
+<span class="c1">-- Comprobación.</span>
+<span class="c1">--    λ&gt; quickCheck prop_inserta_no_es_vacia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+</pre></div>
+
+<h2>3. Las colas de prioridad en Python</h2>
+<h3>3.1. El tipo abstracto de las colas de prioridad en Python</h3>
+<p>La implementación se encuentra en el módulo <a href="https://github.com/jaalonso/Exercitium-Python/blob/main/src/TAD/ColaDePrioridad.py">ColaDePrioridad.py</a> cuyo contenido es el siguiente:</p>
+<div class="code"><pre class="code literal-block"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="s1">'CPrioridad'</span><span class="p">,</span>
+   <span class="s1">'vacia'</span><span class="p">,</span>
+   <span class="s1">'inserta'</span><span class="p">,</span>
+   <span class="s1">'primero'</span><span class="p">,</span>
+   <span class="s1">'resto'</span><span class="p">,</span>
+   <span class="s1">'esVacia'</span><span class="p">,</span>
+    <span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">src.TAD.ColaDePrioridadConListas</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CPrioridad</span><span class="p">,</span> <span class="n">esVacia</span><span class="p">,</span> <span class="n">inserta</span><span class="p">,</span>
+                                              <span class="n">primero</span><span class="p">,</span> <span class="n">resto</span><span class="p">,</span> <span class="n">vacia</span><span class="p">)</span>
+</pre></div>
+
+<p>Para usar el TAD hay que usar una implementación concreta. En principio, consideraremos solo una que usa las listas.</p>
+<h3>3.2. Implementación de las colas de prioridad mediante listas</h3>
+<p>La implementación se encuentra en el módulo <a href="https://github.com/jaalonso/Exercitium-Python/blob/main/src/TAD/ColaDePrioridadConListas.py">ColaDePrioridadConListas.py</a> en el que se define la clase CPrioridad con los siguientes métodos:</p>
+<ul>
+<li>inserta(x) añade x a la cola.</li>
+<li>primero() es el primero de la cola.</li>
+<li>resto() elimina el primero de la cola.</li>
+<li>esVacia() se verifica si la cola es vacía.</li>
+</ul>
+<p>Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   &gt;&gt;&gt; c = CPrioridad()
+   &gt;&gt;&gt; c
+   -
+   &gt;&gt;&gt; c.inserta(5)
+   &gt;&gt;&gt; c.inserta(2)
+   &gt;&gt;&gt; c.inserta(3)
+   &gt;&gt;&gt; c.inserta(4)
+   &gt;&gt;&gt; c
+   2 | 3 | 4 | 5
+   &gt;&gt;&gt; c.primero()
+   2
+   &gt;&gt;&gt; c.resto()
+   &gt;&gt;&gt; c
+   3 | 4 | 5
+   &gt;&gt;&gt; c.esVacia()
+   False
+   &gt;&gt;&gt; c = CPrioridad()
+   &gt;&gt;&gt; c.esVacia()
+   True
+</pre></div>
+
+<p>Además se definen las correspondientes funciones. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">   &gt;&gt;&gt; vacia()
+   -
+   &gt;&gt;&gt; inserta(4, inserta(3, inserta(2, inserta(5, vacia()))))
+   2 | 3 | 4 | 5
+   &gt;&gt;&gt; primero (inserta(4, inserta(3, inserta(2, inserta(5, vacia())))))
+   2
+   &gt;&gt;&gt; resto (inserta(4, inserta(3, inserta(2, inserta(5, vacia())))))
+   3 | 4 | 5
+   &gt;&gt;&gt; esVacia(inserta(4, inserta(3, inserta(2, inserta(5, vacia())))))
+   False
+   &gt;&gt;&gt; esVacia(vacia())
+   True
+</pre></div>
+
+<p>Finalmente, se define un generador aleatorio de colas de prioridad y se comprueba que las colas de prioridad cumplen las propiedades de su especificación.</p>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="s1">'CPrioridad'</span><span class="p">,</span>
+   <span class="s1">'vacia'</span><span class="p">,</span>
+   <span class="s1">'inserta'</span><span class="p">,</span>
+   <span class="s1">'primero'</span><span class="p">,</span>
+   <span class="s1">'resto'</span><span class="p">,</span>
+   <span class="s1">'esVacia'</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">assume</span><span class="p">,</span> <span class="n">given</span>
+<span class="kn">from</span> <span class="nn">hypothesis</span> <span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">st</span>
+
+
+<span class="k">class</span> <span class="nc">Comparable</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">otro</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Comparable</span><span class="p">)</span>
+
+<span class="c1"># Clase de las colas de prioridad mediante listas</span>
+<span class="c1"># ===============================================</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CPrioridad</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">A</span><span class="p">]):</span>
+    <span class="n">_elementos</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve una cadena con los elementos de la cola separados por " | ".</span>
+<span class="sd">        Si la cola está vacía, devuelve "-".</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'-'</span>
+        <span class="k">return</span> <span class="s1">' | '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Comprueba si la cola está vacía.</span>
+
+<span class="sd">        Devuelve True si la cola está vacía, False en caso contrario.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span>
+
+    <span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Inserta el elemento x en la cola de prioridad.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Devuelve el primer elemento de la cola.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Elimina el primer elemento de la cola</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elementos</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Funciones del tipo de las listas</span>
+<span class="c1"># ================================</span>
+
+<span class="k">def</span> <span class="nf">vacia</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Crea y devuelve una cola vacía de tipo A.</span>
+<span class="sd">    """</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">CPrioridad</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">c</span>
+
+<span class="k">def</span> <span class="nf">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Inserta un elemento x en la cola c y devuelve una nueva cola con</span>
+<span class="sd">    el elemento insertado.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="k">def</span> <span class="nf">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve True si la cola está vacía, False si no lo está.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">esVacia</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">primero</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">A</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Devuelve el primer elemento de la cola c.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">primero</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">resto</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Elimina el primer elemento de la cola c y devuelve una copia de la</span>
+<span class="sd">    cola resultante.</span>
+<span class="sd">    """</span>
+    <span class="n">_aux</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">_aux</span><span class="o">.</span><span class="n">resto</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_aux</span>
+
+<span class="c1"># Generador de colas de prioridad</span>
+<span class="c1"># ===============================</span>
+
+<span class="k">def</span> <span class="nf">colaAleatoria</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">st</span><span class="o">.</span><span class="n">SearchStrategy</span><span class="p">[</span><span class="n">CPrioridad</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Genera una estrategia de búsqueda para generar colas de enteros de</span>
+<span class="sd">    forma aleatoria.</span>
+
+<span class="sd">    Utiliza la librería Hypothesis para generar una lista de enteros y</span>
+<span class="sd">    luego se convierte en una instancia de la clase cola.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">st</span><span class="o">.</span><span class="n">lists</span><span class="p">(</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">CPrioridad</span><span class="p">)</span>
+
+<span class="c1"># Comprobación de las propiedades de las colas</span>
+<span class="c1"># ============================================</span>
+
+<span class="c1"># Las propiedades son</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola1</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span> <span class="o">==</span> <span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">x</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vacia</span><span class="p">()))</span> <span class="o">==</span> <span class="n">vacia</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">vacia</span><span class="p">())</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">colaAleatoria</span><span class="p">(),</span> <span class="n">x</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="n">st</span><span class="o">.</span><span class="n">integers</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">test_cola2</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">assume</span><span class="p">(</span><span class="ow">not</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))))</span> <span class="o">==</span> \
+        <span class="n">primero</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">c</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">))))</span> <span class="o">==</span> \
+        <span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">resto</span><span class="p">(</span><span class="n">inserta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">)))</span>
+
+<span class="c1"># La comprobación es</span>
+<span class="c1">#    &gt; poetry run pytest -q ColaDePrioridadConListas.py</span>
+<span class="c1">#    2 passed in 0.54s</span>
+</pre></div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/04-bee_mochila/" class="u-url">El problema de la mochila (mediante espacio de estados)</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -3550,31 +3994,6 @@ ejemplo,</p>
 </pre></div>
 
 <p class="more"><a href="posts/2023/02/15-extiendecola/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/02/14-algunoverifica/" class="u-url">TAD de las colas - Alguno de los elementos verifican una propiedad</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2023/02/14-algunoverifica/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-02-14T06:00:00+02:00" itemprop="datePublished" title="14-02-2023">14-02-2023</time></a>
-            </p>
-		    <p><span class="text-dark">El tipo abstracto de datos de las colas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Utilizando el <a href="posts/2023/02/07-el_tipo_abstracto_de_datos_de_las_colas">tipo abstracto de datos de las colas</a>, definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">algunoVerifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-</pre></div>
-
-<p>tal que <code>algunoVerifica p c</code> se verifica si alguno de los elementos de la cola <code>c</code> cumplen la propiedad <code>p</code>. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">algunoVerifica</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">vacia</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kt">True</span>
-<span class="w">   </span><span class="n">algunoVerifica</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">vacia</span><span class="p">))</span><span class="w">    </span><span class="o">==</span><span class="w"> </span><span class="kt">False</span>
-</pre></div>
-
-<p class="more"><a href="posts/2023/02/14-algunoverifica/">Leer más…</a></p>
 </div>
                 </div>
             </article>
