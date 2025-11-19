@@ -45,7 +45,76 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/07-bpm_8puzzle/" class="u-url">El problema del 8 puzzle</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/08/04-busquedaenescalada/" class="u-url">Búsqueda en escalada</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2023/08/04-busquedaenescalada/" rel="bookmark">
+            <time class="published dt-published" datetime="2023-08-04T06:00:00+02:00" itemprop="datePublished" title="04-08-2023">04-08-2023</time></a>
+            </p>
+		    <p><span class="text-dark">Búsqueda en espacios de estados</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <p>En la búsqueda en escalada se supone que los estados están  mediante una función, la heurística, que es una estimación de su coste para llegar a un estado final.</p>
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">buscaEscalada</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">Ord</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Bool</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">n</span><span class="o">]</span>
+</pre></div>
+
+<p>tal que <code>(buscaEscalada s o e)</code> es la lista de soluciones del problema de espacio de estado definido por la función sucesores <code>s</code>, el objetivo <code>o</code> y estado inicial <code>e</code>, obtenidas buscando en escalada.</p>
+<p><strong>Nota:</strong> La búsqueda en escalada se aplica en el <a href="posts/2023/08/05-escalada_monedas">problema de las monedas</a>.</p>
+<h2>Soluciones</h2>
+<p>A continuación se muestran las <a href="posts/2023/08/04-busquedaenescalada/#haskell">soluciones en Haskell</a> y las <a href="posts/2023/08/04-busquedaenescalada/#python">soluciones en Python</a>.</p>
+<p><a name="haskell"></a></p>
+<h3>Soluciones en Haskell</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">module</span><span class="w"> </span><span class="nn">BusquedaEnEscalada</span><span class="w"> </span><span class="p">(</span><span class="nf">buscaEscalada</span><span class="p">)</span><span class="w">  </span><span class="kr">where</span>
+
+<span class="kr">import</span><span class="w"> </span><span class="nn">TAD.ColaDePrioridad</span><span class="w"> </span><span class="p">(</span><span class="nf">esVacia</span><span class="p">,</span><span class="w"> </span><span class="nf">inserta</span><span class="p">,</span><span class="w"> </span><span class="nf">primero</span><span class="p">,</span><span class="w"> </span><span class="nf">vacia</span><span class="p">)</span>
+
+<span class="nf">buscaEscalada</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+<span class="nf">buscaEscalada</span><span class="w"> </span><span class="n">sucesores</span><span class="w"> </span><span class="n">esFinal</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">busca'</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="n">busca'</span><span class="w"> </span><span class="n">c</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">esVacia</span><span class="w"> </span><span class="n">c</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">esFinal</span><span class="w"> </span><span class="p">(</span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="p">]</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">           </span><span class="ow">=</span><span class="w"> </span><span class="n">busca'</span><span class="w"> </span><span class="p">(</span><span class="n">foldr</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="n">vacia</span><span class="w"> </span><span class="p">(</span><span class="n">sucesores</span><span class="w"> </span><span class="p">(</span><span class="n">primero</span><span class="w"> </span><span class="n">c</span><span class="p">)))</span>
+</pre></div>
+
+<p><a name="python"></a></p>
+<h3>Soluciones en Python</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">src.TAD.ColaDePrioridad</span> <span class="kn">import</span> <span class="p">(</span><span class="n">CPrioridad</span><span class="p">,</span> <span class="n">esVacia</span><span class="p">,</span> <span class="n">inserta</span><span class="p">,</span> <span class="n">primero</span><span class="p">,</span>
+                                     <span class="n">vacia</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Comparable</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">otro</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Comparable</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">buscaEscalada</span><span class="p">(</span><span class="n">sucesores</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="n">A</span><span class="p">]],</span>
+                  <span class="n">esFinal</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span>
+                  <span class="n">inicial</span><span class="p">:</span> <span class="n">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">CPrioridad</span><span class="p">[</span><span class="n">A</span><span class="p">]</span> <span class="o">=</span> <span class="n">inserta</span><span class="p">(</span><span class="n">inicial</span><span class="p">,</span> <span class="n">vacia</span><span class="p">())</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">esVacia</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">primero</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">esFinal</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">inserta</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">sucesores</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">vacia</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/07/07-bpm_8puzzle/" class="u-url">El problema del 8 puzzle</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4425,40 +4494,6 @@ decir, la menor relación transitiva que contiene a r. Por ejemplo,</p>
 </pre></div>
 
 <p class="more"><a href="posts/2023/02/20-pertenececola/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2023/02/17-agrupacolas/" class="u-url">TAD de las colas - Agrupación de colas</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2023/02/17-agrupacolas/" rel="bookmark">
-            <time class="published dt-published" datetime="2023-02-17T06:00:00+02:00" itemprop="datePublished" title="17-02-2023">17-02-2023</time></a>
-            </p>
-		    <p><span class="text-dark">El tipo abstracto de datos de las colas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Utilizando el <a href="posts/2023/02/07-el_tipo_abstracto_de_datos_de_las_colas">tipo abstracto de datos de las colas</a>, definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">agrupaColas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Cola</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>tal que <code>agrupaColas [c1,c2,c3,...,cn]</code> es la cola formada mezclando las colas de la lista como sigue: mezcla <code>c1</code> con <code>c2</code>, el resultado con <code>c3</code>, el resultado con <code>c4</code>, y así sucesivamente. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="n">vacia</span><span class="p">)</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">vacia</span><span class="p">))</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ej3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">inserta</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="n">inserta</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="n">vacia</span><span class="p">)))</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">agrupaColas</span><span class="w"> </span><span class="kt">[]</span>
-<span class="w">   </span><span class="o">-</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">agrupaColas</span><span class="w"> </span><span class="p">[</span><span class="n">ej1</span><span class="p">]</span>
-<span class="w">   </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">agrupaColas</span><span class="w"> </span><span class="p">[</span><span class="n">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="p">]</span>
-<span class="w">   </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span>
-<span class="w">   </span><span class="n">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">agrupaColas</span><span class="w"> </span><span class="p">[</span><span class="n">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="p">,</span><span class="w"> </span><span class="n">ej3</span><span class="p">]</span>
-<span class="w">   </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">3</span>
-</pre></div>
-
-<p class="more"><a href="posts/2023/02/17-agrupacolas/">Leer más…</a></p>
 </div>
                 </div>
             </article>
