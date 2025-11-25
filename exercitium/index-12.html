@@ -45,7 +45,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/07-prefijo_con_suma_acotada/" class="u-url">Prefijo con suma acotada</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/" class="u-url">Caminos desde la raíz en un árbol binario</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-02-08T06:00:00+02:00" itemprop="datePublished" title="08-02-2017">08-02-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Los árboles binarios se pueden representar con el de tipo de dato algebraico</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">H</span>
+<span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="w">  </span><span class="kr">deriving</span><span class="w"> </span><span class="kt">Show</span>
+</pre></div>
+
+<p>Por ejemplo, los árboles</p>
+<div class="code"><pre class="code literal-block">    3                7
+   / \              / \
+  2   4            5   8
+ / \   \          /   / \
+1   7   5        6   4   9
+</pre></div>
+
+<p>se representan por</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ej1</span><span class="p">,</span><span class="w"> </span><span class="n">ej2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span>
+<span class="nf">ej1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+<span class="nf">ej2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">N</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">H</span><span class="w"> </span><span class="kt">H</span><span class="p">))</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">caminosDesdeRaiz</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Arbol</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+</pre></div>
+
+<p>tal que (caminosDesdeRaiz a) es la lista de las caminosDesdeRaiz desde la raíz de a hasta cualquiera de sus nodos. Por ejemplo.</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosDesdeRaiz</span><span class="w"> </span><span class="n">ej1</span>
+<span class="p">[[</span><span class="mi">3</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosDesdeRaiz</span><span class="w"> </span><span class="n">ej2</span>
+<span class="p">[[</span><span class="mi">7</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/02/08-caminos_desde_la_raiz_en_un_arbol_binario/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/02/07-prefijo_con_suma_acotada/" class="u-url">Prefijo con suma acotada</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -3989,38 +4037,6 @@ y además:
 
 <hr>
 <p class="more"><a href="posts/2016/04/21-polinomios_cuadraticos_generadores_de_primos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/" class="u-url">Término ausente en una progresión aritmética</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-04-20T06:00:00+02:00" itemprop="datePublished" title="20-04-2016">20-04-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Una progresión aritmética es una sucesión de números tales que la diferencia de dos términos sucesivos cualesquiera de la sucesión es constante.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ausente</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integral</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>tal que (ausente xs) es el único término ausente de la progresión aritmética xs. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">5</span>
-<span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">7</span>
-<span class="nf">ausente</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">11</span><span class="p">]</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">9</span>
-<span class="nf">ausente</span><span class="w"> </span><span class="p">([</span><span class="mi">1</span><span class="o">..</span><span class="mi">9</span><span class="p">]</span><span class="o">++</span><span class="p">[</span><span class="mi">11</span><span class="o">..</span><span class="p">])</span><span class="w">          </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
-<span class="nf">ausente2</span><span class="w"> </span><span class="p">([</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">+</span><span class="mi">10</span><span class="o">^</span><span class="mi">6</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">1000001</span>
-</pre></div>
-
-<p><strong>Nota</strong>. Se supone que la lista tiene al menos 3 elementos, que puede ser
-infinita y que sólo hay exactamente un término de la progresión aritmética que no está en la lista.</p>
-<hr>
-<p class="more"><a href="posts/2016/04/20-termino_ausente_en_una_progresion_aritmetica/">Leer más…</a></p>
 </div>
                 </div>
             </article>
