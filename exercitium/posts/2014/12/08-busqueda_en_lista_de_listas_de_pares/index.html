@@ -66,28 +66,115 @@ tal que (busca x pss) es la lista de los segundos componentes de los pares de la
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-12-08T06:00:00+02:00" itemprop="datePublished" title="08-12-2014">08-12-2014</time></a>
+            <time class="published dt-published" datetime="2014-12-08T06:00:00+02:00" itemprop="datePublished" title="08-12-2014">08-12-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-12-03T06:00:00+02:00" itemprop="dateUpdated" title="03-12-2025">03-12-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la función</p>
+    <hr>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">busca</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (busca x pss) es la lista de los segundos componentes de los pares de la lista de listas de pares pss cuya primera componentes es x. Por ejemplo,</p>
+<p>tal que <code>(busca x pss)</code> es la lista de los segundos componentes de los pares de la lista de listas de pares <code>pss</code> cuya primera componentes es <code>x</code>. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">busca</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[[(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)],[(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)],[(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">)]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
 </pre></div>
 
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="c1">-- 1ª solución:</span>
-<span class="nf">busca</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
-<span class="nf">busca</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">pss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">pss</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="c1">-- 2ª solución:</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">busca1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">busca1</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">pss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">pss</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
 <span class="nf">busca2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
 <span class="nf">busca2</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">pss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="n">pss</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">]</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">busca3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">busca3</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">pss</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="p">(</span><span class="n">filter</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="kr">_</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">concat</span><span class="w"> </span><span class="n">pss</span><span class="p">))</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">busca4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">busca4</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">fst</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">concat</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">busca5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+<span class="nf">busca5</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">snd</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">==</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">fst</span><span class="p">))</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">busca</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">busca</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[[(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)],[(</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)],[(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">),(</span><span class="mi">7</span><span class="p">,</span><span class="mi">3</span><span class="p">)]]</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">busca1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">busca2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">busca3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">busca4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">busca5</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    5 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)]]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">busca1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">busca2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">busca3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">busca4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="p">,</span>
+<span class="w">       </span><span class="n">busca5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xss</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; length (busca1 3 [[(i,j) | i &lt;- [1..2000]] | j &lt;- [1..2000]])</span>
+<span class="c1">--    2000</span>
+<span class="c1">--    (1.75 secs, 897,558,320 bytes)</span>
+<span class="c1">--    λ&gt; length (busca2 3 [[(i,j) | i &lt;- [1..2000]] | j &lt;- [1..2000]])</span>
+<span class="c1">--    2000</span>
+<span class="c1">--    (2.30 secs, 1,121,414,384 bytes)</span>
+<span class="c1">--    λ&gt; length (busca3 3 [[(i,j) | i &lt;- [1..2000]] | j &lt;- [1..2000]])</span>
+<span class="c1">--    2000</span>
+<span class="c1">--    (1.64 secs, 1,121,558,392 bytes)</span>
+<span class="c1">--    λ&gt; length (busca4 3 [[(i,j) | i &lt;- [1..2000]] | j &lt;- [1..2000]])</span>
+<span class="c1">--    2000</span>
+<span class="c1">--    (1.32 secs, 1,025,558,856 bytes)</span>
+<span class="c1">--    λ&gt; length (busca5 3 [[(i,j) | i &lt;- [1..2000]] | j &lt;- [1..2000]])</span>
+<span class="c1">--    2000</span>
+<span class="c1">--    (1.36 secs, 801,734,784 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
