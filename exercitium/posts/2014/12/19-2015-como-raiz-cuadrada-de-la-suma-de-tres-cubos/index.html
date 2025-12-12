@@ -62,18 +62,24 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2014-12-19T06:00:00+02:00" itemprop="datePublished" title="19-12-2014">19-12-2014</time></a>
+            <time class="published dt-published" datetime="2014-12-19T06:00:00+02:00" itemprop="datePublished" title="19-12-2014">19-12-2014</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2025-12-12T06:00:00+02:00" itemprop="dateUpdated" title="12-12-2025">12-12-2025</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Todos los años, en las proximidades del final de año suelen aparecer cuestiones con propiedades del número del nuevo año. Una sobre el 2015 es la publicada el martes en la entrada <a href="https://simplementenumeros.blogspot.com/2014/12/1370-2015-como-raiz-de-la-suma-de-tres.html">2015 como raíz de la suma de tres cubos</a> del blog <a href="https://simplementenumeros.blogspot.com/">Números y algo más</a> en la que se pide calcular tres números tales que 2015 sea igual a la raíz cuadrada de la suma de dichos tres números.</p>
+    <hr>
+<p>Todos los años, en las proximidades del final de año suelen aparecer cuestiones con propiedades del número del nuevo año. Una sobre el 2015 es la publicada el martes en la entrada <a href="https://simplementenumeros.blogspot.com/2014/12/1370-2015-como-raiz-de-la-suma-de-tres.html">2015 como raíz de la suma de tres cubos</a> del blog <a href="https://simplementenumeros.blogspot.com/">Números y algo más</a> en la que se pide calcular tres números tales que 2015 sea igual a la raíz cuadrada de la suma de dichos tres números.</p>
 <p>A partir de dicha entrada, se propone el siguiente problema: Definir la sucesión</p>
 <div class="code"><pre class="code literal-block"><span class="nf">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 </pre></div>
 
 <p>cuyos elementos son los números que se pueden escribir como raíces cuadradas de sumas de tres cubos. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">take</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="mi">72</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">59</span><span class="p">,</span><span class="mi">78</span><span class="p">]</span>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos</span>
+<span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="mi">53</span><span class="p">,</span><span class="mi">59</span><span class="p">,</span><span class="mi">71</span><span class="p">,</span><span class="mi">72</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">100</span>
+<span class="mi">672</span>
 </pre></div>
 
 <p>El 6 está en la sucesión porque 1³+2³+3³ = 36 y la raíz cuadrada de36 es 6 y el 9 está porque 3³+3³+3³ = 81 y la raíz cuadrada de 81 es 9. Algunos números tienen varias descomposiones como raíz cuadrada de suma de tres cubos; por ejemplo, el 71 se puede escribir como la raíz cuadrada de la suma de los cubos de 6, 9 y 16 y también como la de 4, 4, y 17.</p>
@@ -87,10 +93,15 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
 <div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">raicesCuadradasDeSumasDe3Cubos1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">raicesCuadradasDeSumasDe3Cubos1</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones1</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
 
 <span class="c1">-- (descomposiciones n) es la lista de ternas de números tales que n es la</span>
 <span class="c1">-- raíz cuadrada de la suma de los cubos de los tres números de la</span>
@@ -98,36 +109,160 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="c1">--    descomposiciones  6  ==  [(1,2,3)]</span>
 <span class="c1">--    descomposiciones  9  ==  [(3,3,3)]</span>
 <span class="c1">--    descomposiciones 71  ==  [(6,9,16),(4,4,17)]</span>
-<span class="nf">descomposiciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
-<span class="nf">descomposiciones</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">floor</span><span class="w"> </span><span class="p">((</span><span class="n">fromIntegral</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))],</span>
-<span class="w">               </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">c</span><span class="p">],</span>
-<span class="w">               </span><span class="kr">let</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="o">^</span><span class="mi">3</span><span class="p">,</span>
-<span class="w">               </span><span class="n">d</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">               </span><span class="kr">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">round</span><span class="w"> </span><span class="p">((</span><span class="n">fromIntegral</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)),</span>
+<span class="nf">descomposiciones1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">descomposiciones1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">               </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">               </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
 <span class="w">               </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">b</span><span class="p">,</span>
-<span class="w">               </span><span class="n">a</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">d</span><span class="p">]</span>
+<span class="w">               </span><span class="n">b</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">c</span><span class="p">,</span>
+<span class="w">               </span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">raicesCuadradasDeSumasDe3Cubos2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">raicesCuadradasDeSumasDe3Cubos2</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones2</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="nf">descomposiciones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">descomposiciones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">               </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">               </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="o">..</span><span class="n">n</span><span class="p">],</span>
+<span class="w">               </span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">raicesCuadradasDeSumasDe3Cubos3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">raicesCuadradasDeSumasDe3Cubos3</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones3</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="nf">descomposiciones3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">descomposiciones3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">m</span><span class="p">],</span>
+<span class="w">               </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="o">..</span><span class="n">m</span><span class="p">],</span>
+<span class="w">               </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">b</span><span class="o">..</span><span class="n">m</span><span class="p">],</span>
+<span class="w">               </span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">a</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">3</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">floor</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">raicesCuadradasDeSumasDe3Cubos4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">raicesCuadradasDeSumasDe3Cubos4</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones4</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="nf">descomposiciones4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">descomposiciones4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">m</span><span class="p">],</span>
+<span class="w">             </span><span class="n">b</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="n">c</span><span class="p">],</span>
+<span class="w">             </span><span class="kr">let</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="o">^</span><span class="mi">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">c</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b</span><span class="o">^</span><span class="mi">3</span><span class="p">,</span>
+<span class="w">             </span><span class="n">d</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">             </span><span class="kr">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">round</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)),</span>
+<span class="w">             </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">b</span><span class="p">,</span>
+<span class="w">             </span><span class="n">a</span><span class="o">^</span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">d</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">floor</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">take</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">27</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos4</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    4 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonNegative</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="p">(</span><span class="kt">NonNegative</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">raicesCuadradasDeSumasDe3Cubos1</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">raicesCuadradasDeSumasDe3Cubos2</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">raicesCuadradasDeSumasDe3Cubos3</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">raicesCuadradasDeSumasDe3Cubos4</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=9}) prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; descomposiciones1 253</span>
+<span class="c1">--    [(1,2,40),(12,25,36)]</span>
+<span class="c1">--    (10.79 secs, 9,337,643,944 bytes)</span>
+<span class="c1">--    λ&gt; descomposiciones2 253</span>
+<span class="c1">--    [(1,2,40),(12,25,36)]</span>
+<span class="c1">--    (6.29 secs, 7,194,138,952 bytes)</span>
+<span class="c1">--    λ&gt; descomposiciones3 253</span>
+<span class="c1">--    [(1,2,40),(12,25,36)]</span>
+<span class="c1">--    (0.06 secs, 30,965,776 bytes)</span>
+<span class="c1">--    λ&gt; descomposiciones4 253</span>
+<span class="c1">--    [(12,25,36),(1,2,40)]</span>
+<span class="c1">--    (0.01 secs, 2,727,752 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos1 !! 7</span>
+<span class="c1">--    71</span>
+<span class="c1">--    (4.09 secs, 3,446,545,944 bytes)</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos2 !! 7</span>
+<span class="c1">--    71</span>
+<span class="c1">--    (2.29 secs, 2,682,797,856 bytes)</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos3 !! 7</span>
+<span class="c1">--    71</span>
+<span class="c1">--    (0.08 secs, 55,521,968 bytes)</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos4 !! 7</span>
+<span class="c1">--    71</span>
+<span class="c1">--    (0.04 secs, 12,254,520 bytes)</span>
+<span class="c1">--    λ&gt; :r</span>
+<span class="c1">--    Ok, one module loaded.</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos3 !! 40</span>
+<span class="c1">--    253</span>
+<span class="c1">--    (1.94 secs, 2,284,895,544 bytes)</span>
+<span class="c1">--    λ&gt; raicesCuadradasDeSumasDe3Cubos4 !! 40</span>
+<span class="c1">--    253</span>
+<span class="c1">--    (0.27 secs, 216,861,896 bytes)</span>
+
+<span class="c1">-- Cuestiones</span>
+<span class="c1">-- ==========</span>
 
 <span class="c1">-- El cálculo de la posición de 2015 es</span>
-<span class="c1">--    λ&gt; length (takeWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos)</span>
+<span class="c1">--    λ&gt; length (takeWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos4)</span>
 <span class="c1">--    343</span>
 
 <span class="c1">-- El cálculo del próximo año expresable como la raízcuadrada de la suma</span>
 <span class="c1">-- de tres cubos es</span>
-<span class="c1">--    λ&gt; head (dropWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos)</span>
+<span class="c1">--    λ&gt; head (dropWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos4)</span>
 <span class="c1">--    2022</span>
 
 <span class="c1">-- (masDescomponibles xs) es la lista de elementos de xs que se pueden</span>
 <span class="c1">-- escribir de más formas como raíz cuadrada de suma de tres cubos.</span>
 <span class="nf">masDescomponibles</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
 <span class="nf">masDescomponibles</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">p</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="n">zs</span><span class="p">]</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones</span><span class="w"> </span><span class="n">x</span><span class="p">),</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
-<span class="w">          </span><span class="n">u</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">  </span><span class="p">[</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="kr">_</span><span class="p">,</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">takeWhile</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">p</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="n">zs</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">sort</span><span class="w"> </span><span class="p">[(</span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">descomposiciones4</span><span class="w"> </span><span class="n">x</span><span class="p">),</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">xs</span><span class="p">])</span>
+<span class="w">        </span><span class="n">u</span><span class="w">  </span><span class="ow">=</span><span class="w"> </span><span class="n">fst</span><span class="w"> </span><span class="p">(</span><span class="n">head</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
 
 <span class="c1">-- El cálculo de los años hasta el 2015 con mayor número de</span>
 <span class="c1">-- descomposiciones es</span>
-<span class="c1">--    λ&gt; masDescomponibles (takeWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos)</span>
+<span class="c1">--    λ&gt; masDescomponibles (takeWhile (&lt;=2015) raicesCuadradasDeSumasDe3Cubos4)</span>
 <span class="c1">--    [1728]</span>
 </pre></div>
     </div>
