@@ -68,37 +68,45 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <hr>
-<p>Un número <em>tiene factorización capicúa</em> si puede escribir como un producto de números primos tal que la concatenación de sus dígitos forma un número capicúa. Por ejemplo, el 2015 tiene factorización capicúa ya que 2015 = 13<em>5</em>31, los factores son primos y su concatenación es 13531 que es capicúa.</p>
+<p>Un número <strong>tiene factorización capicúa</strong> si puede escribir como un producto de números primos tal que la concatenación de sus dígitos forma un número capicúa. Por ejemplo, el 2015 tiene factorización capicúa ya que \(2015 = 13 \times 5 \times 31), los factores son primos y su concatenación es 13531 que es capicúa.</p>
 <p>Definir la sucesión</p>
 <div class="code"><pre class="code literal-block"><span class="nf">conFactorizacionesCapicuas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 </pre></div>
 
-<p>formada por los números que tienen factorización capicúa. Por
-ejemplo,</p>
+<p>formada por los números que tienen factorización capicúa. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas</span>
 <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">39</span><span class="p">,</span><span class="mi">44</span><span class="p">]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="mi">3000</span>
+<span class="mi">91019</span>
 </pre></div>
 
-<p>Usando conFactorizacionesCapicuas escribir expresiones cuyos valores sean las respuestas a las siguientes preguntas y calcularlas</p>
+<p>Usando <code>conFactorizacionesCapicuas</code> escribir expresiones cuyos valores sean las respuestas a las siguientes preguntas y calcularlas</p>
 <ol>
 <li>¿Qué lugar ocupa el 2015 en la sucesión?</li>
 <li>¿Cuál fue el anterior año con factorización capicúa?</li>
 <li>¿Cuál será el siguiente año con factorización capicúa?</li>
 </ol>
-<h3>Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">permutations</span><span class="p">)</span>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">delete</span><span class="p">,</span><span class="w"> </span><span class="nf">group</span><span class="p">,</span><span class="w"> </span><span class="nf">nub</span><span class="p">,</span><span class="w"> </span><span class="nf">permutations</span><span class="p">,</span><span class="w"> </span><span class="nf">sort</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.Numbers.Primes</span><span class="w"> </span><span class="p">(</span><span class="nf">primeFactors</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">conFactorizacionesCapicuas</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-<span class="nf">conFactorizacionesCapicuas</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacionesCapicua</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">conFactorizacionesCapicuas1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas1</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacionesCapicua</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
 
 <span class="c1">-- (factorizacionesCapicua n) es la lista de las factorizaciones</span>
 <span class="c1">-- capicúas de n. Por ejemplo,</span>
 <span class="c1">--    factorizacionesCapicua 2015  ==  [[13,5,31],[31,5,13]]</span>
 <span class="nf">factorizacionesCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 <span class="nf">factorizacionesCapicua</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">permutations</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacion</span><span class="w"> </span><span class="n">n</span><span class="p">),</span>
-<span class="w">          </span><span class="n">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">permutations</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacion</span><span class="w"> </span><span class="n">n</span><span class="p">),</span>
+<span class="w">        </span><span class="n">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
 
 <span class="c1">-- (factorizacion n) es la lista de todos los factores primos de n; es</span>
 <span class="c1">-- decir, es una lista de números primos cuyo producto es n. Por ejemplo,</span>
@@ -106,7 +114,7 @@ ejemplo,</p>
 <span class="nf">factorizacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 <span class="nf">factorizacion</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
 <span class="w">                </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">factorizacion</span><span class="w"> </span><span class="p">(</span><span class="n">div</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">menorFactor</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">menorFactor</span><span class="w"> </span><span class="n">n</span>
 
 <span class="c1">-- (menorFactor n) es el menor factor primo de n. Por ejemplo,</span>
 <span class="c1">--    menorFactor 15  ==  3</span>
@@ -121,8 +129,258 @@ ejemplo,</p>
 <span class="c1">--    esCapicuaConcatenacion [135,31]    ==  True</span>
 <span class="c1">--    esCapicuaConcatenacion [135,21]    ==  False</span>
 <span class="nf">esCapicuaConcatenacion</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
-<span class="nf">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+<span class="nf">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">esCapicua</span><span class="w"> </span><span class="p">(</span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- (esCapicua s) se verifica si la cadena s es capicúa.</span>
+<span class="nf">esCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">esCapicua</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">s</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas2</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacionesCapicua2</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="nf">factorizacionesCapicua2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">factorizacionesCapicua2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacion2</span><span class="w"> </span><span class="n">n</span><span class="p">),</span>
+<span class="w">        </span><span class="n">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+
+<span class="nf">factorizacion2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">factorizacion2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">factorizacion2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">factoriza</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">factoriza</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">d</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">factoriza</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="n">d</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="n">factoriza</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">-- (permutaciones xs) es la lista sin repeticiones de las permutaciones</span>
+<span class="c1">-- de xs. Por ejemplo,</span>
+<span class="c1">--    λ&gt; permutaciones [2,2,3] == [[2,2,3],[2,3,2],[3,2,2]]</span>
+<span class="nf">permutaciones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="n">a</span><span class="p">]]</span>
+<span class="nf">permutaciones</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="nf">permutaciones</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="kt">:</span><span class="n">ps</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">nub</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">delete</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">xs</span><span class="p">)]</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas3</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="p">(</span><span class="n">null</span><span class="w"> </span><span class="p">(</span><span class="n">factorizacionesCapicua3</span><span class="w"> </span><span class="n">n</span><span class="p">))]</span>
+
+<span class="c1">-- (factorizacionesCapicua3 n) es la lista de las factorizaciones</span>
+<span class="c1">-- capicúas de n. Por ejemplo,</span>
+<span class="c1">--    factorizacionesCapicua3 2015  ==  [[13,5,31],[31,5,13]]</span>
+<span class="nf">factorizacionesCapicua3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">factorizacionesCapicua3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">primeFactors</span><span class="w"> </span><span class="n">n</span><span class="p">),</span>
+<span class="w">        </span><span class="n">esCapicuaConcatenacion</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas4</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="p">[</span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">conFactorizacionCapicua</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- (conFactorizacionCapicua n) se verifica si n tiene factorización</span>
+<span class="c1">-- capicúa. Por ejemplo,</span>
+<span class="c1">--    factorizacionesCapicua2 2015  ==  [[13,5,31],[31,5,13]]</span>
+<span class="nf">conFactorizacionCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">conFactorizacionCapicua</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">any</span><span class="w"> </span><span class="n">listaCapicua</span><span class="w"> </span><span class="p">(</span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">primeFactors</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- (listaCapicua xs) se verifica si la cadena obtenida concatenando los</span>
+<span class="c1">-- dígitos de xs es capicúa. Por ejemplo,</span>
+<span class="c1">--    listaCapicua [13,5,31] == True</span>
+<span class="c1">--    listaCapicua [13,5,21] == False</span>
+<span class="nf">listaCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Show</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">listaCapicua</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">ys</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas5</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">tieneFactorizacionCapicua</span><span class="w">  </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- (tieneFactorizacionCapicua n) se verifica si n tiene alguna</span>
+<span class="c1">-- factorización capicúa. Por ejemplo,</span>
+<span class="c1">--    tieneFactorizacionCapicua 2015 == True</span>
+<span class="c1">--    tieneFactorizacionCapicua 2016 == False</span>
+<span class="nf">tieneFactorizacionCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">tieneFactorizacionCapicua</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">any</span><span class="w"> </span><span class="p">((</span><span class="nf">\</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">concat</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="n">permutaciones</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">factorizacion5</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="nf">factorizacion5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">factorizacion5</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">primo</span><span class="w"> </span><span class="n">n</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">divs</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">factorizacion5</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="n">divs</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">primo</span><span class="w">       </span><span class="ow">=</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">divisores</span>
+<span class="w">        </span><span class="n">divisores</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="o">..</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span>
+<span class="w">        </span><span class="n">divs</span><span class="w">        </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">primo</span><span class="w"> </span><span class="p">(</span><span class="n">divisores</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">tieneFactorizacionCapicua6</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="nf">tieneFactorizacionCapicua6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">tieneFactorizacionCapicua6</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">tieneFactorizacionCapicua6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">puedeSerCapicua</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">esCapicua</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">concat</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">fs</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">factorizacion6</span><span class="w"> </span><span class="n">n</span>
+
+<span class="nf">factorizacion6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">factorizacion6</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">factorizacion6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">..</span><span class="p">])</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="kt">:</span><span class="n">ps</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+<span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">mod</span><span class="p">`</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="kt">:</span><span class="n">ps</span><span class="p">)</span>
+<span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">      </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">ps</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="ne">error</span><span class="w"> </span><span class="s">"Caso imposible"</span>
+
+<span class="c1">-- (puedeSerCapicua fs) se verifica si a lo sumo un dígito de fs aparece</span>
+<span class="c1">-- un número impar de veces. Por ejemplo,</span>
+<span class="c1">--    puedeSerCapicua [5,13,31] == True</span>
+<span class="c1">--    puedeSerCapicua [5,13,21] == False</span>
+<span class="nf">puedeSerCapicua</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">puedeSerCapicua</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">filter</span><span class="w"> </span><span class="n">odd</span><span class="w"> </span><span class="p">(</span><span class="n">frecuencias</span><span class="w"> </span><span class="p">(</span><span class="n">digitos</span><span class="w"> </span><span class="n">fs</span><span class="p">)))</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- (digitos xs) es la cadena de los dígitos de xs. Por ejemplo,</span>
+<span class="c1">--    λ&gt; digitos [3,11,3,13]</span>
+<span class="c1">--    "311313"</span>
+<span class="nf">digitos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span>
+<span class="nf">digitos</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">show</span>
+
+<span class="c1">-- (frecuencias cs) es la lista del número de apariciones de cada uno de</span>
+<span class="c1">-- los elementos de cs. Por ejemplo.</span>
+<span class="c1">--    λ&gt; frecuencias "3533573"</span>
+<span class="c1">--    [4,2,1]</span>
+<span class="nf">frecuencias</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">frecuencias</span><span class="w"> </span><span class="n">cs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">group</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="n">cs</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">conFactorizacionesCapicuas7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">conFactorizacionesCapicuas7</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="n">tieneFactorizacionCapicua7</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="nf">tieneFactorizacionCapicua7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">tieneFactorizacionCapicua7</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">True</span>
+<span class="nf">tieneFactorizacionCapicua7</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">puedeSerCapicua</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">  </span><span class="n">any</span><span class="w"> </span><span class="p">(</span><span class="n">esCapicua</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">concat</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">permutaciones</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">fs</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">fs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">primeFactors</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">take</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas</span>
+<span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">27</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">39</span><span class="p">,</span><span class="mi">44</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    7 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonNegative</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="p">(</span><span class="kt">NonNegative</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">    </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">conFactorizacionesCapicuas1</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">        </span><span class="p">[</span><span class="n">conFactorizacionesCapicuas2</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">         </span><span class="n">conFactorizacionesCapicuas3</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">         </span><span class="n">conFactorizacionesCapicuas4</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">         </span><span class="n">conFactorizacionesCapicuas5</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">         </span><span class="n">conFactorizacionesCapicuas6</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">         </span><span class="n">conFactorizacionesCapicuas7</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; :set +s</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas1 !! 300</span>
+<span class="c1">--    2450</span>
+<span class="c1">--    (5.23 secs, 10,907,294,432 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas2 !! 300</span>
+<span class="c1">--    2450</span>
+<span class="c1">--    (0.14 secs, 98,081,344 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas2 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (0.26 secs, 172,766,536 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas3 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (0.15 secs, 186,914,864 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas4 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (0.20 secs, 189,234,456 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas5 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (2.17 secs, 1,349,678,296 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas6 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (0.12 secs, 54,761,808 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas7 !! 400</span>
+<span class="c1">--    3861</span>
+<span class="c1">--    (0.09 secs, 85,802,672 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas2 !! 1000</span>
+<span class="c1">--    15885</span>
+<span class="c1">--    (1.49 secs, 1,331,680,880 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas3 !! 1000</span>
+<span class="c1">--    15885</span>
+<span class="c1">--    (1.11 secs, 1,397,445,856 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas4 !! 1000</span>
+<span class="c1">--    15885</span>
+<span class="c1">--    (1.19 secs, 1,414,891,080 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas6 !! 1000</span>
+<span class="c1">--    15885</span>
+<span class="c1">--    (0.42 secs, 312,621,920 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas7 !! 1000</span>
+<span class="c1">--    15885</span>
+<span class="c1">--    (0.27 secs, 515,702,608 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas6 !! 2000</span>
+<span class="c1">--    47916</span>
+<span class="c1">--    (1.71 secs, 1,286,865,688 bytes)</span>
+<span class="c1">--    λ&gt; conFactorizacionesCapicuas7 !! 2000</span>
+<span class="c1">--    47916</span>
+<span class="c1">--    (1.02 secs, 2,123,255,960 bytes)</span>
+
+<span class="c1">-- Cuestiones</span>
+<span class="c1">-- ==========</span>
 
 <span class="c1">-- El cálculo de la 1ª respuesta es</span>
 <span class="c1">--    λ&gt; length (takeWhile (&lt;= 2015) conFactorizacionesCapicuas)</span>
@@ -144,7 +402,19 @@ ejemplo,</p>
             <li class="next">
                 <a href="../02-simplificacion_de_expresiones_proposicionales/" rel="next" title="Simplificación de expresiones proposicionales">Siguiente publicación</a>
             </li>
-        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             
