@@ -45,7 +45,121 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/03/09-generadores_de_numeros_de_gabonacci/" class="u-url">Generadores de números de Gibonacci</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/03/10-caminos_minimales_en_un_arbol_numerico/" class="u-url">Caminos minimales en un arbol numérico</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2017/03/10-caminos_minimales_en_un_arbol_numerico/" rel="bookmark">
+            <time class="published dt-published" datetime="2017-03-10T06:00:00+02:00" itemprop="datePublished" title="10-03-2017">10-03-2017</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los árboles y los bosques como sigue</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+
+<p>Se pueden definir árboles. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ej</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">Node</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">Node</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">[]</span><span class="p">]</span>
+</pre></div>
+
+<p>Y se pueden dibujar con la función drawTree. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">putStrLn</span><span class="w"> </span><span class="p">(</span><span class="n">drawTree</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">ej</span><span class="p">))</span>
+<span class="mi">3</span>
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">9</span>
+<span class="o">|</span>
+<span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">7</span>
+</pre></div>
+
+<p>Los <strong>mayores divisores</strong> de un número x son los divisores u tales que u &gt; 1 y existe un v tal que 1 &lt; v &lt; u y u*v = x.  Por ejemplo, los mayores divisores de 24 son 12, 8 y 6.</p>
+<p>El <strong>árbol de los predecesores y mayores divisores</strong> de un número x es el árbol cuya raíz es x y los sucesores de cada nodo y &gt; 1 es el conjunto formado por y-1 junto con los mayores divisores de y. Los nodos con valor 1 no tienen sucesores. Por ejemplo, el árbol de los predecesores y mayores divisores del número 6 es</p>
+<div class="code"><pre class="code literal-block">    6
+   / \
+  5   3
+  |   |
+  4   2
+ / \  |
+3   2 1
+|   |
+2   1
+|
+1
+</pre></div>
+
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">mayoresDivisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">arbol</span><span class="w">            </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">caminos</span><span class="w">          </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminosMinimales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(mayoresDivisores x) es la lista de los mayores divisores de x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">mayoresDivisores</span><span class="w"> </span><span class="mi">24</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="nf">mayoresDivisores</span><span class="w"> </span><span class="mi">16</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<span class="nf">mayoresDivisores</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="nf">mayoresDivisores</span><span class="w"> </span><span class="mi">17</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="kt">[]</span>
+</pre></div>
+
+<ul>
+<li>(arbol x) es el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">putStrLn</span><span class="w"> </span><span class="p">(</span><span class="n">drawTree</span><span class="w"> </span><span class="p">(</span><span class="n">fmap</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">arbol</span><span class="w"> </span><span class="mi">6</span><span class="p">)))</span>
+<span class="mi">6</span>
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">4</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">+-</span><span class="w"> </span><span class="mi">3</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="o">|</span>
+<span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span><span class="p">`</span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+</pre></div>
+
+<ul>
+<li>(caminos x) es la lista de los caminos en el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminos</span><span class="w"> </span><span class="mi">6</span>
+<span class="p">[[</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+
+<ul>
+<li>(caminosMinimales x) es la lista de los caminos en de menor longitud en el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosMinimales</span><span class="w"> </span><span class="mi">6</span>
+<span class="p">[[</span><span class="mi">6</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosMinimales</span><span class="w"> </span><span class="mi">17</span>
+<span class="p">[[</span><span class="mi">17</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">caminosMinimales</span><span class="w"> </span><span class="mi">50</span>
+<span class="p">[[</span><span class="mi">50</span><span class="p">,</span><span class="mi">25</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2017/03/10-caminos_minimales_en_un_arbol_numerico/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2017/03/09-generadores_de_numeros_de_gabonacci/" class="u-url">Generadores de números de Gibonacci</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4173,23 +4287,6 @@ son</p>
 <p><strong>Nota</strong>: La relación entre la sucesión y el funcionamiento del reloj se puede ver en <a href="http://www.global-sci.org/mc/galley/prague_sc_pic/prague_eng.pdf">The Mathematics Behind Prague's Horloge Introduction</a>.</p>
 <hr>
 <p class="more"><a href="posts/2016/05/23-la_sucesion_del_reloj_astronomico_de_praga/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2016/05/20-sucesiones_de_listas_de_numeros/" class="u-url">Sucesiones de listas de números</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2016/05/20-sucesiones_de_listas_de_numeros/" rel="bookmark">
-            <time class="published dt-published" datetime="2016-05-20T06:00:00+02:00" itemprop="datePublished" title="20-05-2016">20-05-2016</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<hr>
-<p class="more"><a href="posts/2016/05/20-sucesiones_de_listas_de_numeros/">Leer más…</a></p>
 </div>
                 </div>
             </article>
