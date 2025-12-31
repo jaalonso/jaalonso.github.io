@@ -45,7 +45,65 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/09-teorema_de_hilbert-waring/" class="u-url">Teorema de Hilbert-Waring</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/10-teorema_de_existencia_de_divisores/" class="u-url">Teorema de existencia de divisores</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2020/01/10-teorema_de_existencia_de_divisores/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-01-10T06:00:00+02:00" itemprop="datePublished" title="10-01-2020">10-01-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El <strong>teorema de existencia de divisores</strong> afirma que</p>
+<blockquote>
+<p>En cualquier subconjunto de {1, 2, ..., 2m} con al menos m+1 elementos existen números distintos a, b tales que a divide a b.</p>
+</blockquote>
+<p>Un conjunto de números naturales xs es mayoritario si existe un m tal que la lista de xs es un subconjunto de {1,2,...,2m} con al menos m+1 elementos. Por ejemplo, {2,3,5,6} porque es un subconjunto de {1,2,...,6} con más de 3 elementos.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">divisoresMultiplos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="nf">esMayoritario</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(divisores xs) es la lista de pares de elementos distintos de (a,b) tales que a divide a b. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">divisoresMultiplos [2,3,5,6]  ==  [(2,6),(3,6)]
+divisoresMultiplos [2,3,5]    ==  []
+divisoresMultiplos [4..8]     ==  [(4,8)]
+</pre></div>
+
+<ul>
+<li>(esMayoritario xs) se verifica xs es mayoritario. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">esMayoritario [2,3,5,6]  ==  True
+esMayoritario [2,3,5]    ==  False
+</pre></div>
+
+<p>Comprobar con QuickCheck el teorema de existencia de divisores; es decir, en cualquier conjunto mayoritario existen números distintos a, b tales que a divide a b. Para la comprobación se puede usar el siguiente generador de conjuntos mayoritarios</p>
+<div class="code"><pre class="code literal-block"><span class="nf">mayoritario</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
+<span class="nf">mayoritario</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">m'</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">arbitrary</span>
+<span class="w">  </span><span class="kr">let</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="n">m'</span>
+<span class="w">  </span><span class="n">xs'</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">sublistOf</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">]</span><span class="w"> </span><span class="p">`</span><span class="n">suchThat</span><span class="p">`</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">ys</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">genericLength</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">m</span><span class="p">)</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="n">xs'</span>
+</pre></div>
+
+<p>con lo que la propiedad que hay que comprobar con QuickCheck es</p>
+<div class="code"><pre class="code literal-block"><span class="nf">teorema_de_existencia_de_divisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">teorema_de_existencia_de_divisores</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="n">mayoritario</span><span class="w"> </span><span class="p">(</span><span class="n">not</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">null</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">divisoresMultiplos</span><span class="p">)</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2020/01/10-teorema_de_existencia_de_divisores/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/09-teorema_de_hilbert-waring/" class="u-url">Teorema de Hilbert-Waring</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4672,54 +4730,6 @@ tieneCombinacionDivisible [1,3,9]   2  ==  False
 <p>y ninguna de las 4 es divisible por 2.</p>
 <hr>
 <p class="more"><a href="posts/2019/03/11-combinaciones_divisibles/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/" class="u-url">Camino de máxima suma en una matriz</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/" rel="bookmark">
-            <time class="published dt-published" datetime="2019-03-08T06:00:00+02:00" itemprop="datePublished" title="08-03-2019">08-03-2019</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<div class="code"><pre class="code literal-block">(  1  6 11  2 )
-(  7 12  3  8 )
-(  3  8  4  9 )
-</pre></div>
-
-<p>moviéndose en cada paso una casilla hacia abajo o hacia la derecha, son los siguientes:</p>
-<div class="code"><pre class="code literal-block"><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w">  </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-<span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">6</span><span class="p">,</span><span class="w"> </span><span class="mf">11</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span><span class="w"> </span><span class="mf">9</span>
-</pre></div>
-
-<p>Las sumas de los caminos son 32, 41, 36, 40, 40, 35, 39, 34, 38 y 37, respectivamente. El camino de máxima suma es el segundo (1, 7, 12, 8, 4, 9) que tiene una suma de 41.</p>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">caminoMaxSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-</pre></div>
-
-<p>tal que (caminoMaxSuma m) es un camino de máxima suma en la matriz m desde el extremo superior izquierdo hasta el extremo inferior derecho, moviéndose en cada paso una casilla hacia abajo o hacia la  derecha. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">λ&gt; caminoMaxSuma (fromLists [[1,6,11,2],[7,12,3,8],[3,8,4,9]])
-[1,7,12,8,4,9]
-λ&gt; sum (caminoMaxSuma3 (fromList 800 800 [1..]))
-766721999
-(1.68 secs, 1,082,106,856 bytes)
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2019/03/08-camino_de_maxima_suma_en_una_matriz/">Leer más…</a></p>
 </div>
                 </div>
             </article>
