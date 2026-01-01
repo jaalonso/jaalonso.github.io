@@ -45,7 +45,62 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" class="u-url">El cociente por 11 es igual a la suma de los cuadrados de sus cifras</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/" class="u-url">Descomposiciones como sumas de consecutivos</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/" rel="bookmark">
+            <time class="published dt-published" datetime="2021-05-25T07:00:00+02:00" itemprop="datePublished" title="25-05-2021">25-05-2021</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El enunciado de un problema para la IMO (Olimpiada Internacional de Matemáticas) de 1966 es</p>
+<blockquote>
+<ul>
+<li>(a) Calcular el número de maneras de expresar 500 como suma de números naturales consecutivos.</li>
+<li>(b) Calcular el número de tales representaciones para n = 2^x·3^y·5^z, con x, y, z ∈ ℕ. ¿Cuántas de ellas están formadas por un único elemento?</li>
+<li>(c) Calcular el número de tales representaciones para un número natural n.</li>
+</ul>
+</blockquote>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">consecutivosConSuma</span><span class="w">    </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[(</span><span class="kt">Integer</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)]</span>
+<span class="w">   </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(consecutivosConSuma n) es la lista de los extremos de las sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">),(</span><span class="m">3</span><span class="p">,</span><span class="m">3</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">4</span><span class="p">,</span><span class="m">4</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">5</span><span class="p">,</span><span class="m">5</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">),(</span><span class="m">6</span><span class="p">,</span><span class="m">6</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="p">[(</span><span class="m">0</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">1</span><span class="p">,</span><span class="m">5</span><span class="p">),(</span><span class="m">4</span><span class="p">,</span><span class="m">6</span><span class="p">),(</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">),(</span><span class="m">15</span><span class="p">,</span><span class="m">15</span><span class="p">)]</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="nf">length </span><span class="p">(</span><span class="n">consecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..1000</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">16</span>
+</pre></div>
+
+<ul>
+<li>(nDeConsecutivosConSuma n) es la cantidad de sucesiones de números naturales consecutivos cuya suma es n. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">3</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">1</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">2</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">6</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="m">3</span>
+<span class="w">     </span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="m">5</span>
+<span class="w">     </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">nDeConsecutivosConSuma</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..10</span><span class="o">^</span><span class="m">5</span><span class="p">]]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">49</span>
+<span class="w">     </span><span class="nf">nDeConsecutivosConSuma </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="m">1</span><span class="kc">..17</span><span class="p">])</span><span class="w">            </span><span class="o">==</span><span class="w"> </span><span class="m">672</span>
+</pre></div>
+
+<p>Usando las funciones anteriores, calcular las respuestas del problema de la Olimpiada.</p>
+<hr>
+<p class="more"><a href="posts/2021/05/25-descomposiciones_como_sumas_de_consecutivos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2021/05/24-el_cociente_por_11_es_igual_a_la_suma_de_los_cuadrados_de_sus_cifras/" class="u-url">El cociente por 11 es igual a la suma de los cuadrados de sus cifras</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4179,45 +4234,6 @@ map minimoSumandosDigitos [10..20] == [10,11,6,5,5,3,6,5,4,3,10]
                     <div>
 <hr>
 <p class="more"><a href="posts/2020/06/02-cambio_con_el_menor_numero_de_monedas/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/01-la_sucesion_ecg/" class="u-url">La sucesión ECG</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2020/06/01-la_sucesion_ecg/" rel="bookmark">
-            <time class="published dt-published" datetime="2020-06-01T06:00:00+02:00" itemprop="datePublished" title="01-06-2020">01-06-2020</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>La sucesión ECG estás definida por a(1) = 1, a(2) = 2 y, para n &gt;= 3, a(n) es el menor natural que aún no está en la sucesión tal que a(n) tiene algún divisor común con a(n-1).</p>
-<p>Los primeros términos de la sucesión son 1, 2, 4, 6, 3, 9, 12, 8, 10, 5, 15, ...</p>
-<p>Al dibujar su gráfica, se parece a la de los electrocardiogramas (abreviadamente, ECG). Por ello, la sucesión se conoce como la sucesión ECG.</p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">sucECG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">graficaSucECG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
-</pre></div>
-
-<p>tales que</p>
-<ul>
-<li>sucECG es la lista de los términos de la sucesión ECG. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block">λ&gt; take 20 sucECG
-[1,2,4,6,3,9,12,8,10,5,15,18,14,7,21,24,16,20,22,11]
-λ&gt; sucECG !! 6000
-6237
-</pre></div>
-
-<ul>
-<li>(graficaSucECG n) dibuja la gráfica de los n primeros términos de la sucesión ECG. Por ejemplo, (graficaSucECG 160) dibuja</li>
-</ul>
-<p><img alt="La sucesión ECG" src="images/La_sucesion_ECG.png"></p>
-<hr>
-<p class="more"><a href="posts/2020/06/01-la_sucesion_ecg/">Leer más…</a></p>
 </div>
                 </div>
             </article>
