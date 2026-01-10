@@ -45,7 +45,55 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/04-subexpresiones_aritmeticas/" class="u-url">Subexpresiones aritméticas</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/05-caminos_reducidos/" class="u-url">Caminos reducidos</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2020/06/05-caminos_reducidos/" rel="bookmark">
+            <time class="published dt-published" datetime="2020-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2020">05-06-2020</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Un camino es una sucesión de pasos en una de las cuatros direcciones Norte, Sur, Este, Oeste. Ir en una dirección y a continuación en la opuesta es un esfuerzo que se puede reducir, Por ejemplo, el camino [Norte,Sur,Este,Sur] se puede reducir a [Este,Sur].</p>
+<p>Un camino se dice que es reducido si no tiene dos pasos consecutivos en direcciones opuesta. Por ejemplo, [Este,Sur] es reducido y [Norte,Sur,Este,Sur] no lo es.</p>
+<p>En Haskell, las direcciones y los caminos se pueden definir por</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Direccion</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">N</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">S</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">E</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">O</span><span class="w"> </span><span class="kr">deriving</span><span class="w"> </span><span class="p">(</span><span class="kt">Show</span><span class="p">,</span><span class="w"> </span><span class="kt">Eq</span><span class="p">)</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Camino</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Direccion</span><span class="p">]</span>
+</pre></div>
+
+<p>Definir la función</p>
+<div class="code"><pre class="code literal-block"><span class="nf">reducido</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Camino</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Camino</span>
+</pre></div>
+
+<p>tal que (reducido ds) es el camino reducido equivalente al camino ds. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="n">reducido</span><span class="w"> </span><span class="err">[]</span><span class="w">                              </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N</span><span class="o">]</span><span class="w">                             </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O</span><span class="o">]</span><span class="w">                           </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N,O</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,E</span><span class="o">]</span><span class="w">                         </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,E,S</span><span class="o">]</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,O,S,E</span><span class="o">]</span><span class="w">                       </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">N,O,S,E</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">S,S,S,N,N,N</span><span class="o">]</span><span class="w">                   </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,S,S,E,O,N</span><span class="o">]</span><span class="w">                   </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="o">[</span><span class="n">N,S,S,E,O,N,O</span><span class="o">]</span><span class="w">                 </span><span class="o">==</span><span class="w">  </span><span class="o">[</span><span class="n">O</span><span class="o">]</span>
+<span class="n">reducido</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">cycle</span><span class="w"> </span><span class="o">[</span><span class="n">N,E,O,S</span><span class="o">]</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="err">[]</span>
+</pre></div>
+
+<p>Nótese que en el penúltimo ejemplo las reducciones son</p>
+<div class="code"><pre class="code literal-block"><span class="w">    </span><span class="o">[</span><span class="n">N,S,S,E,O,N,O</span><span class="o">]</span>
+<span class="o">--&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">S,E,O,N,O</span><span class="o">]</span>
+<span class="o">--&gt;</span><span class="w"> </span><span class="o">[</span><span class="n">S,N,O</span><span class="o">]</span>
+<span class="c1">--&gt; [O]</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2020/06/05-caminos_reducidos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/06/04-subexpresiones_aritmeticas/" class="u-url">Subexpresiones aritméticas</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4804,55 +4852,6 @@ descomposicionesGoldbach (9+10^9)  ==  [(2,1000000007)]
 <p>En el ejemplo anterior se comprueba que en los múltiplos de 6 (es decir, en 6, 12, 18, 24, 30, 36 y 42), el número de descomposiciones de Goldbach alcanza un máximo local. Comprobar con QuickCheck que esta propiedad se cumple en general; es decir, para todo entero positivo n, el número de descomposiciones de Goldbach en 6n es un máximo local.</p>
 <hr>
 <p class="more"><a href="posts/2020/01/20-maximos_locales_en_los_numeros_de_descomposiciones_de_goldbach/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2020/01/17-teorema_de_la_amistad/" class="u-url">Teorema de la amistad</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2020/01/17-teorema_de_la_amistad/" rel="bookmark">
-            <time class="published dt-published" datetime="2020-01-17T06:00:00+02:00" itemprop="datePublished" title="17-01-2020">17-01-2020</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El <strong>teorema de la amistad</strong> afirma que</p>
-<blockquote>
-<p>En cualquier reunión de n personas hay al menos dos personas que tienen el mismo número de amigos (suponiendo que la relación de amistad es simétrica).</p>
-</blockquote>
-<p>Se pueden usar las siguientes representaciones:</p>
-<ul>
-<li>números enteros para representar a las personas,</li>
-<li>pares de enteros (x,y), con x &lt; y, para representar que la persona x e y so amigas y</li>
-<li>lista de pares de enteros para representar la reunión junto con las relaciones de amistad.</li>
-</ul>
-<p>Por ejemplo, [(2,3),(3,5)] representa una reunión de tres personas
-(2, 3 y 5) donde</p>
-<ul>
-<li>2 es amiga de 3,</li>
-<li>3 es amiga de 2 y 5 y</li>
-<li>5 es amiga de 3.
-Si clasificamos las personas poniendo en la misma clase las que tienen el mismo número de amigos, se obtiene [[2,5],[3]] ya que 2 y 5 tienen 1 amigo y 3 tiene 2 amigos.</li>
-</ul>
-<p>Definir la función</p>
-<div class="code"><pre class="code literal-block"><span class="nf">clasesAmigos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Int</span><span class="p">)]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
-</pre></div>
-
-<p>tal que (clasesAmigos r) es la clasificación según el número de amigos de las personas de la reunión r; es decir, la lista cuyos elementos son las listas de personas con 1 amigo, con 2 amigos y así hasta que se completa todas las personas de la reunión r. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">3</span><span class="p">]]</span>
-<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
-<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
-<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">)]</span><span class="w">      </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
-<span class="nf">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]]</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]]</span>
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">clasesAmigos</span><span class="w"> </span><span class="p">[(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">2020</span><span class="p">]])</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span>
-</pre></div>
-
-<p>Comprobar con QuickCheck el teorema de la amistad; es decir, si r es una lista de pares de enteros, entonces (clasesAmigos r') donde r' es la lista de los pares (x,y) de r con x &lt; y y se supone que r' es no vacía.</p>
-<hr>
-<p class="more"><a href="posts/2020/01/17-teorema_de_la_amistad/">Leer más…</a></p>
 </div>
                 </div>
             </article>
