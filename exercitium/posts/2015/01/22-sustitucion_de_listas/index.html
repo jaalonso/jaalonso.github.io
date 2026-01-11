@@ -26,12 +26,12 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:site_name" content="Exercitium">
 <meta property="og:title" content="Sustitución de listas">
 <meta property="og:url" content="https://jaalonso.github.io/exercitium/posts/2015/01/22-sustitucion_de_listas/">
-<meta property="og:description" content='Definir la función
+<meta property="og:description" content="Definir la función
 sustituye :: Eq a =&gt; [a] -&gt; [a] -&gt; [a] -&gt; [a]
 
 
-tal que (sustituye xs ys zs) es la lista obtenida sustituyendo las ocurrencias de xs en zs por ys. Por ejemplo,
-sustituye "as" "_" "l'>
+tal que (sustituye xs ys zs) es la lista obtenida sustituyendo las ocurrencias de la lista no vacía xs en zs por ys. Por ejemplo,
+sus">
 <meta property="og:image" content="https://jaalonso.github.io/exercitium/images/exercitium.jpg">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2015-01-22T06:00:00+02:00">
@@ -72,11 +72,12 @@ sustituye "as" "_" "l'>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la función</p>
+    <hr>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">sustituye</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 
-<p>tal que (sustituye xs ys zs) es la lista obtenida sustituyendo las ocurrencias de xs en zs por ys. Por ejemplo,</p>
+<p>tal que <code>(sustituye xs ys zs)</code> es la lista obtenida sustituyendo las ocurrencias de la lista no vacía <code>xs</code> en <code>zs</code> por <code>ys</code>. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">sustituye</span><span class="w"> </span><span class="s">"as"</span><span class="w"> </span><span class="s">"_"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w">   </span><span class="o">==</span><span class="w">  </span><span class="s">"l_ c_ader_"</span>
 <span class="nf">sustituye</span><span class="w"> </span><span class="s">"as"</span><span class="w"> </span><span class="s">"es"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="s">"les cesaderes"</span>
 <span class="nf">sustituye</span><span class="w"> </span><span class="s">"asa"</span><span class="w"> </span><span class="s">"a"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="s">"las caderas"</span>
@@ -85,14 +86,107 @@ sustituye "as" "_" "l'>
 
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">isPrefixOf</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">isPrefixOf</span><span class="p">,</span><span class="w"> </span><span class="nf">intercalate</span><span class="p">,</span><span class="w"> </span><span class="nf">stripPrefix</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List.Split</span><span class="w"> </span><span class="p">(</span><span class="nf">splitOn</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">sustituye</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
-<span class="nf">sustituye</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
-<span class="nf">sustituye</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">isPrefixOf</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">sustituye</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="p">(</span><span class="n">drop</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">            </span><span class="ow">=</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sustituye</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">sustituye1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">sustituye1</span><span class="w"> </span><span class="kr">_</span><span class="w">  </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">sustituye1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="o">@</span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs'</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="p">`</span><span class="n">isPrefixOf</span><span class="p">`</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">sustituye1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="p">(</span><span class="n">drop</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">          </span><span class="ow">=</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sustituye1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs'</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">sustituye2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">sustituye2</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">sustituye2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="o">@</span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs'</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="kr">case</span><span class="w"> </span><span class="n">stripPrefix</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="kr">of</span>
+<span class="w">    </span><span class="kt">Just</span><span class="w"> </span><span class="n">resto</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">sustituye2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">resto</span>
+<span class="w">    </span><span class="kt">Nothing</span><span class="w">    </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sustituye2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs'</span>
+
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">sustituye3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">sustituye3</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="nf">sustituye3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="o">@</span><span class="p">(</span><span class="n">z</span><span class="kt">:</span><span class="n">zs'</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">maybe</span><span class="w"> </span><span class="p">(</span><span class="n">z</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">sustituye3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs'</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">\</span><span class="n">resto</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">sustituye3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">resto</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="n">stripPrefix</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">sustituye4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Eq</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">sustituye4</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">intercalate</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">splitOn</span><span class="w"> </span><span class="n">xs</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">sustituye</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">sustituye</span><span class="w"> </span><span class="s">"as"</span><span class="w"> </span><span class="s">"_"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"l_ c_ader_"</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">sustituye</span><span class="w"> </span><span class="s">"as"</span><span class="w"> </span><span class="s">"es"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"les cesaderes"</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">sustituye</span><span class="w"> </span><span class="s">"asa"</span><span class="w"> </span><span class="s">"a"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"las caderas"</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">sustituye</span><span class="w"> </span><span class="s">"asd"</span><span class="w"> </span><span class="s">"a"</span><span class="w"> </span><span class="s">"las casaderas"</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="s">"las casaderas"</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">sustituye1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">sustituye2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">sustituye3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">sustituye4</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    16 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- -- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonEmptyList</span><span class="w"> </span><span class="kt">Char</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="p">(</span><span class="kt">NonEmpty</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">sustituye1</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">sustituye2</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sustituye3</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="p">,</span>
+<span class="w">       </span><span class="n">sustituye4</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">zs</span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; :set +s</span>
+<span class="c1">--    λ&gt; length (sustituye1 "123" "" (take (10^7) (cycle "1234")))</span>
+<span class="c1">--    2500000</span>
+<span class="c1">--    (2.39 secs, 1,920,602,240 bytes)</span>
+<span class="c1">--    λ&gt; length (sustituye2 "123" "" (take (10^7) (cycle "1234")))</span>
+<span class="c1">--    2500000</span>
+<span class="c1">--    (2.06 secs, 2,080,602,216 bytes)</span>
+<span class="c1">--    λ&gt; length (sustituye3 "123" "" (take (10^7) (cycle "1234")))</span>
+<span class="c1">--    2500000</span>
+<span class="c1">--    (2.56 secs, 2,340,603,528 bytes)</span>
+<span class="c1">--    λ&gt; length (sustituye4 "123" "" (take (10^7) (cycle "1234")))</span>
+<span class="c1">--    2500000</span>
+<span class="c1">--    (0.56 secs, 2,940,603,136 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
