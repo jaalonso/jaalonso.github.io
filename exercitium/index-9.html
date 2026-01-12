@@ -45,7 +45,119 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/18-permutacion_de_consecutivos/" class="u-url">Permutación de elementos consecutivos</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/19-caminos_minimales_en_un_arbol_numerico/" class="u-url">Caminos minimales en un arbol numérico</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/03/19-caminos_minimales_en_un_arbol_numerico/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-03-19T06:00:00+02:00" itemprop="datePublished" title="19-03-2019">19-03-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En la librería <a href="https://hackage.haskell.org/package/containers-0.5.10.1/docs/Data-Tree.html">Data.Tree</a> se definen los tipos de árboles y bosques como sigue</p>
+<div class="code"><pre class="code literal-block"><span class="kr">data</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="w">   </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">(</span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
+<span class="kr">type</span><span class="w"> </span><span class="kt">Forest</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">Tree</span><span class="w"> </span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+
+<p>Se pueden definir árboles. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block"><span class="nf">ej</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">[</span><span class="kt">Node</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">[</span><span class="kt">Node</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="kt">[]</span><span class="p">],</span><span class="w"> </span><span class="kt">Node</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="kt">[]</span><span class="p">]</span>
+</pre></div>
+
+<p>Y se pueden dibujar con la función drawTree. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">ej</span><span class="ss">))</span>
+<span class="mi">3</span>
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">9</span>
+<span class="o">|</span>
+`<span class="o">-</span><span class="w"> </span><span class="mi">7</span>
+</pre></div>
+
+<p>Los <em>mayores divisores</em> de un número x son los divisores u tales que u &gt; 1 y existe un v tal que 1 &lt; v &lt; u y u.v = x.  Por ejemplo, los mayores divisores de 24 son 12, 8 y 6.</p>
+<p>El <em>árbol de los predecesores y mayores divisores</em> de un número x es el árbol cuya raíz es x y los sucesores de cada nodo y &gt; 1 es el conjunto formado por y-1 junto con los mayores divisores de y. Los nodos con valor 1 no tienen sucesores. Por ejemplo, el árbol de los predecesores y mayores divisores del número 6 es</p>
+<div class="code"><pre class="code literal-block">    6
+   / \
+  5   3
+  |   |
+  4   2
+ / \  |
+3   2 1
+|   |
+2   1
+|
+1
+</pre></div>
+
+<p>Definir las siguientes funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">mayoresDivisores</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">arbol</span><span class="w">            </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Tree</span><span class="w"> </span><span class="kt">Int</span>
+<span class="nf">caminos</span><span class="w">          </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">caminosMinimales</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+</pre></div>
+
+<p>tales que
++ (mayoresDivisores x) es la lista de los mayores divisores de x. Por ejemplo,</p>
+<div class="code"><pre class="code literal-block">mayoresDivisores 24  ==  [12,8,6]
+mayoresDivisores 16  ==  [8,4]
+mayoresDivisores 10  ==  [5]
+mayoresDivisores 17  ==  []
+</pre></div>
+
+<ul>
+<li>(arbol x) es el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ<span class="o">&gt;</span><span class="w"> </span><span class="nv">putStrLn</span><span class="w"> </span><span class="ss">(</span><span class="nv">drawTree</span><span class="w"> </span><span class="ss">(</span><span class="nv">fmap</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="ss">(</span><span class="nv">arbol</span><span class="w"> </span><span class="mi">6</span><span class="ss">)))</span>
+<span class="mi">6</span>
+<span class="o">|</span>
+<span class="o">+-</span><span class="w"> </span><span class="mi">5</span>
+<span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">4</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">+-</span><span class="w"> </span><span class="mi">3</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="o">|</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w">     </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="o">|</span><span class="w">        </span><span class="o">|</span>
+<span class="o">|</span><span class="w">        </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="o">|</span>
+`<span class="o">-</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">   </span><span class="o">|</span>
+<span class="w">   </span>`<span class="o">-</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="o">|</span>
+<span class="w">      </span>`<span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+</pre></div>
+
+<ul>
+<li>(caminos x) es la lista de los caminos en el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; caminos 6
+[[6,5,4,3,2,1],[6,5,4,2,1],[6,3,2,1]]
+</pre></div>
+
+<ul>
+<li>(caminosMinimales x) es la lista de los caminos en de menor longitud en el árbol de los predecesores y mayores divisores del número x. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; caminosMinimales 6
+[[6,3,2,1]]
+λ&gt; caminosMinimales 17
+[[17,16,4,2,1]]
+λ&gt; caminosMinimales 50
+[[50,25,5,4,2,1],[50,10,9,3,2,1],[50,10,5,4,2,1]]
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/03/19-caminos_minimales_en_un_arbol_numerico/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/03/18-permutacion_de_consecutivos/" class="u-url">Permutación de elementos consecutivos</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4347,69 +4459,6 @@ ejemplo,</p>
 
 <hr>
 <p class="more"><a href="posts/2018/06/06-sin_ceros_consecutivos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/06/05-el_problema_de_las_n_torres/" class="u-url">El problema de las N torres</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2018/06/05-el_problema_de_las_n_torres/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-06-05T06:00:00+02:00" itemprop="datePublished" title="05-06-2018">05-06-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El <strong>problema de las N torres</strong> consiste en colocar N torres en un tablero con N filas y N columnas de forma que no haya dos torres en la misma fila ni en la misma columna.</p>
-<p>Cada solución del problema de puede representar mediante una matriz con ceros y unos donde los unos representan las posiciones ocupadas por las torres y los ceros las posiciones libres. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block">( 0 1 0 )
-( 1 0 0 )
-( 0 0 1 )
-</pre></div>
-
-<p>representa una solución del problema de las 3 torres.</p>
-<p>Definir las funciones</p>
-<div class="code"><pre class="code literal-block"><span class="nf">torres</span><span class="w">  </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Matrix</span><span class="w"> </span><span class="kt">Int</span><span class="p">]</span>
-<span class="nf">nTorres</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-</pre></div>
-
-<p>tales que
-+ (torres n) es la lista de las soluciones del problema de las n torres. Por ejemplo,</p>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">torres</span><span class="w"> </span><span class="mi">3</span>
-<span class="p">[(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">,(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">,(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">,(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">,(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">,(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">(</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span>
-<span class="p">]</span>
-</pre></div>
-
-<ul>
-<li>(nTorres n) es el número de soluciones del problema de las n torres. Por ejemplo,</li>
-</ul>
-<div class="code"><pre class="code literal-block"><span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nTorres</span><span class="w"> </span><span class="mi">3</span>
-<span class="mi">6</span>
-<span class="nf">λ</span><span class="o">&gt;</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="p">(</span><span class="n">nTorres</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="mi">4</span><span class="p">)))</span>
-<span class="mi">35660</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2018/06/05-el_problema_de_las_n_torres/">Leer más…</a></p>
 </div>
                 </div>
             </article>
