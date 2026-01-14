@@ -71,12 +71,15 @@ Comprob">
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2015-01-26T06:00:00+02:00" itemprop="datePublished" title="26-01-2015">26-01-2015</time></a>
+            <time class="published dt-published" datetime="2015-01-26T06:00:00+02:00" itemprop="datePublished" title="26-01-2015">26-01-2015</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2026-01-14T06:00:00+02:00" itemprop="dateUpdated" title="14-01-2026">14-01-2026</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Definir la sucesión</p>
+    <hr>
+<p>Definir la sucesión</p>
 <div class="code"><pre class="code literal-block"><span class="nf">naturales0</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
 </pre></div>
 
@@ -85,25 +88,152 @@ Comprob">
 <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">12</span><span class="p">]</span>
 </pre></div>
 
-<p>Comprobar con QuickCheck que el n-ésimo término de la sucesión es n*(1+(-1)^n)/4.</p>
-<p><strong>Nota</strong>. En la comprobación usar</p>
-<div class="code"><pre class="code literal-block"><span class="nf">quickCheckWith</span><span class="w"> </span><span class="p">(</span><span class="n">stdArgs</span><span class="w"> </span><span class="p">{</span><span class="n">maxSize</span><span class="ow">=</span><span class="mi">7</span><span class="p">})</span><span class="w"> </span><span class="n">prop_naturales0</span>
-</pre></div>
-
+<p>Comprobar con QuickCheck que el n-ésimo término de la sucesión es \(\frac{n(1+(-1)^n)}{4}\).</p>
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">intersperse</span><span class="p">,</span><span class="w"> </span><span class="nf">transpose</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="nf">naturales0</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
-<span class="nf">naturales0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[[</span><span class="n">n</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]]</span>
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero1</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[[</span><span class="n">n</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]]</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero2</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="p">(</span><span class="nf">\</span><span class="n">n</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero3</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">intersperse</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero4</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">intercala</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="n">repeat</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1">-- (intercala xs ys) es la lista obtenida intercalando los elementos de</span>
+<span class="c1">-- xs e ys. Por ejemplo.</span>
+<span class="c1">--    λ&gt; take 10 (intercala [1,3..] [2,4..])</span>
+<span class="c1">--    [1,2,3,4,5,6,7,8,9,10]</span>
+<span class="nf">intercala</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">intercala</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">intercala</span><span class="w"> </span><span class="n">ys</span><span class="w"> </span><span class="n">xs</span>
+<span class="nf">intercala</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="n">ys</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">ys</span>
+
+<span class="c1">-- 5ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero5</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">(</span><span class="n">transpose</span><span class="w"> </span><span class="p">[[</span><span class="mi">0</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1">-- 6ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero6</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">-- 7ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="nf">naturalesEntreCero7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span>
+<span class="nf">naturalesEntreCero7</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;&gt;=</span><span class="w"> </span><span class="p">(</span><span class="kt">:</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">[</span><span class="kt">Int</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">naturalesEntreCero</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">take</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="n">naturalesEntreCero</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">    </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">12</span><span class="p">]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">naturalesEntreCero7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    7 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
 
 <span class="c1">-- La propiedad es</span>
-<span class="nf">prop_naturales0</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Property</span>
-<span class="nf">prop_naturales0</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="o">==&gt;</span><span class="w">  </span><span class="n">naturales0</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">4</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonNegative</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="p">(</span><span class="kt">NonNegative</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">naturalesEntreCero1</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="n">naturalesEntreCero2</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">naturalesEntreCero3</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">naturalesEntreCero4</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">naturalesEntreCero5</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">naturalesEntreCero6</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">,</span>
+<span class="w">       </span><span class="n">naturalesEntreCero7</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="p">]</span>
 
 <span class="c1">-- La comprobación es</span>
-<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=7}) prop_naturales0</span>
+<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=7}) prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; :set +s</span>
+<span class="c1">--    λ&gt; naturalesEntreCero1 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (2.37 secs, 1,840,596,888 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero2 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (1.61 secs, 1,480,597,752 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero3 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (0.44 secs, 760,599,480 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero4 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (2.04 secs, 1,640,597,368 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero5 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (1.23 secs, 2,560,595,160 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero6 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (3.02 secs, 1,848,795,416 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero7 !! (10^7)</span>
+<span class="c1">--    5000000</span>
+<span class="c1">--    (0.45 secs, 1,200,598,424 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; naturalesEntreCero3 !! (2*10^7)</span>
+<span class="c1">--    10000000</span>
+<span class="c1">--    (1.54 secs, 1,520,602,320 bytes)</span>
+<span class="c1">--    λ&gt; naturalesEntreCero7 !! (2*10^7)</span>
+<span class="c1">--    10000000</span>
+<span class="c1">--    (2.58 secs, 2,400,602,488 bytes)</span>
+
+<span class="c1">-- Propiedad</span>
+<span class="c1">-- =========</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_naturalesEntreCero</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">NonNegative</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_naturalesEntreCero</span><span class="w"> </span><span class="p">(</span><span class="kt">NonNegative</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">naturalesEntreCero1</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">`</span><span class="n">div</span><span class="p">`</span><span class="w"> </span><span class="mi">4</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=7}) prop_naturalesEntreCero</span>
 <span class="c1">--    +++ OK, passed 100 tests.</span>
 </pre></div>
     </div>
@@ -114,7 +244,19 @@ Comprob">
             <li class="next">
                 <a href="../27-particiones_en_listas_de_segmentos/" rel="next" title="Particiones en listas de segmentos">Siguiente publicación</a>
             </li>
-        </ul></nav></aside></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             
