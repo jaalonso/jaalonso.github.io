@@ -62,52 +62,219 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2015-02-05T06:00:00+02:00" itemprop="datePublished" title="05-02-2015">05-02-2015</time></a>
+            <time class="published dt-published" datetime="2015-02-05T06:00:00+02:00" itemprop="datePublished" title="05-02-2015">05-02-2015</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2026-01-30T06:00:00+02:00" itemprop="dateUpdated" title="30-01-2026">30-01-2026</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
-    <p>Una <a href="https://en.wikipedia.org/wiki/Integer_partition">partición</a> de un entero positivo n es una manera de escribir n como una suma de enteros positivos. Dos sumas que sólo difieren en el orden de sus sumandos se consideran la misma partición. Por ejemplo, 4 tiene cinco particiones: 4, 3+1, 2+2, 2+1+1 y 1+1+1+1.</p>
+    <hr>
+<p>Una <a href="https://en.wikipedia.org/wiki/Integer_partition">partición</a> de un entero positivo n es una manera de escribir n como una suma de enteros positivos. Dos sumas que sólo difieren en el orden de sus sumandos se consideran la misma partición. Por ejemplo, 4 tiene cinco particiones: 4, 3+1, 2+2, 2+1+1 y 1+1+1+1.</p>
 <p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">particiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 </pre></div>
 
-<p>tal que (particiones n) es la lista de las particiones del número n. Por ejemplo,</p>
+<p>tal que <code>(particiones n)</code> es la lista de las particiones del número <code>n</code>. Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">particiones</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
 <span class="nf">particiones</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="p">[[</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
-<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">particiones</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">204226</span>
+<span class="nf">length</span><span class="w"> </span><span class="p">(</span><span class="n">particiones</span><span class="w"> </span><span class="mi">70</span><span class="p">)</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">4087968</span>
 </pre></div>
 
 <hr>
 <!-- TEASER_END --><h3>Soluciones</h3>
-<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">sort</span><span class="p">)</span>
+<div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.Array</span><span class="w"> </span><span class="p">((</span><span class="o">!</span><span class="p">),</span><span class="w"> </span><span class="nf">listArray</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Math.Combinat.Partitions</span><span class="w"> </span><span class="p">(</span><span class="nf">partitions</span><span class="p">,</span><span class="w"> </span><span class="nf">fromPartition</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="c1">-- 1ª definición</span>
+<span class="c1">-- 1ª solución: Recursiva básica  (generar y filtrar)</span>
+<span class="c1">-- ==================================================</span>
+
 <span class="nf">particiones1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
 <span class="nf">particiones1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
 <span class="nf">particiones1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="kt">:</span><span class="n">y</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">],</span>
 <span class="w">                        </span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">particiones1</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">x</span><span class="p">),</span>
 <span class="w">                        </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">y</span><span class="p">]</span>
 
-<span class="c1">-- 2ª definición</span>
-<span class="nf">particiones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
-<span class="nf">particiones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="o">!!</span><span class="n">n</span><span class="w"> </span><span class="kr">where</span>
-<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">particiones</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span><span class="w"> </span><span class="kr">where</span>
-<span class="w">        </span><span class="n">particiones</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="kt">:</span><span class="n">p</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">],</span>
-<span class="w">                                     </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aux</span><span class="o">!!</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">x</span><span class="p">),</span>
-<span class="w">                                     </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="n">p</span><span class="p">]</span>
+<span class="c1">-- 2ª solución: Recursiva con poda</span>
+<span class="c1">-- ===============================</span>
 
-<span class="c1">-- Comparación de eficiencia</span>
+<span class="nf">particiones2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="kr">where</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="w">        </span><span class="n">aux</span><span class="w"> </span><span class="n">n'</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">concat</span><span class="w"> </span><span class="p">[</span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="kt">:</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">n'</span><span class="o">-</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">i</span><span class="p">)</span>
+<span class="w">                          </span><span class="o">|</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">          </span><span class="kr">where</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">n'</span>
+
+<span class="c1">-- 3ª solución: Notación monádica</span>
+<span class="c1">-- ==============================</span>
+
+<span class="nf">particiones3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">min</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+<span class="w">      </span><span class="n">rest</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">rest</span><span class="p">)</span>
+
+<span class="c1">-- 4ª solución: Memoización con listas infinitas</span>
+<span class="c1">-- =============================================</span>
+
+<span class="nf">particiones4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">particiones</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+<span class="w">    </span><span class="n">particiones</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="kt">:</span><span class="n">p</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">..</span><span class="mi">1</span><span class="p">],</span>
+<span class="w">                                 </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="n">x</span><span class="p">),</span>
+<span class="w">                                 </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">head</span><span class="w"> </span><span class="n">p</span><span class="p">]</span>
+
+<span class="c1">-- 5ª solución: Programación dinámica con listas</span>
+<span class="c1">-- =============================================</span>
+
+<span class="nf">particiones5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="c1">-- tabla !! m !! k es la lista de particiones de 'k'</span>
+<span class="w">    </span><span class="c1">-- con sumandos no mayores a 'm'</span>
+<span class="w">    </span><span class="n">tabla</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[[</span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">k</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">k</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="kt">:</span><span class="n">p</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">m</span><span class="p">)]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">!!</span><span class="w"> </span><span class="n">k</span>
+
+<span class="c1">-- 6ª solución: Programación dinámica con arrays</span>
+<span class="c1">-- =============================================</span>
+
+<span class="nf">particiones6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">tabla</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">listArray</span><span class="w"> </span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="p">[</span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">],</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">n</span><span class="p">]]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="kt">[]</span><span class="p">]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">_</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">    </span><span class="n">aux</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">k</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">m</span><span class="kt">:</span><span class="n">p</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">-</span><span class="n">m</span><span class="p">)]</span><span class="w"> </span><span class="o">++</span><span class="w"> </span><span class="n">tabla</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span>
+
+<span class="c1">-- 7ª solución: Uso de librería especializada (combinat)</span>
+<span class="c1">-- =====================================================</span>
+
+<span class="nf">particiones7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]]</span>
+<span class="nf">particiones7</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">reverse</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">fromPartition</span><span class="w"> </span><span class="p">(</span><span class="n">partitions</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Int</span><span class="p">]])</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">particiones</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">     </span><span class="n">particiones</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">     </span><span class="p">[[</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">     </span><span class="n">particiones</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span>
+<span class="w">     </span><span class="p">[[</span><span class="mi">5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">particiones7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    14 examples, 0 failures</span>
+
+<span class="c1">-- Comprobación de equivalencia</span>
+<span class="c1">-- ============================</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_particiones</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Positive</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">prop_particiones</span><span class="w"> </span><span class="p">(</span><span class="kt">Positive</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">particiones1</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="w"> </span><span class="n">particiones2</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">particiones3</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">particiones4</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">particiones5</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">particiones6</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">particiones7</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheckWith (stdArgs {maxSize=20}) prop_particiones</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia                                        --</span>
 <span class="c1">-- =========================</span>
 
 <span class="c1">-- La comparación es</span>
-<span class="c1">--    λ&gt; length (particiones1 20)</span>
-<span class="c1">--    627</span>
-<span class="c1">--    (4.93 secs, 875288184 bytes)</span>
+<span class="c1">--    λ&gt; :set +s</span>
+<span class="c1">--    λ&gt; length (particiones1 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (11.38 secs, 7,316,678,920 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones2 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.04 secs, 7,380,536 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones3 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.04 secs, 7,502,064 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones4 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.01 secs, 3,453,280 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones5 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.01 secs, 1,345,992 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones6 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.01 secs, 1,350,008 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones7 23)</span>
+<span class="c1">--    1255</span>
+<span class="c1">--    (0.01 secs, 2,124,360 bytes)</span>
 <span class="c1">--</span>
-<span class="c1">--    λ&gt; length (particiones2 20)</span>
-<span class="c1">--    627</span>
-<span class="c1">--    (0.02 secs, 2091056 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones2 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (2.54 secs, 1,633,031,680 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones3 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (2.56 secs, 1,700,791,432 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones4 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (2.43 secs, 863,579,104 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones5 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (0.16 secs, 76,997,688 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones6 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (0.19 secs, 77,020,880 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones7 50)</span>
+<span class="c1">--    204226</span>
+<span class="c1">--    (0.36 secs, 377,769,904 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; length (particiones5 60)</span>
+<span class="c1">--    966467</span>
+<span class="c1">--    (0.84 secs, 358,027,072 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones6 60)</span>
+<span class="c1">--    966467</span>
+<span class="c1">--    (0.87 secs, 358,061,664 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones7 60)</span>
+<span class="c1">--    966467</span>
+<span class="c1">--    (2.00 secs, 1,975,593,104 bytes)</span>
+<span class="c1">--</span>
+<span class="c1">--    λ&gt; length (particiones5 70)</span>
+<span class="c1">--    4087968</span>
+<span class="c1">--    (3.84 secs, 1,507,357,120 bytes)</span>
+<span class="c1">--    λ&gt; length (particiones6 70)</span>
+<span class="c1">--    4087968</span>
+<span class="c1">--    (3.64 secs, 1,507,405,400 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
