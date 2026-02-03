@@ -45,7 +45,88 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/04-distribucion_de_diferencias_de_digitos_consecutivos_de_pi/" class="u-url">Distribución de diferencias de dígitos consecutivos de pi</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/" class="u-url">Conjetura de las familias estables por uniones</a></h1>
+                <div class="metadata">
+                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
+                   </span></p>
+            <p class="dateline">
+            <a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/" rel="bookmark">
+            <time class="published dt-published" datetime="2019-04-05T07:00:00+02:00" itemprop="datePublished" title="05-04-2019">05-04-2019</time></a>
+            </p>
+		    <p><span class="text-dark">Misceláneas</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>La <a href="https://en.wikipedia.org/wiki/Union-closed_sets_conjecture">conjetura de las familias estables por uniones</a> fue planteada por Péter Frankl en 1979 y aún sigue abierta.</p>
+<p>Una familia de conjuntos es estable por uniones si la unión de dos conjuntos cualesquiera de la familia pertenece a la familia. Por ejemplo, {∅, {1}, {2}, {1,2}, {1,3}, {1,2,3}} es estable por uniones; pero {{1}, {2}, {1,3}, {1,2,3}} no lo es.</p>
+<p>La conjetura afirma que toda familia no vacía estable por uniones y distinta {∅} posee algún elemento que pertenece al menos a la mitad de los conjuntos de la familia.</p>
+<p>Definir las funciones</p>
+<div class="code"><pre class="code literal-block"><span class="nf">esEstable</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+<span class="nf">familiasEstables</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">))</span>
+<span class="nf">mayoritarios</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Ord</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="p">(</span><span class="kt">Set</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="p">]</span>
+<span class="nf">conjeturaFrankl</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Bool</span>
+</pre></div>
+
+<p>tales que</p>
+<ul>
+<li>(esEstable f) se verifica si la familia f es estable por uniones. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; esEstable (fromList [empty, fromList [1,2], fromList [1..5]])
+True
+λ&gt; esEstable (fromList [empty, fromList [1,7], fromList [1..5]])
+False
+λ&gt; esEstable (fromList [fromList [1,2], singleton 3, fromList [1..3]])
+True
+</pre></div>
+
+<ul>
+<li>(familiasEstables c) es el conjunto de las familias estables por uniones formadas por elementos del conjunto c. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">λ&gt; familiasEstables (fromList [1..2])
+fromList
+  [ fromList []
+  , fromList [fromList []]
+  , fromList [fromList [],fromList [1]]
+  , fromList [fromList [],fromList [1],fromList [1,2]],
+  fromList [fromList [],fromList [1],fromList [1,2],fromList [2]]
+  , fromList [fromList [],fromList [1,2]]
+  , fromList [fromList [],fromList [1,2],fromList [2]]
+  , fromList [fromList [],fromList [2]]
+  , fromList [fromList [1]]
+  , fromList [fromList [1],fromList [1,2]]
+  , fromList [fromList [1],fromList [1,2],fromList [2]]
+  , fromList [fromList [1,2]]
+  , fromList [fromList [1,2],fromList [2]]
+  , fromList [fromList [2]]]
+λ&gt; size (familiasEstables (fromList [1,2]))
+14
+λ&gt; size (familiasEstables (fromList [1..3]))
+122
+λ&gt; size (familiasEstables (fromList [1..4]))
+4960
+</pre></div>
+
+<ul>
+<li>(mayoritarios f) es la lista de elementos que pertenecen al menos a la mitad de los conjuntos de la familia f. Por ejemplo,</li>
+</ul>
+<div class="code"><pre class="code literal-block">mayoritarios (fromList [empty, fromList [1,3], fromList [3,5]]) == [3]
+mayoritarios (fromList [empty, fromList [1,3], fromList [4,5]]) == []
+</pre></div>
+
+<ul>
+<li>(conjeturaFrankl n) se verifica si para toda familia f formada por elementos del conjunto {1,2,...,n} no vacía, estable por uniones y  distinta de {∅} posee algún elemento que pertenece al menos a la mitad de los conjuntos de f. Por ejemplo.</li>
+</ul>
+<div class="code"><pre class="code literal-block">conjeturaFrankl 2  ==  True
+conjeturaFrankl 3  ==  True
+conjeturaFrankl 4  ==  True
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2019/04/05-conjetura_de_las_familias_estables_por_uniones/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2019/04/04-distribucion_de_diferencias_de_digitos_consecutivos_de_pi/" class="u-url">Distribución de diferencias de dígitos consecutivos de pi</a></h1>
                 <div class="metadata">
                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                        <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
@@ -4521,23 +4602,6 @@ ejemplo,</p>
 <p><strong>Nota</strong>: se puede usar la función <a href="https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-List.html#v:genericLength">genericLength</a>.</p>
 <hr>
 <p class="more"><a href="posts/2018/11/19-numeros_autodescriptivos/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2018/11/16-capicuas_productos_de_dos_numeros_de_dos_digitos/" class="u-url">Capicúas productos de dos números de dos dígitos</a></h1>
-                <div class="metadata">
-                   <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                       <a href="https://jaalonso.github.io" target="_blank" rel="noopener">José A. Alonso</a>
-                   </span></p>
-            <p class="dateline">
-            <a href="posts/2018/11/16-capicuas_productos_de_dos_numeros_de_dos_digitos/" rel="bookmark">
-            <time class="published dt-published" datetime="2018-11-16T06:00:00+02:00" itemprop="datePublished" title="16-11-2018">16-11-2018</time></a>
-            </p>
-		    <p><span class="text-dark">Misceláneas</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<hr>
-<p class="more"><a href="posts/2018/11/16-capicuas_productos_de_dos_numeros_de_dos_digitos/">Leer más…</a></p>
 </div>
                 </div>
             </article>
