@@ -66,17 +66,19 @@ tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del 
 </span></p>
             <p class="dateline">
             <a href="." rel="bookmark">
-            <time class="published dt-published" datetime="2015-02-12T06:00:00+02:00" itemprop="datePublished" title="12-02-2015">12-02-2015</time></a>
+            <time class="published dt-published" datetime="2015-02-12T06:00:00+02:00" itemprop="datePublished" title="12-02-2015">12-02-2015</time><span class="updated"> (actualizado
+                    <time class="updated dt-updated" datetime="2026-02-08T06:00:00+02:00" itemprop="dateUpdated" title="08-02-2026">08-02-2026</time>)</span>
+            </a>
             </p>
         </div>
         
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <hr>
-<!-- TEASER_END --><p>Definir la función</p>
+<p>Definir la función</p>
 <div class="code"><pre class="code literal-block"><span class="nf">mayorProducto</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 </pre></div>
 
-<p>tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del número x (suponiendo que x tiene al menos n dígitos). Por ejemplo,</p>
+<p>tal que <code>(mayorProducto n x)</code> es el mayor producto de <code>n</code> dígitos consecutivos del número <code>x</code> (suponiendo que <code>x</code> tiene al menos <code>n</code> dígitos). Por ejemplo,</p>
 <div class="code"><pre class="code literal-block"><span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">325</span><span class="w">                  </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
 <span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">11111</span><span class="w">                </span><span class="o">==</span><span class="w">  </span><span class="mi">1</span>
 <span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">113111</span><span class="w">               </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span>
@@ -84,27 +86,28 @@ tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del 
 <span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">10151112</span><span class="w">             </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
 <span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">101511124</span><span class="w">            </span><span class="o">==</span><span class="w">  </span><span class="mi">10</span>
 <span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">1000</span><span class="p">])</span><span class="w">  </span><span class="o">==</span><span class="w">  </span><span class="mi">41472</span>
+<span class="nf">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">(</span><span class="mi">123456</span><span class="o">^</span><span class="mi">1234689</span><span class="p">)</span><span class="w">     </span><span class="o">==</span><span class="w">  </span><span class="mi">59049</span>
 </pre></div>
 
-<h3>Soluciones</h3>
+<hr>
+<!-- TEASER_END --><h3>Soluciones</h3>
 <div class="code"><pre class="code literal-block"><span class="kr">import</span><span class="w"> </span><span class="nn">Data.List</span><span class="w"> </span><span class="p">(</span><span class="nf">inits</span><span class="p">,</span><span class="w"> </span><span class="nf">tails</span><span class="p">)</span>
 <span class="kr">import</span><span class="w"> </span><span class="nn">Data.Char</span><span class="w"> </span><span class="p">(</span><span class="nf">digitToInt</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Data.List.Split</span><span class="w"> </span><span class="p">(</span><span class="nf">divvy</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.Hspec</span><span class="w"> </span><span class="p">(</span><span class="kt">Spec</span><span class="p">,</span><span class="w"> </span><span class="nf">describe</span><span class="p">,</span><span class="w"> </span><span class="nf">hspec</span><span class="p">,</span><span class="w"> </span><span class="nf">it</span><span class="p">,</span><span class="w"> </span><span class="nf">shouldBe</span><span class="p">)</span>
+<span class="kr">import</span><span class="w"> </span><span class="nn">Test.QuickCheck</span>
 
-<span class="c1">-- 1ª solución</span>
-<span class="c1">-- ===========</span>
+<span class="c1">-- 1ª solución: Descomposición con funciones auxiliares</span>
+<span class="c1">-- ====================================================</span>
 
 <span class="nf">mayorProducto1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 <span class="nf">mayorProducto1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
-<span class="w">    </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">product</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">segmentos</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">cifras</span><span class="w"> </span><span class="n">x</span><span class="p">)]</span>
+<span class="w">  </span><span class="n">maximum</span><span class="w"> </span><span class="p">[</span><span class="n">product</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">segmentos</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">(</span><span class="n">cifras</span><span class="w"> </span><span class="n">x</span><span class="p">)]</span>
 
-<span class="c1">-- (cifras x) es la lista de las cifras del número x, de derecha a</span>
-<span class="c1">-- izquierda. Por ejemplo,</span>
-<span class="c1">--    cifras 325  ==  [5,2,3]</span>
+<span class="c1">-- (cifras x) es la lista de las cifras del número x. Por ejemplo,</span>
+<span class="c1">--    cifras 325  ==  [3,2,5]</span>
 <span class="nf">cifras</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span>
-<span class="nf">cifras</span><span class="w"> </span><span class="n">x</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w">    </span><span class="ow">=</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
-<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">cifras</span><span class="w"> </span><span class="n">q</span>
-<span class="w">    </span><span class="kr">where</span><span class="w"> </span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">quotRem</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">10</span>
+<span class="nf">cifras</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">toInteger</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">digitToInt</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">show</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
 
 <span class="c1">-- (segmentos n xs) es la lista de los segmentos de longitud n de la</span>
 <span class="c1">-- lista xs. Por ejemplo,</span>
@@ -112,8 +115,8 @@ tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del 
 <span class="nf">segmentos</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="kt">Integer</span><span class="p">]</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="p">[[</span><span class="kt">Integer</span><span class="p">]]</span>
 <span class="nf">segmentos</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="p">(</span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">tails</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span>
 
-<span class="c1">-- 2ª solución</span>
-<span class="c1">-- ===========</span>
+<span class="c1">-- 2ª solución: Recursión explícita</span>
+<span class="c1">-- ================================</span>
 
 <span class="nf">mayorProducto2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
 <span class="nf">mayorProducto2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">aux</span><span class="w"> </span><span class="n">ns</span><span class="p">)</span>
@@ -121,40 +124,164 @@ tal que (mayorProducto n x) es el mayor producto de n dígitos consecutivos del 
 <span class="w">          </span><span class="n">aux</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
 <span class="w">                 </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w">     </span><span class="ow">=</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
 
-<span class="c1">-- 3ª solución</span>
-<span class="c1">-- ===========</span>
+<span class="c1">-- 3ª solución: Refinamiento usando composición</span>
+<span class="c1">-- ============================================</span>
 
 <span class="nf">mayorProducto3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-<span class="nf">mayorProducto3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">&gt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">length</span><span class="p">)</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">tails</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">cifras</span>
+<span class="nf">mayorProducto3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">&gt;=</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">length</span><span class="p">)</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">tails</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">cifras</span>
 
-<span class="c1">-- 4ª solución</span>
-<span class="c1">-- ===========</span>
+<span class="c1">-- 4ª solución: Fuerza bruta con inits y tails</span>
+<span class="c1">-- ===========================================</span>
 
 <span class="nf">mayorProducto4</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
-<span class="nf">mayorProducto4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">digitToInt</span><span class="p">))</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">==</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">length</span><span class="p">)</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">concatMap</span><span class="w"> </span><span class="n">inits</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">tails</span><span class="w"> </span><span class="o">.</span>
-<span class="w">                   </span><span class="n">show</span>
+<span class="nf">mayorProducto4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="p">(</span><span class="n">fromIntegral</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">digitToInt</span><span class="p">))</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">filter</span><span class="w"> </span><span class="p">((</span><span class="o">==</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">length</span><span class="p">)</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">concatMap</span><span class="w"> </span><span class="n">inits</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">tails</span>
+<span class="w">                 </span><span class="o">.</span><span class="w"> </span><span class="n">show</span>
 
-<span class="c1">-- ---------------------------------------------------------------------</span>
-<span class="c1">-- Comparación de soluciones                                          --</span>
-<span class="c1">-- ---------------------------------------------------------------------</span>
+<span class="c1">-- 5ª solución: Optimización basada en el cero</span>
+<span class="c1">-- ===========================================</span>
 
-<span class="c1">-- Tiempo (en segundos) del cálculo de (mayorProducto4 5 (product [1..]))</span>
+<span class="nf">mayorProducto5</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorProducto5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">productos</span><span class="w"> </span><span class="p">(</span><span class="n">cifras</span><span class="w"> </span><span class="n">x</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">where</span>
+<span class="w">    </span><span class="n">productos</span><span class="w"> </span><span class="n">xs</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">[]</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">`</span><span class="n">elem</span><span class="p">`</span><span class="w"> </span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">productos</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="p">(</span><span class="n">dropWhile</span><span class="w"> </span><span class="p">(</span><span class="o">/=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">xs</span><span class="p">))</span>
+<span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="p">(</span><span class="n">take</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="n">productos</span><span class="w"> </span><span class="p">(</span><span class="n">tail</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1">-- 6ª solución: Uso de la librería split</span>
+<span class="c1">-- =====================================</span>
+
+<span class="nf">mayorProducto6</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorProducto6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">maximum</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="p">(</span><span class="n">divvy</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="n">cifras</span><span class="w"> </span><span class="n">x</span><span class="p">)))</span>
+
+<span class="c1">-- 7ª solución: Composición y librería</span>
+<span class="c1">-- ===================================</span>
+
+<span class="nf">mayorProducto7</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span>
+<span class="nf">mayorProducto7</span><span class="w"> </span><span class="n">n</span><span class="w">  </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">maximum</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">divvy</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="n">cifras</span>
+
+<span class="c1">-- Verificación</span>
+<span class="c1">-- ============</span>
+
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">IO</span><span class="w"> </span><span class="nb">()</span>
+<span class="nf">verifica</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">hspec</span><span class="w"> </span><span class="n">spec</span>
+
+<span class="nf">specG</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Integer</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">specG</span><span class="w"> </span><span class="n">mayorProducto</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e1"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">325</span><span class="w">       </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e2"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">11111</span><span class="w">     </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e3"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">113111</span><span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e4"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">110111</span><span class="w">    </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e5"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">10151112</span><span class="w">  </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">  </span><span class="n">it</span><span class="w"> </span><span class="s">"e6"</span><span class="w"> </span><span class="o">$</span>
+<span class="w">    </span><span class="n">mayorProducto</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">101511124</span><span class="w"> </span><span class="p">`</span><span class="n">shouldBe</span><span class="p">`</span><span class="w"> </span><span class="mi">10</span>
+
+<span class="nf">spec</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Spec</span>
+<span class="nf">spec</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 1"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto1</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 2"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto2</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 3"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto3</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 4"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto4</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 5"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto5</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 6"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto6</span>
+<span class="w">  </span><span class="n">describe</span><span class="w"> </span><span class="s">"def. 7"</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="n">specG</span><span class="w"> </span><span class="n">mayorProducto7</span>
+
+<span class="c1">-- La verificación es</span>
+<span class="c1">--    λ&gt; verifica</span>
+<span class="c1">--    42 examples, 0 failures</span>
+
+<span class="c1">-- Equivalencia de las definiciones</span>
+<span class="c1">-- ================================</span>
+
+<span class="c1">-- genEjemplo es un generador de ejemplos (es decir, de pares formados</span>
+<span class="c1">-- por un Int n y un Integer con al menos n dígitos). Por ejemplo,</span>
+<span class="c1">--    λ&gt; generate genEjemplo</span>
+<span class="c1">--    (5,1262536785)</span>
+<span class="c1">--    λ&gt; generate genEjemplo</span>
+<span class="c1">--    (10,54879920995089158515)</span>
+<span class="nf">genEjemplo</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Gen</span><span class="w"> </span><span class="p">(</span><span class="kt">Int</span><span class="p">,</span><span class="kt">Integer</span><span class="p">)</span>
+<span class="nf">genEjemplo</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="n">n</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="ow">&lt;-</span><span class="w"> </span><span class="n">choose</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="n">n</span><span class="p">,</span><span class="mi">10</span><span class="o">^</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+<span class="w">  </span><span class="n">return</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1">-- La propiedad es</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Property</span>
+<span class="nf">prop_equivalencia</span><span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="n">forAll</span><span class="w"> </span><span class="n">genEjemplo</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="nf">\</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="ow">-&gt;</span>
+<span class="w">  </span><span class="n">all</span><span class="w"> </span><span class="p">(</span><span class="o">==</span><span class="w"> </span><span class="n">mayorProducto1</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span><span class="p">)</span>
+<span class="w">      </span><span class="p">[</span><span class="w"> </span><span class="n">mayorProducto2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">mayorProducto3</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">mayorProducto4</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">mayorProducto5</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">mayorProducto6</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">,</span><span class="w"> </span><span class="n">mayorProducto7</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">x</span>
+<span class="w">      </span><span class="p">]</span>
+
+<span class="c1">-- La comprobación es</span>
+<span class="c1">--    λ&gt; quickCheck prop_equivalencia</span>
+<span class="c1">--    +++ OK, passed 100 tests.</span>
+
+<span class="c1">-- Comparación de eficiencia</span>
+<span class="c1">-- =========================</span>
+
+<span class="c1">-- La comparación es</span>
+<span class="c1">--    λ&gt; :set +s</span>
+<span class="c1">--    λ&gt; mayorProducto1 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.01 secs, 1,759,184 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto2 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.03 secs, 5,788,496 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto3 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.01 secs, 1,640,984 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto4 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (5.97 secs, 10,932,681,960 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto5 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.04 secs, 1,894,184 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto6 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.01 secs, 1,731,600 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto7 5 (product [1..500])</span>
+<span class="c1">--    28224</span>
+<span class="c1">--    (0.01 secs, 1,731,984 bytes)</span>
 <span class="c1">--</span>
-<span class="c1">--    | Def | 10   | 100  | 1000 | 5000  |</span>
-<span class="c1">--    |-----+------+------+------+-------|</span>
-<span class="c1">--    | 1   | 0.01 | 0.01 | 0.04 |  0.34 |</span>
-<span class="c1">--    | 2   | 0.01 | 0.01 | 0.07 |  2.86 |</span>
-<span class="c1">--    | 3   | 0.01 | 0.01 | 0.06 | 12.48 |</span>
-<span class="c1">--    | 4   | 0.00 | 0.12 |      |       |</span>
-<span class="o">...</span>
+<span class="c1">--    λ&gt; mayorProducto1 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (0.08 secs, 102,242,784 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto2 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (2.74 secs, 228,906,528 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto3 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (3.25 secs, 98,535,616 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto5 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (2.25 secs, 106,822,520 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto6 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (0.07 secs, 101,388,248 bytes)</span>
+<span class="c1">--    λ&gt; mayorProducto7 5 (product [1..10000])</span>
+<span class="c1">--    59049</span>
+<span class="c1">--    (0.06 secs, 101,388,632 bytes)</span>
 </pre></div>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
