@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Si a converge a L, entonces (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1] | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2026/06/03-cota_inferior_de_sucesiones_convergentes/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta name="twitter:title" content="Si a converge a L, entonces (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1] | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../01-suma_de_sucesiones_convergentes/" title="Si aₙ converge a L y bₙ a M, entonces aₙ+bₙ converge a L+M." type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Si a converge a L, entonces (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1]">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2026/06/03-cota_inferior_de_sucesiones_convergentes/">
+<meta property="og:description" content="Demostrar que si la sucesión \(a\) converge a \(L\), entonces
+\[ (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1] \]
+Para ello, completar la siguiente teoría de Lean4:
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic
+
+">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-06-03T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Proof exercises in Lean4 and Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Si a converge a L, entonces (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1]</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2026-06-03T06:00:00+02:00" itemprop="datePublished" title="03-06-2026">03-06-2026</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>Demostrar que si la sucesión \(a\) converge a \(L\), entonces
+\[ (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h2>1. Demostración en lenguaje natural</h2>
+<p>Puesto que \(a\) converge a \(L\), existe un \(N ∈ ℕ\) tal que
+\[ (∀ n ≥ N) |aₙ - L| &lt; 1 \tag{1} \]
+Veamos que
+\[ (∀ n ≥ N) [aₙ ≥ L - 1] \]
+En efecto, sea \(n ≥ N\). Por (1),
+\[ |aₙ - L| &lt; 1 \]
+Luego,
+\begin{align}
+   &amp;-1 &lt; aₙ - L ∧ aₙ - L &lt; 1    \newline
+   &amp;\Longrightarrow -1 &lt; aₙ - L \newline
+   &amp;\Longrightarrow aₙ ≥ L - 1
+\end{align}</p>
+<h2>2. Demostraciones en Lean 4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">L1</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">add_lt_add_iff_right</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="bp">.</span><span class="n">mpr</span><span class="w"> </span><span class="n">h</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">neg_lt_iff_pos_add.mp</span><span class="w"> </span><span class="n">h</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">le_of_lt</span><span class="w"> </span><span class="n">h2</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">one_pos</span>
+<span class="w">  </span><span class="c1">-- N : ℕ</span>
+<span class="w">  </span><span class="c1">-- hN : ∀ n ≥ N, |a n - L| &lt; 1</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">N</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ N, a n ≥ L - 1</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ N</span>
+<span class="w">  </span><span class="c1">-- ⊢ a n ≥ L - 1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hN</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">abs_lt.mp</span><span class="w"> </span><span class="n">h1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h3</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">h2</span><span class="bp">.</span><span class="mi">1</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">ge_iff_le</span><span class="o">,</span><span class="w"> </span><span class="bp">←</span><span class="w"> </span><span class="n">sub_nonneg</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ 0 ≤ a n - (L - 1)</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">L1</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="n">h3</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">sub_add</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">one_pos</span>
+<span class="w">  </span><span class="c1">-- N : ℕ</span>
+<span class="w">  </span><span class="c1">-- hN : ∀ n ≥ N, |a n - L| &lt; 1</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">N</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ N, a n ≥ L - 1</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ N</span>
+<span class="w">  </span><span class="c1">-- ⊢ a n ≥ L - 1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">abs_lt.mp</span><span class="w"> </span><span class="o">(</span><span class="n">hN</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="o">))</span><span class="bp">.</span><span class="mi">1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">sub_add</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">ge_iff_le</span><span class="o">,</span><span class="w"> </span><span class="bp">←</span><span class="w"> </span><span class="n">sub_nonneg</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ 0 ≤ a n - (L - 1)</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">h2</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ 0 ≤ a n - L + 1</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">neg_le_iff_add_nonneg.mp</span><span class="w"> </span><span class="o">(</span><span class="n">le_of_lt</span><span class="w"> </span><span class="n">h1</span><span class="o">)</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">one_pos</span>
+<span class="w">  </span><span class="c1">-- N : ℕ</span>
+<span class="w">  </span><span class="c1">-- hN : ∀ n ≥ N, |a n - L| &lt; 1</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">N</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ N, a n ≥ L - 1</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ N</span>
+<span class="w">  </span><span class="c1">-- ⊢ a n ≥ L - 1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">abs_lt.mp</span><span class="w"> </span><span class="o">(</span><span class="n">hN</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="o">))</span><span class="bp">.</span><span class="mi">1</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">ge_iff_le</span><span class="o">,</span><span class="w"> </span><span class="bp">←</span><span class="w"> </span><span class="n">sub_nonneg</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ 0 ≤ a n - (L - 1)</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">one_pos</span>
+<span class="w">  </span><span class="c1">-- N : ℕ</span>
+<span class="w">  </span><span class="c1">-- hN : ∀ n ≥ N, |a n - L| &lt; 1</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">N</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ N, a n ≥ L - 1</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ N</span>
+<span class="w">  </span><span class="c1">-- ⊢ a n ≥ L - 1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">abs_lt.mp</span><span class="w"> </span><span class="o">(</span><span class="n">hN</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="o">))</span><span class="bp">.</span><span class="mi">1</span>
+<span class="w">  </span><span class="n">linarith</span>
+
+<span class="c1">-- 5ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span><span class="o">)</span>
+<span class="w">  </span><span class="c1">-- N : ℕ</span>
+<span class="w">  </span><span class="c1">-- hN : ∀ n ≥ N, |a n - L| &lt; 1</span>
+<span class="w">  </span><span class="n">refine</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="bp">?</span><span class="n">_</span><span class="o">⟩</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ N</span>
+<span class="w">  </span><span class="c1">-- ⊢ a n ≥ L - 1</span>
+<span class="w">  </span><span class="n">grind</span>
+
+<span class="c1">-- 6ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
+<span class="k">let</span><span class="w"> </span><span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">hN</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span><span class="o">)</span>
+<span class="o">⟨</span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span><span class="o">⟩</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">abs_lt</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">x</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="bp">-</span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">add_lt_add_iff_right</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">z</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">ge_iff_le</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">le_of_lt</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">neg_le_iff_add_nonneg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">neg_lt_iff_pos_add</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">-</span><span class="n">x</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">one_pos</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">sub_add</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="o">(</span><span class="n">y</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">z</span><span class="o">))</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">sub_nonneg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+</pre></div>
+
+<p>Se puede interactuar con las demostraciones anteriores en <a href="https://live.lean-lang.org/#url=https://github.com/jaalonso/Calculemus2/blob/main/src/Cota_inferior_de_sucesiones_convergentes.lean">Lean 4 Web</a>.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../01-suma_de_sucesiones_convergentes/" rel="prev" title="Si aₙ converge a L y bₙ a M, entonces aₙ+bₙ converge a L+M.">Previous post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
