@@ -45,7 +45,100 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/26-proofs_that_the_mirror_function_of_binary_trees_is_involutive/" class="u-url">Proofs that the mirror function of binary trees is involutive</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/28-flatten_of_mirror/" class="u-url">Proofs of "flatten (mirror a) = reverse (flatten a)"</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/08/28-flatten_of_mirror/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-28T06:00:00+02:00" itemprop="datePublished" title="28-08-2024">28-08-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Binary trees</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>The tree corresponding to</p>
+<div class="code"><pre class="code literal-block">    3
+   / \
+  2   4
+ / \
+1   5
+</pre></div>
+
+<p>can be represented by the term</p>
+<div class="code"><pre class="code literal-block">Node 3 (Node 2 (Leaf 1) (Leaf 5)) (Leaf 4)
+</pre></div>
+
+<p>using the datatype defined by</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">inductive</span> <span class="n">Tree'</span> <span class="o">(</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">)</span> <span class="o">:</span> <span class="kt">Type</span>
+     <span class="bp">|</span> <span class="n">Leaf</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+     <span class="bp">|</span> <span class="n">Node</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+</pre></div>
+
+<p>The mirror image of the previous tree is</p>
+<div class="code"><pre class="code literal-block">  3
+ / \
+4   2
+   / \
+  5   1
+</pre></div>
+
+<p>and the list obtained by flattening it (traversing it in infix order) is</p>
+<div class="code"><pre class="code literal-block">[4, 3, 5, 2, 1]
+</pre></div>
+
+<p>The definition of the function that calculates the mirror image is</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">mirror</span> <span class="o">:</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+     <span class="bp">|</span> <span class="n">Leaf</span> <span class="n">x</span>     <span class="bp">=&gt;</span> <span class="n">Leaf</span> <span class="n">x</span>
+     <span class="bp">|</span> <span class="n">Node</span> <span class="n">x</span> <span class="n">l</span> <span class="n">r</span> <span class="bp">=&gt;</span> <span class="n">Node</span> <span class="n">x</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">r</span><span class="o">)</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">l</span><span class="o">)</span>
+</pre></div>
+
+<p>and the one that flattens the tree is</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">flatten</span> <span class="o">:</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span>
+     <span class="bp">|</span> <span class="n">Leaf</span> <span class="n">x</span>     <span class="bp">=&gt;</span> <span class="o">[</span><span class="n">x</span><span class="o">]</span>
+     <span class="bp">|</span> <span class="n">Node</span> <span class="n">x</span> <span class="n">l</span> <span class="n">r</span> <span class="bp">=&gt;</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">l</span><span class="o">)</span> <span class="bp">++</span> <span class="o">[</span><span class="n">x</span><span class="o">]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">r</span><span class="o">)</span>
+</pre></div>
+
+<p>Prove that</p>
+<div class="code"><pre class="code literal-block">   <span class="n">flatten</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">a</span><span class="o">)</span> <span class="bp">=</span> <span class="n">reverse</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">a</span><span class="o">)</span>
+</pre></div>
+
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">List</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+
+<span class="kd">set_option</span> <span class="n">pp.fieldNotation</span> <span class="n">false</span>
+
+<span class="kd">inductive</span> <span class="n">Tree'</span> <span class="o">(</span><span class="n">α</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">)</span> <span class="o">:</span> <span class="kt">Type</span>
+  <span class="bp">|</span> <span class="n">Leaf</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+  <span class="bp">|</span> <span class="n">Node</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+
+<span class="kn">namespace</span> <span class="n">Tree'</span>
+
+<span class="kd">variable</span> <span class="o">(</span><span class="n">a</span> <span class="n">l</span> <span class="n">r</span> <span class="o">:</span> <span class="n">Tree'</span> <span class="n">α</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">x</span> <span class="o">:</span> <span class="n">α</span><span class="o">)</span>
+
+<span class="kd">def</span> <span class="n">mirror</span> <span class="o">:</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">Tree'</span> <span class="n">α</span>
+  <span class="bp">|</span> <span class="n">Leaf</span> <span class="n">x</span>     <span class="bp">=&gt;</span> <span class="n">Leaf</span> <span class="n">x</span>
+  <span class="bp">|</span> <span class="n">Node</span> <span class="n">x</span> <span class="n">l</span> <span class="n">r</span> <span class="bp">=&gt;</span> <span class="n">Node</span> <span class="n">x</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">r</span><span class="o">)</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">l</span><span class="o">)</span>
+
+<span class="kd">def</span> <span class="n">flatten</span> <span class="o">:</span> <span class="n">Tree'</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">List</span> <span class="n">α</span>
+  <span class="bp">|</span> <span class="n">Leaf</span> <span class="n">x</span>     <span class="bp">=&gt;</span> <span class="o">[</span><span class="n">x</span><span class="o">]</span>
+  <span class="bp">|</span> <span class="n">Node</span> <span class="n">x</span> <span class="n">l</span> <span class="n">r</span> <span class="bp">=&gt;</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">l</span><span class="o">)</span> <span class="bp">++</span> <span class="o">[</span><span class="n">x</span><span class="o">]</span> <span class="bp">++</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">r</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span>
+  <span class="n">flatten</span> <span class="o">(</span><span class="n">mirror</span> <span class="n">a</span><span class="o">)</span> <span class="bp">=</span> <span class="n">reverse</span> <span class="o">(</span><span class="n">flatten</span> <span class="n">a</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/08/28-flatten_of_mirror/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/26-proofs_that_the_mirror_function_of_binary_trees_is_involutive/" class="u-url">Proofs that the mirror function of binary trees is involutive</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -684,74 +777,6 @@ cons_append : (x :: xs) ++ y = x :: (xs ++ ys)
 </pre></div>
 
 <p class="more"><a href="posts/2024/07/25-si_a_es_un_punto_de_acumulacion_de_la_sucesion_de_cauchy_u_entonces_a_es_el_limite_de_u/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" class="u-url">El punto de acumulación de las sucesiones convergente es su límite</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-07-16T06:00:00+02:00" itemprop="datePublished" title="16-07-2024">16-07-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Límites</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
-\[ u_0, u_2, u_4, u_6, ... \]
-se ha obtenido con la función de extracción \(f\) tal que \(f(n) = 2n\).</p>
-<p>En Lean4, se puede definir que \(f\) es una función de extracción por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
-</pre></div>
-
-<p>que \(a\) es un límite de \(u\) por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
-</pre></div>
-
-<p>que \(u\) es convergente por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
-</pre></div>
-
-<p>que \(a\) es un punto de acumulación de \(u\) por</p>
-<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-     <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
-</pre></div>
-
-<p>Demostrar con Lean4 que si \(u\) es una sucesión convergente y \(a\) es un punto de acumulación de \(u\), entonces \(a\) es un límite de \(u\).</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span> <span class="n">Nat</span>
-
-<span class="kd">variable</span> <span class="o">{</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">{</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span> <span class="n">extraccion</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℕ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∀</span> <span class="n">n</span> <span class="n">m</span><span class="o">,</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">m</span> <span class="bp">→</span> <span class="n">f</span> <span class="n">n</span> <span class="bp">&lt;</span> <span class="n">f</span> <span class="n">m</span>
-
-<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">N</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">N</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">a</span><span class="bp">|</span> <span class="bp">&lt;</span> <span class="n">ε</span>
-
-<span class="kd">def</span> <span class="n">convergente</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∃</span> <span class="n">a</span><span class="o">,</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span>
-
-<span class="kd">def</span> <span class="n">punto_acumulacion</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">a</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∃</span> <span class="n">f</span><span class="o">,</span> <span class="n">extraccion</span> <span class="n">f</span> <span class="bp">∧</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="n">a</span>
-
-<span class="kd">example</span>
-  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">convergente</span> <span class="n">u</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">ha</span> <span class="o">:</span> <span class="n">punto_acumulacion</span> <span class="n">u</span> <span class="n">a</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">a</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/07/16-el_punto_de_acumulacion_de_las_sucesiones_convergente_es_su_limite/">Read more…</a></p>
 </div>
                 </div>
             </article>
