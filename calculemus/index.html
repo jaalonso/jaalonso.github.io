@@ -634,53 +634,6 @@ Entonces,
 <p>Al finalizar de la semana publicaré un enlace a <a href="https://live.lean-lang.org/">Lean Web</a> con las soluciones del reto, que seguirán el siguiente esquema: en primer lugar, una solución en lenguaje natural; a continuación, varias formalizaciones en Lean 4 empezando por la más automática (generalmente, con <code>grind</code>), siguiendo con otras con tácticas más específicas (como <code>norm_num</code>, <code>ring</code>, <code>positivity</code>, <code>linarith</code>) y terminando con una demostración en que la que dichas tácticas se sustituyen por lemas concretos. Con este proceso de refinamiento sucesivo se buscará que la demostración final se corresponda, en la medida de lo posible con la escrita en lenguaje natural.</p>
 <p>Una vez concluido cada reto, publicaré las soluciones en este blog bajo la etiqueta <a href="categories/cat_retoslean4/">Retos Lean4</a>.</p>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/04/27-no_convergencia_-1n/" class="u-url">La sucesión 1, -1, 1, -1, ... no es convergente</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/04/27-no_convergencia_-1n/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-04-27T06:00:00+02:00" itemprop="datePublished" title="27-04-2026">27-04-2026</time></a>
-            </p>
-		    <p><span class="text-dark">Límites</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>En Lean, una sucesión \(a₀, a₁, a₂, ...\) se puede representar mediante una función \((a : ℕ → ℝ)\) de forma que \(a(n)\) es \(aₙ\).</p>
-<p>Se define que \(L\) es el límite de la sucesión \(a\), por</p>
-<div class="code"><pre class="code literal-block"><span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>También se define que \(a\) es convergente por</p>
-<div class="code"><pre class="code literal-block"><span class="kd">def</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
-</pre></div>
-
-<p>Demostrar que si para todo \(n\), \(aₙ = (-1)^n\), entonces la sucesión \(a\) no es convergente.</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/04/27-no_convergencia_-1n/">Read more…</a></p>
-</div>
-                </div>
             </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/01/10-propiedad-arquimediana/" class="u-url">Propiedad arquimediana de los números reales</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
@@ -793,6 +746,52 @@ Entonces,
 
 <hr>
 <p class="more"><a href="posts/2025/04/25-union_con_la_imagen_inversa/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/04/24-interseccion_con_la_imagen_inversa/" class="u-url">Demostraciones de "f[s] ∩ v = f[s ∩ f⁻¹[v]​]​"</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2025/04/24-interseccion_con_la_imagen_inversa/" rel="bookmark">
+            <time class="published dt-published" datetime="2025-04-24T06:00:00+02:00" itemprop="datePublished" title="24-04-2025">24-04-2025</time></a>
+            </p>
+		    <p><span class="text-dark">Funciones</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<hr>
+<p>Demostrar con Lean4 y con Isabelle/HOL que
+\[ f[s] ∩ v = f[s ∩ f⁻¹[v]] \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Set.Function</span>
+<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span> <span class="n">Set</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">α</span> <span class="n">β</span> <span class="o">:</span> <span class="kt">Type</span> <span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">f</span> <span class="o">:</span> <span class="n">α</span> <span class="bp">→</span> <span class="n">β</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">s</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">α</span><span class="o">)</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">v</span> <span class="o">:</span> <span class="n">Set</span> <span class="n">β</span><span class="o">)</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="o">(</span><span class="n">f</span> <span class="bp">''</span> <span class="n">s</span><span class="o">)</span> <span class="bp">∩</span> <span class="n">v</span> <span class="bp">=</span> <span class="n">f</span> <span class="bp">''</span> <span class="o">(</span><span class="n">s</span> <span class="bp">∩</span> <span class="n">f</span> <span class="bp">⁻¹'</span> <span class="n">v</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span> <span class="gr">sorry</span>
+</pre></div>
+
+<p>y la siguiente teoría de Isabelle/HOL:</p>
+<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Interseccion_con_la_imagen_inversa</span>
+<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
+<span class="k">begin</span>
+
+<span class="kn">lemma</span><span class="w"> </span><span class="s">"(f ` s) ∩ v = f ` (s ∩ f -` v)"</span>
+<span class="gr">sorry</span>
+
+<span class="k">end</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2025/04/24-interseccion_con_la_imagen_inversa/">Read more…</a></p>
 </div>
                 </div>
             </article>
