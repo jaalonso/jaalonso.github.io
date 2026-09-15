@@ -45,7 +45,107 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/" class="u-url">Las particiones definen relaciones reflexivas</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/" class="u-url">Las familias de conjuntos definen relaciones simétricas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-05T06:00:00+02:00" itemprop="datePublished" title="05-07-2024">05-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Cada familia de conjuntos \(P\) define una relación de forma que dos elementos están relacionados si algún conjunto de \(P\) contiene a ambos elementos. Se puede definir en Lean4 por</p>
+<div class="code"><pre class="code literal-block">   <span class="kd">def</span> <span class="n">relacion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">set</span> <span class="o">(</span><span class="n">set</span> <span class="n">X</span><span class="o">))</span> <span class="o">(</span><span class="n">x</span> <span class="n">y</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+     <span class="bp">∃</span> <span class="n">A</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="bp">∧</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">A</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(P\) es una familia de subconjuntos de \(X\), entonces la relación definida por \(P\) es simétrica.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span>
+
+<span class="kd">def</span> <span class="n">relacion</span> <span class="o">(</span><span class="n">P</span> <span class="o">:</span> <span class="n">Set</span> <span class="o">(</span><span class="n">Set</span> <span class="n">X</span><span class="o">))</span> <span class="o">(</span><span class="n">x</span> <span class="n">y</span> <span class="o">:</span> <span class="n">X</span><span class="o">)</span> <span class="o">:=</span>
+  <span class="bp">∃</span> <span class="n">A</span> <span class="bp">∈</span> <span class="n">P</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="bp">∧</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">A</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">Symmetric</span> <span class="o">(</span><span class="n">relacion</span> <span class="n">P</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">x</span> <span class="n">y</span> <span class="n">hxy</span>
+  <span class="c1">-- x y : X</span>
+  <span class="c1">-- hxy : relacion P x y</span>
+  <span class="c1">-- ⊢ relacion P y x</span>
+  <span class="n">rcases</span> <span class="n">hxy</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="n">h1</span><span class="o">⟩</span>
+  <span class="c1">-- A : Set X</span>
+  <span class="c1">-- h1 : A ∈ P ∧ x ∈ A ∧ y ∈ A</span>
+  <span class="k">have</span> <span class="n">h2</span> <span class="o">:</span> <span class="n">A</span> <span class="bp">∈</span> <span class="n">P</span> <span class="bp">∧</span> <span class="n">y</span> <span class="bp">∈</span> <span class="n">A</span> <span class="bp">∧</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">A</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">tauto</span>
+  <span class="n">exact</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="n">h2</span><span class="o">⟩</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">Symmetric</span> <span class="o">(</span><span class="n">relacion</span> <span class="n">P</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">unfold</span> <span class="n">Symmetric</span>
+  <span class="c1">-- ⊢ ∀ ⦃x y : X⦄, relacion P x y → relacion P y x</span>
+  <span class="n">intros</span> <span class="n">x</span> <span class="n">y</span> <span class="n">hxy</span>
+  <span class="c1">-- x y : X</span>
+  <span class="c1">-- hxy : relacion P x y</span>
+  <span class="c1">-- ⊢ relacion P y x</span>
+  <span class="n">unfold</span> <span class="n">relacion</span> <span class="n">at</span> <span class="bp">*</span>
+  <span class="c1">-- hxy : ∃ A, A ∈ P ∧ x ∈ A ∧ y ∈ A</span>
+  <span class="c1">-- ⊢ ∃ A, A ∈ P ∧ y ∈ A ∧ x ∈ A</span>
+  <span class="n">rcases</span> <span class="n">hxy</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="n">hAP</span><span class="o">,</span> <span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span> <span class="n">hyA</span><span class="o">⟩⟩</span>
+  <span class="c1">-- A : Set X</span>
+  <span class="c1">-- hAP : A ∈ P</span>
+  <span class="c1">-- hxA : x ∈ A</span>
+  <span class="c1">-- hyA : y ∈ A</span>
+  <span class="n">use</span> <span class="n">A</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">Symmetric</span> <span class="o">(</span><span class="n">relacion</span> <span class="n">P</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">x</span> <span class="n">y</span> <span class="n">hxy</span>
+  <span class="c1">-- x y : X</span>
+  <span class="c1">-- hxy : relacion P x y</span>
+  <span class="c1">-- ⊢ relacion P y x</span>
+  <span class="n">rcases</span> <span class="n">hxy</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="n">hAP</span><span class="o">,</span> <span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span> <span class="n">hyA</span><span class="o">⟩⟩</span>
+  <span class="c1">-- A : Set X</span>
+  <span class="c1">-- hAP : A ∈ P</span>
+  <span class="c1">-- hxA : x ∈ A</span>
+  <span class="c1">-- hyA : y ∈ A</span>
+  <span class="n">use</span> <span class="n">A</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span> <span class="o">:</span> <span class="n">Symmetric</span> <span class="o">(</span><span class="n">relacion</span> <span class="n">P</span><span class="o">)</span> <span class="o">:=</span>
+<span class="kd">by</span>
+  <span class="n">intros</span> <span class="n">x</span> <span class="n">y</span> <span class="n">hxy</span>
+  <span class="c1">-- x y : X</span>
+  <span class="c1">-- hxy : relacion P x y</span>
+  <span class="c1">-- ⊢ relacion P y x</span>
+  <span class="n">rcases</span> <span class="n">hxy</span> <span class="k">with</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="n">hAP</span><span class="o">,</span> <span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span> <span class="n">hyA</span><span class="o">⟩⟩</span>
+  <span class="c1">-- A : Set X</span>
+  <span class="c1">-- hAP : A ∈ P</span>
+  <span class="c1">-- hxA : x ∈ A</span>
+  <span class="c1">-- hyA : y ∈ A</span>
+  <span class="n">exact</span> <span class="o">⟨</span><span class="n">A</span><span class="o">,</span> <span class="o">⟨</span><span class="n">hAP</span><span class="o">,</span> <span class="n">hyA</span><span class="o">,</span> <span class="n">hxA</span><span class="o">⟩⟩</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/" class="u-url">Las particiones definen relaciones reflexivas</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -423,38 +523,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 </pre></div>
 
 <p class="more"><a href="posts/2024/06/24-la_equipotencia_es_una_relacion_transitiva/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/06/21-la_composicion_de_funciones_biyectivas_es_biyectiva/" class="u-url">La composición de funciones biyectivas es biyectiva</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/06/21-la_composicion_de_funciones_biyectivas_es_biyectiva/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-06-21T06:00:00+02:00" itemprop="datePublished" title="21-06-2024">21-06-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Funciones</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Demostrar con Lean4 que la composición de dos funciones biyectivas es una función biyectiva.</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
-<span class="kn">open</span> <span class="n">Function</span>
-
-<span class="kd">variable</span> <span class="o">{</span><span class="n">X</span> <span class="n">Y</span> <span class="n">Z</span> <span class="o">:</span> <span class="kt">Type</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">{</span><span class="n">f</span> <span class="o">:</span> <span class="n">X</span> <span class="bp">→</span> <span class="n">Y</span><span class="o">}</span>
-<span class="kd">variable</span> <span class="o">{</span><span class="n">g</span> <span class="o">:</span> <span class="n">Y</span> <span class="bp">→</span> <span class="n">Z</span><span class="o">}</span>
-
-<span class="kd">example</span>
-  <span class="o">(</span><span class="n">Hf</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="n">f</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">Hg</span> <span class="o">:</span> <span class="n">Bijective</span> <span class="n">g</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">Bijective</span> <span class="o">(</span><span class="n">g</span> <span class="bp">∘</span> <span class="n">f</span><span class="o">)</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/06/21-la_composicion_de_funciones_biyectivas_es_biyectiva/">Read more…</a></p>
 </div>
                 </div>
             </article>
