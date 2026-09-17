@@ -22,7 +22,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
 <meta name="twitter:title" content="Calculemus">
-<link rel="prefetch" href="posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/" type="text/html">
+<link rel="prefetch" href="posts/2026/09/07-convergencia_producto/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -45,7 +45,43 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/" class="u-url">Reto 9: Unicidad del límite</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/09/07-convergencia_producto/" class="u-url">Reto 18: Convergencia del producto de sucesiones convergentes</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2026/09/07-convergencia_producto/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-09-07T06:00:00+02:00" itemprop="datePublished" title="07-09-2026">07-09-2026</time></a>
+            </p>
+		    <p><span class="text-dark">RetosLean4</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El reto de esta semana consiste en demostrar en Lean 4 que si la sucesión \(aₙ\) converge a \(L\) y \(bₙ\) converge a \(M\), entonces \(aₙbₙ\) converge a \(LM\).</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">M</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2026/09/07-convergencia_producto/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/" class="u-url">Reto 9: Unicidad del límite</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -348,41 +384,6 @@ sucesión \(aₙ\) converge a \(L\), entonces \(2aₙ\) converge a \(2L\).</p>
 
 <hr>
 <p class="more"><a href="posts/2026/05/24-si_a_converge_a_l_entonces_2a_converge_a_2l/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/17-no_convergencia_-1n/" class="u-url">Reto 2: La sucesión 1, -1, 1, -1,... no es convergente</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/05/17-no_convergencia_-1n/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-17T06:00:00+02:00" itemprop="datePublished" title="17-05-2026">17-05-2026</time></a>
-            </p>
-		    <p><span class="text-dark">RetosLean4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>En el reto de esta semana continuamos explorando la convergencia de sucesiones, retomando el trabajo de la semana anterior. El problema consiste en demostrar que la sucesión definida por 1, -1, 1, -1,,,, no converge. Para ello, se propone completar la siguiente demostración en Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/05/17-no_convergencia_-1n/">Read more…</a></p>
 </div>
                 </div>
             </article>
