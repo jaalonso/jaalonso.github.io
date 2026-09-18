@@ -85,180 +85,23 @@ By adding, we observe that each pair of numbers in the same column sums to (n-1)
 which proves the formula.</p>
 <p>Prove Gauss's formula by following the above procedure.</p>
 <p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.BigOperators.Intervals</span>
-<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Algebra.BigOperators.Intervals</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kn">open</span> <span class="n">Finset</span> <span class="n">Nat</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Finset</span><span class="w"> </span><span class="n">Nat</span>
 
-<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="n">i</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
 
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="bp">∑</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
 <!-- TEASER_END -->
 
 <h2>1. Proof in natural language</h2>
 <p>It suffices to prove that
-\[ 2\sum_{i&lt;n} i = n(n-1) \]
-which is proven by the following chain of equalities
-\begin{align}
-   2\sum_{i&lt;n} i
-   &amp;= \sum_{i&lt;n} i + \sum_{i&lt;n} i \newline
-   &amp;= \sum_{i&lt;n} i + \sum_{i&lt;n} ((n - 1) - i) \newline
-   &amp;= \sum_{i&lt;n} (i + ((n - 1) - i)) \newline
-   &amp;= \sum_{i&lt;n} (n - 1) \newline
-   &amp;= n(n - 1)
-\end{align}</p>
-<h2>2. Proofs with Lean4</h2>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Algebra.BigOperators.Intervals</span>
-<span class="kn">import</span> <span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span> <span class="n">Finset</span> <span class="n">Nat</span>
-
-<span class="kd">variable</span> <span class="o">(</span><span class="n">n</span> <span class="n">i</span> <span class="o">:</span> <span class="n">ℕ</span><span class="o">)</span>
-
-<span class="c1">-- Auxiliary Lemma</span>
-<span class="c1">-- ===============</span>
-
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span> <span class="bp">→</span> <span class="n">x</span> <span class="bp">+</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">x</span><span class="o">)</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="n">intros</span> <span class="n">x</span> <span class="n">hx</span>
-  <span class="c1">-- x : ℕ</span>
-  <span class="c1">-- hx : x ∈ range n</span>
-  <span class="c1">-- ⊢ x + ((n - 1) - x) = n - 1</span>
-  <span class="n">replace</span> <span class="n">hx</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">&lt;</span> <span class="n">n</span> <span class="o">:=</span> <span class="n">mem_range.mp</span> <span class="n">hx</span>
-  <span class="n">replace</span> <span class="n">hx</span> <span class="o">:</span> <span class="n">x</span> <span class="bp">≤</span> <span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="o">:=</span> <span class="n">le_pred_of_lt</span> <span class="n">hx</span>
-  <span class="n">exact</span> <span class="n">add_sub_of_le</span> <span class="n">hx</span>
-
-<span class="c1">-- 2nd proof of the auxiliary lemma</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span> <span class="bp">→</span> <span class="n">x</span> <span class="bp">+</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">x</span><span class="o">)</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="n">intros</span> <span class="n">x</span> <span class="n">hx</span>
-  <span class="c1">-- x : ℕ</span>
-  <span class="c1">-- hx : x ∈ range n</span>
-  <span class="c1">-- ⊢ x + (n - 1 - x) = n - 1</span>
-  <span class="n">exact</span> <span class="n">add_sub_of_le</span> <span class="o">(</span><span class="n">le_pred_of_lt</span> <span class="o">(</span><span class="n">mem_range.1</span> <span class="n">hx</span><span class="o">))</span>
-
-<span class="c1">-- 3rd proof of the auxiliary lemma</span>
-<span class="kd">lemma</span> <span class="n">auxiliar</span> <span class="o">:</span>
-  <span class="bp">∀</span> <span class="n">x</span><span class="o">,</span> <span class="n">x</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span> <span class="bp">→</span> <span class="n">x</span> <span class="bp">+</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">x</span><span class="o">)</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="o">:=</span>
-<span class="k">fun</span> <span class="n">_</span> <span class="n">hx</span> <span class="bp">↦</span> <span class="n">add_sub_of_le</span> <span class="o">(</span><span class="n">le_pred_of_lt</span> <span class="o">(</span><span class="n">mem_range.1</span> <span class="n">hx</span><span class="o">))</span>
-
-<span class="c1">-- Main lemma</span>
-<span class="c1">-- ==========</span>
-
-<span class="c1">-- Proof 1</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="k">suffices</span> <span class="n">_</span> <span class="o">:</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="kd">by</span> <span class="n">omega</span>
-  <span class="k">calc</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span>
-       <span class="bp">=</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">+</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">mul_two</span> <span class="n">_</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">+</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">i</span><span class="o">))</span>
-           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">((</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">+</span> <span class="bp">.</span><span class="o">)</span> <span class="o">(</span><span class="n">sum_range_reflect</span> <span class="n">id</span> <span class="n">n</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">i</span> <span class="bp">+</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">i</span><span class="o">))</span>
-           <span class="o">:=</span> <span class="n">sum_add_distrib.symm</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">sum_congr</span> <span class="n">rfl</span> <span class="o">(</span><span class="kd">by</span> <span class="n">exact</span> <span class="k">fun</span> <span class="n">x</span> <span class="n">a</span> <span class="bp">=&gt;</span> <span class="n">auxiliar</span> <span class="n">n</span> <span class="n">x</span> <span class="n">a</span><span class="o">)</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="n">card</span> <span class="o">(</span><span class="n">range</span> <span class="n">n</span><span class="o">)</span> <span class="bp">•</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">sum_const</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="n">card</span> <span class="o">(</span><span class="n">range</span> <span class="n">n</span><span class="o">)</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">nsmul_eq_mul</span> <span class="n">_</span> <span class="n">_</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">congrArg</span> <span class="o">(</span><span class="bp">.</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">))</span> <span class="o">(</span><span class="n">card_range</span> <span class="n">n</span><span class="o">)</span>
-
-<span class="c1">-- Proof 2</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="k">suffices</span> <span class="n">_</span> <span class="o">:</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="kd">by</span> <span class="n">omega</span>
-  <span class="k">calc</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span>
-       <span class="bp">=</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">+</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">i</span><span class="o">))</span>
-           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">sum_range_reflect</span> <span class="o">(</span><span class="k">fun</span> <span class="n">i</span> <span class="bp">=&gt;</span> <span class="n">i</span><span class="o">)</span> <span class="n">n</span><span class="o">,</span> <span class="n">mul_two</span><span class="o">]</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">i</span> <span class="bp">+</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span> <span class="bp">-</span> <span class="n">i</span><span class="o">))</span>
-           <span class="o">:=</span> <span class="n">sum_add_distrib.symm</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="n">sum_congr</span> <span class="n">rfl</span> <span class="o">(</span><span class="n">auxiliar</span> <span class="n">n</span><span class="o">)</span>
-     <span class="n">_</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-           <span class="o">:=</span> <span class="kd">by</span> <span class="n">rw</span> <span class="o">[</span><span class="n">sum_const</span><span class="o">,</span> <span class="n">card_range</span><span class="o">,</span> <span class="n">Nat.nsmul_eq_mul</span><span class="o">]</span>
-
-<span class="c1">-- Proof 3</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="k">suffices</span> <span class="n">_</span> <span class="o">:</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="kd">by</span> <span class="n">omega</span>
-  <span class="k">show</span> <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">*</span> <span class="mi">2</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span>
-  <span class="n">exact</span> <span class="n">sum_range_id_mul_two</span> <span class="n">n</span>
-
-<span class="c1">-- Proof 4</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="kd">by</span>
-  <span class="n">rw</span> <span class="o">[</span><span class="bp">←</span> <span class="n">sum_range_id_mul_two</span> <span class="n">n</span><span class="o">]</span>
-  <span class="c1">-- ⊢ ∑ i ∈ range n, i = (∑ i ∈ range n, i) * 2 / 2</span>
-  <span class="n">rw</span> <span class="o">[</span><span class="n">Nat.mul_div_cancel</span> <span class="n">_</span> <span class="n">zero_lt_two</span><span class="o">]</span>
-
-<span class="c1">-- Proof 5</span>
-<span class="kd">example</span> <span class="o">:</span>
-  <span class="o">(</span><span class="bp">∑</span> <span class="n">i</span> <span class="bp">∈</span> <span class="n">range</span> <span class="n">n</span><span class="o">,</span> <span class="n">i</span><span class="o">)</span> <span class="bp">=</span> <span class="n">n</span> <span class="bp">*</span> <span class="o">(</span><span class="n">n</span> <span class="bp">-</span> <span class="mi">1</span><span class="o">)</span> <span class="bp">/</span> <span class="mi">2</span> <span class="o">:=</span>
-<span class="n">sum_range_id</span> <span class="n">n</span>
-
-<span class="c1">-- Used lemmas</span>
-<span class="c1">-- ===========</span>
-
-<span class="c1">-- variable (m : ℕ)</span>
-<span class="c1">-- variable (f g : ℕ → ℕ)</span>
-<span class="c1">-- variable (s t : Finset ℕ)</span>
-<span class="c1">-- #check (Nat.mul_div_cancel m : 0 &lt; n → m * n / n = m)</span>
-<span class="c1">-- #check (add_sub_of_le : n ≤ m → n + (m - n) = m)</span>
-<span class="c1">-- #check (card_range n : card (range n) = n)</span>
-<span class="c1">-- #check (le_pred_of_lt : n &lt; m → n ≤ m - 1)</span>
-<span class="c1">-- #check (mem_range : m ∈ range n ↔ m &lt; n)</span>
-<span class="c1">-- #check (mul_two n : n * 2 = n + n)</span>
-<span class="c1">-- #check (nsmul_eq_mul m n : m • n = m * n)</span>
-<span class="c1">-- #check (sum_add_distrib :  ∑ x ∈ s, (f x + g x) = ∑ x ∈ s, f x + ∑ x ∈ s, g x)</span>
-<span class="c1">-- #check (sum_congr : s = t → (∀ x ∈ t, f x = g x) → s.sum f = t.sum g)</span>
-<span class="c1">-- #check (sum_const m : ∑ _ ∈ s, m = card s • m)</span>
-<span class="c1">-- #check (sum_range_id n : ∑ i ∈ range n, i = n * (n - 1) / 2)</span>
-<span class="c1">-- #check (sum_range_id_mul_two n : (∑ i ∈ range n, i) * 2 = n * (n - 1))</span>
-<span class="c1">-- #check (sum_range_reflect f n : ∑ j ∈ range n, f (n - 1 - j) = ∑ j ∈ range n, f j)</span>
-</pre></div>
-
-<p>You can interact with the previous proofs at <a href="https://live.lean-lang.org/#url=https://raw.githubusercontent.com/jaalonso/Calculemus2/main/src/Gauss's_formula_for_summation.lean">Lean 4 Web</a>.</p>
-<h2>3. Proofs with Isabelle/HOL</h2>
-<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Gauss_formula_for_summation</span>
-<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
-<span class="k">begin</span>
-
-<span class="kn">lemma</span>
-<span class="w">  </span><span class="kp">fixes</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">::</span><span class="w"> </span><span class="n">nat</span>
-<span class="w">  </span><span class="kp">shows</span><span class="w"> </span><span class="s">"2 * (∑i&lt;n. i) = n * (n - 1)"</span>
-<span class="k">proof</span><span class="w"> </span><span class="o">-</span>
-<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="s">"2 * (∑i&lt;n. i) = (∑i&lt;n. i) + (∑i&lt;n. i)"</span>
-<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
-<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (∑i&lt;n. i) + (∑i&lt;n. n - Suc i)"</span>
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">sum.nat_diff_reindex</span><span class="w"> </span><span class="o">[</span><span class="kp">where</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="o">]</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
-<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (∑i&lt;n. (i + (n - Suc i)))"</span>
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">sum.distrib</span><span class="w"> </span><span class="o">[</span><span class="kp">where</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{..&lt;n}"</span><span class="w"> </span><span class="kp">and</span>
-<span class="w">                             </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="kp">and</span>
-<span class="w">                             </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"λi. n - Suc i"</span><span class="o">]</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
-<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = (∑i&lt;n. n - 1)"</span>
-<span class="w">    </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span>
-<span class="w">  </span><span class="k">also</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="s">"… = n * (n -1)"</span>
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">sum_constant</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">auto</span>
-<span class="w">  </span><span class="k">finally</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="s">"2 * (∑i&lt;n. i) = n * (n - 1)"</span><span class="w"> </span><span class="ow">.</span>
-<span class="k">qed</span>
-
-<span class="k">end</span>
-</pre></div>
-
-<hr>
-<p><strong>Note:</strong> The code for the previous proofs can be found in the <a href="https://github.com/jaalonso/Calculemus2">Calculemus repository</a> on GitHub.</p>
+\[ 2\sum_{i</p>
     </div>
     <aside class="postpromonav"><nav><ul class="pager hidden-print">
 <li class="previous">
