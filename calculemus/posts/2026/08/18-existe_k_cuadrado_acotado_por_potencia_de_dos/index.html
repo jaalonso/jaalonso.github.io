@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reto 15: Existe un k ∈ ℕ tal que, para todo n ∈ ℕ, (n + k)² ≤ 2ⁿ⁺ᵏ | Calculemus</title>
+<link href="../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS" hreflang="en" href="../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/posts/2026/08/18-existe_k_cuadrado_acotado_por_potencia_de_dos/">
+<link rel="icon" href="../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta name="twitter:title" content="Reto 15: Existe un k ∈ ℕ tal que, para todo n ∈ ℕ, (n + k)² ≤ 2ⁿ⁺ᵏ | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../09-dos_n_mas_nueve_acotado_por_potencia/" title="Reto 14: Para todo n ∈ ℕ, 2n + 9 ≤ 2ⁿ⁺⁴" type="text/html">
+<link rel="next" href="../../09/07-convergencia_producto/" title="Reto 18: Convergencia del producto de sucesiones convergentes" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Reto 15: Existe un k ∈ ℕ tal que, para todo n ∈ ℕ, (n + k)² ≤ 2ⁿ⁺ᵏ">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/posts/2026/08/18-existe_k_cuadrado_acotado_por_potencia_de_dos/">
+<meta property="og:description" content="El reto de esta semana consiste en demostrar en Lean 4, existe un \(k ∈ ℕ\) tal que, para todo \(n \in ℕ\), \((n + k)^{2} ≤ 2^{n+k}\).
+Para ello, completar la siguiente teoría de Lean 4:
+import Mathli">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-08-18T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Proof exercises in Lean4 and Isabelle/HOL</div>
+
+        
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Reto 15: Existe un k ∈ ℕ tal que, para todo n ∈ ℕ, (n + k)² ≤ 2ⁿ⁺ᵏ</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2026-08-18T06:00:00+02:00" itemprop="datePublished" title="18-08-2026">18-08-2026</time></a>
+            </p>
+        </div>
+        
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>El reto de esta semana consiste en demostrar en Lean 4, existe un \(k ∈ ℕ\) tal que, para todo \(n \in ℕ\), \((n + k)^{2} ≤ 2^{n+k}\).</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h2>1. Demostración en lenguaje natural</h2>
+<h3>1ª demostración</h3>
+<p>En primer lugar demostraremos el siguiente lema auxiliar:
+Para todo \(m \geq 4\), se tiene \(m^2 ≤ 2^m\). Sea \(m \in \mathbb{N}\), tenemos que
+demostrar que
+\[ m \geq 4 → m^2 ≤ 2^m \]
+lo demostraremos por inducción en \(m\).</p>
+<p>Caso base: Para \(m = 0\) se tiene, trivialmente que
+\[ 0 \geq 4 → 0^2 ≤ 2^0 \]</p>
+<p>Paso de inducción: Sea \(n \in \mathbb{N}\) que cumple la hipótesis de
+inducción; es decir,
+\[ n \geq 4 → n ^ 2 ≤ 2 ^ n  \tag{HI} \]
+y tenemos que demostrar que
+\[ n + 1 \geq 4 → (n + 1)^2 ≤ 2^{n + 1} \]
+Suponiendo que
+\[ n + 1 \geq 4 \tag{1} \]
+tenemos que demostrar que
+\[ (n + 1)^2 ≤ 2^{n + 1} \]
+Lo haremmos por caso según \(4 ≤ n\).</p>
+<p>Primer caso: Supongamos que
+\[ 4 ≤ n \tag{2} \]
+Entonces, demostramos que
+\[ 2n + 1 ≤ n^2 \tag{3} \]
+Efectivamente,
+\[
+\begin{array}{llll}
+   2n + 1 &amp;≤ 2n + 8       \\
+          &amp;≤ 2n + 2n   &amp;&amp;\text{[por (2)]} \\
+          &amp;= 4n           \\
+          &amp;≤ nn           &amp;&amp;\text{[por (2)]} \\
+          &amp;= n ^ 2
+\end{array}
+\]
+Por tanto,
+\[
+\begin{array}{llll}
+   (n + 1) ^ 2 &amp;= n ^ 2 + 2n + 1   \\
+               &amp;≤ n ^ 2 + n ^ 2       &amp;&amp;\text{[por (3)]} \\
+               &amp;= 2n ^ 2           \\
+               &amp;≤ 2 \times 2 ^ n           &amp;&amp;\text{[por HI y (2)]} \\
+               &amp;= 2 ^{n + 1}
+\end{array}
+\]</p>
+<p>Segundo caso: Supongamos que
+\[ ¬ (4 ≤ n) \]
+Entonces, por (1), se tiene que
+\[ n = 3 \]
+y
+\[
+\begin{array}{ll}
+   (n + 1) ^ 2 &amp;= (3 + 1) ^ 2  \\
+               &amp;= 16           \\
+               &amp;≤ 2 ^{3 + 1}   \\
+               &amp;= 2 ^{n + 1}
+\end{array}
+\]</p>
+<p>Para concluir la demostración del ejercicio
+\[ \exists k, \forall n, (n + k) ^ 2 ≤ 2 ^ {n + k} \]
+basta usar 4 como k y queda
+\[ \forall n, (n + 4) ^ 2 ≤ 2 ^ {n + 4} \]
+que se demuestra con el lema auxiliar. En efecto,
+sea \(n \in \mathbb{N}\). Entonces,
+\[ n + 4 \geq 4 \]
+y, por el lema auxiliar,
+\[ (n + 4) ^ 2 ≤ 2 ^ {n + 4} \]</p>
+<h3>2ª demostración</h3>
+<p>En primer lugar demostraremos el siguiente lema auxiliar:
+Para todo \(m \geq 4\), se tiene \(m^2 ≤ 2^m\). Sea \(m \in \mathbb{N}\) tal que
+\[ m \geq 4 \]
+tenemos que demostrar que
+\[ m ^ 2 ≤ 2 ^ m \]
+lo demostraremos por inducción generalizada en \(m\) a partir
+de 4.</p>
+<p>Caso base: Para \(m = 4\) se tiene, trivialmente que
+\[ 4 ^ 2 ≤ 2 ^ 4 \]</p>
+<p>Paso de inducción: Sea \(n \in \mathbb{N}\) tal que
+\[ 4 ≤ n \tag{1} \]
+y que cumple la hipótesis de inducción; es decir,
+\[ n ^ 2 ≤ 2 ^ n  \tag{HI} \]
+y tenemos que demostrar que
+\[ (n + 1) ^ 2 ≤ 2 ^ {n + 1} \]
+Antes, demostramos que
+\[ 2n + 1 ≤ n ^ 2 \tag{2} \]
+Efectivamente,
+\[
+\begin{array}{llll}
+   2n + 1 &amp;≤ 2n + 8       \\
+          &amp;≤ 2n + 2n   &amp;&amp;\text{[por (1)]} \\
+          &amp;= 4n           \\
+          &amp;≤ n \times n           &amp;&amp;\text{[por (1)]} \\
+          &amp;= n ^ 2
+\end{array}
+\]
+Por tanto,
+\[
+\begin{array}{llll}
+   (n + 1) ^ 2 &amp;= n ^ 2 + 2n + 1   \\
+               &amp;≤ n ^ 2 + n ^ 2       &amp;&amp;\text{[por (2)]} \\
+               &amp;= 2n ^ 2           \\
+               &amp;≤ 2 \times 2 ^ n           &amp;&amp;\text{[por HI]} \\
+               &amp;= 2 ^ {n + 1}
+\end{array}
+\]</p>
+<p>Para concluir la demostración del ejercicio
+\[ \exists k, \forall n, (n + k) ^ 2 ≤ 2 ^ {n + k} \]
+basta usar \(4\) como \(k\) y queda
+\[ \forall n, (n + 4) ^ 2 ≤ 2 ^ {n + 4} \]
+que se demuestra con el lema auxiliar. En efecto,
+sea \(n \in \mathbb{N}\). Entonces,
+\[ n + 4 \geq 4 \]
+y, por el lema auxiliar,
+\[ (n + 4) ^ 2 ≤ 2 ^ {n + 4} \]</p>
+<h2>2. Demostraciones con Lean 4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="c1">-- 1ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="kn">namespace</span><span class="w"> </span><span class="n">Solucion1</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">4</span><span class="o">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">m</span>
+<span class="w">  </span><span class="c1">-- m : ℕ</span>
+<span class="w">  </span><span class="c1">-- ⊢ m ≥ 4 → m ^ 2 ≤ 2 ^ m</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">with</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- ⊢ 0 ≥ 4 → 0 ^ 2 ≤ 2 ^ 0</span>
+<span class="w">    </span><span class="n">grind</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hi</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- n : ℕ</span>
+<span class="w">    </span><span class="c1">-- hi : n ≥ 4 → n ^ 2 ≤ 2 ^ n</span>
+<span class="w">    </span><span class="c1">-- ⊢ n + 1 ≥ 4 → (n + 1) ^ 2 ≤ 2 ^ (n + 1)</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="n">hn1</span>
+<span class="w">    </span><span class="c1">-- hn1 : n + 1 ≥ 4</span>
+<span class="w">    </span><span class="n">by_cases</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span>
+<span class="w">    </span><span class="bp">·</span><span class="w"> </span><span class="c1">-- hn : 4 ≤ n</span>
+<span class="w">      </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">        </span><span class="k">calc</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">             </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">8</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">        </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">        </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">        </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">gcongr</span>
+<span class="w">        </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="k">calc</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">           </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_left</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">(</span><span class="n">hi</span><span class="w"> </span><span class="n">hn</span><span class="o">)</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">    </span><span class="bp">·</span><span class="w"> </span><span class="c1">-- hn : ¬4 ≤ n</span>
+<span class="w">      </span><span class="k">have</span><span class="w"> </span><span class="n">hn3</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">subst</span><span class="w"> </span><span class="n">hn3</span>
+<span class="w">      </span><span class="c1">-- ⊢ (3 + 1) ^ 2 ≤ 2 ^ (3 + 1)</span>
+<span class="w">      </span><span class="n">norm_num</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="c1">-- ⊢ (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">4</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span><span class="o">)</span>
+
+<span class="kd">end</span><span class="w"> </span><span class="n">Solucion1</span>
+
+<span class="c1">-- 2ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="kn">namespace</span><span class="w"> </span><span class="n">Solucion2</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">4</span><span class="o">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">hm</span>
+<span class="w">  </span><span class="c1">-- m : ℕ</span>
+<span class="w">  </span><span class="c1">-- hm : m ≥ 4</span>
+<span class="w">  </span><span class="c1">-- ⊢ m ^ 2 ≤ 2 ^ m</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="n">hm</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">Nat.le_induction</span><span class="w"> </span><span class="k">with</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- ⊢ 4 ^ 2 ≤ 2 ^ 4</span>
+<span class="w">    </span><span class="n">grind</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="n">hi</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- n : ℕ</span>
+<span class="w">    </span><span class="c1">-- hn : 4 ≤ n</span>
+<span class="w">    </span><span class="c1">-- hi : n ^ 2 ≤ 2 ^ n</span>
+<span class="w">    </span><span class="c1">-- ⊢ (n + 1) ^ 2 ≤ 2 ^ (n + 1)</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">      </span><span class="k">calc</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">           </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">8</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">gcongr</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_left</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">hi</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="c1">-- ⊢ (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">4</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span><span class="o">)</span>
+
+<span class="kd">end</span><span class="w"> </span><span class="n">Solucion2</span>
+
+<span class="c1">-- 3ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="kn">namespace</span><span class="w"> </span><span class="n">Solucion3</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">4</span><span class="o">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">hm</span>
+<span class="w">  </span><span class="c1">-- m : ℕ</span>
+<span class="w">  </span><span class="c1">-- hm : m ≥ 4</span>
+<span class="w">  </span><span class="c1">-- ⊢ m ^ 2 ≤ 2 ^ m</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="n">hm</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">Nat.le_induction</span><span class="w"> </span><span class="k">with</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- ⊢ 4 ^ 2 ≤ 2 ^ 4</span>
+<span class="w">    </span><span class="n">norm_num</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="n">hi</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- n : ℕ</span>
+<span class="w">    </span><span class="c1">-- hn : 4 ≤ n</span>
+<span class="w">    </span><span class="c1">-- hi : n ^ 2 ≤ 2 ^ n</span>
+<span class="w">    </span><span class="c1">-- ⊢ (n + 1) ^ 2 ≤ 2 ^ (n + 1)</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">      </span><span class="k">calc</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">           </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">8</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">omega</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">omega</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">gcongr</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_left</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">hi</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="c1">-- ⊢ (n + 4) ^ 2 ≤ 2 ^ (n + 4)</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">4</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">omega</span><span class="o">)</span>
+
+<span class="kd">end</span><span class="w"> </span><span class="n">Solucion3</span>
+
+<span class="c1">-- 4ª solución</span>
+<span class="c1">-- ===========</span>
+
+<span class="kn">namespace</span><span class="w"> </span><span class="n">Solucion4</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">4</span><span class="o">,</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">hm</span>
+<span class="w">  </span><span class="c1">-- m : ℕ</span>
+<span class="w">  </span><span class="c1">-- hm : m ≥ 4</span>
+<span class="w">  </span><span class="c1">-- ⊢ m ^ 2 ≤ 2 ^ m</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="n">hm</span><span class="w"> </span><span class="n">using</span><span class="w"> </span><span class="n">Nat.le_induction</span><span class="w"> </span><span class="k">with</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- ⊢ 4 ^ 2 ≤ 2 ^ 4</span>
+<span class="w">    </span><span class="n">norm_num</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="n">hi</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="c1">-- n : ℕ</span>
+<span class="w">    </span><span class="c1">-- hn : 4 ≤ n</span>
+<span class="w">    </span><span class="c1">-- hi : n ^ 2 ≤ 2 ^ n</span>
+<span class="w">    </span><span class="c1">-- ⊢ (n + 1) ^ 2 ≤ 2 ^ (n + 1)</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">      </span><span class="k">calc</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">           </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">8</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_iff_left.mpr</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">norm_num</span><span class="o">)</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_left_inj.mpr</span><span class="w"> </span><span class="n">rfl</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_iff_left.mpr</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">hn</span><span class="o">)</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.add_mul</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">congrArg</span><span class="w"> </span><span class="o">(</span><span class="bp">·</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.succ_add</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.mul_le_mul_right</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">      </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.pow_two</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.add_le_add_left</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.two_mul</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="w">         </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">hi</span>
+<span class="w">    </span><span class="n">_</span><span class="w">    </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat.pow_succ'.symm</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">⟨</span><span class="mi">4</span><span class="o">,</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">aux</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">4</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">omega</span><span class="o">)⟩</span>
+
+<span class="kd">end</span><span class="w"> </span><span class="n">Solucion4</span>
+
+<span class="c1">-- Lemas usados</span>
+<span class="c1">-- ============</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.add_le_add_iff_left</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">k</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.add_le_add_left</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.add_left_inj</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">↔</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">k</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.add_mul</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.mul_le_mul_left</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">m</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.mul_le_mul_right</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.pow_succ'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n.succ</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.pow_two</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.succ_add</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n.succ</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">m</span><span class="o">)</span><span class="bp">.</span><span class="n">succ</span><span class="o">)</span>
+<span class="k">#check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat.two_mul</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+</pre></div>
+
+<p>Es posible consultar, modificar y ejecutar el código de estas demostraciones de forma interactiva en <a href="https://live.lean-lang.org/#url=https://github.com/jaalonso/Retos/blob/main/src/Reto_15.lean">Lean 4 Web</a>.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../09-dos_n_mas_nueve_acotado_por_potencia/" rel="prev" title="Reto 14: Para todo n ∈ ℕ, 2n + 9 ≤ 2ⁿ⁺⁴">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../../09/07-convergencia_producto/" rel="next" title="Reto 18: Convergencia del producto de sucesiones convergentes">Next post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
