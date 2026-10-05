@@ -22,7 +22,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
 <meta name="twitter:title" content="Calculemus">
-<link rel="prefetch" href="posts/2026/09/28-subsucesiones_convergentes/" type="text/html">
+<link rel="prefetch" href="posts/2026/10/05-subsucesiones_con_limites_distintos_implican_no_convergencia/" type="text/html">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
@@ -45,7 +45,60 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/09/28-subsucesiones_convergentes/" class="u-url">Reto 21: Las subsucesiones tienen el mismo límite que la sucesión</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/10/05-subsucesiones_con_limites_distintos_implican_no_convergencia/" class="u-url">Reto 22: Subsucesiones con límites distintos implican no convergencia</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2026/10/05-subsucesiones_con_limites_distintos_implican_no_convergencia/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-10-02T06:00:00+02:00" itemprop="datePublished" title="02-10-2026">02-10-2026</time></a>
+            </p>
+		    <p><span class="text-dark">RetosLean4</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <p>El reto de esta semana consiste en demostrar en Lean 4 que si una sucesión tiene dos subsucesiones con límites distintos, entonces la sucesión no es convergente. Para ello, completar la siguiente teoría:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="c1">-- a converge a L</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="c1">-- La sucesión a es convergente</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">SucConvergente</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
+
+<span class="c1">-- φ es una función de extracción.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">extraccion</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- b es una subsucesión de a.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">subsucesion</span><span class="w"> </span><span class="o">(</span><span class="n">b</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">extraccion</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b₁</span><span class="w"> </span><span class="n">b₂</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="n">L₁</span><span class="w"> </span><span class="n">L₂</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb₁</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsucesion</span><span class="w"> </span><span class="n">b₁</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hL₁</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">b₁</span><span class="w"> </span><span class="n">L₁</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb₂</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsucesion</span><span class="w"> </span><span class="n">b₂</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hL₂</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">b₂</span><span class="w"> </span><span class="n">L₂</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">L₁</span><span class="w"> </span><span class="bp">≠</span><span class="w"> </span><span class="n">L₂</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="n">SucConvergente</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p><strong>¿Cómo publicar tu solución?</strong></p>
+<ol>
+<li>Escribe tu demostración en <a href="https://live.lean-lang.org/">live.lean-lang.org</a> y copia el enlace que genera.</li>
+<li>Publícalo en el <a href="https://mathstodon.xyz/@Jose_A_Alonso/117388194849056081">hilo de Mastodon de este problema</a>, con un mensaje del tipo:<br>
+   «Mi solución está en [enlace].»</li>
+<li>Podrás comparar tu planteamiento con el de otros participantes durante la semana. La solución oficial se publicará el próximo lunes.</li>
+</ol>
+</div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/09/28-subsucesiones_convergentes/" class="u-url">Reto 21: Las subsucesiones tienen el mismo límite que la sucesión</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -57,7 +110,8 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 		    <p><span class="text-dark">RetosLean4</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
-                    <p>Una subsucesión se obtiene aplicando a la sucesión original una función de extracción; es decir, una función \(φ : ℕ \to ℕ\) estrictamente creciente. Por ejemplo, la subsucesión \[ u_{0}, u_{2}, u_{4}, u_{6}, \dots \] se obtiene con la función de extracción \(\varphi\) definida por \(\varphi(n) = 2n\).</p>
+                    <div>
+<p>Una subsucesión se obtiene aplicando a la sucesión original una función de extracción; es decir, una función \(φ : ℕ \to ℕ\) estrictamente creciente. Por ejemplo, la subsucesión \[ u_{0}, u_{2}, u_{4}, u_{6}, \dots \] se obtiene con la función de extracción \(\varphi\) definida por \(\varphi(n) = 2n\).</p>
 <p>Las definiciones anteriores se formalizan en Lean 4 como:</p>
 <div class="code"><pre class="code literal-block"><span class="c1">-- φ es una función de extracción.</span>
 <span class="kd">def</span><span class="w"> </span><span class="n">extraccion</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
@@ -94,14 +148,10 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<p><strong>¿Cómo publicar tu solución?</strong></p>
-<ol>
-<li>Escribe tu demostración en <a href="https://live.lean-lang.org/">live.lean-lang.org</a> y copia el enlace que genera.</li>
-<li>Publícalo en el <a href="https://mathstodon.xyz/@Jose_A_Alonso/117349194855620872">hilo de Mastodon de este problema</a>, con un mensaje del tipo:<br>
-   «Mi solución está en [enlace].»</li>
-<li>Podrás comparar tu planteamiento con el de otros participantes durante la semana. La solución oficial se publicará el próximo lunes.</li>
-</ol>
+<hr>
+<p class="more"><a href="posts/2026/09/28-subsucesiones_convergentes/">Read more…</a></p>
 </div>
+                </div>
             </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/09/21-limite_menor_que_cota/" class="u-url">Reto 20: Si aₙ → L y M es una cota superior de aₙ, entonces L ≤ M</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
@@ -362,42 +412,6 @@ superior de \(a_{n}\) (es decir, \(a_{n} ≤ M\) para todo \(n\)), entonces \(L 
 
 <hr>
 <p class="more"><a href="posts/2026/08/03-desigualdad_triangular_inversa/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/07/27-eventualmente_menor_de_limsuc_menor/" class="u-url">Reto 12: Si aₙ → L, bₙ → M y L &lt; M, entonces eventualmente aₙ &lt; bₙ</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/07/27-eventualmente_menor_de_limsuc_menor/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-07-27T06:00:00+02:00" itemprop="datePublished" title="27-07-2026">27-07-2026</time></a>
-            </p>
-		    <p><span class="text-dark">RetosLean4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El reto de esta semana consiste en demostrar en Lean 4 que si las sucesiones \(a_n\) y \(b_n\) convergen a \(L\) y \(M\), respectivamente, con \(L &lt; M\), entonces eventualmente \(a_n &lt; b_n\); es decir, que existe un \(k ∈ \mathbb{N}\) tal que, para todo \(n ≥ k\), \(a_n &lt; b_n\).</p>
-<p>Para ello, completar la siguiente teoría de Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">M</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hLM</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">M</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/07/27-eventualmente_menor_de_limsuc_menor/">Read more…</a></p>
 </div>
                 </div>
             </article>
