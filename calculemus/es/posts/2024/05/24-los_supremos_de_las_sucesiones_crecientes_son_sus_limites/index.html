@@ -15,11 +15,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta name="theme-color" content="#5670d4">
 <meta name="generator" content="Nikola (getnikola.com)">
 <link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../rss.xml">
-<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../../en/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../../rss.xml">
 <link rel="canonical" href="https://jaalonso.github.io/calculemus/es/posts/2024/05/24-los_supremos_de_las_sucesiones_crecientes_son_sus_limites/">
 <link rel="icon" href="../../../../../favicon.png" sizes="48x48">
 <!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/meta-twitter.png">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
 <meta name="twitter:title" content="Los supremos de las sucesiones crecientes son sus límites | Calculemus">
 <meta name="author" content="José A. Alonso">
 <link rel="prev" href="../23-si_fx_leq_fy_to_x_leq_y_entonces_f_es_inyectiva/" title="Si `f(x) ≤ f(y) → x ≤ y`, entonces f es inyectiva" type="text/html">
@@ -30,10 +30,13 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <meta property="og:description" content="Sea \(u\) una sucesión creciente. Demostrar con Lean4 que si \(S\) es un supremo de \(u\), entonces el límite de \(u\) es \(S\).
 Para ello, completar la siguiente teoría de Lean4:
 import Mathlib.Data.">
-<meta property="og:image" content="https://jaalonso.github.io/calculemus/favicon.png">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="2024-05-24T06:00:00+02:00">
-<link rel="alternate" hreflang="en" href="../../../../../en/posts/2024/05/24-los_supremos_de_las_sucesiones_crecientes_son_sus_limites/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+<link rel="alternate" hreflang="en" href="../../../../../posts/2024/05/24-los_supremos_de_las_sucesiones_crecientes_son_sus_limites/">
 </head>
 <body>
     <a href="#content" class="sr-only sr-only-focusable">Ir al contenido principal</a>
@@ -42,20 +45,20 @@ import Mathlib.Data.">
 
         <span id="blog-title">Calculemus</span>
     </a></h1>
-    <div>Ejercicios de demostración con Lean4 e Isabelle/HOL</div>
+    <div>Retos semanales de demostración en Lean 4.</div>
 
                 <div id="toptranslations">
             <h2>Idiomas:</h2>
-                        <li class="nav-item"><a href="../../../../../en/" rel="alternate" hreflang="en" class="nav-link">English</a></li>
+                        <li class="nav-item"><a href="../../../../../" rel="alternate" hreflang="en" class="nav-link">English</a></li>
 
         </div>
 
             <nav id="menu"><ul>
 <li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
-                <li><a href="../../../../../archive.html">Archivo</a></li>
-                <li><a href="../../../../../categories/">Etiquetas</a></li>
-                <li><a href="../../../../../about/">Acerca de</a></li>
-                <li><a href="../../../../../rss.xml">RSS</a></li>
+                <li><a href="../../../../archive.html">Archivo</a></li>
+                <li><a href="../../../../categories/">Etiquetas</a></li>
+                <li><a href="../../../../about/">Acerca de</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
 
     
     
@@ -75,24 +78,25 @@ import Mathlib.Data.">
     </header><div class="e-content entry-content" itemprop="articleBody text">
     <p>Sea \(u\) una sucesión creciente. Demostrar con Lean4 que si \(S\) es un supremo de \(u\), entonces el límite de \(u\) es \(S\).</p>
 <p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kd">variable</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span>
-<span class="kd">variable</span> <span class="o">(</span><span class="n">S</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
 
 <span class="c1">-- (limite u c) expresa que el límite de u es c.</span>
-<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">m</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">m</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">c</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="c1">-- (supremo u S) expresa que el supremo de u es S.</span>
-<span class="kd">def</span> <span class="n">supremo</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">S</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="o">(</span><span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">S</span><span class="o">)</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="n">u</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">S</span> <span class="bp">-</span> <span class="n">ε</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">S</span><span class="o">)</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="kd">example</span>
-  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">Monotone</span> <span class="n">u</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">hS</span> <span class="o">:</span> <span class="n">supremo</span> <span class="n">u</span> <span class="n">S</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">S</span> <span class="o">:=</span>
-<span class="kd">by</span> <span class="gr">sorry</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Monotone</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
 <!-- TEASER_END -->
@@ -119,123 +123,124 @@ o, equivalentemente,
           &amp;≤ ε
 \end{align}</p>
 <h2>2. Demostraciones con Lean4</h2>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span> <span class="n">Mathlib.Data.Real.Basic</span>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kd">variable</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span>
-<span class="kd">variable</span> <span class="o">(</span><span class="n">S</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
 
 <span class="c1">-- (limite u c) expresa que el límite de u es c.</span>
-<span class="kd">def</span> <span class="n">limite</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">c</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">m</span><span class="o">,</span> <span class="bp">∀</span> <span class="n">n</span> <span class="bp">≥</span> <span class="n">m</span><span class="o">,</span> <span class="bp">|</span><span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">c</span><span class="bp">|</span> <span class="bp">≤</span> <span class="n">ε</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">m</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">c</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="c1">-- (supremo u S) expresa que el supremo de u es S.</span>
-<span class="kd">def</span> <span class="n">supremo</span> <span class="o">(</span><span class="n">u</span> <span class="o">:</span> <span class="n">ℕ</span> <span class="bp">→</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">(</span><span class="n">S</span> <span class="o">:</span> <span class="n">ℝ</span><span class="o">)</span> <span class="o">:=</span>
-  <span class="o">(</span><span class="bp">∀</span> <span class="n">n</span><span class="o">,</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">≤</span> <span class="n">S</span><span class="o">)</span> <span class="bp">∧</span> <span class="bp">∀</span> <span class="n">ε</span> <span class="bp">&gt;</span> <span class="mi">0</span><span class="o">,</span> <span class="bp">∃</span> <span class="n">k</span><span class="o">,</span> <span class="n">u</span> <span class="n">k</span> <span class="bp">≥</span> <span class="n">S</span> <span class="bp">-</span> <span class="n">ε</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">S</span><span class="o">)</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="c1">-- 1ª demostración</span>
 <span class="c1">-- ===============</span>
 
 <span class="kd">example</span>
-  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">Monotone</span> <span class="n">u</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">hS</span> <span class="o">:</span> <span class="n">supremo</span> <span class="n">u</span> <span class="n">S</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">S</span> <span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Monotone</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span>
-  <span class="n">unfold</span> <span class="n">limite</span>
-  <span class="c1">-- ⊢ ∀ (ε : ℝ), ε &gt; 0 → ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
-  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
-  <span class="c1">-- ε : ℝ</span>
-  <span class="c1">-- hε : ε &gt; 0</span>
-  <span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
-  <span class="n">unfold</span> <span class="n">supremo</span> <span class="n">at</span> <span class="n">hS</span>
-  <span class="c1">-- hS : (∀ (n : ℕ), u n ≤ S) ∧ ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
-  <span class="n">cases'</span> <span class="n">hS</span> <span class="k">with</span> <span class="n">hS₁</span> <span class="n">hS₂</span>
-  <span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
-  <span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
-  <span class="n">cases'</span> <span class="n">hS₂</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="n">k</span> <span class="n">hk</span>
-  <span class="c1">-- k : ℕ</span>
-  <span class="c1">-- hk : u k ≥ S - ε</span>
-  <span class="n">use</span> <span class="n">k</span>
-  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
-  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
-  <span class="c1">-- n : ℕ</span>
-  <span class="c1">-- hn : n ≥ k</span>
-  <span class="c1">-- ⊢ |u n - S| ≤ ε</span>
-  <span class="n">rw</span> <span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
-  <span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
-  <span class="n">constructor</span>
-  <span class="bp">.</span> <span class="c1">-- ⊢ -ε ≤ u n - S</span>
-    <span class="n">unfold</span> <span class="n">Monotone</span> <span class="n">at</span> <span class="n">hu</span>
-    <span class="c1">-- hu : ∀ ⦃a b : ℕ⦄, a ≤ b → u a ≤ u b</span>
-    <span class="n">specialize</span> <span class="n">hu</span> <span class="n">hn</span>
-    <span class="c1">-- hu : u k ≤ u n</span>
-    <span class="k">calc</span> <span class="bp">-</span><span class="n">ε</span>
-         <span class="bp">=</span> <span class="o">(</span><span class="n">S</span> <span class="bp">-</span> <span class="n">ε</span><span class="o">)</span> <span class="bp">-</span> <span class="n">S</span> <span class="o">:=</span> <span class="kd">by</span> <span class="n">ring</span>
-       <span class="n">_</span> <span class="bp">≤</span> <span class="n">u</span> <span class="n">k</span> <span class="bp">-</span> <span class="n">S</span>     <span class="o">:=</span> <span class="n">sub_le_sub_right</span> <span class="n">hk</span> <span class="n">S</span>
-       <span class="n">_</span> <span class="bp">≤</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">S</span>     <span class="o">:=</span> <span class="n">sub_le_sub_right</span> <span class="n">hu</span> <span class="n">S</span>
-  <span class="bp">.</span> <span class="k">calc</span> <span class="n">u</span> <span class="n">n</span> <span class="bp">-</span> <span class="n">S</span>
-         <span class="bp">≤</span> <span class="n">S</span> <span class="bp">-</span> <span class="n">S</span>       <span class="o">:=</span> <span class="n">sub_le_sub_right</span> <span class="o">(</span><span class="n">hS₁</span> <span class="n">n</span><span class="o">)</span> <span class="n">S</span>
-       <span class="n">_</span> <span class="bp">=</span> <span class="mi">0</span>           <span class="o">:=</span> <span class="n">sub_self</span> <span class="n">S</span>
-       <span class="n">_</span> <span class="bp">≤</span> <span class="n">ε</span>           <span class="o">:=</span> <span class="n">le_of_lt</span> <span class="n">hε</span>
+<span class="w">  </span><span class="n">unfold</span><span class="w"> </span><span class="n">limite</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (ε : ℝ), ε &gt; 0 → ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">unfold</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">hS</span>
+<span class="w">  </span><span class="c1">-- hS : (∀ (n : ℕ), u n ≤ S) ∧ ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">hS₁</span><span class="w"> </span><span class="n">hS₂</span>
+<span class="w">  </span><span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
+<span class="w">  </span><span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS₂</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">hk</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
+<span class="w">  </span><span class="n">constructor</span>
+<span class="w">  </span><span class="bp">.</span><span class="w"> </span><span class="c1">-- ⊢ -ε ≤ u n - S</span>
+<span class="w">    </span><span class="n">unfold</span><span class="w"> </span><span class="n">Monotone</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">hu</span>
+<span class="w">    </span><span class="c1">-- hu : ∀ ⦃a b : ℕ⦄, a ≤ b → u a ≤ u b</span>
+<span class="w">    </span><span class="n">specialize</span><span class="w"> </span><span class="n">hu</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">    </span><span class="c1">-- hu : u k ≤ u n</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="bp">-</span><span class="n">ε</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">ε</span><span class="o">)</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">ring</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">S</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">sub_le_sub_right</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">S</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">S</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">sub_le_sub_right</span><span class="w"> </span><span class="n">hu</span><span class="w"> </span><span class="n">S</span>
+<span class="w">  </span><span class="bp">.</span><span class="w"> </span><span class="k">calc</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">S</span>
+<span class="w">         </span><span class="bp">≤</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">S</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="n">sub_le_sub_right</span><span class="w"> </span><span class="o">(</span><span class="n">hS₁</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="n">S</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">0</span><span class="w">           </span><span class="o">:=</span><span class="w"> </span><span class="n">sub_self</span><span class="w"> </span><span class="n">S</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span><span class="w">           </span><span class="o">:=</span><span class="w"> </span><span class="n">le_of_lt</span><span class="w"> </span><span class="n">hε</span>
 
 <span class="c1">-- 2ª demostración</span>
 <span class="c1">-- ===============</span>
 
 <span class="kd">example</span>
-  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">Monotone</span> <span class="n">u</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">hS</span> <span class="o">:</span> <span class="n">supremo</span> <span class="n">u</span> <span class="n">S</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">S</span> <span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Monotone</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span>
-  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
-  <span class="c1">-- ε : ℝ</span>
-  <span class="c1">-- hε : ε &gt; 0</span>
-  <span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
-  <span class="n">cases'</span> <span class="n">hS</span> <span class="k">with</span> <span class="n">hS₁</span> <span class="n">hS₂</span>
-  <span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
-  <span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
-  <span class="n">cases'</span> <span class="n">hS₂</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="n">k</span> <span class="n">hk</span>
-  <span class="c1">-- k : ℕ</span>
-  <span class="c1">-- hk : u k ≥ S - ε</span>
-  <span class="n">use</span> <span class="n">k</span>
-  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
-  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
-  <span class="c1">-- n : ℕ</span>
-  <span class="c1">-- hn : n ≥ k</span>
-  <span class="c1">-- ⊢ |u n - S| ≤ ε</span>
-  <span class="n">rw</span> <span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
-  <span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
-  <span class="n">constructor</span>
-  <span class="bp">.</span> <span class="c1">-- ⊢ -ε ≤ u n - S</span>
-    <span class="n">linarith</span> <span class="o">[</span><span class="n">hu</span> <span class="n">hn</span><span class="o">]</span>
-  <span class="bp">.</span> <span class="c1">-- ⊢ u n - S ≤ ε</span>
-    <span class="n">linarith</span> <span class="o">[</span><span class="n">hS₁</span> <span class="n">n</span><span class="o">]</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">hS₁</span><span class="w"> </span><span class="n">hS₂</span>
+<span class="w">  </span><span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
+<span class="w">  </span><span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS₂</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">hk</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
+<span class="w">  </span><span class="n">constructor</span>
+<span class="w">  </span><span class="bp">.</span><span class="w"> </span><span class="c1">-- ⊢ -ε ≤ u n - S</span>
+<span class="w">    </span><span class="n">linarith</span><span class="w"> </span><span class="o">[</span><span class="n">hu</span><span class="w"> </span><span class="n">hn</span><span class="o">]</span>
+<span class="w">  </span><span class="bp">.</span><span class="w"> </span><span class="c1">-- ⊢ u n - S ≤ ε</span>
+<span class="w">    </span><span class="n">linarith</span><span class="w"> </span><span class="o">[</span><span class="n">hS₁</span><span class="w"> </span><span class="n">n</span><span class="o">]</span>
 
 <span class="c1">-- 3ª demostración</span>
 <span class="c1">-- ===============</span>
 
 <span class="kd">example</span>
-  <span class="o">(</span><span class="n">hu</span> <span class="o">:</span> <span class="n">Monotone</span> <span class="n">u</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">hS</span> <span class="o">:</span> <span class="n">supremo</span> <span class="n">u</span> <span class="n">S</span><span class="o">)</span>
-  <span class="o">:</span> <span class="n">limite</span> <span class="n">u</span> <span class="n">S</span> <span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Monotone</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hS</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">supremo</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span>
-  <span class="n">intros</span> <span class="n">ε</span> <span class="n">hε</span>
-  <span class="c1">-- ε : ℝ</span>
-  <span class="c1">-- hε : ε &gt; 0</span>
-  <span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
-  <span class="n">cases'</span> <span class="n">hS</span> <span class="k">with</span> <span class="n">hS₁</span> <span class="n">hS₂</span>
-  <span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
-  <span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
-  <span class="n">cases'</span> <span class="n">hS₂</span> <span class="n">ε</span> <span class="n">hε</span> <span class="k">with</span> <span class="n">k</span> <span class="n">hk</span>
-  <span class="c1">-- k : ℕ</span>
-  <span class="c1">-- hk : u k ≥ S - ε</span>
-  <span class="n">use</span> <span class="n">k</span>
-  <span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
-  <span class="n">intros</span> <span class="n">n</span> <span class="n">hn</span>
-  <span class="c1">-- n : ℕ</span>
-  <span class="c1">-- hn : n ≥ k</span>
-  <span class="c1">-- ⊢ |u n - S| ≤ ε</span>
-  <span class="n">rw</span> <span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
-  <span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
-  <span class="n">constructor</span> <span class="bp">&lt;;&gt;</span> <span class="n">linarith</span> <span class="o">[</span><span class="n">hu</span> <span class="n">hn</span><span class="o">,</span> <span class="n">hS₁</span> <span class="n">n</span><span class="o">]</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ m, ∀ (n : ℕ), n ≥ m → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">hS₁</span><span class="w"> </span><span class="n">hS₂</span>
+<span class="w">  </span><span class="c1">-- hS₁ : ∀ (n : ℕ), u n ≤ S</span>
+<span class="w">  </span><span class="c1">-- hS₂ : ∀ (ε : ℝ), ε &gt; 0 → ∃ k, u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">cases'</span><span class="w"> </span><span class="n">hS₂</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">hk</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : u k ≥ S - ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ (n : ℕ), n ≥ k → |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |u n - S| ≤ ε</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">abs_le</span><span class="o">]</span>
+<span class="w">  </span><span class="c1">-- ⊢ -ε ≤ u n - S ∧ u n - S ≤ ε</span>
+<span class="w">  </span><span class="n">constructor</span><span class="w"> </span><span class="bp">&lt;;&gt;</span><span class="w"> </span><span class="n">linarith</span><span class="w"> </span><span class="o">[</span><span class="n">hu</span><span class="w"> </span><span class="n">hn</span><span class="o">,</span><span class="w"> </span><span class="n">hS₁</span><span class="w"> </span><span class="n">n</span><span class="o">]</span>
 
 <span class="c1">-- Lemas usados</span>
 <span class="c1">-- ============</span>
@@ -354,8 +359,7 @@ MathJax.Hub.Config({
         styles: {'.MathJax_Display': {"margin": 0}}
     }
 });
-</script></article></main><footer id="footer"><p>Escrito por <a href="https://jaalonso.github.io/">José A. Alonso</a> usando <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> Esta obra está bajo una 
-<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
 <img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
             
         </footer>
