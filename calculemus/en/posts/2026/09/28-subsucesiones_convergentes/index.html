@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html prefix="
+og: http://ogp.me/ns# article: http://ogp.me/ns/article#
+" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Challenge 21: Subsequences have the same limit as the sequence | Calculemus</title>
+<link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
+<link href="../../../../../assets/css/custom.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather&amp;family=Open+Sans&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="../../../../../assets/css/extras.css" rel="stylesheet" type="text/css">
+<meta name="theme-color" content="#5670d4">
+<meta name="generator" content="Nikola (getnikola.com)">
+<link rel="alternate" type="application/rss+xml" title="RSS (en)" hreflang="en" href="../../../../rss.xml">
+<link rel="alternate" type="application/rss+xml" title="RSS (es)" hreflang="es" href="../../../../../rss.xml">
+<link rel="canonical" href="https://jaalonso.github.io/calculemus/en/posts/2026/09/28-subsucesiones_convergentes/">
+<link rel="icon" href="../../../../../favicon.png" sizes="48x48">
+<!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta name="twitter:title" content="Challenge 21: Subsequences have the same limit as the sequence | Calculemus">
+<meta name="author" content="José A. Alonso">
+<link rel="prev" href="../21-limite_menor_que_cota/" title="Challenge 20: If aₙ → L and M is an upper bound of aₙ, then L ≤ M" type="text/html">
+<link rel="next" href="../../10/05-subsucesiones_con_limites_distintos_implican_no_convergencia/" title="Challenge 22: Subsequences with different limits imply non-convergence" type="text/html">
+<meta property="og:site_name" content="Calculemus">
+<meta property="og:title" content="Challenge 21: Subsequences have the same limit as the sequence">
+<meta property="og:url" content="https://jaalonso.github.io/calculemus/en/posts/2026/09/28-subsucesiones_convergentes/">
+<meta property="og:description" content="A subsequence is obtained by applying an extraction function to the original sequence; that is, a strictly increasing function \(φ : ℕ \to ℕ\). For example, the subsequence \[ u_{0}, u_{2}, u_{4}, u_{">
+<meta property="og:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2026-09-28T06:00:00+02:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Jose_A_Alonso">
+<meta name="twitter:creator" content="@Jose_A_Alonso">
+<link rel="alternate" hreflang="es" href="../../../../../posts/2026/09/28-subsucesiones_convergentes/">
+</head>
+<body>
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="container">
+            <header id="header"><h1 id="brand"><a href="../../../../" title="Calculemus" rel="home">
+
+        <span id="blog-title">Calculemus</span>
+    </a></h1>
+    <div>Weekly proof exercises in Lean 4.</div>
+
+                <div id="toptranslations">
+            <h2>Languages:</h2>
+                        <li class="nav-item"><a href="../../../../../" rel="alternate" hreflang="es" class="nav-link">Español</a></li>
+
+        </div>
+
+            <nav id="menu"><ul>
+<li><a href="https://jaalonso.github.io/">José A. Alonso</a></li>
+                <li><a href="../../../../archive.html">Archive</a></li>
+                <li><a href="../../../../categories/">Tags</a></li>
+                <li><a href="../../../../about/">About</a></li>
+                <li><a href="../../../../rss.xml">RSS</a></li>
+
+    
+    
+    
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Challenge 21: Subsequences have the same limit as the sequence</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
+                    José A. Alonso
+            </span></p>
+            <p class="dateline">
+            <a href="." rel="bookmark">
+            <time class="published dt-published" datetime="2026-09-28T06:00:00+02:00" itemprop="datePublished" title="28-09-2026">28-09-2026</time></a>
+            </p>
+        </div>
+                <div class="metadata posttranslations translations">
+            <h3 class="posttranslations-intro">Also available in:</h3>
+                <p><a href="../../../../../posts/2026/09/28-subsucesiones_convergentes/" rel="alternate" hreflang="es">Español</a></p>
+        </div>
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <p>A subsequence is obtained by applying an extraction function to the original sequence; that is, a strictly increasing function \(φ : ℕ \to ℕ\). For example, the subsequence \[ u_{0}, u_{2}, u_{4}, u_{6}, \dots \] is obtained with the extraction function \(\varphi\) defined by \(\varphi(n) = 2n\).</p>
+<p>The above definitions are formalized in Lean 4 as:</p>
+<div class="code"><pre class="code literal-block"><span class="c1">-- φ is an extraction function.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- v is a subsequence of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">Subseq</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- a is the limit of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>Prove that every subsequence of a convergent sequence converges to the same limit as the sequence.</p>
+<p>To do this, complete the following Lean 4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="c1">-- φ is an extraction function.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">extraction</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- v is a subsequence of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">extraction</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- a is the limit of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<!-- TEASER_END --><h2>1. Proof in natural language</h2>
+<p>We will use the following lemma: if \(φ\) is an extraction function, then
+\[ ∀ n, n ≤ φ(n) \]</p>
+<p>Since \(v\) is a subsequence of \(u\), there is an extraction function \(φ\) such that
+\[ v = u ∘ φ \tag{1} \]</p>
+<p>We have to prove that for every \(ε &gt; 0\) there is a \(k ∈ ℕ\) such that
+\[ ∀ n ≥ k, |v(n) - a| &lt; ε \tag{2} \]</p>
+<p>Since \(a\) is the limit of \(u\), there is a \(k ∈ ℕ\) such that
+\[ ∀ n ≥ k, |u(n) - a| &lt; ε \tag{3} \]</p>
+<p>We show that this \(k\) satisfies (2). Let \(n ≥ k\). Then
+\[ φ(n) ≥ k \tag{4} \]
+since
+\[ φ(n) ≥ n ≥ k \quad\text{[by the lemma]} \]
+Hence,
+\[
+\begin{array}{ll}
+   |v(n) - a| &amp;= |(u ∘ φ)(n) - a| &amp;&amp;\text{[by (1)]} \\
+              &amp;= |u(φ(n)) - a|    \\
+              &amp;&lt; ε                &amp;&amp;\text{[by (3) and (4)]}
+\end{array}
+\]</p>
+<h2>2. Proofs in Lean 4</h2>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="c1">-- φ is an extraction function.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">extraction</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- v is a subsequence of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">extraction</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- a is the limit of u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">hφ</span><span class="o">,</span><span class="w"> </span><span class="n">hφ'</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hv</span>
+<span class="w">  </span><span class="c1">-- φ : ℕ → ℕ</span>
+<span class="w">  </span><span class="c1">-- hφ : extraction φ</span>
+<span class="w">  </span><span class="c1">-- hφ' : v = u ∘ φ</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |v n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |u n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |v n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |v n - a| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="n">n</span>
+<span class="w">         </span><span class="bp">≥</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">StrictMono.le_apply</span><span class="w"> </span><span class="n">hφ</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="n">v</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span>
+<span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w">  </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">hφ'</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">rfl</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w">                 </span><span class="o">:=</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="n">h1</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">hφ</span><span class="o">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hv</span>
+<span class="w">  </span><span class="c1">-- φ : ℕ → ℕ</span>
+<span class="w">  </span><span class="c1">-- hφ : extraction φ</span>
+<span class="w">  </span><span class="c1">-- ⊢ SeqLimit (u ∘ φ) a</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |u n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="n">n</span>
+<span class="w">         </span><span class="bp">≥</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hφ.le_apply</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w">  </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">rfl</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w">                 </span><span class="o">:=</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="n">h1</span>
+
+<span class="c1">-- Proof 3</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">hφ</span><span class="o">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hv</span>
+<span class="w">  </span><span class="c1">-- φ : ℕ → ℕ</span>
+<span class="w">  </span><span class="c1">-- hφ : extraction φ</span>
+<span class="w">  </span><span class="c1">-- ⊢ SeqLimit (u ∘ φ) a</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |u n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">apply</span><span class="w"> </span><span class="n">hk</span>
+<span class="w">  </span><span class="c1">-- ⊢ φ n ≥ k</span>
+<span class="w">  </span><span class="n">apply</span><span class="w"> </span><span class="n">le_trans</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- ⊢ n ≤ φ n</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">hφ.le_apply</span>
+
+<span class="c1">-- Proof 4</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">subsequence</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLimit</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">hφ</span><span class="o">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hv</span>
+<span class="w">  </span><span class="c1">-- φ : ℕ → ℕ</span>
+<span class="w">  </span><span class="c1">-- hφ : extraction φ</span>
+<span class="w">  </span><span class="c1">-- ⊢ SeqLimit (u ∘ φ) a</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(u ∘ φ) n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |u n - a| &lt; ε</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="bp">↦</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">le_trans</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="n">hφ.le_apply</span><span class="o">)⟩</span>
+</pre></div>
+
+<p>You can inspect, modify and run the code of these proofs interactively in <a href="https://live.lean-lang.org/#url=https://github.com/jaalonso/Retos/blob/main/Lean4Web/Reto_21.lean">Lean 4 Web</a>.</p>
+    </div>
+    <aside class="postpromonav"><nav><ul class="pager hidden-print">
+<li class="previous">
+                <a href="../21-limite_menor_que_cota/" rel="prev" title="Challenge 20: If aₙ → L and M is an upper bound of aₙ, then L ≤ M">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../../10/05-subsucesiones_con_limites_distintos_implican_no_convergencia/" rel="next" title="Challenge 22: Subsequences with different limits imply non-convergence">Next post</a>
+            </li>
+        </ul></nav></aside><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+    },
+    displayAlign: 'center', // Change this to 'left' if you want left-aligned equations.
+    "HTML-CSS": {
+        styles: {'.MathJax_Display': {"margin": 0}}
+    }
+});
+</script></article></main><footer id="footer"><p>By <a href="https://jaalonso.github.io/">José A. Alonso</a>, created with <a href="https://getnikola.com" rel="nofollow">Nikola</a> <br> This work is licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en">Creative Commons Attribution Non Commercial Share Alike 4.0 International</a> <br><a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+<img alt="Creative Commons License BY-NC-SA" style="border-width:0; margin-bottom:12px;" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a></p>
+            
+        </footer>
+</div>
+        
+
+    
+    
+</body>
+</html>
