@@ -52,345 +52,419 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/06/03-cota_inferior_de_sucesiones_convergentes/" class="u-url">Si a converge a L, entonces (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1]</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/" class="u-url">Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np"</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2026/06/03-cota_inferior_de_sucesiones_convergentes/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-06-03T06:00:00+02:00" itemprop="datePublished" title="03-06-2026">03-06-2026</time></a>
+            <a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-12T06:00:00+02:00" itemprop="datePublished" title="12-09-2024">12-09-2024</time></a>
             </p>
-		    <p><span class="text-dark">Análisis/Límites</span></p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Demostrar que si la sucesión \(a\) converge a \(L\), entonces
-\[ (∃ N)(∀ n ≥ N)[aₙ ≥ L - 1] \]</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<p>Let \(p ∈ ℝ\) and \(n ∈ ℕ\). Prove that if \(p &gt; -1\), then
+\[ (1 + p)^n ≥ 1 + np \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
 <span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span>
-<span class="w">  </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/06/03-cota_inferior_de_sucesiones_convergentes/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/06/01-suma_de_sucesiones_convergentes/" class="u-url">Si aₙ converge a L y bₙ a M, entonces aₙ+bₙ converge a L+M.</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/06/01-suma_de_sucesiones_convergentes/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-06-01T06:00:00+02:00" itemprop="datePublished" title="01-06-2026">01-06-2026</time></a>
-            </p>
-		    <p><span class="text-dark">Análisis/Límites</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Demostrar que si \(aₙ\) converge a \(L\) y \(bₙ\) a \(M\), entonces \(aₙ+bₙ\) converge a \(L+M\).</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">M</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span>
-<span class="w">  </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/06/01-suma_de_sucesiones_convergentes/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/31-infinitud_de_primos_v2/" class="u-url">Reto 4: Existen infinitos números primos</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/05/31-infinitud_de_primos_v2/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-31T06:00:00+02:00" itemprop="datePublished" title="31-05-2026">31-05-2026</time></a>
-            </p>
-		    <p><span class="text-dark">Retos/Lean 4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El reto de esta semana consiste en demostrar con Lean 4 que existen infinitos números primos.</p>
-<p>Para ello, completar la siguiente teoría de Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Prime.Defs</span>
 
 <span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
 
-<span class="kd">example</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">p</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">Nat.Prime</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
-<span class="w">  </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/05/31-infinitud_de_primos_v2/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/24-si_a_converge_a_l_entonces_2a_converge_a_2l/" class="u-url">Reto 3: Si aₙ converge a L, entonces 2aₙ converge a 2L</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/05/24-si_a_converge_a_l_entonces_2a_converge_a_2l/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-24T06:00:00+02:00" itemprop="datePublished" title="24-05-2026">24-05-2026</time></a>
-            </p>
-		    <p><span class="text-dark">Retos/Lean 4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>El reto de esta semana consiste en demostrar con Lean 4 que si la
-sucesión \(aₙ\) converge a \(L\), entonces \(2aₙ\) converge a \(2L\).</p>
-<p>Para ello, completar la siguiente teoría de Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">L</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span>
-<span class="w">  </span><span class="gr">sorry</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="bp">*</span><span class="n">p</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2026/05/24-si_a_converge_a_l_entonces_2a_converge_a_2l/">Read more…</a></p>
+<p class="more"><a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/">Read more…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/17-no_convergencia_-1n/" class="u-url">Reto 2: La sucesión 1, -1, 1, -1,... no es convergente</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/10-sum_of_the_first_cubesen/" class="u-url">Proofs of 0³+1³+2³+3³+···+n³ = (n(n+1)/2)²</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2026/05/17-no_convergencia_-1n/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-17T06:00:00+02:00" itemprop="datePublished" title="17-05-2026">17-05-2026</time></a>
+            <a href="posts/2024/09/10-sum_of_the_first_cubesen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-10T06:00:00+02:00" itemprop="datePublished" title="10-09-2024">10-09-2024</time></a>
             </p>
-		    <p><span class="text-dark">Retos/Lean 4</span></p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>En el reto de esta semana continuamos explorando la convergencia de sucesiones, retomando el trabajo de la semana anterior. El problema consiste en demostrar que la sucesión definida por 1, -1, 1, -1,,,, no converge. Para ello, se propone completar la siguiente demostración en Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<p>Prove that the sum of the first cubes
+\[ 0^3 + 1^3 + 2^3 + 3^3 + ··· + n^3 \]
+is
+\[ \dfrac{n(n+1)}{2}^2 \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
 <span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
 
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
 
-<span class="kd">def</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span><span class="bp">^</span><span class="mi">3</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">*</span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">))</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/09/10-sum_of_the_first_cubesen/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/09-sum_of_geometric_progresionen/" class="u-url">Proofs of a+aq+aq²+···+aqⁿ = a(1-qⁿ⁺¹)/(1-q)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/09/09-sum_of_geometric_progresionen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-09T06:00:00+02:00" itemprop="datePublished" title="09-09-2024">09-09-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Prove that if \(q ≠ 1\), then the sum of the terms of the geometric progression
+\[ a + aq + aq^2 + ··· + aq^n \]
+is
+\[ \dfrac{a(1 - q^{n+1})}{1 - q} \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">_</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">q</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">q</span><span class="bp">^</span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">))</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">^</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="w"> </span><span class="n">SucConv</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="bp">≠</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">q</span><span class="bp">^</span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">))</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2026/05/17-no_convergencia_-1n/">Read more…</a></p>
+<p class="more"><a href="posts/2024/09/09-sum_of_geometric_progresionen/">Read more…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/10-la_sucesion_1_div_n_converge_a_0/" class="u-url">Challenge 1: The sequence 1/n converges to 0</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/07-sum_of_arithmetic_progressionen/" class="u-url">Proofs of a+(a+d)+(a+2d)+···+(a+nd)=(n+1)(2a+nd)/2</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2026/05/10-la_sucesion_1_div_n_converge_a_0/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-10T06:00:00+02:00" itemprop="datePublished" title="10-05-2026">10-05-2026</time></a>
+            <a href="posts/2024/09/07-sum_of_arithmetic_progressionen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-07T06:00:00+02:00" itemprop="datePublished" title="07-09-2024">07-09-2024</time></a>
             </p>
-		    <p><span class="text-dark">Challenges/Lean 4</span></p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>In Lean, a sequence \(a₀, a₁, a₂,...\) can be represented by a function \(a : ℕ → ℝ\) so that \(a(n)\) is \(aₙ\).</p>
-<p>The statement that \(L\) is the limit of the sequence \(a\) is defined by</p>
-<div class="code"><pre class="code literal-block"><span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>Prove that if \(aₙ = 1/n\) for all \(n\), then the sequence \(a\) converges to 0.</p>
-<p>To do so, complete the following Lean 4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<p>Prove that the sum of the terms of the arithmetic progression
+\[ a + (a + d) + (a + 2d) + ··· + (a + nd) \]
+is
+\[ \dfrac{(n + 1)(2a + nd)}{2} \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
 <span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
 
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">_</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">d</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">d</span><span class="o">)</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">d</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/09/07-sum_of_arithmetic_progressionen/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/" class="u-url">Proofs of "0+1+2+3+···+n=n(n + 1)/2"</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-05T06:00:00+02:00" itemprop="datePublished" title="05-09-2024">05-09-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Prove that the sum of the natural numbers
+\[ 0 + 1 + 2 + 3 + ··· + n \]
+is
+\[\dfrac{n(n + 1)}{2}\]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Init.Data.Nat.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span>
+
+<span class="kd">set_option</span><span class="w"> </span><span class="n">pp.fieldNotation</span><span class="w"> </span><span class="n">false</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">      </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/04-sufficient_condition_of_continuityen/" class="u-url">If f is continuous at a and the limit of u(n) is a, then the limit of f(u(n)) is f(a)</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/09/04-sufficient_condition_of_continuityen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-04T06:00:00+02:00" itemprop="datePublished" title="04-09-2024">04-09-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Analysis/Limits</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>and that \(f\) is continuous at \(a\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">|</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>To prove that if the function \(f\) is continuous at the point \(a\), and the sequence \(u(n)\) converges to \(a\), then the sequence \(f(u(n))\) converges to \(f(a)\).</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">|</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hf</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2026/05/10-la_sucesion_1_div_n_converge_a_0/">Read more…</a></p>
+<p class="more"><a href="posts/2024/09/04-sufficient_condition_of_continuityen/">Read more…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/05/09-retos_de_demostracion_en_lean_4/" class="u-url">Retos de demostración en Lean 4</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/" class="u-url">If x is the limit of u and y is an upper bound of u, then x ≤ y</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2026/05/09-retos_de_demostracion_en_lean_4/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-09T06:00:00+02:00" itemprop="datePublished" title="09-05-2026">09-05-2026</time></a>
+            <a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-03T06:00:00+02:00" itemprop="datePublished" title="03-09-2024">03-09-2024</time></a>
             </p>
-		    <p><span class="text-dark">Retos/Lean 4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <p>He empezado a publicar la serie de "Retos matemáticos en Lean 4" en el canal de <a href="https://t.me/Retos_Matematicos/109557/139685">Retos matemáticos</a> de Telegram.</p>
-<p>La dinámica es sencilla: cada semana publicaré un problema matemático para que los interesados compartan sus soluciones en Lean 4 dentro del grupo. Aunque el acceso es público y cualquiera puede leer los retos, es necesario unirse al grupo en https://t.me/Retos_Matematicos para publicar soluciones.</p>
-<p>Al finalizar de la semana publicaré un enlace a <a href="https://live.lean-lang.org/">Lean Web</a> con las soluciones del reto, que seguirán el siguiente esquema: en primer lugar, una solución en lenguaje natural; a continuación, varias formalizaciones en Lean 4 empezando por la más automática (generalmente, con <code>grind</code>), siguiendo con otras con tácticas más específicas (como <code>norm_num</code>, <code>ring</code>, <code>positivity</code>, <code>linarith</code>) y terminando con una demostración en que la que dichas tácticas se sustituyen por lemas concretos. Con este proceso de refinamiento sucesivo se buscará que la demostración final se corresponda, en la medida de lo posible con la escrita en lenguaje natural.</p>
-<p>Una vez concluido cada reto, publicaré las soluciones en este blog bajo la etiqueta <a href="../categories/cat_retoslean4/">Retos Lean4</a>.</p>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/01/10-propiedad_arquimediana/" class="u-url">Propiedad arquimediana de los números reales</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/01/10-propiedad_arquimediana/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-01-10T06:00:00+02:00" itemprop="datePublished" title="10-01-2026">10-01-2026</time></a>
-            </p>
-		    <p><span class="text-dark">Análisis/Números reales</span></p>
+		    <p><span class="text-dark">Analysis/Limits</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Demostrar la propiedad arquimediana de los números reales; es decir, que para cualquier \(ε ∈ ℝ\) con \(0 &lt; ε\), existe \(N ∈ ℕ\) tal que \(1/ε &lt; N\).</p>
-<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<p>In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>and that \(a\) is an upper bound of \(u\) by:</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+
+<p>Prove that if \(x\) is the limit of the sequence \(u\) and \(y\) is an upper bound of \(u\), then \(x ≤ y\).</p>
+<p>To do this, complete the following Lean4 theory:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
 <span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">ε</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w">  </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
 
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="o">(</span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">),</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
+<span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
 
-<hr>
-<p class="more"><a href="posts/2026/01/10-propiedad_arquimediana/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/12/23-convergencia_de_la_sucesion_constante_v2/" class="u-url">La sucesión constante aₙ = L converge a L</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2025/12/23-convergencia_de_la_sucesion_constante_v2/" rel="bookmark">
-            <time class="published dt-published" datetime="2025-12-23T06:00:00+02:00" itemprop="datePublished" title="23-12-2025">23-12-2025</time></a>
-            </p>
-		    <p><span class="text-dark">Análisis/Límites</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>En Lean, una sucesión \(a₀, a₁, a₂, ...\) se puede representar mediante una función \((a : ℕ → ℝ)\) de forma que \(a(n)\) es \(aₙ\).</p>
-<p>Se define que \(L\) es el límite de la sucesión \(a\), por</p>
-<div class="code"><pre class="code literal-block"><span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>Demostrar que si para todo \(n\), \(aₙ = L\), entonces la sucesión \(a\) converge a \(L\).</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">a</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">LimSuc</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2025/12/23-convergencia_de_la_sucesion_constante_v2/">Read more…</a></p>
+<p class="more"><a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/">Read more…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2025/04/25-union_con_la_imagen_inversa/" class="u-url">Demostraciones de "s ∪ f⁻¹[v] ⊆ f⁻¹[f[s] ∪ v]"</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/02-le_of_forall_pos_le_adden/" class="u-url">If (∀ ε &gt; 0, y ≤ x + ε), then y ≤ x</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2025/04/25-union_con_la_imagen_inversa/" rel="bookmark">
-            <time class="published dt-published" datetime="2025-04-25T06:00:00+02:00" itemprop="datePublished" title="25-04-2025">25-04-2025</time></a>
+            <a href="posts/2024/09/02-le_of_forall_pos_le_adden/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-09-02T06:00:00+02:00" itemprop="datePublished" title="02-09-2024">02-09-2024</time></a>
             </p>
-		    <p><span class="text-dark">Fundamentos/Funciones</span></p>
+		    <p><span class="text-dark">Number Theory/Real numbers</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<hr>
-<p>Demostrar con Lean4 y con Isabelle/HOL que
-\[ s ∪ f⁻¹[v] ⊆ f⁻¹[f[s] ∪ v] \]</p>
-<p>Para ello, completar la siguiente teoría de Lean4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Set.Function</span>
+<p>Let \(x, y ∈ ℝ\). Prove that
+\[ (∀ ε &gt; 0, y ≤ x + ε) → y ≤ x \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kn">open</span><span class="w"> </span><span class="n">Set</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">α</span><span class="w"> </span><span class="n">β</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">_</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">α</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">β</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">α</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">β</span><span class="o">)</span>
-
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="bp">∪</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="bp">⁻¹'</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">⊆</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="bp">⁻¹'</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="bp">''</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="bp">∪</span><span class="w"> </span><span class="n">v</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">ε</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<p>y la siguiente teoría de Isabelle/HOL:</p>
-<div class="code"><pre class="code literal-block"><span class="k">theory</span><span class="w"> </span><span class="n">Union_con_la_imagen_inversa</span>
-<span class="kp">imports</span><span class="w"> </span><span class="n">Main</span>
-<span class="k">begin</span>
-
-<span class="kn">lemma</span><span class="w"> </span><span class="s">"s ∪ f -` v ⊆ f -` (f ` s ∪ v)"</span>
-<span class="gr">sorry</span>
-
-<span class="k">end</span>
+<p class="more"><a href="posts/2024/09/02-le_of_forall_pos_le_adden/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/" class="u-url">If x is the supremum of set A, then ((∀ y)[y &lt; x → (∃ a ∈ A)[y &lt; a]]</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-31T06:00:00+02:00" itemprop="datePublished" title="31-08-2024">31-08-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Number Theory/Real numbers</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>In Lean4, one can define that \(x\) is an upper bound of \(A\) by</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span>
 </pre></div>
 
-<hr>
-<p class="more"><a href="posts/2025/04/25-union_con_la_imagen_inversa/">Read more…</a></p>
+<p>and \(x\) is supremum of \(A\) by</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span>
+</pre></div>
+
+<p>Prove that if \(x\) is the supremum of \(A\), then
+\[ (∀ y)[y &lt; x → (∃ a ∈ A)[y &lt; a]] \]</p>
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/29-fibonaccien/" class="u-url">Equivalence of definitions of the Fibonacci function</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/08/29-fibonaccien/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-08-29T06:00:00+02:00" itemprop="datePublished" title="29-08-2024">29-08-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Number Theory/Induction</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>In Lean4, the Fibonacci function can be defined as</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">Nat</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">Nat</span>
+<span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="ow">=&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="ow">=&gt;</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+<p>Another more efficient definition is</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">def</span><span class="w"> </span><span class="n">fib</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">Nat</span><span class="p">)</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">Nat</span><span class="w"> </span><span class="kt">:=</span>
+<span class="w">     </span><span class="p">(</span><span class="n">loop</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="mi">1</span>
+<span class="w">   </span><span class="kr">where</span>
+<span class="w">     </span><span class="n">loop</span><span class="w"> </span><span class="kt">:</span><span class="w"> </span><span class="kt">Nat</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="kt">Nat</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="kt">Nat</span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">=&gt;</span>
+<span class="w">         </span><span class="kr">let</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="kt">:=</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="n">n</span>
+<span class="w">         </span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="o">.</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">p</span><span class="o">.</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p>Prove that both definitions are equivalent; that is,</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="n">fibonacci</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">fib</span>
+</pre></div>
+
+<p>To do this, complete the following Lean4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
+
+<span class="kd">set_option</span><span class="w"> </span><span class="n">pp.fieldNotation</span><span class="w"> </span><span class="n">false</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">fib</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">loop</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="bp">.</span><span class="mi">1</span>
+<span class="n">where</span>
+<span class="w">  </span><span class="n">loop</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">×</span><span class="w"> </span><span class="n">Nat</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="bp">=&gt;</span><span class="w"> </span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">      </span><span class="k">let</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="n">n</span>
+<span class="w">      </span><span class="o">(</span><span class="n">p</span><span class="bp">.</span><span class="mi">2</span><span class="o">,</span><span class="w"> </span><span class="n">p</span><span class="bp">.</span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">p</span><span class="bp">.</span><span class="mi">2</span><span class="o">)</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">fibonacci</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">fib</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/08/29-fibonaccien/">Read more…</a></p>
 </div>
                 </div>
             </article>

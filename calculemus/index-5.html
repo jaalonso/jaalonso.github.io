@@ -52,400 +52,482 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/19-gausss_formula_for_summationen/" class="u-url">Proofs of "∑i&lt;n. i = n(n-1)/2"</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/10-relacion_entre_los_indices_de_las_subsucesiones_y_de_la_sucesion/" class="u-url">Relación entre los índices de las subsucesiones y de la sucesión</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2024/09/19-gausss_formula_for_summationen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-19T06:00:00+02:00" itemprop="datePublished" title="19-09-2024">19-09-2024</time></a>
+            <a href="posts/2024/07/10-relacion_entre_los_indices_de_las_subsucesiones_y_de_la_sucesion/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-10T06:00:00+02:00" itemprop="datePublished" title="10-07-2024">10-07-2024</time></a>
             </p>
-		    <p><span class="text-dark">Estructuras discretas/Sumatorias</span></p>
+		    <p><span class="text-dark">Análisis/Sucesiones</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Gauss's formula for the sum of the first natural numbers is
-\[ 0 + 1 + 2 + ... + (n-1) = \dfrac{n(n-1)}{2} \]
-that is,
-\[ \sum_{i &lt; n} i = \dfrac{n(n-1)}{2} \]</p>
-<p>In a previous exercise, this formula was proven by induction. Another way to prove it, without using induction, is the following: The sum can be written in two ways
-\begin{align}
-   S &amp;= &amp;0     &amp;+ &amp;1     &amp;+ &amp;2     &amp;+ ... &amp;+ &amp;(n-3) &amp;+ &amp;(n-2) &amp;+ &amp;(n-1) \newline
-   S &amp;= &amp;(n-1) &amp;+ &amp;(n-2) &amp;+ &amp;(n-3) &amp;+ ... &amp;+ &amp;2     &amp;+ &amp;1     &amp;+ &amp;0
-\end{align}
-By adding, we observe that each pair of numbers in the same column sums to (n-1), and since there are n columns in total, it follows that
-\[ 2S = n(n-1) \]
-which proves the formula.</p>
-<p>Prove Gauss's formula by following the above procedure.</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Algebra.BigOperators.Intervals</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+<p>Para extraer una subsucesión se aplica una función de extracción que conserva el orden; por ejemplo, la subsucesión
+\[ u_0, u_2, u_4, u_6, ... \]
+se ha obtenido con la función de extracción \(ϕ\) tal que \(ϕ(n) = 2n\).</p>
+<p>En Lean4, se puede definir que \(ϕ\) es una función de extracción por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">extraccion</span><span class="w"> </span><span class="o">(</span><span class="n">ϕ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="o">},</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="n">m</span>
+</pre></div>
 
-<span class="kn">open</span><span class="w"> </span><span class="n">Finset</span><span class="w"> </span><span class="n">Nat</span>
+<p>Demostrarcon Lean4 que si \(ϕ\) es una función de extracción, entonces
+\[ (∀ n)[n ≤ ϕ(n) \]</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">ϕ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">extraccion</span><span class="w"> </span><span class="o">(</span><span class="n">ϕ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="o">},</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="n">m</span>
 
 <span class="kd">example</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="bp">∑</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">extraccion</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ϕ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<p class="more"><a href="posts/2024/09/19-gausss_formula_for_summationen/">Leer más…</a></p>
+<p class="more"><a href="posts/2024/07/10-relacion_entre_los_indices_de_las_subsucesiones_y_de_la_sucesion/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/" class="u-url">Proofs of "If p &gt; -1, then (1+p)ⁿ ≥ 1+np"</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/09-las_particiones_definen_relaciones_de_equivalencia/" class="u-url">Las particiones definen relaciones de equivalencia</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-12T06:00:00+02:00" itemprop="datePublished" title="12-09-2024">12-09-2024</time></a>
+            <a href="posts/2024/07/09-las_particiones_definen_relaciones_de_equivalencia/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-09T06:00:00+02:00" itemprop="datePublished" title="09-07-2024">09-07-2024</time></a>
             </p>
-		    <p><span class="text-dark">Number Theory/Induction</span></p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Let \(p ∈ ℝ\) and \(n ∈ ℕ\). Prove that if \(p &gt; -1\), then
-\[ (1 + p)^n ≥ 1 + np \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
+<p>Cada familia de conjuntos \(P\) define una relación de forma que dos elementos están relacionados si algún conjunto de \(P\) contiene a ambos elementos. Se puede definir en Lean4 por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+</pre></div>
+
+<p>Una familia \(P\) de subconjuntos de \(X\) es una partición de \(X\) si cada elemento de \(X\) pertenece a un único conjunto de \(P\) y todos los elementos de \(P\) son no vacíos. Se puede definir en Lean4 por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(P\) es una partición de \(X\), entonces la relación definida por \(P\) es una relación de equivalencia.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">Equivalence</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/09-las_particiones_definen_relaciones_de_equivalencia/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/08-las_particiones_definen_relaciones_transitivas/" class="u-url">Las particiones definen relaciones transitivas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/08-las_particiones_definen_relaciones_transitivas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-08T06:00:00+02:00" itemprop="datePublished" title="08-07-2024">08-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Cada familia de conjuntos \(P\) define una relación de forma que dos elementos están relacionados si algún conjunto de \(P\) contiene a ambos elementos. Se puede definir en Lean4 por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+</pre></div>
+
+<p>Una familia \(P\) de subconjuntos de \(X\) es una partición de \(X\) si cada elemento de \(X\) pertenece a un único conjunto de \(P\) y todos los elementos de \(P\) son no vacíos. Se puede definir en Lean por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(P\) es una partición de \(X\), entonces la relación definida por \(P\) es transitiva.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">Transitive</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/08-las_particiones_definen_relaciones_transitivas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/" class="u-url">Las familias de conjuntos definen relaciones simétricas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-05T06:00:00+02:00" itemprop="datePublished" title="05-07-2024">05-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Cada familia de conjuntos \(P\) define una relación de forma que dos elementos están relacionados si algún conjunto de \(P\) contiene a ambos elementos. Se puede definir en Lean4 por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(P\) es una familia de subconjuntos de \(X\), entonces la relación definida por \(P\) es simétrica.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+
+<span class="c1">-- 1ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Symmetric</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">hxy</span>
+<span class="w">  </span><span class="c1">-- x y : X</span>
+<span class="w">  </span><span class="c1">-- hxy : relacion P x y</span>
+<span class="w">  </span><span class="c1">-- ⊢ relacion P y x</span>
+<span class="w">  </span><span class="n">rcases</span><span class="w"> </span><span class="n">hxy</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">h1</span><span class="o">⟩</span>
+<span class="w">  </span><span class="c1">-- A : Set X</span>
+<span class="w">  </span><span class="c1">-- h1 : A ∈ P ∧ x ∈ A ∧ y ∈ A</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">tauto</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">h2</span><span class="o">⟩</span>
+
+<span class="c1">-- 2ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Symmetric</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">unfold</span><span class="w"> </span><span class="n">Symmetric</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ ⦃x y : X⦄, relacion P x y → relacion P y x</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">hxy</span>
+<span class="w">  </span><span class="c1">-- x y : X</span>
+<span class="w">  </span><span class="c1">-- hxy : relacion P x y</span>
+<span class="w">  </span><span class="c1">-- ⊢ relacion P y x</span>
+<span class="w">  </span><span class="n">unfold</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="bp">*</span>
+<span class="w">  </span><span class="c1">-- hxy : ∃ A, A ∈ P ∧ x ∈ A ∧ y ∈ A</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ A, A ∈ P ∧ y ∈ A ∧ x ∈ A</span>
+<span class="w">  </span><span class="n">rcases</span><span class="w"> </span><span class="n">hxy</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">hAP</span><span class="o">,</span><span class="w"> </span><span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span><span class="w"> </span><span class="n">hyA</span><span class="o">⟩⟩</span>
+<span class="w">  </span><span class="c1">-- A : Set X</span>
+<span class="w">  </span><span class="c1">-- hAP : A ∈ P</span>
+<span class="w">  </span><span class="c1">-- hxA : x ∈ A</span>
+<span class="w">  </span><span class="c1">-- hyA : y ∈ A</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">A</span>
+
+<span class="c1">-- 3ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Symmetric</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">hxy</span>
+<span class="w">  </span><span class="c1">-- x y : X</span>
+<span class="w">  </span><span class="c1">-- hxy : relacion P x y</span>
+<span class="w">  </span><span class="c1">-- ⊢ relacion P y x</span>
+<span class="w">  </span><span class="n">rcases</span><span class="w"> </span><span class="n">hxy</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">hAP</span><span class="o">,</span><span class="w"> </span><span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span><span class="w"> </span><span class="n">hyA</span><span class="o">⟩⟩</span>
+<span class="w">  </span><span class="c1">-- A : Set X</span>
+<span class="w">  </span><span class="c1">-- hAP : A ∈ P</span>
+<span class="w">  </span><span class="c1">-- hxA : x ∈ A</span>
+<span class="w">  </span><span class="c1">-- hyA : y ∈ A</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">A</span>
+
+<span class="c1">-- 4ª demostración</span>
+<span class="c1">-- ===============</span>
+
+<span class="kd">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Symmetric</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intros</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="n">hxy</span>
+<span class="w">  </span><span class="c1">-- x y : X</span>
+<span class="w">  </span><span class="c1">-- hxy : relacion P x y</span>
+<span class="w">  </span><span class="c1">-- ⊢ relacion P y x</span>
+<span class="w">  </span><span class="n">rcases</span><span class="w"> </span><span class="n">hxy</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">hAP</span><span class="o">,</span><span class="w"> </span><span class="o">⟨</span><span class="n">hxA</span><span class="o">,</span><span class="w"> </span><span class="n">hyA</span><span class="o">⟩⟩</span>
+<span class="w">  </span><span class="c1">-- A : Set X</span>
+<span class="w">  </span><span class="c1">-- hAP : A ∈ P</span>
+<span class="w">  </span><span class="c1">-- hxA : x ∈ A</span>
+<span class="w">  </span><span class="c1">-- hyA : y ∈ A</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="o">⟨</span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="o">⟨</span><span class="n">hAP</span><span class="o">,</span><span class="w"> </span><span class="n">hyA</span><span class="o">,</span><span class="w"> </span><span class="n">hxA</span><span class="o">⟩⟩</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/05-las_familias_de_conjuntos_definen_relaciones_simetricas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/" class="u-url">Las particiones definen relaciones reflexivas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-04T06:00:00+02:00" itemprop="datePublished" title="04-07-2024">04-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Cada familia de conjuntos \(P\) define una relación de forma que dos elementos están relacionados si algún conjunto de \(P\) contiene a ambos elementos. Se puede definir en Lean por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+</pre></div>
+
+<p>Una familia de subconjuntos de \(X\) es una partición de \(X\) si cada elemento de \(X\) pertenece a un único conjunto de \(P\) y todos los elementos de \(P\) son no vacíos. Se puede definir en Lean por</p>
+<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="o">(</span><span class="n">set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">     </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que si \(P\) es una partición de \(X\), entonces la relación definida por \(P\) es reflexiva.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">relacion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">Reflexive</span><span class="w"> </span><span class="o">(</span><span class="n">relacion</span><span class="w"> </span><span class="n">P</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/04-las_particiones_definen_relaciones_reflexivas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" class="u-url">El conjunto de las clases de equivalencia es una partición</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-03T06:00:00+02:00" itemprop="datePublished" title="03-07-2024">03-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar con Lean4 que si \(R\) es una relación de equivalencia en \(X\), entonces las clases de equivalencia de \(R\) es una partición de \(X\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="o">(</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">{</span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">|</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">(</span><span class="n">P</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="o">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="bp">∃</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">P</span><span class="o">,</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">C</span><span class="o">))</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="bp">∉</span><span class="w"> </span><span class="n">P</span>
+
+<span class="kd">lemma</span><span class="w"> </span><span class="n">aux</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Equivalence</span><span class="w"> </span><span class="n">R</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hxy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">⊆</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:=</span>
+<span class="k">fun</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="n">hz</span><span class="w"> </span><span class="bp">↦</span><span class="w"> </span><span class="n">h</span><span class="bp">.</span><span class="mi">3</span><span class="w"> </span><span class="n">hxy</span><span class="w"> </span><span class="n">hz</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Equivalence</span><span class="w"> </span><span class="n">R</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">particion</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">|</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">s</span><span class="o">}</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/03-el_conjunto_de_las_clases_de_equivalencia_es_una_particion/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" class="u-url">Las clases de equivalencia de elementos no relacionados son disjuntas</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-02T06:00:00+02:00" itemprop="datePublished" title="02-07-2024">02-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar con Lean4 que las clases de equivalencia de elementos no relacionados son disjuntas.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="o">(</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">{</span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">|</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Equivalence</span><span class="w"> </span><span class="n">R</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hxy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∩</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">∅</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/02-las_clases_de_equivalencia_de_elementos_no_relacionados_son_disjuntas/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/07/01-las_clases_de_equivalencia_de_elementos_relacionados_son_iguales/" class="u-url">Las clases de equivalencia de elementos relacionados son iguales</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/07/01-las_clases_de_equivalencia_de_elementos_relacionados_son_iguales/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-07-01T06:00:00+02:00" itemprop="datePublished" title="01-07-2024">01-07-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Fundamentos/Relaciones de equivalencia</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar con Lean4 que las clases de equivalencia de elementos relacionados son iguales.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="o">(</span><span class="n">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">{</span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">|</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Equivalence</span><span class="w"> </span><span class="n">R</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hxy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">clase</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<p class="more"><a href="posts/2024/07/01-las_clases_de_equivalencia_de_elementos_relacionados_son_iguales/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/06/28-las_sucesiones_convergentes_son_sucesiones_de_cauchy/" class="u-url">Las sucesiones convergentes son sucesiones de Cauchy</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2024/06/28-las_sucesiones_convergentes_son_sucesiones_de_cauchy/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-06-28T06:00:00+02:00" itemprop="datePublished" title="28-06-2024">28-06-2024</time></a>
+            </p>
+		    <p><span class="text-dark">Análisis/Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>En Lean4, una sucesión \(u_0, u_1, u_2, ...\) se puede representar mediante una función \(u : ℕ → ℝ\) de forma que \(u(n)\) es \(uₙ\).</p>
+<p>Se define</p>
+<ul>
+<li>\(a\) es un límite de la sucesión \(u\) , por</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="kd">def</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">       </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<ul>
+<li>la sucesión \(u\) es convergente por</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="kd">def</span><span class="w"> </span><span class="n">suc_convergente</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">       </span><span class="bp">∃</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+
+<ul>
+<li>la sucesión \(u\) es de Cauchy por</li>
+</ul>
+<div class="code"><pre class="code literal-block"><span class="w">     </span><span class="kd">def</span><span class="w"> </span><span class="n">suc_Cauchy</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">       </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">q</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>Demostrar con Lean4 que las sucesiones convergentes son de Cauchy.</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
 <div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
 <span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
 
-<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="o">}</span>
 
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
 
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">p</span><span class="o">)</span><span class="bp">^</span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="bp">*</span><span class="n">p</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
+<span class="kd">def</span><span class="w"> </span><span class="n">suc_convergente</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">limite</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span>
 
-<p class="more"><a href="posts/2024/09/12-proofs_of_1%2Bpn_ge_1%2Bnpen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/10-sum_of_the_first_cubesen/" class="u-url">Proofs of 0³+1³+2³+3³+···+n³ = (n(n+1)/2)²</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/10-sum_of_the_first_cubesen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-10T06:00:00+02:00" itemprop="datePublished" title="10-09-2024">10-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Number Theory/Induction</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Prove that the sum of the first cubes
-\[ 0^3 + 1^3 + 2^3 + 3^3 + ··· + n^3 \]
-is
-\[ \dfrac{n(n+1)}{2}^2 \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">   </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">0</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span><span class="bp">^</span><span class="mi">3</span>
-
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sumCubes</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">*</span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">))</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/09/10-sum_of_the_first_cubesen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/09-sum_of_geometric_progresionen/" class="u-url">Proofs of a+aq+aq²+···+aqⁿ = a(1-qⁿ⁺¹)/(1-q)</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/09-sum_of_geometric_progresionen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-09T06:00:00+02:00" itemprop="datePublished" title="09-09-2024">09-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Number Theory/Induction</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Prove that if \(q ≠ 1\), then the sum of the terms of the geometric progression
-\[ a + aq + aq^2 + ··· + aq^n \]
-is
-\[ \dfrac{a(1 - q^{n+1})}{1 - q} \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">_</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">a</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">q</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">q</span><span class="bp">^</span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">))</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">suc_Cauchy</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">q</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="bp">≠</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">sumGP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">q</span><span class="bp">^</span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">))</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">suc_convergente</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">suc_Cauchy</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<p class="more"><a href="posts/2024/09/09-sum_of_geometric_progresionen/">Leer más…</a></p>
+<p class="more"><a href="posts/2024/06/28-las_sucesiones_convergentes_son_sucesiones_de_cauchy/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/07-sum_of_arithmetic_progressionen/" class="u-url">Proofs of a+(a+d)+(a+2d)+···+(a+nd)=(n+1)(2a+nd)/2</a></h1>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/06/27-la_composicion_por_la_izquierda_con_una_inyectiva_es_inyectiva/" class="u-url">Si g es inyectiva y g ∘ f₁ = g ∘ f₂, entonces f₁ = f₂</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
                     </span></p>
             <p class="dateline">
-            <a href="posts/2024/09/07-sum_of_arithmetic_progressionen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-07T06:00:00+02:00" itemprop="datePublished" title="07-09-2024">07-09-2024</time></a>
+            <a href="posts/2024/06/27-la_composicion_por_la_izquierda_con_una_inyectiva_es_inyectiva/" rel="bookmark">
+            <time class="published dt-published" datetime="2024-06-27T06:00:00+02:00" itemprop="datePublished" title="27-06-2024">27-06-2024</time></a>
             </p>
-		    <p><span class="text-dark">Number Theory/Induction</span></p>
+		    <p><span class="text-dark">Fundamentos/Funciones</span></p>
                 </div>
             </header><div class="p-summary entry-summary">
                     <div>
-<p>Prove that the sum of the terms of the arithmetic progression
-\[ a + (a + d) + (a + 2d) + ··· + (a + nd) \]
-is
-\[ \dfrac{(n + 1)(2a + nd)}{2} \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Nat.Defs</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+<p>Sean \(f_1\) y \(f_2\) funciones de \(X\) en \(Y\) y \(g\) una función de \(Y\) en \(Z\). Demostrar con Lean4 que si \(g\) es inyectiva y \(g ∘ f_1 = g ∘ f_2\), entonces \(f_1 = f_2\).</p>
+<p>Para ello, completar la siguiente teoría de Lean4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Function</span>
 
-<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">_</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="w">     </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">a</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">a</span><span class="o">,</span><span class="w"> </span><span class="n">d</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">d</span><span class="o">)</span>
-
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sumAP</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">d</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/09/07-sum_of_arithmetic_progressionen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/" class="u-url">Proofs of "0+1+2+3+···+n=n(n + 1)/2"</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-05T06:00:00+02:00" itemprop="datePublished" title="05-09-2024">05-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Number Theory/Induction</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Prove that the sum of the natural numbers
-\[ 0 + 1 + 2 + 3 + ··· + n \]
-is
-\[\dfrac{n(n + 1)}{2}\]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Init.Data.Nat.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span><span class="w"> </span><span class="n">Nat</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span>
-
-<span class="kd">set_option</span><span class="w"> </span><span class="n">pp.fieldNotation</span><span class="w"> </span><span class="n">false</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="mi">0</span><span class="w">      </span><span class="bp">=&gt;</span><span class="w"> </span><span class="mi">0</span>
-<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span>
-
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/09/05-sum_of_the_first_n_natural_numbersen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/04-sufficient_condition_of_continuityen/" class="u-url">If f is continuous at a and the limit of u(n) is a, then the limit of f(u(n)) is f(a)</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/04-sufficient_condition_of_continuityen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-04T06:00:00+02:00" itemprop="datePublished" title="04-09-2024">04-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Analysis/Limits</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>and that \(f\) is continuous at \(a\) by:</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">|</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>To prove that if the function \(f\) is continuous at the point \(a\), and the sequence \(u(n)\) converges to \(a\), then the sequence \(f(u(n))\) converges to \(f(a)\).</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">δ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">|</span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">ε</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">X</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="n">Z</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">_</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">f₁</span><span class="w"> </span><span class="n">f₂</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Y</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">g</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Z</span><span class="o">}</span>
 
 <span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hf</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">continuous_at</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hu</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Injective</span><span class="w"> </span><span class="n">g</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hgf</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">f₁</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">f₂</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">f₁</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">f₂</span><span class="w"> </span><span class="o">:=</span>
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<p class="more"><a href="posts/2024/09/04-sufficient_condition_of_continuityen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/" class="u-url">If x is the limit of u and y is an upper bound of u, then x ≤ y</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-03T06:00:00+02:00" itemprop="datePublished" title="03-09-2024">03-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Analysis/Limits</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>In Lean4, we can define that \(a\) is the limit of the sequence \(u\) by:</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-</pre></div>
-
-<p>and that \(a\) is an upper bound of \(u\) by:</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">a</span>
-</pre></div>
-
-<p>Prove that if \(x\) is the limit of the sequence \(u\) and \(y\) is an upper bound of \(u\), then \(x ≤ y\).</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w">  </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">a</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_limit</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hy</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">y</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/09/03-limits_are_less_than_or_equal_to_upper_boundsen/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/09/02-le_of_forall_pos_le_adden/" class="u-url">If (∀ ε &gt; 0, y ≤ x + ε), then y ≤ x</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/09/02-le_of_forall_pos_le_adden/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-09-02T06:00:00+02:00" itemprop="datePublished" title="02-09-2024">02-09-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Number Theory/Real numbers</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Let \(x, y ∈ ℝ\). Prove that
-\[ (∀ ε &gt; 0, y ≤ x + ε) → y ≤ x \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">example</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="o">(</span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">ε</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/09/02-le_of_forall_pos_le_adden/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/" class="u-url">If x is the supremum of set A, then ((∀ y)[y &lt; x → (∃ a ∈ A)[y &lt; a]]</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/" rel="bookmark">
-            <time class="published dt-published" datetime="2024-08-31T06:00:00+02:00" itemprop="datePublished" title="31-08-2024">31-08-2024</time></a>
-            </p>
-		    <p><span class="text-dark">Number Theory/Real numbers</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>In Lean4, one can define that \(x\) is an upper bound of \(A\) by</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span>
-</pre></div>
-
-<p>and \(x\) is supremum of \(A\) by</p>
-<div class="code"><pre class="code literal-block"><span class="w">   </span><span class="kd">def</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">     </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span>
-</pre></div>
-
-<p>Prove that if \(x\) is the supremum of \(A\), then
-\[ (∀ y)[y &lt; x → (∃ a ∈ A)[y &lt; a]] \]</p>
-<p>To do this, complete the following Lean4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">x</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">x</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">is_upper_bound</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">y</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hx</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">is_supremum</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">y</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∈</span><span class="w"> </span><span class="n">A</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<p class="more"><a href="posts/2024/08/31-if_x_is_the_supremum_of_set_a_then_forall_y_y_lt_x_to_exists_a_in_a_y_lt_aen/">Leer más…</a></p>
+<p class="more"><a href="posts/2024/06/27-la_composicion_por_la_izquierda_con_una_inyectiva_es_inyectiva/">Leer más…</a></p>
 </div>
                 </div>
             </article>
