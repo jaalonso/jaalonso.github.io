@@ -52,7 +52,50 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
     
     
     </ul></nav></header><main id="content"><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/08/24-seis_divide_producto/" class="u-url">Challenge 16: For every n ∈ N, n(n+1)(2n+1) is divisible by 6</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/08/30-acotada_si_convergente/" class="u-url">Challenge 17: Convergent sequences are bounded</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="posts/2026/08/30-acotada_si_convergente/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-08-30T06:00:00+02:00" itemprop="datePublished" title="30-08-2026">30-08-2026</time></a>
+            </p>
+                        <p class="commentline">
+		    </p>
+<p><span class="text-dark">Lean 4 Challenges/Analysis/Limits</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Prove that if a sequence \(a_n\) is convergent, then \(a_n\) is bounded; that is, there exists an \(M ∈ ℝ\) such that for every \(n ∈ ℕ\), \(|a_n| ≤ M\).</p>
+<p>To do so, complete the following Lean 4 theory:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kn">open</span><span class="w"> </span><span class="n">Finset</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqConv</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">M</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">M</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqConv</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="posts/2026/08/30-acotada_si_convergente/">Read more…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/08/24-seis_divide_producto/" class="u-url">Challenge 16: For every n ∈ N, n(n+1)(2n+1) is divisible by 6</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -351,41 +394,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <hr>
 <p class="more"><a href="posts/2026/06/28-no_converge_a_limite_pequeno_si_infinitos_terminos_grandes/">Read more…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="posts/2026/06/21-composicion_de_funciones_inyectivas/" class="u-url">Challenge 7: The composition of injective functions is injective</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="posts/2026/06/21-composicion_de_funciones_inyectivas/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-06-21T06:00:00+02:00" itemprop="datePublished" title="21-06-2026">21-06-2026</time></a>
-            </p>
-                        <p class="commentline">
-		    </p>
-<p><span class="text-dark">Lean 4 Challenges/Foundations/Functions</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Prove that the composition of injective functions is injective.</p>
-<p>To do so, complete the following Lean 4 theory:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kn">open</span><span class="w"> </span><span class="n">Function</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">α</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">_</span><span class="o">}</span><span class="w"> </span><span class="o">{</span><span class="n">β</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">_</span><span class="o">}</span><span class="w"> </span><span class="o">{</span><span class="n">γ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">_</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">f</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">α</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">β</span><span class="o">}</span><span class="w"> </span><span class="o">{</span><span class="n">g</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">β</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">γ</span><span class="o">}</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hg</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Injective</span><span class="w"> </span><span class="n">g</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hf</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Injective</span><span class="w"> </span><span class="n">f</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
-<span class="w">  </span><span class="n">Injective</span><span class="w"> </span><span class="o">(</span><span class="n">g</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">f</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
-<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="posts/2026/06/21-composicion_de_funciones_inyectivas/">Read more…</a></p>
 </div>
                 </div>
             </article>
