@@ -5,7 +5,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Challenge 26: Product of a sequence with limit zero and a bounded sequence | Calculemus</title>
+<title>Challenge 26: Product of a sequence converging to zero and a bounded sequence | Calculemus</title>
 <link href="../../../../../assets/css/rst.css" rel="stylesheet" type="text/css">
 <link href="../../../../../assets/css/code.css" rel="stylesheet" type="text/css">
 <link href="../../../../../assets/css/theme.css" rel="stylesheet" type="text/css">
@@ -20,11 +20,11 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="icon" href="../../../../../favicon.png" sizes="48x48">
 <!--[if lt IE 9]><script src="../../../../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
-<meta name="twitter:title" content="Challenge 26: Product of a sequence with limit zero and a bounded sequence | Calculemus">
+<meta name="twitter:title" content="Challenge 26: Product of a sequence converging to zero and a bounded sequence | Calculemus">
 <meta name="author" content="José A. Alonso">
 <link rel="prev" href="../../10/26-convergencia_de_la_mezcla_de_sucesiones/" title="Challenge 25: If the interleaving of two sequences converges to L, then both converge to L" type="text/html">
 <meta property="og:site_name" content="Calculemus">
-<meta property="og:title" content="Challenge 26: Product of a sequence with limit zero and a bounded sequ">
+<meta property="og:title" content="Challenge 26: Product of a sequence converging to zero and a bounded s">
 <meta property="og:url" content="https://jaalonso.github.io/calculemus/en/posts/2026/11/02-limite_cero_por_acotada/">
 <meta property="og:description" content="Prove that if the sequence \(a_n\) converges to \(0\) and the sequence \(b_n\) is bounded (not necessarily convergent), then the sequence \(a_n·b_n\) converges to \(0\).
 To do so, complete the followi">
@@ -67,7 +67,7 @@ To do so, complete the followi">
     
     
     
-    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Challenge 26: Product of a sequence with limit zero and a bounded sequence</a></h1>
+    </ul></nav></header><main id="content"><article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Challenge 26: Product of a sequence converging to zero and a bounded sequence</a></h1>
 
         <div class="metadata">
             <p class="byline author vcard p-author h-card"><span class="byline-name fn p-name" itemprop="author">
@@ -106,8 +106,193 @@ To do so, complete the followi">
 <span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
 </pre></div>
 
-<h3>Collaborative solutions</h3>
-<p>How can you post your solution?</p>
+<hr>
+<!-- TEASER_END --><h3>1. Proof in natural language</h3>
+<p>Let \(\varepsilon \in \mathbb{R}\) be such that
+\[ \varepsilon &gt; 0  \tag{1} \]
+We have to prove that there exists \(k \in \mathbb{N}\) such that
+\[ \forall n \geq k, |a_n \cdot b_n - 0| &lt; \varepsilon \tag{2} \]
+Since \(b_n\) is bounded, there exists \(M \in \mathbb{R}\) such that
+\[ M &gt; 0 \tag{3} \]
+\[ \forall n, |b_n| ≤ M. \tag{4} \]
+By (1) and (3),
+\[ \dfrac{\varepsilon}{M} &gt; 0 \]
+and, since \(a_n\) converges to \(0\), there exists \(k \in \mathbb{N}\) such that
+\[ \forall n \geq k, |a_n| &lt; \dfrac{\varepsilon}{M} \tag{5} \]
+Let us show that (2) holds for this \(k\). To that end, let \(n \in \mathbb{N}\) be such that
+\[ n \geq k \tag{6} \]
+Then
+\[
+\begin{array}{llll}
+|a_n \cdot b_n - 0| &amp;= |a_n \cdot b_n|         \\
+                &amp;= |a_n| \cdot |b_n|       \\
+                &amp;≤ |a_n| \cdot M           &amp;&amp;\text{[by (4)]} \\
+                &amp;&lt; \left(\dfrac{\varepsilon}{M}\right) \cdot M  &amp;&amp;\text{[by (5), (6) and (3)]} \\
+                &amp;= \varepsilon
+\end{array}
+\]
+Therefore, \(a_n \cdot b_n\) converges to \(0\).</p>
+<h3>2. Proofs in Lean 4</h3>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Basic.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">M</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span>
+
+<span class="c1">-- Proof 1</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="n">b</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">M</span><span class="o">,</span><span class="w"> </span><span class="n">hM</span><span class="o">,</span><span class="w"> </span><span class="n">hbM</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hb</span>
+<span class="w">  </span><span class="c1">-- M : ℝ</span>
+<span class="w">  </span><span class="c1">-- hM : M &gt; 0</span>
+<span class="w">  </span><span class="c1">-- hbM : ∀ (n : ℕ), |b n| ≤ M</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="o">(</span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">positivity</span><span class="o">)</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |a n - 0| &lt; ε / M</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span>
+<span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rfl</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="bp">|</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">bound</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">bound</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ε</span><span class="w">              </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">grind</span>
+
+<span class="c1">-- Proof 2</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="n">b</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">M</span><span class="o">,</span><span class="w"> </span><span class="n">hM</span><span class="o">,</span><span class="w"> </span><span class="n">hbM</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hb</span>
+<span class="w">  </span><span class="c1">-- M : ℝ</span>
+<span class="w">  </span><span class="c1">-- hM : M &gt; 0</span>
+<span class="w">  </span><span class="c1">-- hbM : ∀ (n : ℕ), |b n| ≤ M</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="o">(</span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="kd">by</span><span class="w"> </span><span class="n">positivity</span><span class="o">)</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |a n - 0| &lt; ε / M</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">sub_zero</span><span class="o">]</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span>
+<span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">sub_zero</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="k">Pi</span><span class="bp">.</span><span class="n">mul_apply</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="bp">|</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">abs_mul</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">bound</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">bound</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ε</span><span class="w">              </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">field_simp</span>
+
+<span class="c1">-- Proof 3</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="n">b</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">M</span><span class="o">,</span><span class="w"> </span><span class="n">hM</span><span class="o">,</span><span class="w"> </span><span class="n">hbM</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hb</span>
+<span class="w">  </span><span class="c1">-- M : ℝ</span>
+<span class="w">  </span><span class="c1">-- hM : M &gt; 0</span>
+<span class="w">  </span><span class="c1">-- hbM : ∀ (n : ℕ), |b n| ≤ M</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="o">(</span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">div_pos</span><span class="w"> </span><span class="n">hε</span><span class="w"> </span><span class="n">hM</span><span class="o">)</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |a n - 0| &lt; ε / M</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">sub_zero</span><span class="o">]</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span>
+<span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">congr</span><span class="bp">;</span><span class="w"> </span><span class="n">exact</span><span class="w"> </span><span class="n">sub_zero</span><span class="w"> </span><span class="o">((</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">congr</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="bp">|</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">abs_mul</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rel</span><span class="w"> </span><span class="o">[</span><span class="n">hbM</span><span class="w"> </span><span class="n">n</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span><span class="w"> </span><span class="n">rel</span><span class="w"> </span><span class="o">[</span><span class="n">h1</span><span class="o">]</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ε</span><span class="w">              </span><span class="o">:=</span><span class="w"> </span><span class="n">div_mul_cancel₀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hM.ne'</span>
+
+<span class="c1">-- Proof 4</span>
+<span class="c1">-- =======</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hb</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqBdd</span><span class="w"> </span><span class="n">b</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hε</span>
+<span class="w">  </span><span class="c1">-- ε : ℝ</span>
+<span class="w">  </span><span class="c1">-- hε : ε &gt; 0</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∃ k, ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">M</span><span class="o">,</span><span class="w"> </span><span class="n">hM</span><span class="o">,</span><span class="w"> </span><span class="n">hbM</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hb</span>
+<span class="w">  </span><span class="c1">-- M : ℝ</span>
+<span class="w">  </span><span class="c1">-- hM : M &gt; 0</span>
+<span class="w">  </span><span class="c1">-- hbM : ∀ (n : ℕ), |b n| ≤ M</span>
+<span class="w">  </span><span class="n">obtain</span><span class="w"> </span><span class="o">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="o">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">ha</span><span class="w"> </span><span class="o">(</span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">div_pos</span><span class="w"> </span><span class="n">hε</span><span class="w"> </span><span class="n">hM</span><span class="o">)</span>
+<span class="w">  </span><span class="c1">-- k : ℕ</span>
+<span class="w">  </span><span class="c1">-- hk : ∀ n ≥ k, |a n - 0| &lt; ε / M</span>
+<span class="w">  </span><span class="n">use</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="c1">-- ⊢ ∀ n ≥ k, |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="c1">-- n : ℕ</span>
+<span class="w">  </span><span class="c1">-- hn : n ≥ k</span>
+<span class="w">  </span><span class="c1">-- ⊢ |(a * b) n - 0| &lt; ε</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
+<span class="w">    </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span>
+<span class="w">         </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">congrArg</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="o">(</span><span class="n">sub_zero</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">))</span><span class="bp">.</span><span class="n">symm</span>
+<span class="w">       </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="n">hk</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">calc</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">0</span><span class="bp">|</span>
+<span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="n">congrArg</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="o">(</span><span class="n">sub_zero</span><span class="w"> </span><span class="o">((</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="o">))</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">    </span><span class="o">:=</span><span class="w"> </span><span class="n">congrArg</span><span class="w"> </span><span class="n">abs</span><span class="w"> </span><span class="o">(</span><span class="k">Pi</span><span class="bp">.</span><span class="n">mul_apply</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="bp">|</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">abs_mul</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="n">mul_le_mul_of_nonneg_left</span><span class="w"> </span><span class="o">(</span><span class="n">hbM</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">abs_nonneg</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="o">))</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">M</span><span class="w">      </span><span class="o">:=</span><span class="w"> </span><span class="n">mul_lt_mul_of_pos_right</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="n">hM</span>
+<span class="w">     </span><span class="n">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ε</span><span class="w">              </span><span class="o">:=</span><span class="w"> </span><span class="n">div_mul_cancel₀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="n">hM.ne'</span>
+</pre></div>
+
+<p>You can inspect, modify and run the code of these proofs interactively in <a href="https://live.lean-lang.org/#url=https://github.com/jaalonso/Retos/blob/main/Lean4Web/Reto_26.lean">Lean 4 Web</a>.</p>
+<h3>3. Collaborative solutions</h3>
+<p>Have you found a proof different from the published ones? You can share it in the comments below by following these steps:</p>
 <ul>
 <li>Write your proof in <a href="https://live.lean-lang.org/">live.lean-lang.org</a> and check that it compiles without errors.</li>
 <li>Copy the code and post it in the comments of this entry, inside a Lean code block:</li>
@@ -116,11 +301,7 @@ To do so, complete the followi">
 <span class="w">   </span><span class="c1">-- your proof</span>
 <span class="sb">```</span>
 </pre></div>
-
-<ul>
-<li>During the week you will be able to compare your approach with those of other participants. The official solution will be published Monday 9 November 2026.</li>
-</ul>
-</div>
+    </div>
     <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
 <li><a class="tag p-category" href="../../../../tags/analysis/" rel="tag">Analysis</a></li>
             <li><a class="tag p-category" href="../../../../tags/lean4/" rel="tag">Lean4</a></li>
