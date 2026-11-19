@@ -61,7 +61,64 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             
         </div>
     </header><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../../../posts/2026/09/21-limite_menor_que_cota/" class="u-url">Reto 20: Si aₙ → L y M es una cota superior de aₙ, entonces L ≤ M</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../../../posts/2026/09/28-subsucesiones_convergentes/" class="u-url">Reto 21: Las subsucesiones tienen el mismo límite que la sucesión</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="../../../../posts/2026/09/28-subsucesiones_convergentes/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-09-28T06:00:00+02:00" itemprop="datePublished" title="28-09-2026">28-09-2026</time></a>
+            </p>
+                        <p class="commentline">
+		    </p>
+<p><span class="text-dark">Retos en Lean 4/Análisis/Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Una subsucesión se obtiene aplicando a la sucesión original una función de extracción; es decir, una función \(φ : ℕ \to ℕ\) estrictamente creciente. Por ejemplo, la subsucesión \[ u_{0}, u_{2}, u_{4}, u_{6}, \dots \] se obtiene con la función de extracción \(\varphi\) definida por \(\varphi(n) = 2n\).</p>
+<p>Las definiciones anteriores se formalizan en Lean 4 como:</p>
+<div class="code"><pre class="code literal-block"><span class="c1">-- φ es una función de extracción.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- v es una subsucesión de u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">Subseq</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="c1">-- a es el límite de u.</span>
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+</pre></div>
+
+<p>Demostrar que toda subsucesión de una sucesión convergente converge al mismo límite que la sucesión.</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">u</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="o">(</span><span class="n">φ</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℕ</span><span class="o">):=</span>
+<span class="w">  </span><span class="n">StrictMono</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">Subseq</span><span class="w"> </span><span class="o">(</span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∃</span><span class="w"> </span><span class="n">φ</span><span class="o">,</span><span class="w"> </span><span class="n">IsExtraction</span><span class="w"> </span><span class="n">φ</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="bp">∘</span><span class="w"> </span><span class="n">φ</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">u</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">u</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">a</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Subseq</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">u</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="../../../../posts/2026/09/28-subsucesiones_convergentes/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../../../posts/2026/09/21-limite_menor_que_cota/" class="u-url">Reto 20: Si aₙ → L y M es una cota superior de aₙ, entonces L ≤ M</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -406,45 +463,6 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 
 <hr>
 <p class="more"><a href="../../../../posts/2026/06/28-no_converge_a_limite_pequeno_si_infinitos_terminos_grandes/">Leer más…</a></p>
-</div>
-                </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../../../posts/2026/06/14-teorema_del_emparedado/" class="u-url">Reto 6: Si aₙ y cₙ convergen a L y aₙ ≤ bₙ ≤ cₙ para todo n, entonces bₙ converge a L</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="../../../../posts/2026/06/14-teorema_del_emparedado/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-06-14T06:00:00+02:00" itemprop="datePublished" title="14-06-2026">14-06-2026</time></a>
-            </p>
-                        <p class="commentline">
-		    </p>
-<p><span class="text-dark">Retos en Lean 4/Análisis/Límites</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <div>
-<p>Demostrar el teorema del emparedado; es decir que si \(a_n\) y \(c_n\) convergen a \(L\) y \(a_n ≤ b_n \leq c_n\) para todo \(n\), entonces \(b_n\) converge a \(L\).</p>
-<p>Para ello, completar la siguiente teoría de Lean 4:</p>
-<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
-<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
-
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
-
-<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
-<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">N</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
-
-<span class="kd">example</span>
-<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hab</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">(</span><span class="n">hbc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="n">n</span><span class="o">)</span>
-<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kd">by</span>
-<span class="w">  </span><span class="gr">sorry</span>
-</pre></div>
-
-<hr>
-<p class="more"><a href="../../../../posts/2026/06/14-teorema_del_emparedado/">Leer más…</a></p>
 </div>
                 </div>
             </article>
