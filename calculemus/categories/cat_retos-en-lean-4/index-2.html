@@ -19,6 +19,7 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <link rel="canonical" href="https://jaalonso.github.io/calculemus/categories/cat_retos-en-lean-4/index-2.html">
 <link rel="icon" href="../../favicon.png" sizes="48x48">
 <link rel="prev" href="index-1.html" type="text/html">
+<link rel="next" href="index-3.html" type="text/html">
 <!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jaalonso.github.io/calculemus/images/calculemus.jpg">
 <meta name="twitter:title" content="Publicaciones sobre Retos en Lean 4 (publicaciones antiguas, página 2) | Calculemus">
@@ -66,7 +67,117 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
             
         </div>
     </header><div class="postindex">
-            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/06/21-composicion_de_funciones_inyectivas/" class="u-url">Reto 7: La composición de funciones inyectivas es inyectiva</a></h1>
+            <article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/07/13-eventualmentemayorigmitadabslimitepos/" class="u-url">Reto 10: Si aₙ → L con L ≠ 0, entonces |aₙ| ≥ |L|/2 eventualmente</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="../../posts/2026/07/13-eventualmentemayorigmitadabslimitepos/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-07-13T06:00:00+02:00" itemprop="datePublished" title="13-07-2026">13-07-2026</time></a>
+            </p>
+                        <p class="commentline">
+		    </p>
+<p><span class="text-dark">Retos en Lean 4/Análisis/Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar que si una sucesión converge a un límite no nulo, entonces sus términos están eventualmente acotados inferiormente por la mitad del valor absoluto del límite; es decir, si una sucesión \(a_n\) converge a \(L\) con \(L ≠ 0\), entonces existe \(k\) tal que para todo \(n ≥ k\) se tiene que \(|aₙ| ≥ \dfrac{|L|}{2}\).</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hL</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">≠</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="bp">|</span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="../../posts/2026/07/13-eventualmentemayorigmitadabslimitepos/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/" class="u-url">Reto 9: Unicidad del límite</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="../../posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-07-06T06:00:00+02:00" itemprop="datePublished" title="06-07-2026">06-07-2026</time></a>
+            </p>
+                        <p class="commentline">
+		    </p>
+<p><span class="text-dark">Retos en Lean 4/Análisis/Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>El reto de esta semana consiste en demostrar en Lean 4 que si una sucesión \(aₙ\) converge tanto a \(L\) como a \(M\), entonces \(L = M\).</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hL</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="o">)</span>
+<span class="w">  </span><span class="o">(</span><span class="n">hM</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">M</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="../../posts/2026/07/06-unicidad_del_limite_de_las_sucesiones_convergentes/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/06/28-no_converge_a_limite_pequeno_si_infinitos_terminos_grandes/" class="u-url">Reto 8: Sucesiones con infinitos términos grandes no convergen a límites pequeños</a></h1>
+                <div class="metadata">
+                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
+                        José A. Alonso
+                    </span></p>
+            <p class="dateline">
+            <a href="../../posts/2026/06/28-no_converge_a_limite_pequeno_si_infinitos_terminos_grandes/" rel="bookmark">
+            <time class="published dt-published" datetime="2026-06-28T06:00:00+02:00" itemprop="datePublished" title="28-06-2026">28-06-2026</time></a>
+            </p>
+                        <p class="commentline">
+		    </p>
+<p><span class="text-dark">Retos en Lean 4/Análisis/Límites</span></p>
+                </div>
+            </header><div class="p-summary entry-summary">
+                    <div>
+<p>Demostrar que una sucesión que posee infinitos términos con valor absoluto superior a 10 no puede converger a un límite cuyo valor absoluto sea menor que 5.</p>
+<p>Para ello, completar la siguiente teoría de Lean 4:</p>
+<div class="code"><pre class="code literal-block"><span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Data.Real.Basic</span>
+<span class="kn">import</span><span class="w"> </span><span class="n">Mathlib.Tactic</span>
+
+<span class="kd">def</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="bp">∀</span><span class="w"> </span><span class="n">ε</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="o">,</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">ε</span>
+
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℕ</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+<span class="kd">variable</span><span class="w"> </span><span class="o">{</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ℝ</span><span class="o">}</span>
+
+<span class="kd">example</span>
+<span class="w">  </span><span class="o">(</span><span class="n">ha</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="bp">|</span><span class="n">a</span><span class="w"> </span><span class="n">n</span><span class="bp">|</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">10</span><span class="o">)</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="bp">¬</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">L</span><span class="o">,</span><span class="w"> </span><span class="n">SeqLim</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">L</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="bp">|</span><span class="n">L</span><span class="bp">|</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">:=</span>
+<span class="kd">by</span><span class="w"> </span><span class="gr">sorry</span>
+</pre></div>
+
+<hr>
+<p class="more"><a href="../../posts/2026/06/28-no_converge_a_limite_pequeno_si_infinitos_terminos_grandes/">Leer más…</a></p>
+</div>
+                </div>
+            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/06/21-composicion_de_funciones_inyectivas/" class="u-url">Reto 7: La composición de funciones inyectivas es inyectiva</a></h1>
                 <div class="metadata">
                     <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
                         José A. Alonso
@@ -318,39 +429,14 @@ og: http://ogp.me/ns# article: http://ogp.me/ns/article#
 <p class="more"><a href="../../posts/2026/05/10-la_sucesion_1_div_n_converge_a_0/">Leer más…</a></p>
 </div>
                 </div>
-            </article><article class="h-entry post-text" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title"><a href="../../posts/2026/05/09-retos_de_demostracion_en_lean_4/" class="u-url">Retos de demostración en Lean 4</a></h1>
-                <div class="metadata">
-                    <p class="byline author vcard"><span class="byline-name fn" itemprop="author">
-                        José A. Alonso
-                    </span></p>
-            <p class="dateline">
-            <a href="../../posts/2026/05/09-retos_de_demostracion_en_lean_4/" rel="bookmark">
-            <time class="published dt-published" datetime="2026-05-09T06:00:00+02:00" itemprop="datePublished" title="09-05-2026">09-05-2026</time></a>
-            </p>
-                        <p class="commentline">
-		    </p>
-<p><span class="text-dark">Retos en Lean 4</span></p>
-                </div>
-            </header><div class="p-summary entry-summary">
-                    <p>He empezado a publicar la serie <a href=".">Retos matemáticos en Lean 4</a>.</p>
-<p>La dinámica es sencilla: cada semana propondré un problema matemático para que quienes estén interesados compartan sus soluciones en Lean 4.</p>
-<p>Al terminar la semana publicaré las soluciones del reto, que seguirán este esquema:</p>
-<ol>
-<li>Una solución en lenguaje natural.</li>
-<li>Varias formalizaciones en Lean 4, de menos a más detalladas:<ol>
-<li>La más automática, generalmente con <code>grind</code>.</li>
-<li>Otras con tácticas más específicas, como <code>norm_num</code>, <code>ring</code>, <code>positivity</code> o <code>linarith</code>.</li>
-<li>Una demostración final en la que esas tácticas se sustituyen por lemas concretos.</li>
-</ol>
-</li>
-</ol>
-<p>Con este refinamiento sucesivo se pretende que la demostración final se corresponda, en la medida de lo posible, con la escrita en lenguaje natural.</p>
-                </div>
             </article>
 </div>
             <nav class="postindexpager"><ul class="pager">
 <li class="previous">
                 <a href="index-1.html" rel="prev">Publicaciones posteriores</a>
+            </li>
+            <li class="next">
+                <a href="index-3.html" rel="next">Publicaciones anteriores</a>
             </li>
         </ul></nav><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML" integrity="sha384-3lJUsx1TJHt7BA4udB5KPnDrlkO8T6J6v/op7ui0BbCjvZ9WqV4Xm6DTP6kQ/iBH" crossorigin="anonymous"></script><script type="text/x-mathjax-config">
 MathJax.Hub.Config({
